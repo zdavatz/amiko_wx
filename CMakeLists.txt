@@ -1,0 +1,68 @@
+cmake_minimum_required (VERSION 3.10)
+
+project (AmiKo-wx)
+
+SET(CMAKE_CXX_STANDARD 17)
+
+#-----------------------------------------------------------------------------
+#set(wxWidgets_ROOT_DIR "C:/wxWidgets-3.1.3")
+set(wxWidgets_ROOT_DIR ${WX_ROOT})
+
+if (APPLE)
+#--- Taken from Gingko CAD
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
+SET(wxWidgets_wxrx_EXECUTABLE "${WX_ROOT}/bin/wxrc")
+FIND_PACKAGE(wxWidgets REQUIRED)
+include(${wxWidgets_USE_FILE})
+
+if(wxWidgets_CXX_FLAGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${wxWidgets_CXX_FLAGS}")
+endif()
+endif (APPLE)
+
+if(NOT APPLE)
+if(UNIX)
+SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
+SET(wxWidgets_wxrc_EXECUTABLE "${WX_ROOT}/bin/wxrc")
+FIND_PACKAGE(wxWidgets REQUIRED )
+endif(UNIX)
+endif(NOT APPLE)
+
+if (APPLE)
+# From wx-config
+ADD_DEFINITIONS("-D_FILE_OFFSET_BITS=64")
+ADD_DEFINITIONS("-D_LARGE_FILES")
+ADD_DEFINITIONS("-D__WXMAC__")
+ADD_DEFINITIONS("-DGL_SILENCE_DEPRECATION=1")
+endif(APPLE)
+
+if(NOT APPLE)
+if(UNIX)
+ADD_DEFINITIONS("-D__WXGTK__")
+endif(UNIX)
+endif(NOT APPLE)
+
+#=============================================================================
+set(APP_NAME CoMed)
+MESSAGE("=== TARGET: ${APP_NAME}")
+
+ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
+    main.cpp main.hpp
+    gui/MainWindowBase.cpp
+    gui/MainWindowBase.h
+    gui/MainWindow.cpp
+    gui/MainWindow.h
+    )
+
+#ADD_DEFINITIONS("-DwxWidgets_USE_STATIC=OFF")
+target_include_directories( ${APP_NAME} PUBLIC 
+    ${CMAKE_SOURCE_DIR}/gui
+    ${wxWidgets_INCLUDE_DIRS} )
+target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} )
+
