@@ -9,6 +9,15 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
+BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
+	EVT_BUTTON( wxID_BTN_PREPARATION, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_REGISTRATION_OWNER, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_ACTIVE_SUBSTANCE, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+END_EVENT_TABLE()
+
 MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -19,22 +28,29 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 
-	m_button1 = new wxButton( this, wxID_ANY, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
+	mySearchField = new wxSearchCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	#ifndef __WXMAC__
+	mySearchField->ShowSearchButton( true );
+	#endif
+	mySearchField->ShowCancelButton( false );
+	bSizer2->Add( mySearchField, 0, wxALL|wxEXPAND, 5 );
+
+	m_button1 = new wxButton( this, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
 
-	m_button2 = new wxButton( this, wxID_ANY, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button2 = new wxButton( this, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
 
-	m_button3 = new wxButton( this, wxID_ANY, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button3 = new wxButton( this, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
 
-	m_button4 = new wxButton( this, wxID_ANY, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button4 = new wxButton( this, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
 
-	m_button5 = new wxButton( this, wxID_ANY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button5 = new wxButton( this, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
 
-	m_button6 = new wxButton( this, wxID_ANY, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button6 = new wxButton( this, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
 
