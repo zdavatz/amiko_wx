@@ -38,12 +38,15 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button1;
 		wxButton* m_button2;
 		wxButton* m_button3;
+		wxButton* m_button4;
+		wxButton* m_button5;
+		wxButton* m_button6;
 		wxDataViewListCtrl* m_dataViewListCtrl1;
 
 	public:
 		wxHtmlWindow* fiPanel;
 
-		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 730,391 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MainWindowBase();
 

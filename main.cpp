@@ -25,7 +25,6 @@ bool MyApp::OnInit()
     if (!wxApp::OnInit())
         return false;
  
-    // create the main application window
     MainWindow* frame = new MainWindow(nullptr);
 
     frame->Show();
