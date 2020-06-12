@@ -49,7 +49,10 @@ endif(UNIX)
 endif(NOT APPLE)
 
 #=============================================================================
-set(APP_NAME CoMed)
+
+#set(APP_NAME CoMed)
+foreach(APP_NAME CoMed AmiKo)
+
 MESSAGE("=== TARGET: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
@@ -66,3 +69,4 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${wxWidgets_INCLUDE_DIRS} )
 target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} )
 
+endforeach(loop_var)
