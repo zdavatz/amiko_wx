@@ -1,3 +1,4 @@
+#include <wx/wx.h>
 #include "MainWindow.h"
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -35,4 +36,11 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
             std::clog << "TODO: setSearchState:kFullText" << std::endl;
             break;
     }
+}
+
+void MainWindow::showAboutPanel( wxCommandEvent& event )
+{
+    wxMessageBox(wxString::Format("%s\n%s",
+             wxGetOsDescription(), wxVERSION_STRING),
+    APP_NAME, wxOK | wxICON_INFORMATION);
 }

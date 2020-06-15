@@ -1,5 +1,5 @@
 /* XPM */
-static char *interactions[] = {
+static char *interactions_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "64 64 5 1 ",
 "  c None",

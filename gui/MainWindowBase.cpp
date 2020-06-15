@@ -12,6 +12,7 @@
 #include "../res/xpm/favorites.xpm"
 #include "../res/xpm/interactions.xpm"
 #include "../res/xpm/prescription.xpm"
+#include "../res/xpm/print.xpm"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +23,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_showAboutPanel )
 END_EVENT_TABLE()
 
 MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -74,30 +76,21 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	this->SetSizer( bSizer1 );
 	this->Layout();
-	m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL, wxID_ANY );
-	m_bpButton1 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+	m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
+	m_tool1 = m_toolBar1->AddTool( wxID_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_NORMAL, _("AIPS Database"), wxEmptyString, NULL );
 
-	m_bpButton1->SetBitmap( wxBitmap( compendium ) );
-	m_toolBar1->AddControl( m_bpButton1 );
-	m_bpButton2 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+	m_tool2 = m_toolBar1->AddTool( wxID_ANY, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_bpButton2->SetBitmap( wxBitmap( favorites ) );
-	m_toolBar1->AddControl( m_bpButton2 );
-	m_bpButton3 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+	m_tool3 = m_toolBar1->AddTool( wxID_ANY, _("Interactions"), wxBitmap( interactions_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_bpButton3->SetBitmap( wxBitmap( interactions ) );
-	m_toolBar1->AddControl( m_bpButton3 );
-	m_bpButton4 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+	m_tool4 = m_toolBar1->AddTool( wxID_ANY, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_bpButton4->SetBitmap( wxBitmap( prescription ) );
-	m_toolBar1->AddControl( m_bpButton4 );
+	m_toolBar1->AddSeparator();
 
-	m_bpButton5 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW|0 );
-	m_toolBar1->AddControl( m_bpButton5 );
-	m_bpButton6 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+	m_tool5 = m_toolBar1->AddTool( wxID_PRINT, _("Print"), wxBitmap( print_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_bpButton6->SetBitmap( wxBitmap( desitin ) );
-	m_toolBar1->AddControl( m_bpButton6 );
+	m_toolAbout = m_toolBar1->AddTool( wxID_ABOUT, _("AmiKo Desitin"), wxBitmap( desitin_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+
 	m_toolBar1->Realize();
 
 

@@ -50,7 +50,6 @@ endif(NOT APPLE)
 
 #=============================================================================
 
-#set(APP_NAME CoMed)
 foreach(APP_NAME CoMed AmiKo)
 
 MESSAGE("=== TARGET: ${APP_NAME}")
@@ -69,4 +68,7 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${wxWidgets_INCLUDE_DIRS} )
 target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} )
 
+target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
+
 endforeach(loop_var)
+
