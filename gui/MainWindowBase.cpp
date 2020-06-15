@@ -7,6 +7,12 @@
 
 #include "MainWindowBase.h"
 
+#include "../res/xpm/compendium.xpm"
+#include "../res/xpm/desitin.xpm"
+#include "../res/xpm/favorites.xpm"
+#include "../res/xpm/interactions.xpm"
+#include "../res/xpm/prescription.xpm"
+
 ///////////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
@@ -53,6 +59,9 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button6 = new wxButton( this, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
+	m_dataViewListCtrl2 = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( m_dataViewListCtrl2, 1, wxALL|wxEXPAND, 5 );
+
 
 	bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
 
@@ -60,11 +69,37 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer1->Add( fiPanel, 1, wxALL|wxEXPAND, 5 );
 
 	m_dataViewListCtrl1 = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( 200,-1 ), 0 );
-	bSizer1->Add( m_dataViewListCtrl1, 0, wxALL, 5 );
+	bSizer1->Add( m_dataViewListCtrl1, 0, wxALL|wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer1 );
 	this->Layout();
+	m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL, wxID_ANY );
+	m_bpButton1 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+
+	m_bpButton1->SetBitmap( wxBitmap( compendium ) );
+	m_toolBar1->AddControl( m_bpButton1 );
+	m_bpButton2 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+
+	m_bpButton2->SetBitmap( wxBitmap( favorites ) );
+	m_toolBar1->AddControl( m_bpButton2 );
+	m_bpButton3 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+
+	m_bpButton3->SetBitmap( wxBitmap( interactions ) );
+	m_toolBar1->AddControl( m_bpButton3 );
+	m_bpButton4 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+
+	m_bpButton4->SetBitmap( wxBitmap( prescription ) );
+	m_toolBar1->AddControl( m_bpButton4 );
+
+	m_bpButton5 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW|0 );
+	m_toolBar1->AddControl( m_bpButton5 );
+	m_bpButton6 = new wxBitmapButton( m_toolBar1, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 64,64 ), wxBU_AUTODRAW|0 );
+
+	m_bpButton6->SetBitmap( wxBitmap( desitin ) );
+	m_toolBar1->AddControl( m_bpButton6 );
+	m_toolBar1->Realize();
+
 
 	this->Centre( wxBOTH );
 }

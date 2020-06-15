@@ -20,9 +20,11 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/dataview.h>
 #include <wx/sizer.h>
 #include <wx/html/htmlwin.h>
-#include <wx/dataview.h>
+#include <wx/bmpbuttn.h>
+#include <wx/toolbar.h>
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -54,7 +56,15 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button4;
 		wxButton* m_button5;
 		wxButton* m_button6;
+		wxDataViewListCtrl* m_dataViewListCtrl2;
 		wxDataViewListCtrl* m_dataViewListCtrl1;
+		wxToolBar* m_toolBar1;
+		wxBitmapButton* m_bpButton1;
+		wxBitmapButton* m_bpButton2;
+		wxBitmapButton* m_bpButton3;
+		wxBitmapButton* m_bpButton4;
+		wxBitmapButton* m_bpButton5;
+		wxBitmapButton* m_bpButton6;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
@@ -63,7 +73,7 @@ class MainWindowBase : public wxFrame
 	public:
 		wxHtmlWindow* fiPanel;
 
-		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 730,391 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 739,482 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MainWindowBase();
 
