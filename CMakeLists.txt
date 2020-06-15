@@ -56,14 +56,14 @@ MESSAGE("=== TARGET: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
-    gui/MainWindowBase.cpp
-    gui/MainWindowBase.h
-    gui/MainWindow.cpp
-    gui/MainWindow.h
+    gui/MainWindowBase.cpp gui/MainWindowBase.h
+    gui/MainWindow.cpp gui/MainWindow.h
+    customURLConnection.cpp customURLConnection.hpp
     )
 
 #ADD_DEFINITIONS("-DwxWidgets_USE_STATIC=OFF")
 target_include_directories( ${APP_NAME} PUBLIC 
+    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/gui
     ${wxWidgets_INCLUDE_DIRS} )
 target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} )

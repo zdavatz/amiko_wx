@@ -1,4 +1,3 @@
-//
 //  main.cpp
 //  AmiKo-wx
 //
@@ -10,6 +9,7 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
+#include <wx/stdpaths.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -66,7 +66,7 @@ bool MyApp::OnInit()
     }
 #endif
 #endif
- 
+
     MainWindow* frame = new MainWindow(nullptr);
 
     frame->Show();

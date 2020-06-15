@@ -1,5 +1,8 @@
 #include <wx/wx.h>
+#include <wx/stdpaths.h>
+
 #include "MainWindow.h"
+#include "customURLConnection.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -50,4 +53,18 @@ void MainWindow::showAboutPanel( wxCommandEvent& event )
     wxMessageBox(wxString::Format("%s\n%s",
              wxGetOsDescription(), wxVERSION_STRING),
     APP_NAME, wxOK | wxICON_INFORMATION);
+}
+
+void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
+{
+    downloadTextFileWithName("amiko_report_de.html");
+
+    downloadFileWithName("drug_interactions_csv_de.zip");
+    downloadFileWithName("amiko_frequency_de.db.zip");
+    downloadFileWithName("amiko_db_full_idx_de.db.zip");
+}
+
+void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 }

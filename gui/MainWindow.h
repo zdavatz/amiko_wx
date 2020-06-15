@@ -17,6 +17,8 @@ class MainWindow : public MainWindowBase
 		// Handlers for MainWindowBase events.
 		void OnButtonPressed( wxCommandEvent& event );
 		void showAboutPanel( wxCommandEvent& event );
+		void OnUpdateAipsDatabase( wxCommandEvent& event );
+		void OnLoadAipsDatabase( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		MainWindow( wxWindow* parent );

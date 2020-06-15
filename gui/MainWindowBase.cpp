@@ -24,6 +24,8 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_showAboutPanel )
+	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
+	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
 END_EVENT_TABLE()
 
 MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -128,13 +130,13 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menuFile->AppendSeparator();
 
-	wxMenuItem* m_menuItem7;
-	m_menuItem7 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Update via Internet") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menuFile->Append( m_menuItem7 );
+	wxMenuItem* m_miUpdateDB;
+	m_miUpdateDB = new wxMenuItem( m_menuFile, wxID_UPDATE_DB, wxString( _("Update via Internet") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_miUpdateDB );
 
-	wxMenuItem* m_menuItem8;
-	m_menuItem8 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Update from file") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menuFile->Append( m_menuItem8 );
+	wxMenuItem* m_miLoadDB;
+	m_miLoadDB = new wxMenuItem( m_menuFile, wxID_LOAD_DB, wxString( _("Update from file") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_miLoadDB );
 
 	m_menuFile->AppendSeparator();
 
