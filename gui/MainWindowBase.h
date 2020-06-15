@@ -60,21 +60,19 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button6;
 		wxDataViewListCtrl* m_dataViewListCtrl2;
 		wxDataViewListCtrl* m_dataViewListCtrl1;
-		wxToolBar* m_toolBar1;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
 		wxToolBarToolBase* m_tool4;
 		wxToolBarToolBase* m_tool5;
-		wxToolBarToolBase* m_toolAbout;
 		wxMenuBar* m_menubar1;
-		wxMenu* m_menu1;
+		wxMenu* m_menuFile;
 		wxMenu* m_menu11;
-		wxMenu* m_menu2;
-		wxMenu* m_menu3;
-		wxMenu* m_menu4;
-		wxMenu* m_menu5;
-		wxMenu* m_menu6;
+		wxMenu* m_menuEdit;
+		wxMenu* m_menuPrescr;
+		wxMenu* m_menuContacts;
+		wxMenu* m_menuWindow;
+		wxMenu* m_menuHelp;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
@@ -83,6 +81,8 @@ class MainWindowBase : public wxFrame
 
 	public:
 		wxHtmlWindow* fiPanel;
+		wxToolBar* m_tbMain;
+		wxToolBarToolBase* m_toolAbout;
 
 		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 735,538 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 

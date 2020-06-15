@@ -1,10 +1,17 @@
 #include <wx/wx.h>
 #include "MainWindow.h"
 
+#include "../res/xpm/CoMed.xpm"
+
 MainWindow::MainWindow( wxWindow* parent )
 :
 MainWindowBase( parent )
 {
+    if (APP_NAME == "CoMed") {
+        m_toolAbout->SetLabel("CoMed Desitin");
+        m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
+    }
+
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
 }

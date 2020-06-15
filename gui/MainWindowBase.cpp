@@ -7,8 +7,8 @@
 
 #include "MainWindowBase.h"
 
+#include "../res/xpm/AmiKo.xpm"
 #include "../res/xpm/compendium.xpm"
-#include "../res/xpm/desitin.xpm"
 #include "../res/xpm/favorites.xpm"
 #include "../res/xpm/interactions.xpm"
 #include "../res/xpm/prescription.xpm"
@@ -76,27 +76,27 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	this->SetSizer( bSizer1 );
 	this->Layout();
-	m_toolBar1 = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
-	m_tool1 = m_toolBar1->AddTool( wxID_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_NORMAL, _("AIPS Database"), wxEmptyString, NULL );
+	m_tbMain = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
+	m_tool1 = m_tbMain->AddTool( wxID_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_NORMAL, _("AIPS Database"), wxEmptyString, NULL );
 
-	m_tool2 = m_toolBar1->AddTool( wxID_ANY, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool2 = m_tbMain->AddTool( wxID_ANY, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_tool3 = m_toolBar1->AddTool( wxID_ANY, _("Interactions"), wxBitmap( interactions_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool3 = m_tbMain->AddTool( wxID_ANY, _("Interactions"), wxBitmap( interactions_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_tool4 = m_toolBar1->AddTool( wxID_ANY, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool4 = m_tbMain->AddTool( wxID_ANY, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_toolBar1->AddSeparator();
+	m_tbMain->AddSeparator();
 
-	m_tool5 = m_toolBar1->AddTool( wxID_PRINT, _("Print"), wxBitmap( print_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool5 = m_tbMain->AddTool( wxID_PRINT, _("Print"), wxBitmap( print_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_toolAbout = m_toolBar1->AddTool( wxID_ABOUT, _("AmiKo Desitin"), wxBitmap( desitin_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_toolAbout = m_tbMain->AddTool( wxID_ABOUT, _("AmiKo Desitin"), wxBitmap( AmiKo_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
-	m_toolBar1->Realize();
+	m_tbMain->Realize();
 
 	m_menubar1 = new wxMenuBar( 0 );
-	m_menu1 = new wxMenu();
+	m_menuFile = new wxMenu();
 	m_menu11 = new wxMenu();
-	wxMenuItem* m_menu11Item = new wxMenuItem( m_menu1, wxID_ANY, _("Prescription Info"), wxEmptyString, wxITEM_NORMAL, m_menu11 );
+	wxMenuItem* m_menu11Item = new wxMenuItem( m_menuFile, wxID_ANY, _("Prescription Info"), wxEmptyString, wxITEM_NORMAL, m_menu11 );
 	wxMenuItem* m_menuItem1;
 	m_menuItem1 = new wxMenuItem( m_menu11, wxID_ANY, wxString( _("Find...") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu11->Append( m_menuItem1 );
@@ -109,89 +109,89 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_menuItem3 = new wxMenuItem( m_menu11, wxID_ANY, wxString( _("Find Previous...") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menu11->Append( m_menuItem3 );
 
-	m_menu1->Append( m_menu11Item );
+	m_menuFile->Append( m_menu11Item );
 
-	m_menu1->AppendSeparator();
+	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_menuItem4;
-	m_menuItem4 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Print technical information...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem4 );
+	m_menuItem4 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Print technical information...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem4 );
 
 	wxMenuItem* m_menuItem5;
-	m_menuItem5 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Print prescription...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem5 );
+	m_menuItem5 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Print prescription...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem5 );
 	m_menuItem5->Enable( false );
 
 	wxMenuItem* m_menuItem6;
-	m_menuItem6 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Print search result...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem6 );
+	m_menuItem6 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Print search result...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem6 );
 
-	m_menu1->AppendSeparator();
+	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_menuItem7;
-	m_menuItem7 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Update via Internet") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem7 );
+	m_menuItem7 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Update via Internet") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem7 );
 
 	wxMenuItem* m_menuItem8;
-	m_menuItem8 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Update from file") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem8 );
+	m_menuItem8 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Update from file") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem8 );
 
-	m_menu1->AppendSeparator();
+	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_menuItem9;
-	m_menuItem9 = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("Word Analysis") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu1->Append( m_menuItem9 );
+	m_menuItem9 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Word Analysis") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_menuItem9 );
 
-	m_menubar1->Append( m_menu1, _("File") );
+	m_menubar1->Append( m_menuFile, _("File") );
 
-	m_menu2 = new wxMenu();
-	m_menubar1->Append( m_menu2, _("Edit") );
+	m_menuEdit = new wxMenu();
+	m_menubar1->Append( m_menuEdit, _("Edit") );
 
-	m_menu3 = new wxMenu();
+	m_menuPrescr = new wxMenu();
 	wxMenuItem* m_menuItem10;
-	m_menuItem10 = new wxMenuItem( m_menu3, wxID_ANY, wxString( _("Load Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu3->Append( m_menuItem10 );
+	m_menuItem10 = new wxMenuItem( m_menuPrescr, wxID_ANY, wxString( _("Load Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuPrescr->Append( m_menuItem10 );
 
 	wxMenuItem* m_menuItem11;
-	m_menuItem11 = new wxMenuItem( m_menu3, wxID_ANY, wxString( _("Save Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu3->Append( m_menuItem11 );
+	m_menuItem11 = new wxMenuItem( m_menuPrescr, wxID_ANY, wxString( _("Save Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuPrescr->Append( m_menuItem11 );
 
-	m_menubar1->Append( m_menu3, _("Prescription") );
+	m_menubar1->Append( m_menuPrescr, _("Prescription") );
 
-	m_menu4 = new wxMenu();
+	m_menuContacts = new wxMenu();
 	wxMenuItem* m_menuItem12;
-	m_menuItem12 = new wxMenuItem( m_menu4, wxID_ANY, wxString( _("Patient management...") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu4->Append( m_menuItem12 );
+	m_menuItem12 = new wxMenuItem( m_menuContacts, wxID_ANY, wxString( _("Patient management...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuContacts->Append( m_menuItem12 );
 
 	wxMenuItem* m_menuItem13;
-	m_menuItem13 = new wxMenuItem( m_menu4, wxID_ANY, wxString( _("Doctor signature") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu4->Append( m_menuItem13 );
+	m_menuItem13 = new wxMenuItem( m_menuContacts, wxID_ANY, wxString( _("Doctor signature") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuContacts->Append( m_menuItem13 );
 
-	m_menubar1->Append( m_menu4, _("Contacts") );
+	m_menubar1->Append( m_menuContacts, _("Contacts") );
 
-	m_menu5 = new wxMenu();
-	m_menubar1->Append( m_menu5, _("Windows") );
+	m_menuWindow = new wxMenu();
+	m_menubar1->Append( m_menuWindow, _("Window") );
 
-	m_menu6 = new wxMenu();
+	m_menuHelp = new wxMenu();
 	wxMenuItem* m_menuItem14;
-	m_menuItem14 = new wxMenuItem( m_menu6, wxID_ANY, wxString( _("Feedback") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu6->Append( m_menuItem14 );
+	m_menuItem14 = new wxMenuItem( m_menuHelp, wxID_ANY, wxString( _("Feedback") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuHelp->Append( m_menuItem14 );
 
 	wxMenuItem* m_menuItem15;
-	m_menuItem15 = new wxMenuItem( m_menu6, wxID_ANY, wxString( _("Share") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu6->Append( m_menuItem15 );
+	m_menuItem15 = new wxMenuItem( m_menuHelp, wxID_ANY, wxString( _("Share") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuHelp->Append( m_menuItem15 );
 
 	wxMenuItem* m_menuItem16;
-	m_menuItem16 = new wxMenuItem( m_menu6, wxID_ANY, wxString( _("Rate") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu6->Append( m_menuItem16 );
+	m_menuItem16 = new wxMenuItem( m_menuHelp, wxID_ANY, wxString( _("Rate") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuHelp->Append( m_menuItem16 );
 
-	m_menu6->AppendSeparator();
+	m_menuHelp->AppendSeparator();
 
 	wxMenuItem* m_menuItem17;
-	m_menuItem17 = new wxMenuItem( m_menu6, wxID_ANY, wxString( _("Report") ) , wxEmptyString, wxITEM_NORMAL );
-	m_menu6->Append( m_menuItem17 );
+	m_menuItem17 = new wxMenuItem( m_menuHelp, wxID_ANY, wxString( _("Report") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuHelp->Append( m_menuItem17 );
 
-	m_menubar1->Append( m_menu6, _("Help") );
+	m_menubar1->Append( m_menuHelp, _("Help") );
 
 	this->SetMenuBar( m_menubar1 );
 
