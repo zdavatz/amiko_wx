@@ -821,7 +821,7 @@
                     <event name="OnToolClicked">showAboutPanel</event>
                 </object>
             </object>
-            <object class="wxMenuBar" expanded="1">
+            <object class="wxMenuBar" expanded="0">
                 <property name="bg"></property>
                 <property name="context_help"></property>
                 <property name="context_menu">1</property>
@@ -843,7 +843,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <object class="wxMenu" expanded="1">
+                <object class="wxMenu" expanded="0">
                     <property name="label">File</property>
                     <property name="name">m_menuFile</property>
                     <property name="permission">protected</property>
@@ -985,7 +985,7 @@
                         <property name="unchecked_bitmap"></property>
                     </object>
                 </object>
-                <object class="wxMenu" expanded="1">
+                <object class="wxMenu" expanded="0">
                     <property name="label">Edit</property>
                     <property name="name">m_menuEdit</property>
                     <property name="permission">protected</property>
@@ -1052,7 +1052,7 @@
                         <property name="unchecked_bitmap"></property>
                     </object>
                 </object>
-                <object class="wxMenu" expanded="1">
+                <object class="wxMenu" expanded="0">
                     <property name="label">Window</property>
                     <property name="name">m_menuWindow</property>
                     <property name="permission">protected</property>

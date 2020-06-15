@@ -14,6 +14,8 @@ MainWindowBase( parent )
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }
+    
+    SetTitle(APP_NAME);
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
