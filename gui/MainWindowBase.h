@@ -24,6 +24,7 @@
 #include <wx/sizer.h>
 #include <wx/html/htmlwin.h>
 #include <wx/toolbar.h>
+#include <wx/menu.h>
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,14 @@ class MainWindowBase : public wxFrame
 		wxToolBarToolBase* m_tool4;
 		wxToolBarToolBase* m_tool5;
 		wxToolBarToolBase* m_toolAbout;
+		wxMenuBar* m_menubar1;
+		wxMenu* m_menu1;
+		wxMenu* m_menu11;
+		wxMenu* m_menu2;
+		wxMenu* m_menu3;
+		wxMenu* m_menu4;
+		wxMenu* m_menu5;
+		wxMenu* m_menu6;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
