@@ -17,7 +17,7 @@
 void downloadTextFileWithName(wxString filename)
 {
     wxString PILLBOX_ODDB_ORG("http://pillbox.oddb.org/");
-    wxString dir = wxStandardPaths::Get().GetAppDocumentsDir();
+	wxString dir = wxStandardPaths::Get().GetUserDataDir();
 
     wxURL url(PILLBOX_ODDB_ORG + filename);
     if (url.GetError() != wxURL_NOERR)
@@ -45,18 +45,15 @@ void downloadTextFileWithName(wxString filename)
 void downloadFileWithName(wxString filename)
 {
     wxString server("pillbox.oddb.org");  // No "http://" scheme prefix !
-    wxString dir = wxStandardPaths::Get().GetAppDocumentsDir();
+    wxString dir = wxStandardPaths::Get().GetUserDataDir();
 
     wxHTTP http;
     //http.SetHeader(_T("Content-type"), "text/html; charset=utf-8");
     http.SetTimeout(10);
 
     wxString localFilePath( dir + wxFILE_SEP_PATH + filename);
-    std::clog << "Line " << __LINE__ << " local file: " << localFilePath.ToStdString() << std::endl;
     wxFileOutputStream output(localFilePath);
     wxDataOutputStream store(output);
-
-    std::clog << "Line " << __LINE__ << " connect to " << server.ToStdString() << std::endl;
 
 //    while (!http.Connect(server))  // only the server, no pages here yet ...
 //    wxSleep(5);
@@ -68,8 +65,6 @@ void downloadFileWithName(wxString filename)
         return;
     }
 
-    std::clog << "Line " << __LINE__ << " path " << filename.ToStdString() << std::endl;
-
     wxInputStream *stream;
     stream = http.GetInputStream("/" + filename);
     if (stream == nullptr) {
@@ -79,14 +74,16 @@ void downloadFileWithName(wxString filename)
     }
 
     unsigned char buffer[1024];
-    int byteRead;
+    size_t byteRead;
 
     // receive stream
     while (!stream->Eof()) {
         stream->Read(buffer, sizeof(buffer));
         store.Write8(buffer, sizeof(buffer));
         byteRead = stream->LastRead();
-        if (byteRead <= 0)
+        if (byteRead == 0)
+            break;
+        if (!stream->IsOk())
             break;
     }
 
