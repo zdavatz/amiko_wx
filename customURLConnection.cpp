@@ -13,6 +13,8 @@
 #include <wx/datstrm.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include "wx/fs_zip.h"
+#include <wx/zipstrm.h>
 
 #include "customURLConnection.hpp"
 
@@ -59,7 +61,7 @@ void downloadFileWithName(wxString filename)
 
 //    while (!http.Connect(server))  // only the server, no pages here yet ...
 //    wxSleep(5);
-    
+
     if (!http.Connect(server, 80))
     {
         std::clog << "Line " << __LINE__ << " Connect fail" << std::endl;
@@ -90,4 +92,23 @@ void downloadFileWithName(wxString filename)
     }
 
     output.Close();
+    
+    // Unzip file, see connectionDidFinishLoading
+    if (wxFileName(filename).GetExt() != "zip")
+        return;
+    
+    if (!wxFileName::Exists(localFilePath))
+        return;
+
+    wxFileInputStream in(localFilePath);
+    wxZipInputStream zip(in);
+    
+    if (zip.GetTotalEntries() == 0)
+        return;
+    
+    wxZipEntry* pZIPEntry = zip.GetNextEntry();
+    wxString localUnzippedFilePath( dir + wxFILE_SEP_PATH + pZIPEntry->GetName());
+    zip.OpenEntry(*pZIPEntry);
+    wxFileOutputStream theOutputFile(localUnzippedFilePath);
+    zip.Read(theOutputFile);
 }

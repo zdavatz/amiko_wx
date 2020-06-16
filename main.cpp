@@ -17,6 +17,8 @@
 
 #include <wx/intl.h>
 #include <wx/dir.h>
+#include "wx/fs_zip.h"
+#include <wx/zipstrm.h>
 
 #include "main.hpp"
 #include "MainWindow.h"
@@ -71,6 +73,8 @@ bool MyApp::OnInit()
     wxString dir = wxStandardPaths::Get().GetUserDataDir();
     if (!wxDir::Exists(dir))
         wxFileName::Mkdir(dir);
+    
+    wxFileSystem::AddHandler(new wxZipFSHandler);
 
     MainWindow* frame = new MainWindow(nullptr);
 
