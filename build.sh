@@ -24,6 +24,9 @@ if [ $CONFIG_GENERATOR_XC ] ; then
 elif [ $CONFIG_GENERATOR_MK ] ; then
     GENERATOR="Unix Makefiles"
     IDE=mk
+elif [ $CONFIG_GENERATOR_CL ] ; then
+    GENERATOR="CodeLite - Unix Makefiles"
+    IDE=cl
 fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION

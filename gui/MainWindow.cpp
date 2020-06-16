@@ -63,7 +63,7 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 
     downloadFileWithName("drug_interactions_csv_de.zip");
     downloadFileWithName("amiko_frequency_de.db.zip");
-    downloadFileWithName("amiko_db_full_idx_de.db.zip");
+    downloadFileWithName("amiko_db_full_idx_de.zip");
 }
 
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
