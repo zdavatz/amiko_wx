@@ -22,7 +22,7 @@ MainWindowBase( parent )
     // TODO: Register applications defaults if necessary
     // TODO: Start timer to check if database needs to be updatd (checks every hour)
 
-    // TODO. Open sqlite database
+    // Open sqlite database
     openSQLiteDatabase();
     
     // TODO: Open fulltext database

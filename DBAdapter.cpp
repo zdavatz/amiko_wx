@@ -30,7 +30,7 @@ bool DBAdapter::openDatabase(wxString dbName)
         std::cerr << "AIPS DB found in user's documents folder - " << filePath.ToStdString() << std::endl;
         mySqliteDb = new SQLiteDatabase;
         mySqliteDb->initReadOnlyWithPath(filePath);
-        return;
+        return true;
     }
     
     // B. If no database is available, check if db is in app bundle
