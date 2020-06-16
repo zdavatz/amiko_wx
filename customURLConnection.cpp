@@ -11,6 +11,8 @@
 #include <wx/stdpaths.h>
 #include <wx/wfstream.h>
 #include <wx/datstrm.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
 
 #include "customURLConnection.hpp"
 

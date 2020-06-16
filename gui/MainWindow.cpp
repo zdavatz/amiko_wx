@@ -1,5 +1,6 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
+//#include <wx/dialup.h>
 
 #include "MainWindow.h"
 #include "customURLConnection.hpp"
@@ -59,11 +60,22 @@ void MainWindow::showAboutPanel( wxCommandEvent& event )
 
 void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 {
-    downloadTextFileWithName("amiko_report_de.html");
+    // TODO: check if there is an active internet connection
+    //std::clog << wxDialupManager::IsOnline() << std::endl;
 
-    downloadFileWithName("drug_interactions_csv_de.zip");
-    downloadFileWithName("amiko_frequency_de.db.zip");
-    downloadFileWithName("amiko_db_full_idx_de.zip");
+    wxBusyCursor wait;
+
+    const char * languageCode;
+    if (APP_NAME == "CoMed")
+        languageCode = "fr";
+    else
+        languageCode = "de";
+
+    downloadTextFileWithName(wxString::Format("amiko_report_%s.html", languageCode));
+    
+    downloadFileWithName(wxString::Format("drug_interactions_csv_%s.zip", languageCode));
+    downloadFileWithName(wxString::Format("amiko_frequency_%s.db.zip", languageCode));
+    downloadFileWithName(wxString::Format("amiko_db_full_idx_%s.zip", languageCode));
 }
 
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )

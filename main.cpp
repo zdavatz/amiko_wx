@@ -16,6 +16,7 @@
 #endif
 
 #include <wx/intl.h>
+#include <wx/dir.h>
 
 #include "main.hpp"
 #include "MainWindow.h"
@@ -66,6 +67,10 @@ bool MyApp::OnInit()
     }
 #endif
 #endif
+    
+    wxString dir = wxStandardPaths::Get().GetUserDataDir();
+    if (!wxDir::Exists(dir))
+        wxFileName::Mkdir(dir);
 
     MainWindow* frame = new MainWindow(nullptr);
 
