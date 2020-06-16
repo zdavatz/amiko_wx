@@ -23,7 +23,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_showAboutPanel )
+	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_OnShowAboutPanel )
 	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
 	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
 END_EVENT_TABLE()
@@ -63,8 +63,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button6 = new wxButton( this, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
-	m_dataViewListCtrl2 = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_dataViewListCtrl2, 1, wxALL|wxEXPAND, 5 );
+	myTableView = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer2->Add( myTableView, 1, wxALL|wxEXPAND, 5 );
 
 
 	bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );

@@ -49,7 +49,7 @@ class MainWindowBase : public wxFrame
 
 		// Private event handlers
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
-		void _wxFB_showAboutPanel( wxCommandEvent& event ){ showAboutPanel( event ); }
+		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
 		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
 
@@ -62,7 +62,6 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button4;
 		wxButton* m_button5;
 		wxButton* m_button6;
-		wxDataViewListCtrl* m_dataViewListCtrl2;
 		wxDataViewListCtrl* m_dataViewListCtrl1;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
@@ -80,12 +79,13 @@ class MainWindowBase : public wxFrame
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
-		virtual void showAboutPanel( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
+		wxDataViewListCtrl* myTableView;
 		wxHtmlWindow* fiPanel;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;

@@ -18,7 +18,7 @@ class MainWindow : public MainWindowBase
 	protected:
 		// Handlers for MainWindowBase events.
 		void OnButtonPressed( wxCommandEvent& event );
-		void showAboutPanel( wxCommandEvent& event );
+		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
 	public:
@@ -28,7 +28,16 @@ class MainWindow : public MainWindowBase
 
     private:
         void openSQLiteDatabase();
+        void fadeInAndShow();
+        void resetDataInTableView();
+        void setSearchState(int searchState);
+        void hideTextFinder();
+        void updateSearchResults();
+        void updateTableView();
         DBAdapter *mDb;
+        int mCurrentSearchState;
+        wxString mCurrentSearchKey;
+        std::vector<int> searchResults; // TODO: not int
 };
 
 #endif // __MainWindow__
