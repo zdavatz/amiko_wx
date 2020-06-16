@@ -77,7 +77,6 @@ bool MyApp::OnInit()
     wxFileSystem::AddHandler(new wxZipFSHandler);
 
     MainWindow* frame = new MainWindow(nullptr);
-
     frame->Show();
     SetTopWindow( frame );
     return true;

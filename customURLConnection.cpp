@@ -94,6 +94,8 @@ void downloadFileWithName(wxString filename)
     output.Close();
     
     // Unzip file, see connectionDidFinishLoading
+    // For now we assume each zip file contains one file only
+
     if (wxFileName(filename).GetExt() != "zip")
         return;
     
@@ -108,7 +110,15 @@ void downloadFileWithName(wxString filename)
     
     wxZipEntry* pZIPEntry = zip.GetNextEntry();
     wxString localUnzippedFilePath( dir + wxFILE_SEP_PATH + pZIPEntry->GetName());
-    zip.OpenEntry(*pZIPEntry);
+    if (!zip.OpenEntry(*pZIPEntry))
+        return;
+    
+    if (!zip.CanRead())
+        return;
+
     wxFileOutputStream theOutputFile(localUnzippedFilePath);
+    if (theOutputFile.IsOk())
+        return;
+
     zip.Read(theOutputFile);
 }

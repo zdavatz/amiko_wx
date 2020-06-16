@@ -17,6 +17,12 @@ MainWindowBase( parent )
     }
     
     SetTitle(APP_NAME);
+    
+    // TODO: Register applications defaults if necessary
+    // TODO: Start timer to check if database needs to be updatd (checks every hour)
+
+    // TODO. Open sqlite database
+    //openSQLiteDatabase();
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
