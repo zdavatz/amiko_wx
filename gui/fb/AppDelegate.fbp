@@ -753,46 +753,50 @@
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/compendium.xpm</property>
                     <property name="context_menu">0</property>
-                    <property name="id">wxID_COMPENDIUM</property>
+                    <property name="id">wxID_TB_COMPENDIUM</property>
                     <property name="kind">wxITEM_NORMAL</property>
                     <property name="label">Compendium</property>
                     <property name="name">m_tool1</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
                     <property name="tooltip">AIPS Database</property>
+                    <event name="OnToolClicked">OnToolbarAction</event>
                 </object>
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/favorites.xpm</property>
                     <property name="context_menu">0</property>
-                    <property name="id">wxID_ANY</property>
+                    <property name="id">wxID_TB_FAVORITES</property>
                     <property name="kind">wxITEM_NORMAL</property>
                     <property name="label">Favorites</property>
                     <property name="name">m_tool2</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
                     <property name="tooltip"></property>
+                    <event name="OnToolClicked">OnToolbarAction</event>
                 </object>
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/interactions.xpm</property>
                     <property name="context_menu">0</property>
-                    <property name="id">wxID_ANY</property>
+                    <property name="id">wxID_TB_INTERACTIONS</property>
                     <property name="kind">wxITEM_NORMAL</property>
                     <property name="label">Interactions</property>
                     <property name="name">m_tool3</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
                     <property name="tooltip"></property>
+                    <event name="OnToolClicked">OnToolbarAction</event>
                 </object>
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/prescription.xpm</property>
                     <property name="context_menu">0</property>
-                    <property name="id">wxID_ANY</property>
+                    <property name="id">wxID_TB_PRESCRIPTION</property>
                     <property name="kind">wxITEM_NORMAL</property>
                     <property name="label">Prescription</property>
                     <property name="name">m_tool4</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
                     <property name="tooltip"></property>
+                    <event name="OnToolClicked">OnToolbarAction</event>
                 </object>
                 <object class="toolSeparator" expanded="0">
                     <property name="permission">protected</property>
@@ -807,6 +811,7 @@
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
                     <property name="tooltip"></property>
+                    <event name="OnToolClicked">OnPrintDocument</event>
                 </object>
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/AmiKo.xpm</property>

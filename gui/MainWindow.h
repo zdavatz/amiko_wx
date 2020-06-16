@@ -18,6 +18,8 @@ class MainWindow : public MainWindowBase
 	protected:
 		// Handlers for MainWindowBase events.
 		void OnButtonPressed( wxCommandEvent& event );
+		void OnToolbarAction( wxCommandEvent& event );
+		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
@@ -26,18 +28,25 @@ class MainWindow : public MainWindowBase
 		MainWindow( wxWindow* parent );
 	//// end generated class members
 
-    private:
-        void openSQLiteDatabase();
-        void fadeInAndShow();
-        void resetDataInTableView();
-        void setSearchState(int searchState);
-        void hideTextFinder();
-        void updateSearchResults();
-        void updateTableView();
-        DBAdapter *mDb;
-        int mCurrentSearchState;
-        wxString mCurrentSearchKey;
-        std::vector<int> searchResults; // TODO: not int
+private:
+    void openSQLiteDatabase();
+    void fadeInAndShow();
+    void resetDataInTableView();
+    void setSearchState(int searchState);
+    void hideTextFinder();
+    void updateSearchResults();
+    void updateTableView();
+    void switchTabs(int item);
+
+    // 105
+    int mUsedDatabase;
+    // 110
+    bool mSearchInteractions;
+    bool mPrescriptionMode;
+    DBAdapter *mDb;
+    int mCurrentSearchState;
+    wxString mCurrentSearchKey;
+    std::vector<int> searchResults; // TODO: not int
 };
 
 #endif // __MainWindow__

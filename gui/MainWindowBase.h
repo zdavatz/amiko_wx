@@ -35,9 +35,12 @@
 #define wxID_BTN_REGISTATION_NUMBER 1003
 #define wxID_BTN_THERAPY 1004
 #define wxID_BTN_FULL_TEXT 1005
-#define wxID_COMPENDIUM 1006
-#define wxID_UPDATE_DB 1007
-#define wxID_LOAD_DB 1008
+#define wxID_TB_COMPENDIUM 1006
+#define wxID_TB_FAVORITES 1007
+#define wxID_TB_INTERACTIONS 1008
+#define wxID_TB_PRESCRIPTION 1009
+#define wxID_UPDATE_DB 1010
+#define wxID_LOAD_DB 1011
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -49,6 +52,8 @@ class MainWindowBase : public wxFrame
 
 		// Private event handlers
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
+		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
+		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
 		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
 		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
@@ -79,6 +84,8 @@ class MainWindowBase : public wxFrame
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnPrintDocument( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadAipsDatabase( wxCommandEvent& event ) { event.Skip(); }

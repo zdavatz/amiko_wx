@@ -13,6 +13,11 @@
 
 #include "../res/xpm/CoMed.xpm"
 
+// Database types
+enum {
+    kAips=0, kHospital=1, kFavorites=2, kInteractions=4
+};
+
 // Search states
 enum {
     kTitle=0, kAuthor=1, kAtcCode=2, kRegNr=3, kTherapy=4, kWebView=5, kFullText=6
@@ -21,6 +26,9 @@ enum {
 MainWindow::MainWindow( wxWindow* parent )
 : MainWindowBase( parent )
 , mCurrentSearchState(kTitle)
+, mUsedDatabase(kAips)
+, mSearchInteractions(false)
+, mPrescriptionMode(false)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -109,11 +117,58 @@ void MainWindow::resetDataInTableView()
     //myTableView->reloadData();
 }
 
+// 1755
+// Switch app state
+void MainWindow::switchTabs(int item)
+{
+    switch (item) {
+        case wxID_TB_COMPENDIUM:
+            std::clog << "AIPS Database" << std::endl;
+            mUsedDatabase = kAips;
+            mSearchInteractions = false;
+            mPrescriptionMode = false;
+            // TODO
+            break;
+            
+        case wxID_TB_FAVORITES:
+            std::clog << "Favorites" << std::endl;
+            mUsedDatabase = kFavorites;
+            mSearchInteractions = false;
+            mPrescriptionMode = false;
+            // TODO:
+            break;
+            
+        case wxID_TB_INTERACTIONS:
+            std::clog << "Interactions" << std::endl;
+            mUsedDatabase = kAips;
+            mSearchInteractions = true;
+            mPrescriptionMode = false;
+            // TODO:
+            break;
+            
+        case wxID_TB_PRESCRIPTION:
+            std::clog << "Rezept" << std::endl;
+            mUsedDatabase = kAips;
+            mSearchInteractions = false;
+            mPrescriptionMode = true;
+            // TODO:
+            break;
+            
+#if 0 // TODO
+        case wxID_EXPORT:
+            break;
+            
+        case wxID_TB_AMIKO:
+            break;
+#endif
+        default:
+            break;
+    }
+}
+
 // 1967
 void MainWindow::setSearchState(int searchState)
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-
     switch (searchState)
     {
         case kTitle:
@@ -211,6 +266,17 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
         updateTableView();
         // myTableView->reloadData(); // TODO:
     }
+}
+
+void MainWindow::OnToolbarAction( wxCommandEvent& event )
+{
+    // TODO: launchProgressIndicator();
+    switchTabs(event.GetId());
+}
+
+void MainWindow::OnPrintDocument( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
 }
 
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
