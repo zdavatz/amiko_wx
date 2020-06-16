@@ -4,6 +4,7 @@
 
 #include "MainWindow.h"
 #include "customURLConnection.hpp"
+#include "DBAdapter.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -22,10 +23,35 @@ MainWindowBase( parent )
     // TODO: Start timer to check if database needs to be updatd (checks every hour)
 
     // TODO. Open sqlite database
-    //openSQLiteDatabase();
+    openSQLiteDatabase();
+    
+    // TODO: Open fulltext database
+    // openFullTextDatabase();
+//    #ifdef DEBUG
+//    NSLog(@"Number of records in fulltext database = %ld", (long)[mFullTextDb getNumRecords]);
+//    #endif
+        
+    // TODO: Open drug interactions csv file
+    //openInteractionsCsvFile();
+//    #ifdef DEBUG
+//    NSLog(@"Number of records in interaction file = %lu", (unsigned long)[mInteractions getNumInteractions]);
+//    #endif
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
+}
+
+void MainWindow::openSQLiteDatabase()
+{
+    mDb = new DBAdapter;
+
+    const char * languageCode;
+    if (APP_NAME == "CoMed")
+        languageCode = "fr";
+    else
+        languageCode = "de";
+
+    bool ok = mDb->openDatabase(wxString::Format("amiko_db_full_idx_%s", languageCode));
 }
 
 void MainWindow::OnButtonPressed( wxCommandEvent& event )

@@ -5,11 +5,9 @@ project (AmiKo-wx)
 SET(CMAKE_CXX_STANDARD 17)
 
 #-----------------------------------------------------------------------------
-#set(wxWidgets_ROOT_DIR "C:/wxWidgets-3.1.3")
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
 
 if (APPLE)
-#--- Taken from Gingko CAD
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
@@ -49,15 +47,32 @@ endif(UNIX)
 endif(NOT APPLE)
 
 #=============================================================================
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SQLITE3 REQUIRED sqlite3)
+message(STATUS "SQLITE3_INCLUDEDIR: ${SQLITE3_INCLUDEDIR}")
+message(STATUS "SQLITE3_LIBRARIES: ${SQLITE3_LIBRARIES}")
+message(STATUS "SQLite3_FOUND: ${SQLite3_FOUND}")
+
+#=============================================================================
 
 foreach(APP_NAME CoMed AmiKo)
+
+set( SRCS_GUI
+    gui/MainWindowBase.cpp gui/MainWindowBase.h
+    gui/MainWindow.cpp gui/MainWindow.h )
+    
+set( SRCS_SQL
+    DBAdapter.cpp DBAdapter.hpp
+    SQLiteDatabase.cpp SQLiteDatabase.hpp )
+    
+source_group(GUI FILES ${SRCS_GUI})
+source_group(SQL FILES ${SRCS_SQL})
 
 MESSAGE("=== TARGET: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
-    gui/MainWindowBase.cpp gui/MainWindowBase.h
-    gui/MainWindow.cpp gui/MainWindow.h
+    ${SRCS_GUI} ${SRCS_SQL}
     customURLConnection.cpp customURLConnection.hpp
     )
 
@@ -65,8 +80,12 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
 target_include_directories( ${APP_NAME} PUBLIC 
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/gui
-    ${wxWidgets_INCLUDE_DIRS} )
-target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} )
+    ${wxWidgets_INCLUDE_DIRS}
+    ${SQLITE3_INCLUDEDIR} )
+
+target_link_libraries( ${APP_NAME}
+  ${wxWidgets_LIBRARIES}
+  ${SQLITE3_LIBRARIES})
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 
