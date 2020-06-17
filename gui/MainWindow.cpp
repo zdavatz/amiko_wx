@@ -44,25 +44,31 @@ MainWindow::MainWindow( wxWindow* parent )
     
     SetTitle(APP_NAME);
     
-    fadeInAndShow();
+    //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // TODO: Register applications defaults if necessary
     // TODO: Start timer to check if database needs to be updatd (checks every hour)
 
     // Open sqlite database
     openSQLiteDatabase();
+#ifndef NDEBUG
+    std::clog << "Number of records in AIPS database: " << mDb->getNumRecords() << std::endl;
+#endif
     
-    // TODO: Open fulltext database
+    // Open fulltext database
     openFullTextDatabase();
 #ifndef NDEBUG
-//    NSLog(@"Number of records in fulltext database = %ld", (long)[mFullTextDb getNumRecords]);
+    std::clog << "Number of records in fulltext database: " << mFullTextDb->getNumRecords() << std::endl;
 #endif
         
-    // TODO: Open drug interactions csv file
+    // Open drug interactions csv file
     openInteractionsCsvFile();
 #ifndef NDEBUG
-//    NSLog(@"Number of records in interaction file = %lu", (unsigned long)[mInteractions getNumInteractions]);
+    std::clog << "Number of records in interaction file: " << mInteractions->getNumInteractions() << std::endl;
 #endif
+    
+    fadeInAndShow();
+
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
@@ -114,12 +120,11 @@ void MainWindow::openFullTextDatabase()
 void MainWindow::updateSearchResults()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#if 0
+
     if (mUsedDatabase == kAips)
-        searchResults = [self searchAnyDatabasesWith:mCurrentSearchKey];
+        searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
     else if (mUsedDatabase == kFavorites)
-        searchResults = [self retrieveAllFavorites];
-#endif
+        searchResults = retrieveAllFavorites();
 }
 
 // 858
@@ -127,6 +132,9 @@ void MainWindow::resetDataInTableView()
 {
     // Reset search state
     setSearchState(kTitle);
+    
+    mCurrentSearchKey = "";
+    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
 
     //myTableView->reloadData();
 }
@@ -178,6 +186,12 @@ void MainWindow::switchTabs(int item)
         default:
             break;
     }
+}
+
+// 1897
+MYARRAY MainWindow::retrieveAllFavorites()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // 1967
@@ -235,6 +249,20 @@ void MainWindow::setSearchState(int searchState)
 
     mCurrentSearchKey = "";
     mCurrentSearchState = searchState;
+}
+
+// 2029
+MYARRAY MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+{
+    std::clog << __FUNCTION__ << " searchQuery " << searchQuery.ToStdString() << std::endl;
+    return;
+
+    MYARRAY searchRes;
+
+    if (mCurrentSearchState == kTitle)
+        searchRes = mDb->searchTitle(searchQuery);  // NSArray of MLMedication
+    
+    // TODO:
 }
 
 // 2286

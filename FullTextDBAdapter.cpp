@@ -11,6 +11,9 @@
 #include "FullTextDBAdapter.hpp"
 #include "SQLiteDatabase.hpp"
 
+// 37
+static wxString DATABASE_TABLE("frequency");
+
 FullTextDBAdapter::FullTextDBAdapter()
 : myFullTextDb(nullptr)
 {
@@ -44,4 +47,10 @@ bool FullTextDBAdapter::openDatabase(wxString dbName)
 #endif
 
     return false;
+}
+
+// 82
+int FullTextDBAdapter::getNumRecords()
+{
+    return myFullTextDb->numberRecordsForTable(DATABASE_TABLE);
 }
