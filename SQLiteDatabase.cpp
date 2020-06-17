@@ -58,7 +58,7 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 // 169
 MYARRAY SQLiteDatabase::performQuery(wxString query)
 {
-    std::clog << __FUNCTION__ << "query: " << query.ToStdString() << std::endl;
+    //std::clog << __FUNCTION__ << ", query: " << query.ToStdString() << std::endl;
 
     MYARRAY result;
 

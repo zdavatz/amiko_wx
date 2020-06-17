@@ -254,8 +254,7 @@ void MainWindow::setSearchState(int searchState)
 // 2029
 MYARRAY MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
-    std::clog << __FUNCTION__ << " searchQuery " << searchQuery.ToStdString() << std::endl;
-    return;
+    std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
 
     MYARRAY searchRes;
 
@@ -263,6 +262,7 @@ MYARRAY MainWindow::searchAnyDatabasesWith(wxString searchQuery)
         searchRes = mDb->searchTitle(searchQuery);  // NSArray of MLMedication
     
     // TODO:
+    return searchRes;
 }
 
 // 2286
