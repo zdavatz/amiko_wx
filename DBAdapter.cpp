@@ -94,7 +94,7 @@ int DBAdapter::getNumRecords()
 // 169
 MYARRAY DBAdapter::searchTitle(wxString title)
 {
-    //std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
     
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
             SHORT_TABLE.ToStdString(),
@@ -103,6 +103,8 @@ MYARRAY DBAdapter::searchTitle(wxString title)
             title.ToStdString(),
             KEY_TITLE,
             title.ToStdString());
+
+    //std::clog << "query: " << query.ToStdString() << std::endl;
 
     MYARRAY results = mySqliteDb->performQuery(query);
     return results;
