@@ -14,7 +14,9 @@ SQLiteDatabase::SQLiteDatabase()
 
 void SQLiteDatabase::initReadOnlyWithPath(wxString path)
 {
+#ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << " " << path.ToStdString() << std::endl;
+#endif
     sqlite3 *dbConnection;
     
     int rc = sqlite3_open_v2(path.c_str(), &dbConnection, SQLITE_OPEN_READONLY, nullptr);

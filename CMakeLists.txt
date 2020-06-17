@@ -63,7 +63,9 @@ set( SRCS_GUI
     
 set( SRCS_SQL
     DBAdapter.cpp DBAdapter.hpp
-    SQLiteDatabase.cpp SQLiteDatabase.hpp )
+    SQLiteDatabase.cpp SQLiteDatabase.hpp
+    FullTextDBAdapter.cpp FullTextDBAdapter.hpp
+    InteractionsAdapter.cpp InteractionsAdapter.hpp )
     
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
@@ -72,6 +74,7 @@ MESSAGE("=== TARGET: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
+    Utilities.cpp Utilities.hpp
     ${SRCS_GUI} ${SRCS_SQL}
     customURLConnection.cpp customURLConnection.hpp
     )

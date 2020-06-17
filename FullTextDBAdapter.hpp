@@ -1,7 +1,7 @@
-//  dbAdapter.hpp
+//  FullTextDBAdapter.hpp
 //  AmiKo-wx
 //
-//  Created by Alex Bettarini on 16 Jun 2020
+//  Created by Alex Bettarini on 17 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #pragma once
@@ -10,14 +10,14 @@
 
 class SQLiteDatabase;
 
-class DBAdapter
+class FullTextDBAdapter
 {
 public:
-    DBAdapter();
-    virtual ~DBAdapter() {}
-    
+    FullTextDBAdapter();
+    virtual ~FullTextDBAdapter() {}
+
     bool openDatabase(wxString dbName);
-    
+
 private:
-     SQLiteDatabase *mySqliteDb;
+    SQLiteDatabase *myFullTextDb;
 };

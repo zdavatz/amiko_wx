@@ -8,8 +8,12 @@
 #include <sqlite3.h>
 
 #include "MainWindow.h"
+
+#include "FullTextDBAdapter.hpp"
 #include "customURLConnection.hpp"
 #include "DBAdapter.hpp"
+#include "InteractionsAdapter.hpp"
+#include "Utilities.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -23,9 +27,12 @@ enum {
     kTitle=0, kAuthor=1, kAtcCode=2, kRegNr=3, kTherapy=4, kWebView=5, kFullText=6
 };
 
+// 106
+static int mCurrentSearchState = kTitle;
+static wxString mCurrentSearchKey;
+
 MainWindow::MainWindow( wxWindow* parent )
 : MainWindowBase( parent )
-, mCurrentSearchState(kTitle)
 , mUsedDatabase(kAips)
 , mSearchInteractions(false)
 , mPrescriptionMode(false)
@@ -46,16 +53,16 @@ MainWindow::MainWindow( wxWindow* parent )
     openSQLiteDatabase();
     
     // TODO: Open fulltext database
-    // openFullTextDatabase();
-//    #ifdef DEBUG
+    openFullTextDatabase();
+#ifndef NDEBUG
 //    NSLog(@"Number of records in fulltext database = %ld", (long)[mFullTextDb getNumRecords]);
-//    #endif
+#endif
         
     // TODO: Open drug interactions csv file
-    //openInteractionsCsvFile();
-//    #ifdef DEBUG
+    openInteractionsCsvFile();
+#ifndef NDEBUG
 //    NSLog(@"Number of records in interaction file = %lu", (unsigned long)[mInteractions getNumInteractions]);
-//    #endif
+#endif
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
@@ -82,18 +89,25 @@ void MainWindow::fadeInAndShow()
     resetDataInTableView();
 }
 
+// 591
+void MainWindow::openInteractionsCsvFile()
+{
+    mInteractions = new InteractionsAdapter;
+    bool ok = mInteractions->openInteractionsCsvFile( wxString::Format("drug_interactions_csv_%s", UTI::appLanguage()));
+}
+
 // 605
 void MainWindow::openSQLiteDatabase()
 {
     mDb = new DBAdapter;
+    bool ok = mDb->openDatabase( wxString::Format("amiko_db_full_idx_%s", UTI::appLanguage()));
+}
 
-    const char * languageCode;
-    if (APP_NAME == "CoMed")
-        languageCode = "fr";
-    else
-        languageCode = "de";
-
-    bool ok = mDb->openDatabase(wxString::Format("amiko_db_full_idx_%s", languageCode));
+// 621
+void MainWindow::openFullTextDatabase()
+{
+    mFullTextDb = new FullTextDBAdapter;
+    bool ok = mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
 }
 
 // 847
@@ -293,11 +307,7 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 
     wxBusyCursor wait;
 
-    const char * languageCode;
-    if (APP_NAME == "CoMed")
-        languageCode = "fr";
-    else
-        languageCode = "de";
+    const char * languageCode = UTI::appLanguage();
 
     downloadTextFileWithName(wxString::Format("amiko_report_%s.html", languageCode));
     

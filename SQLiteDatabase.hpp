@@ -13,7 +13,7 @@ class SQLiteDatabase
 {
 public:
     SQLiteDatabase();
-    ~SQLiteDatabase() {}
+    virtual ~SQLiteDatabase() {}
     
     void initReadOnlyWithPath(wxString path);
     
