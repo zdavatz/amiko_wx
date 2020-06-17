@@ -17,6 +17,7 @@ public:
     virtual ~FullTextDBAdapter() {}
 
     bool openDatabase(wxString dbName);
+    int getNumRecords();
 
 private:
     SQLiteDatabase *myFullTextDb;

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <wx/wx.h>
+#include "SQLiteDatabase.hpp"
 
 class SQLiteDatabase;
 
@@ -17,6 +18,8 @@ public:
     virtual ~DBAdapter() {}
     
     bool openDatabase(wxString dbName);
+    MYARRAY searchTitle(wxString title);
+    int getNumRecords();
     
 private:
      SQLiteDatabase *mySqliteDb;

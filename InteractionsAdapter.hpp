@@ -7,6 +7,7 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <map>
 
 class InteractionsAdapter
 {
@@ -15,7 +16,10 @@ public:
     virtual ~InteractionsAdapter() {}
     
     bool openInteractionsCsvFile(wxString name);
+    int getNumInteractions();
     
 private:
     bool readDrugInteractionMap(wxString filePath);
+    //std::map<std::string, std::string> myDrugInteractionMap;
+    std::map<wxString, wxString> myDrugInteractionMap;
 };
