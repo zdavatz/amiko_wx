@@ -9,8 +9,11 @@
 #include <wx/wx.h>
 #include <sqlite3.h>
 
-union myType {
-    const unsigned char *c;
+#define MYARRAY             std::vector<struct myStruct>
+#define MYRESULTS           std::vector<MYARRAY>
+
+union myType { // only simple types allowed
+    char *c;
     int i;
     double d;
 };
@@ -18,10 +21,9 @@ union myType {
 struct myStruct {
     int type;
     union myType u;
-};
 
-#define MYARRAY             std::vector<struct myStruct>
-#define MYRESULTS           std::vector<MYARRAY>
+    myStruct() {u.c = nullptr;} // constructor
+};
 
 class SQLiteDatabase
 {

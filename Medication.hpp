@@ -11,4 +11,23 @@ class Medication
 public:
     Medication();
     virtual ~Medication() {}
+
+    long medId; // pk in DB file
+    char *title;
+    char *auth;
+    char *atccode;
+    char *substances;
+    char *regnrs;
+    char *atcClass;
+    char *therapy;
+    char *application;
+    char *indications;
+    int customerId; // sqlite 3 returns type SQLITE_TEXT if the cell is empty
+    char *packInfo;
+    char *addInfo;
+    char *sectionIds;
+    char *sectionTitles;
+    char *styleStr;
+    char *contentStr;
+    char *packages;
 };

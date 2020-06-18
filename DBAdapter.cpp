@@ -5,6 +5,7 @@
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #include <vector>
+#include <algorithm>    // std::min
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
@@ -18,8 +19,10 @@
 enum {
     kMedId = 0, kTitle, kAuth, kAtcCode, kSubstances,
     kRegnrs, kAtcClass, kTherapy, kApplication, kIndications,
-    kCustomerId, kPackInfo, kPackages, kAddInfo, kIdsStr,
-    kSectionsStr, kContentStr, kStyleStr,
+    kCustomerId, kPackInfo, kPackages,    // short query up to here
+    
+    // full query includes the following:
+    kAddInfo, kIdsStr, kSectionsStr, kContentStr, kStyleStr,
     
     kNumberOfKeys
 };
@@ -61,7 +64,8 @@ DBAdapter::DBAdapter()
 
     if (FULL_TABLE.size() == 0) {
         FULL_TABLE = wxString::Format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                      KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES, KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
+                      KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES,
+                      KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
     }
     
 }
@@ -163,20 +167,32 @@ MYRESULTS DBAdapter::searchApplication(wxString application)
 Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
 {
     Medication *medi = new Medication;
-    // Type:
-    //  0-1  type 1 SQLITE_INTEGER
-    //  2-17 type 3 SQLITE_TEXT
-    for (int i=0; i<kNumberOfKeys; i++) {
+
+#if 0
+    // kMedId type 1 SQLITE_INTEGER
+    // kCustomerId 3 if empty, 1 if it contains a number
+    // others type 3 SQLITE_TEXT
+    int n = std::min((int)kNumberOfKeys,    // 18
+                     (int)cursor.size());   // 13 for short query
+    for (int i=0; i<n; i++) {
         std::cerr << i << " Type:" << cursor[i].type;
         if (cursor[i].type == SQLITE_INTEGER)
             std::cerr << "  int value: " << cursor[i].u.i;
         else
-            std::cerr  << " char value: " << cursor[i].u.c;
+            std::cerr << " char value: <" << cursor[i].u.c << ">";
 
         std::cerr << std::endl;
     }
+#endif
 
-    int medID = cursor[kMedId].u.i;
+    medi->medId = cursor[kMedId].u.i;
+    medi->title = cursor[kTitle].u.c;
+    medi->auth = cursor[kAuth].u.c;
+    // TODO: finish up
+    
+    // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
+    if (cursor[kCustomerId].type == SQLITE_INTEGER)
+        medi->customerId = cursor[kCustomerId].u.i;
 
     return medi;
 }
