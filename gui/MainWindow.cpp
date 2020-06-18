@@ -19,21 +19,21 @@
 
 // Database types
 enum {
-    kAips=0, kHospital=1, kFavorites=2, kInteractions=4
+    kdbt_Aips=0, kdbt_Hospital=1, kdbt_Favorites=2, kdbt_Interactions=4
 };
 
 // Search states
 enum {
-    kTitle=0, kAuthor=1, kAtcCode=2, kRegNr=3, kTherapy=4, kWebView=5, kFullText=6
+    kss_Title=0, kss_Author=1, kss_AtcCode=2, kss_RegNr=3, kss_Therapy=4, kss_WebView=5, kss_FullText=6
 };
 
 // 106
-static int mCurrentSearchState = kTitle;
+static int mCurrentSearchState = kss_Title;
 static wxString mCurrentSearchKey;
 
 MainWindow::MainWindow( wxWindow* parent )
 : MainWindowBase( parent )
-, mUsedDatabase(kAips)
+, mUsedDatabase(kdbt_Aips)
 , mSearchInteractions(false)
 , mPrescriptionMode(false)
 {
@@ -121,9 +121,9 @@ void MainWindow::updateSearchResults()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 
-    if (mUsedDatabase == kAips)
+    if (mUsedDatabase == kdbt_Aips)
         searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
-    else if (mUsedDatabase == kFavorites)
+    else if (mUsedDatabase == kdbt_Favorites)
         searchResults = retrieveAllFavorites();
 }
 
@@ -131,7 +131,7 @@ void MainWindow::updateSearchResults()
 void MainWindow::resetDataInTableView()
 {
     // Reset search state
-    setSearchState(kTitle);
+    setSearchState(kss_Title);
     
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
@@ -146,7 +146,7 @@ void MainWindow::switchTabs(int item)
     switch (item) {
         case wxID_TB_COMPENDIUM:
             std::clog << "AIPS Database" << std::endl;
-            mUsedDatabase = kAips;
+            mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO
@@ -154,7 +154,7 @@ void MainWindow::switchTabs(int item)
             
         case wxID_TB_FAVORITES:
             std::clog << "Favorites" << std::endl;
-            mUsedDatabase = kFavorites;
+            mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO:
@@ -162,7 +162,7 @@ void MainWindow::switchTabs(int item)
             
         case wxID_TB_INTERACTIONS:
             std::clog << "Interactions" << std::endl;
-            mUsedDatabase = kAips;
+            mUsedDatabase = kdbt_Aips;
             mSearchInteractions = true;
             mPrescriptionMode = false;
             // TODO:
@@ -170,7 +170,7 @@ void MainWindow::switchTabs(int item)
             
         case wxID_TB_PRESCRIPTION:
             std::clog << "Rezept" << std::endl;
-            mUsedDatabase = kAips;
+            mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = true;
             // TODO:
@@ -189,7 +189,7 @@ void MainWindow::switchTabs(int item)
 }
 
 // 1897
-MYARRAY MainWindow::retrieveAllFavorites()
+MYRESULTS MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
@@ -199,37 +199,37 @@ void MainWindow::setSearchState(int searchState)
 {
     switch (searchState)
     {
-        case kTitle:
+        case kss_Title:
             mySearchField->SetValue("");
-            mCurrentSearchState = kTitle;
+            mCurrentSearchState = kss_Title;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Preparation")));
              break;
 
-        case kAuthor:
+        case kss_Author:
             mySearchField->SetValue("");
-            mCurrentSearchState = kAuthor;
+            mCurrentSearchState = kss_Author;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Owner")));
             break;
 
-        case kAtcCode:
+        case kss_AtcCode:
             mySearchField->SetValue("");
-            mCurrentSearchState = kAtcCode;
+            mCurrentSearchState = kss_AtcCode;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("ATC Code")));
             break;
 
-        case kRegNr:
+        case kss_RegNr:
             mySearchField->SetValue("");
-            mCurrentSearchState = kRegNr;
+            mCurrentSearchState = kss_RegNr;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Reg. No")));
             break;
 
-        case kTherapy:
+        case kss_Therapy:
             mySearchField->SetValue("");
-            mCurrentSearchState = kTherapy;
+            mCurrentSearchState = kss_Therapy;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Therapy")));
             break;
 
-        case kWebView:
+        case kss_WebView:
             // Hide textfinder
             hideTextFinder();
             // NOTE: Commented out because we're using SHCWebView now (02.03.2015)
@@ -240,9 +240,9 @@ void MainWindow::setSearchState(int searchState)
             */
             break;
 
-        case kFullText:
+        case kss_FullText:
             mySearchField->SetValue("");
-            mCurrentSearchState = kFullText;
+            mCurrentSearchState = kss_FullText;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Full Text")));
             break;
     }
@@ -252,16 +252,30 @@ void MainWindow::setSearchState(int searchState)
 }
 
 // 2029
-MYARRAY MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+MYRESULTS MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
     std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
 
-    MYARRAY searchRes;
+    MYRESULTS searchRes;
 
-    if (mCurrentSearchState == kTitle)
-        searchRes = mDb->searchTitle(searchQuery);  // NSArray of MLMedication
+    if (mCurrentSearchState == kss_Title)
+        searchRes = mDb->searchTitle(searchQuery);  // array of MLMedication
+    else if (mCurrentSearchState == kss_Author)
+        searchRes = mDb->searchAuthor(searchQuery);
+    else if (mCurrentSearchState == kss_AtcCode)
+        searchRes = mDb->searchATCCode(searchQuery);
+    else if (mCurrentSearchState == kss_RegNr)
+        searchRes = mDb->searchRegNr(searchQuery);
+    else if (mCurrentSearchState == kss_Therapy)
+        searchRes = mDb->searchApplication(searchQuery);
+    else if (mCurrentSearchState == kss_FullText)
+    {
+        if (searchQuery.length() > 2)
+            searchRes = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
+    }
+
+    mCurrentSearchKey = searchQuery;
     
-    // TODO:
     return searchRes;
 }
 
@@ -277,31 +291,31 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
     switch (event.GetId()) {
         case wxID_BTN_PREPARATION:
-            setSearchState(kTitle);
+            setSearchState(kss_Title);
             break;
             
         case wxID_BTN_REGISTRATION_OWNER:
-            setSearchState(kAuthor);
+            setSearchState(kss_Author);
             break;
             
         case wxID_BTN_ACTIVE_SUBSTANCE:
-            setSearchState(kAtcCode);
+            setSearchState(kss_AtcCode);
             break;
             
         case wxID_BTN_REGISTATION_NUMBER:
-            setSearchState(kRegNr);
+            setSearchState(kss_RegNr);
             break;
             
         case wxID_BTN_THERAPY:
-            setSearchState(kTherapy);
+            setSearchState(kss_Therapy);
             break;
             
         case wxID_BTN_FULL_TEXT:
-            setSearchState(kFullText);
+            setSearchState(kss_FullText);
             break;
     }
     
-    if (prevState == kFullText || mCurrentSearchState == kFullText)
+    if (prevState == kss_FullText || mCurrentSearchState == kss_FullText)
         updateSearchResults();
     
     if (searchResults.size() > 0) {

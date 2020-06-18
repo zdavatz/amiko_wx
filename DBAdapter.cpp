@@ -4,12 +4,25 @@
 //  Created by Alex Bettarini on 16 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+#include <vector>
+
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 
 #include "DBAdapter.hpp"
 #include "SQLiteDatabase.hpp"
+#include "Medication.hpp"
+
+// 28
+enum {
+    kMedId = 0, kTitle, kAuth, kAtcCode, kSubstances,
+    kRegnrs, kAtcClass, kTherapy, kApplication, kIndications,
+    kCustomerId, kPackInfo, kPackages, kAddInfo, kIdsStr,
+    kSectionsStr, kContentStr, kStyleStr,
+    
+    kNumberOfKeys
+};
 
 // 32
 static const char * KEY_ROWID = "_id";
@@ -92,7 +105,7 @@ int DBAdapter::getNumRecords()
 }
 
 // 169
-MYARRAY DBAdapter::searchTitle(wxString title)
+MYRESULTS DBAdapter::searchTitle(wxString title)
 {
     std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
     
@@ -106,6 +119,77 @@ MYARRAY DBAdapter::searchTitle(wxString title)
 
     //std::clog << "query: " << query.ToStdString() << std::endl;
 
-    MYARRAY results = mySqliteDb->performQuery(query);
+    MYRESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
+}
+
+// 177
+// Search Inhaber
+MYRESULTS DBAdapter::searchAuthor(wxString author)
+{
+    // TODO:
+    MYRESULTS results;
     return results;
+}
+
+// 187
+// Search ATC Code
+MYRESULTS DBAdapter::searchATCCode(wxString atccode)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 209
+// Search Reg. Nr.
+MYRESULTS DBAdapter::searchRegNr(wxString regnr)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 230
+// Search Application
+MYRESULTS DBAdapter::searchApplication(wxString application)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 307
+Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
+{
+    Medication *medi = new Medication;
+    // Type:
+    //  0-1  type 1 SQLITE_INTEGER
+    //  2-17 type 3 SQLITE_TEXT
+    for (int i=0; i<kNumberOfKeys; i++) {
+        std::cerr << i << " Type:" << cursor[i].type;
+        if (cursor[i].type == SQLITE_INTEGER)
+            std::cerr << "  int value: " << cursor[i].u.i;
+        else
+            std::cerr  << " char value: " << cursor[i].u.c;
+
+        std::cerr << std::endl;
+    }
+
+    int medID = cursor[kMedId].u.i;
+
+    return medi;
+}
+
+// 365
+MYRESULTS DBAdapter::extractShortMedInfoFrom(MYRESULTS &results)
+{
+    MYRESULTS medList;
+    
+    for (auto cursor : results)  {
+        Medication *medi = cursorToShortMedInfo(cursor);
+//        [medList addObject:medi];
+    }
+
+    return medList;
 }

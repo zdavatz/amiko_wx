@@ -11,7 +11,11 @@
 #include "FullTextDBAdapter.hpp"
 #include "SQLiteDatabase.hpp"
 
-// 37
+// 32
+static const char *KEY_ROWID = "id";
+static const char *KEY_KEYWORD = "keyword";
+static const char *KEY_REGNR = "regnr";
+
 static wxString DATABASE_TABLE("frequency");
 
 FullTextDBAdapter::FullTextDBAdapter()
@@ -53,4 +57,16 @@ bool FullTextDBAdapter::openDatabase(wxString dbName)
 int FullTextDBAdapter::getNumRecords()
 {
     return myFullTextDb->numberRecordsForTable(DATABASE_TABLE);
+}
+
+// 97
+// Search fulltext containing keyword
+MYRESULTS FullTextDBAdapter::searchKeyword(wxString keyword)
+{
+    wxString query = wxString::Format("select * from %s where %s like '%s%%'",
+                                      DATABASE_TABLE.ToStdString(),
+                                      KEY_KEYWORD,
+                                      keyword.c_str());
+    MYRESULTS results = myFullTextDb->performQuery(query);
+    return results;
 }

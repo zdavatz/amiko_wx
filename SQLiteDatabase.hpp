@@ -20,7 +20,8 @@ struct myStruct {
     union myType u;
 };
 
-#define MYARRAY         std::vector<std::vector<struct myStruct>>
+#define MYARRAY             std::vector<struct myStruct>
+#define MYRESULTS           std::vector<MYARRAY>
 
 class SQLiteDatabase
 {
@@ -29,7 +30,7 @@ public:
     virtual ~SQLiteDatabase() {}
     
     void initReadOnlyWithPath(wxString path);
-    MYARRAY performQuery(wxString query);
+    MYRESULTS performQuery(wxString query);
     int numberRecordsForTable(wxString table);
     
 private:
