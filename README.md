@@ -1,7 +1,7 @@
 # amiko_linux
 AmiKo/CoMed for Linux done with wxWidgets and C++, 64 bit.
 
-Dependencies:
+Prerequisites:
 
 - GTK 3
 
