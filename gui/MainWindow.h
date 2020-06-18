@@ -43,8 +43,8 @@ private:
     void openSQLiteDatabase();
     void openFullTextDatabase();
     void openInteractionsCsvFile();
-    MYARRAY searchAnyDatabasesWith(wxString searchQuery);
-    MYARRAY retrieveAllFavorites();
+    MYRESULTS searchAnyDatabasesWith(wxString searchQuery);
+    MYRESULTS retrieveAllFavorites();
 
     // 105
     int mUsedDatabase;
@@ -60,7 +60,7 @@ private:
     InteractionsAdapter *mInteractions;
 
     // .m 168
-    MYARRAY searchResults;
+    MYRESULTS searchResults;
 };
 
 #endif // __MainWindow__

@@ -27,6 +27,9 @@ elif [ $CONFIG_GENERATOR_MK ] ; then
 elif [ $CONFIG_GENERATOR_CL ] ; then
     GENERATOR="CodeLite - Unix Makefiles"
     IDE=cl
+elif [ $CONFIG_GENERATOR_CB ] ; then
+    GENERATOR="CodeBlocks - Unix Makefiles"
+    IDE=cb
 fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
@@ -122,7 +125,6 @@ $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX=$BIN_APP \
     -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_CXX_FLAGS="$COMPILER_FLAGS" \
-    -D BOOST_ROOT="$BIN_BOOST" \
     -D WX_ROOT=$BIN_WXWIDGETS \
     $SRC_APP
 fi

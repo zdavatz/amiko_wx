@@ -4,12 +4,28 @@
 //  Created by Alex Bettarini on 16 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+#include <vector>
+#include <algorithm>    // std::min
+
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 
 #include "DBAdapter.hpp"
 #include "SQLiteDatabase.hpp"
+#include "Medication.hpp"
+
+// 28
+enum {
+    kMedId = 0, kTitle, kAuth, kAtcCode, kSubstances,
+    kRegnrs, kAtcClass, kTherapy, kApplication, kIndications,
+    kCustomerId, kPackInfo, kPackages,    // short query up to here
+    
+    // full query includes the following:
+    kAddInfo, kIdsStr, kSectionsStr, kContentStr, kStyleStr,
+    
+    kNumberOfKeys
+};
 
 // 32
 static const char * KEY_ROWID = "_id";
@@ -48,7 +64,8 @@ DBAdapter::DBAdapter()
 
     if (FULL_TABLE.size() == 0) {
         FULL_TABLE = wxString::Format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                      KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES, KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
+                      KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES,
+                      KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
     }
     
 }
@@ -92,7 +109,7 @@ int DBAdapter::getNumRecords()
 }
 
 // 169
-MYARRAY DBAdapter::searchTitle(wxString title)
+MYRESULTS DBAdapter::searchTitle(wxString title)
 {
     std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
     
@@ -106,6 +123,89 @@ MYARRAY DBAdapter::searchTitle(wxString title)
 
     //std::clog << "query: " << query.ToStdString() << std::endl;
 
-    MYARRAY results = mySqliteDb->performQuery(query);
+    MYRESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
+}
+
+// 177
+// Search Inhaber
+MYRESULTS DBAdapter::searchAuthor(wxString author)
+{
+    // TODO:
+    MYRESULTS results;
     return results;
+}
+
+// 187
+// Search ATC Code
+MYRESULTS DBAdapter::searchATCCode(wxString atccode)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 209
+// Search Reg. Nr.
+MYRESULTS DBAdapter::searchRegNr(wxString regnr)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 230
+// Search Application
+MYRESULTS DBAdapter::searchApplication(wxString application)
+{
+    // TODO:
+    MYRESULTS results;
+    return results;
+}
+
+// 307
+Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
+{
+    Medication *medi = new Medication;
+
+#if 0
+    // kMedId type 1 SQLITE_INTEGER
+    // kCustomerId 3 if empty, 1 if it contains a number
+    // others type 3 SQLITE_TEXT
+    int n = std::min((int)kNumberOfKeys,    // 18
+                     (int)cursor.size());   // 13 for short query
+    for (int i=0; i<n; i++) {
+        std::cerr << i << " Type:" << cursor[i].type;
+        if (cursor[i].type == SQLITE_INTEGER)
+            std::cerr << "  int value: " << cursor[i].u.i;
+        else
+            std::cerr << " char value: <" << cursor[i].u.c << ">";
+
+        std::cerr << std::endl;
+    }
+#endif
+
+    medi->medId = cursor[kMedId].u.i;
+    medi->title = cursor[kTitle].u.c;
+    medi->auth = cursor[kAuth].u.c;
+    // TODO: finish up
+    
+    // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
+    if (cursor[kCustomerId].type == SQLITE_INTEGER)
+        medi->customerId = cursor[kCustomerId].u.i;
+
+    return medi;
+}
+
+// 365
+MYRESULTS DBAdapter::extractShortMedInfoFrom(MYRESULTS &results)
+{
+    MYRESULTS medList;
+    
+    for (auto cursor : results)  {
+        Medication *medi = cursorToShortMedInfo(cursor);
+//        [medList addObject:medi];
+    }
+
+    return medList;
 }

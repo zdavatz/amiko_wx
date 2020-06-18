@@ -7,6 +7,7 @@
 #pragma once
 
 #include <wx/wx.h>
+#include "SQLiteDatabase.hpp"
 
 class SQLiteDatabase;
 
@@ -18,6 +19,7 @@ public:
 
     bool openDatabase(wxString dbName);
     int getNumRecords();
+    MYRESULTS searchKeyword(wxString keyword);
 
 private:
     SQLiteDatabase *myFullTextDb;

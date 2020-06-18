@@ -10,6 +10,7 @@
 #include "SQLiteDatabase.hpp"
 
 class SQLiteDatabase;
+class Medication;
 
 class DBAdapter
 {
@@ -18,8 +19,14 @@ public:
     virtual ~DBAdapter() {}
     
     bool openDatabase(wxString dbName);
-    MYARRAY searchTitle(wxString title);
+    MYRESULTS searchTitle(wxString title);
+    MYRESULTS searchAuthor(wxString author);
+    MYRESULTS searchATCCode(wxString atccode);
+    MYRESULTS searchRegNr(wxString regnr);
+    MYRESULTS searchApplication(wxString application);
     int getNumRecords();
+    MYRESULTS extractShortMedInfoFrom(MYRESULTS &results);
+    Medication * cursorToShortMedInfo(MYARRAY & cursor);
     
 private:
      SQLiteDatabase *mySqliteDb;
