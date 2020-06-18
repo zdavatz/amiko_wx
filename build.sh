@@ -29,7 +29,7 @@ elif [ $CONFIG_GENERATOR_CL ] ; then
     IDE=cl
 elif [ $CONFIG_GENERATOR_CB ] ; then
     GENERATOR="CodeBlocks - Unix Makefiles"
-    IDE=cl
+    IDE=cb
 fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
