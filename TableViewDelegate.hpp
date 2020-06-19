@@ -15,7 +15,7 @@ class DataObject;
 
 // Temporary defines
 #define MyHtmlListBox       TableViewDelegate
-#define myTableView         m_hlbox       // or viceversa
+//#define myTableView         m_hlbox       // or viceversa
 
 // to use wxHtmlListBox you must derive a new class from it as you must
 // implement pure virtual OnGetItem()

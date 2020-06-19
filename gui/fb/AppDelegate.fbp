@@ -600,7 +600,7 @@
                                 <property name="center_pane">0</property>
                                 <property name="class">TableViewDelegate</property>
                                 <property name="close_button">1</property>
-                                <property name="construction">m_hlbox = new TableViewDelegate(this, false);</property>
+                                <property name="construction">myTableView = new TableViewDelegate(this, false);</property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
                                 <property name="declaration"></property>
@@ -623,7 +623,7 @@
                                 <property name="minimize_button">0</property>
                                 <property name="minimum_size"></property>
                                 <property name="moveable">1</property>
-                                <property name="name">m_hlbox</property>
+                                <property name="name">myTableView</property>
                                 <property name="pane_border">1</property>
                                 <property name="pane_position"></property>
                                 <property name="pane_size"></property>

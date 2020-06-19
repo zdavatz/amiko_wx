@@ -70,7 +70,7 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button4;
 		wxButton* m_button5;
 		wxButton* m_button6;
-		TableViewDelegate* m_hlbox;
+		TableViewDelegate* myTableView;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;

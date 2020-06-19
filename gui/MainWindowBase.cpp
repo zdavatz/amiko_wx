@@ -69,8 +69,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button6 = new wxButton( this, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
-	m_hlbox = new TableViewDelegate(this, false);
-	bSizerLeft->Add( m_hlbox, 2, wxEXPAND, 0 );
+	myTableView = new TableViewDelegate(this, false);
+	bSizerLeft->Add( myTableView, 2, wxEXPAND, 0 );
 
 
 	bSizer1->Add( bSizerLeft, 1, wxEXPAND, 5 );

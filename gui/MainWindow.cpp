@@ -142,8 +142,8 @@ void MainWindow::resetDataInTableView()
     if (searchResults.size()>0) {
         updateTableView();
 
-        m_hlbox->SetItemCount(searchResults.size());
-        m_hlbox->SetSelection(0);
+        myTableView->SetItemCount(searchResults.size());
+        myTableView->SetSelection(0);
     }
 }
 
@@ -316,7 +316,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
 
     m->medId = medId;
     doArray.push_back(m); // to be obsolete
-    m_hlbox->searchRes.push_back(m);
+    myTableView->searchRes.push_back(m);
 }
 
 // 2286
@@ -328,13 +328,17 @@ void MainWindow::updateTableView()
         return;
     }
     
-    if (doArray.size() > 0)            doArray.clear(); // to be obsolete
-    if (m_hlbox->searchRes.size() > 0) m_hlbox->searchRes.clear();
+    if (doArray.size() > 0)
+        doArray.clear(); // to be obsolete
+
+    if (myTableView->searchRes.size() > 0)
+        myTableView->searchRes.clear();
 
 #if 0 // TODO:
     if (favoriteKeyData != nil)
         [favoriteKeyData removeAllObjects];
 #endif
+
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
             for (auto m : searchResults) {
