@@ -69,7 +69,7 @@
                         <property name="minimum_size"></property>
                         <property name="name">bSizerLeft</property>
                         <property name="orient">wxVERTICAL</property>
-                        <property name="permission">public</property>
+                        <property name="permission">none</property>
                         <object class="sizeritem" expanded="0">
                             <property name="border">5</property>
                             <property name="flag">wxALL|wxEXPAND</property>

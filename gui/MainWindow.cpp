@@ -47,27 +47,6 @@ MainWindow::MainWindow( wxWindow* parent )
     }
     
     SetTitle(APP_NAME);
-
-#ifdef TEST_INSERT_GRID
-    wxGrid *grid = new wxGrid(this, wxID_ANY);
-    grid->SetTable(table, true);
-    bSizerLeft->Add(grid, 2, wxGROW);
-#endif
-#ifdef TEST_MY_TABLE
-    auto *table = new TableViewDelegate;
-    myTableView->SetTable(table, true);
-    for (int i=0; i < table->GetNumberCols(); i++)
-        myTableView->SetColSize(i, table->GetColSize(i));
-#endif
-#ifdef TEST_SECTION_TITLES
-    {
-//    MyListStoreDerivedModel* page2_model = new MyListStoreDerivedModel();
-//    mySectionTitles->AssociateModel(page2_model);
-        //mySectionTitles->App
-        mySectionTitles->AppendToggleColumn( "Favorites" );
-        mySectionTitles->AppendTextColumn( "Fachinfo" );
-    }
-#endif
     
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
@@ -160,45 +139,6 @@ void MainWindow::resetDataInTableView()
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
     
-    std::clog << __FUNCTION__ << ", searchResults size: " << searchResults.size() << std::endl;
-
-#ifdef TEST_MY_TABLE
-    {
-        //myTableView->reloadData();
-        TableViewDelegate *table = (TableViewDelegate *)myTableView->GetTable();
-        for (auto m : searchResults)
-            table->searchRes.push_back(m);
-
-        std::clog << __FUNCTION__ << ", table->searchRes size: " << table->searchRes.size() << std::endl;
-
-        //    table->searchRes = searchResults;
-        // Refresh (none of the following worked so far):
-        wxString s = table->GetValue(0, 0);
-        std::clog << __FUNCTION__ << ", s: " << s.ToStdString() << std::endl;
-        //table->AppendRows(1);
-        //myTableView->RefreshBlock(0, 0, 0, 0);
-        //myTableView->ForceRefresh();
-    }
-#endif
-
-#ifdef TEST_SECTION_TITLES
-    {
-        //int n = std::min(7, (int)searchResults.size());
-        int n = searchResults.size();
-        wxVector<wxVariant> values;
-        for (int i=0; i<n; i++) {
-            Medication *m = searchResults[i];
-            values.clear();
-            values.push_back(wxVariant(false));
-            values.push_back(wxVariant(m->title));
-            mySectionTitles->AppendItem(values);
-        }
-        
-        //mySectionTitles->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &MyFrame::OnListValueChanged, this);
-
-        mySectionTitles->Fit();
-    }
-#endif
     m_hlbox->searchRes.clear();
     for (auto m : searchResults)
         m_hlbox->searchRes.push_back(m);
@@ -352,13 +292,6 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 void MainWindow::updateTableView()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#ifdef TEST_SECTION_TITLES
-    {
-    //mySectionTitles->ClearColumns();
-    mySectionTitles->DeleteAllItems();
-    std::clog << "# items: " << mySectionTitles->GetItemCount() << std::endl;
-    }
-#endif
 }
 
 // 949

@@ -96,7 +96,6 @@ class MainWindowBase : public wxFrame
 
 
 	public:
-		wxBoxSizer* bSizerLeft;
 		wxHtmlWindow* fiPanel;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
