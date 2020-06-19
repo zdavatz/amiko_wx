@@ -13,10 +13,6 @@
 
 class DataObject;
 
-// Temporary defines
-#define MyHtmlListBox       TableViewDelegate
-//#define myTableView         m_hlbox       // or viceversa
-
 // to use wxHtmlListBox you must derive a new class from it as you must
 // implement pure virtual OnGetItem()
 class TableViewDelegate : public wxHtmlListBox
@@ -24,9 +20,6 @@ class TableViewDelegate : public wxHtmlListBox
 public:
     TableViewDelegate() { }
     TableViewDelegate(wxWindow *parent, bool multi = false);
-
-    void SetChangeSelFg(bool change) { m_change = change; }
-    void UpdateFirstItem();
 
 protected:
     // override this method to return data to be shown in the listbox (this is
@@ -42,7 +35,7 @@ protected:
     bool m_change;
 
     // flag which we toggle to update the first items text in OnGetItem()
-    bool m_firstItemUpdated;
+    //bool m_firstItemUpdated;
 
 public:
 

@@ -14,7 +14,7 @@ TableViewDelegate::TableViewDelegate(wxWindow *parent, bool multi)
                              multi ? wxLB_MULTIPLE : 0)
 {
     m_change = true;
-    m_firstItemUpdated = false;
+    //m_firstItemUpdated = false;
     m_linkClicked = false;
 
     SetMargins(5, 5);
@@ -36,8 +36,8 @@ void TableViewDelegate::OnDrawSeparator(wxDC& dc, wxRect& rect, size_t) const
 
 wxString TableViewDelegate::OnGetItem(size_t n) const
 {
-    if ( !n && m_firstItemUpdated )
-        return "<h1><b>Just updated</b></h1>";
+//    if ( !n && m_firstItemUpdated )
+//        return "<h1><b>Just updated</b></h1>";
 
     int level = n % 6 + 1;
 
@@ -65,10 +65,4 @@ wxColour TableViewDelegate::GetSelectedTextColour(const wxColour& colFg) const
     return m_change ? wxHtmlListBox::GetSelectedTextColour(colFg) : colFg;
 }
 
-void TableViewDelegate::UpdateFirstItem()
-{
-    m_firstItemUpdated = !m_firstItemUpdated;
-
-    RefreshRow(0);
-}
 

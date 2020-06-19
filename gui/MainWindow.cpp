@@ -34,6 +34,11 @@ enum {
 static int mCurrentSearchState = kss_Title;
 static wxString mCurrentSearchKey;
 
+BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+    EVT_HTML_LINK_CLICKED(wxID_ANY, MainWindow::OnHtmlLinkClicked)
+    EVT_HTML_CELL_CLICKED(wxID_ANY, MainWindow::OnHtmlCellClicked)
+END_EVENT_TABLE()
+
 MainWindow::MainWindow( wxWindow* parent )
 : MainWindowBase( parent )
 , mUsedDatabase(kdbt_Aips)
@@ -47,6 +52,7 @@ MainWindow::MainWindow( wxWindow* parent )
     }
     
     SetTitle(APP_NAME);
+    const wxEventTable *et = GetEventTable();
     
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
@@ -466,4 +472,30 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+}
+
+// 2917
+// FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
+void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
+{
+    std::clog
+        << "Click over cell " << event.GetCell()
+        << ", ID " << event.GetCell()->GetId().ToStdString()
+        << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
+        << ", sel " << myTableView->GetSelection()
+        << std::endl;
+
+    // if we don't skip the event, OnHtmlLinkClicked won't be called!
+    event.Skip();
+}
+
+void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
+{
+    std::clog << "The url '"
+        << event.GetLinkInfo().GetHref()
+        << "' has been clicked!"
+        << std::endl;
+
+    //myTableView->RefreshRow(1);
+    event.Skip();
 }

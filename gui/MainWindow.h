@@ -75,10 +75,12 @@ private:
     
     // Delegate
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
-    void OnHtmlCellHover(wxHtmlCellEvent &event);
-    void OnHtmlCellClicked(wxHtmlCellEvent &event);
+    //void OnHtmlCellHover(wxHtmlCellEvent &event);
+    virtual void OnHtmlCellClicked(wxHtmlCellEvent &event);
+
 private:
-    //TableViewDelegate *m_hlbox;
+    
+    DECLARE_EVENT_TABLE()
 };
 
 #endif // __MainWindow__
