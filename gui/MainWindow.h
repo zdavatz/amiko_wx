@@ -42,6 +42,8 @@ private:
     void updateSearchResults();
     void updateTableView();
     void switchTabs(int item);
+    void stopProgressIndicator();
+    void addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId);
 
     void openSQLiteDatabase();
     void openFullTextDatabase();
@@ -61,6 +63,9 @@ private:
 
     // .m 151
     InteractionsAdapter *mInteractions;
+
+    // .m 162
+    std::vector<DataObject *> doArray;
 
     // .m 168
     std::vector<Medication *> searchResults;

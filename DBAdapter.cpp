@@ -188,6 +188,8 @@ Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
     medi->medId = cursor[kMedId].u.i;
     medi->title = cursor[kTitle].u.c;
     medi->auth = cursor[kAuth].u.c;
+
+    medi->packInfo = cursor[kPackInfo].u.c;
     // TODO: finish up
     
     // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty

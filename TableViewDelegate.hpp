@@ -11,7 +11,7 @@
 #include <wx/wx.h>
 #include "wx/htmllbox.h"
 
-class Medication;
+class DataObject;
 
 // Temporary defines
 #define MyHtmlListBox       TableViewDelegate
@@ -50,7 +50,7 @@ public:
     // to change 2nd item's text
     bool m_linkClicked;
     
-    std::vector<Medication *> searchRes;
+    std::vector<DataObject *> searchRes;
 
 #ifdef USE_HTML_FILE
     wxTextFile m_file;

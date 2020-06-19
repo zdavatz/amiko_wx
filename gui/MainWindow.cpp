@@ -1,10 +1,9 @@
 
 #include <vector>
-#include <algorithm>    // std::min
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
-//#include <wx/dialup.h>
+#include <wx/busyinfo.h>
 
 #include <sqlite3.h>
 
@@ -17,6 +16,7 @@
 #include "Utilities.hpp"
 #include "TableViewDelegate.hpp"
 #include "Medication.hpp"
+#include "DataObject.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -139,12 +139,18 @@ void MainWindow::resetDataInTableView()
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
     
-    m_hlbox->searchRes.clear();
-    for (auto m : searchResults)
-        m_hlbox->searchRes.push_back(m);
+    if (searchResults.size()>0) {
+        updateTableView();
 
-    m_hlbox->SetItemCount(searchResults.size());
-    //m_hlbox->SetSelection(3);
+        m_hlbox->SetItemCount(searchResults.size());
+        m_hlbox->SetSelection(0);
+    }
+}
+
+// 1749
+void MainWindow::stopProgressIndicator()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // 1755
@@ -288,12 +294,63 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
     return searchRes;
 }
 
+// 2064
+void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId)
+{
+    DataObject *m = new DataObject;
+    if (title)
+        m->title = title;
+    else
+        m->title = "Not specified"; // TODO: localize
+    
+    if (packinfo && strlen(packinfo) > 0) {
+        if (!mSearchInteractions)
+            m->subTitle = packinfo;
+        else {
+            // We pass atccode instead, which needs to be unpacked
+            // TODO:
+        }
+    }
+    else
+        m->subTitle = "Not specified"; // TODO: localize
+
+    m->medId = medId;
+    doArray.push_back(m); // to be obsolete
+    m_hlbox->searchRes.push_back(m);
+}
+
 // 2286
 void MainWindow::updateTableView()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    if (searchResults.size() == 0) {
+        stopProgressIndicator();
+        return;
+    }
+    
+    if (doArray.size() > 0)            doArray.clear(); // to be obsolete
+    if (m_hlbox->searchRes.size() > 0) m_hlbox->searchRes.clear();
+
+#if 0 // TODO:
+    if (favoriteKeyData != nil)
+        [favoriteKeyData removeAllObjects];
+#endif
+    if (mCurrentSearchState == kss_Title) {
+        if (mUsedDatabase == kdbt_Aips) {
+            for (auto m : searchResults) {
+                // TODO: [favoriteKeyData addObject:m.regnrs];
+                if (mSearchInteractions == false)
+                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                else
+                    addTitle_andPackInfo_andMedId(m->title, m->atccode, m->medId);
+            }
+        }
+    }
+
+    stopProgressIndicator();
 }
 
+// /////////////////////////////////////////////////////////////////////////////
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
@@ -305,6 +362,8 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
     
     while (mSearchInProgress) {
         //[NSThread sleepForTimeInterval:0.005];  // Wait for 5ms
+        wxMilliSleep(10);
+        wxTheApp->Yield();
     }
     
     if (!mSearchInProgress) {
@@ -387,7 +446,8 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
     // TODO: check if there is an active internet connection
     //std::clog << wxDialupManager::IsOnline() << std::endl;
 
-    wxBusyCursor wait;
+    //wxBusyCursor wait;
+    wxBusyInfo info("Downloading latest DB files, please wait...", this);
 
     const char * languageCode = UTI::appLanguage();
 
