@@ -1,5 +1,6 @@
 
 #include <vector>
+#include <algorithm>    // std::min
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
@@ -14,6 +15,8 @@
 #include "DBAdapter.hpp"
 #include "InteractionsAdapter.hpp"
 #include "Utilities.hpp"
+#include "TableViewDelegate.hpp"
+#include "Medication.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -36,6 +39,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mUsedDatabase(kdbt_Aips)
 , mSearchInteractions(false)
 , mPrescriptionMode(false)
+, mSearchInProgress(false)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -43,6 +47,27 @@ MainWindow::MainWindow( wxWindow* parent )
     }
     
     SetTitle(APP_NAME);
+
+#ifdef TEST_INSERT_GRID
+    wxGrid *grid = new wxGrid(this, wxID_ANY);
+    grid->SetTable(table, true);
+    bSizerLeft->Add(grid, 2, wxGROW);
+#endif
+#ifdef TEST_MY_TABLE
+    auto *table = new TableViewDelegate;
+    myTableView->SetTable(table, true);
+    for (int i=0; i < table->GetNumberCols(); i++)
+        myTableView->SetColSize(i, table->GetColSize(i));
+#endif
+#ifdef TEST_SECTION_TITLES
+    {
+//    MyListStoreDerivedModel* page2_model = new MyListStoreDerivedModel();
+//    mySectionTitles->AssociateModel(page2_model);
+        //mySectionTitles->App
+        mySectionTitles->AppendToggleColumn( "Favorites" );
+        mySectionTitles->AppendTextColumn( "Fachinfo" );
+    }
+#endif
     
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
@@ -68,7 +93,6 @@ MainWindow::MainWindow( wxWindow* parent )
 #endif
     
     fadeInAndShow();
-
 
     fiPanel->SetPage("<html><body>Fachinfo</body></html>");
     fiPanel->Fit();
@@ -135,8 +159,52 @@ void MainWindow::resetDataInTableView()
     
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
+    
+    std::clog << __FUNCTION__ << ", searchResults size: " << searchResults.size() << std::endl;
 
-    //myTableView->reloadData();
+#ifdef TEST_MY_TABLE
+    {
+        //myTableView->reloadData();
+        TableViewDelegate *table = (TableViewDelegate *)myTableView->GetTable();
+        for (auto m : searchResults)
+            table->searchRes.push_back(m);
+
+        std::clog << __FUNCTION__ << ", table->searchRes size: " << table->searchRes.size() << std::endl;
+
+        //    table->searchRes = searchResults;
+        // Refresh (none of the following worked so far):
+        wxString s = table->GetValue(0, 0);
+        std::clog << __FUNCTION__ << ", s: " << s.ToStdString() << std::endl;
+        //table->AppendRows(1);
+        //myTableView->RefreshBlock(0, 0, 0, 0);
+        //myTableView->ForceRefresh();
+    }
+#endif
+
+#ifdef TEST_SECTION_TITLES
+    {
+        //int n = std::min(7, (int)searchResults.size());
+        int n = searchResults.size();
+        wxVector<wxVariant> values;
+        for (int i=0; i<n; i++) {
+            Medication *m = searchResults[i];
+            values.clear();
+            values.push_back(wxVariant(false));
+            values.push_back(wxVariant(m->title));
+            mySectionTitles->AppendItem(values);
+        }
+        
+        //mySectionTitles->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &MyFrame::OnListValueChanged, this);
+
+        mySectionTitles->Fit();
+    }
+#endif
+    m_hlbox->searchRes.clear();
+    for (auto m : searchResults)
+        m_hlbox->searchRes.push_back(m);
+
+    m_hlbox->SetItemCount(searchResults.size());
+    //m_hlbox->SetSelection(3);
 }
 
 // 1755
@@ -189,7 +257,7 @@ void MainWindow::switchTabs(int item)
 }
 
 // 1897
-MYRESULTS MainWindow::retrieveAllFavorites()
+std::vector<Medication *> MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
@@ -252,26 +320,27 @@ void MainWindow::setSearchState(int searchState)
 }
 
 // 2029
-MYRESULTS MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
     std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
 
-    MYRESULTS searchRes;
+    MYRESULTS searchResObsolete;
+    std::vector<Medication *> searchRes;
 
     if (mCurrentSearchState == kss_Title)
         searchRes = mDb->searchTitle(searchQuery);  // array of MLMedication
     else if (mCurrentSearchState == kss_Author)
-        searchRes = mDb->searchAuthor(searchQuery);
+        searchResObsolete = mDb->searchAuthor(searchQuery);
     else if (mCurrentSearchState == kss_AtcCode)
-        searchRes = mDb->searchATCCode(searchQuery);
+        searchResObsolete = mDb->searchATCCode(searchQuery);
     else if (mCurrentSearchState == kss_RegNr)
-        searchRes = mDb->searchRegNr(searchQuery);
+        searchResObsolete = mDb->searchRegNr(searchQuery);
     else if (mCurrentSearchState == kss_Therapy)
-        searchRes = mDb->searchApplication(searchQuery);
+        searchResObsolete = mDb->searchApplication(searchQuery);
     else if (mCurrentSearchState == kss_FullText)
     {
         if (searchQuery.length() > 2)
-            searchRes = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
+            searchResObsolete = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
     }
 
     mCurrentSearchKey = searchQuery;
@@ -283,6 +352,41 @@ MYRESULTS MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 void MainWindow::updateTableView()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#ifdef TEST_SECTION_TITLES
+    {
+    //mySectionTitles->ClearColumns();
+    mySectionTitles->DeleteAllItems();
+    std::clog << "# items: " << mySectionTitles->GetItemCount() << std::endl;
+    }
+#endif
+}
+
+// 949
+void MainWindow::OnSearchNow( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " " << mySearchField->GetValue().ToStdString() << std::endl;
+
+    wxString searchText = mySearchField->GetValue();
+    if (mCurrentSearchState == kss_WebView)
+        return;
+    
+    while (mSearchInProgress) {
+        //[NSThread sleepForTimeInterval:0.005];  // Wait for 5ms
+    }
+    
+    if (!mSearchInProgress) {
+        mSearchInProgress = true;
+    }
+    
+    if (searchText.length() > 0) // TODO: > 2 ?
+         searchResults = searchAnyDatabasesWith(searchText);
+    else {
+         if (mUsedDatabase == kdbt_Favorites)
+             searchResults = retrieveAllFavorites();
+    }
+    
+    // TODO: Update tableview
+    mSearchInProgress = false;
 }
 
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
@@ -330,11 +434,13 @@ void MainWindow::OnToolbarAction( wxCommandEvent& event )
     switchTabs(event.GetId());
 }
 
+// 1148
 void MainWindow::OnPrintDocument( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
 }
 
+// 1537
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
@@ -342,6 +448,7 @@ void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
     APP_NAME, wxOK | wxICON_INFORMATION);
 }
 
+// 1168
 void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 {
     // TODO: check if there is an active internet connection
@@ -358,6 +465,7 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
     downloadFileWithName(wxString::Format("amiko_db_full_idx_%s.zip", languageCode));
 }
 
+// 1192
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;

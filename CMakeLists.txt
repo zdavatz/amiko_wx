@@ -76,6 +76,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
     Utilities.cpp Utilities.hpp
     Medication.cpp Medication.hpp
+    TableViewDelegate.cpp TableViewDelegate.hpp
     ${SRCS_GUI} ${SRCS_SQL}
     customURLConnection.cpp customURLConnection.hpp
     )

@@ -19,13 +19,13 @@ public:
     virtual ~DBAdapter() {}
     
     bool openDatabase(wxString dbName);
-    MYRESULTS searchTitle(wxString title);
+    std::vector<Medication *> searchTitle(wxString title);
     MYRESULTS searchAuthor(wxString author);
     MYRESULTS searchATCCode(wxString atccode);
     MYRESULTS searchRegNr(wxString regnr);
     MYRESULTS searchApplication(wxString application);
     int getNumRecords();
-    MYRESULTS extractShortMedInfoFrom(MYRESULTS &results);
+    std::vector<Medication *> extractShortMedInfoFrom(MYRESULTS &results);
     Medication * cursorToShortMedInfo(MYARRAY & cursor);
     
 private:

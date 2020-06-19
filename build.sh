@@ -104,6 +104,9 @@ $CMAKE -G"$GENERATOR" \
     $WX_OPTIONS_OS_CMAKE \
     -D wxBUILD_SHARED=OFF \
     $SRC_WXWIDGETS
+
+#    -D wxBUILD_SAMPLES=ALL \
+
 fi
 fi
 

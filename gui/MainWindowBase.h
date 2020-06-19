@@ -20,27 +20,29 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
-#include <wx/dataview.h>
+#include "TableViewDelegate.hpp"
 #include <wx/sizer.h>
 #include <wx/html/htmlwin.h>
+#include <wx/dataview.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
-#define wxID_BTN_PREPARATION 1000
-#define wxID_BTN_REGISTRATION_OWNER 1001
-#define wxID_BTN_ACTIVE_SUBSTANCE 1002
-#define wxID_BTN_REGISTATION_NUMBER 1003
-#define wxID_BTN_THERAPY 1004
-#define wxID_BTN_FULL_TEXT 1005
-#define wxID_TB_COMPENDIUM 1006
-#define wxID_TB_FAVORITES 1007
-#define wxID_TB_INTERACTIONS 1008
-#define wxID_TB_PRESCRIPTION 1009
-#define wxID_UPDATE_DB 1010
-#define wxID_LOAD_DB 1011
+#define wxID_MY_SEARCH_FIELD 1000
+#define wxID_BTN_PREPARATION 1001
+#define wxID_BTN_REGISTRATION_OWNER 1002
+#define wxID_BTN_ACTIVE_SUBSTANCE 1003
+#define wxID_BTN_REGISTATION_NUMBER 1004
+#define wxID_BTN_THERAPY 1005
+#define wxID_BTN_FULL_TEXT 1006
+#define wxID_TB_COMPENDIUM 1007
+#define wxID_TB_FAVORITES 1008
+#define wxID_TB_INTERACTIONS 1009
+#define wxID_TB_PRESCRIPTION 1010
+#define wxID_UPDATE_DB 1011
+#define wxID_LOAD_DB 1012
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -51,6 +53,7 @@ class MainWindowBase : public wxFrame
 	private:
 
 		// Private event handlers
+		void _wxFB_OnSearchNow( wxCommandEvent& event ){ OnSearchNow( event ); }
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
 		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
 		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
@@ -67,7 +70,7 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button4;
 		wxButton* m_button5;
 		wxButton* m_button6;
-		wxDataViewListCtrl* m_dataViewListCtrl1;
+		TableViewDelegate* m_hlbox;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
@@ -83,6 +86,7 @@ class MainWindowBase : public wxFrame
 		wxMenu* m_menuHelp;
 
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPrintDocument( wxCommandEvent& event ) { event.Skip(); }
@@ -92,8 +96,9 @@ class MainWindowBase : public wxFrame
 
 
 	public:
-		wxDataViewListCtrl* myTableView;
+		wxBoxSizer* bSizerLeft;
 		wxHtmlWindow* fiPanel;
+		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;
 

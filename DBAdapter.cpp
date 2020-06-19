@@ -109,7 +109,7 @@ int DBAdapter::getNumRecords()
 }
 
 // 169
-MYRESULTS DBAdapter::searchTitle(wxString title)
+std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 {
     std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
     
@@ -198,13 +198,13 @@ Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
 }
 
 // 365
-MYRESULTS DBAdapter::extractShortMedInfoFrom(MYRESULTS &results)
+std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(MYRESULTS &results)
 {
-    MYRESULTS medList;
+    std::vector<Medication *> medList;
     
     for (auto cursor : results)  {
         Medication *medi = cursorToShortMedInfo(cursor);
-//        [medList addObject:medi];
+        medList.push_back(medi);
     }
 
     return medList;

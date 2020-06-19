@@ -9,6 +9,7 @@
 #include <wx/wx.h>
 #include <sqlite3.h>
 
+// TODO wxVector<wxVariant>
 #define MYARRAY             std::vector<struct myStruct>
 #define MYRESULTS           std::vector<MYARRAY>
 
