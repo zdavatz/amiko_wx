@@ -54,6 +54,24 @@ static wxString SectionTitle_FR[] = {
     wxT("Mise à jour") };
 
 Medication::Medication()
+: medId(0)
+, title(nullptr)
+, auth(nullptr)
+, atccode(nullptr)
+, substances(nullptr)
+, regnrs(nullptr)
+, atcClass(nullptr)
+, therapy(nullptr)
+, application(nullptr)
+, indications(nullptr)
+, customerId(0)
+, packInfo(nullptr)
+, addInfo(nullptr)
+, sectionIds(nullptr)
+, sectionTitles(nullptr)
+, styleStr(nullptr)
+, contentStr(nullptr)
+, packages(nullptr)
 {
     
 }

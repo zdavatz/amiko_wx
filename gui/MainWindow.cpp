@@ -501,10 +501,10 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
     std::clog << "event " << event.GetEventObject() << std::endl;
-    std::clog << "event Id " << event.GetId() << std::endl; // wxID_SECTION_TITLES
+    std::clog << "event Id " << event.GetId() << std::endl;
     std::clog << "Id "<< mySectionTitles->GetId() <<  std::endl;
     
-    if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
+    if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
         std::clog << "Skip event Id " << event.GetId() << std::endl;
         event.Skip();
         return;

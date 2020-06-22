@@ -80,7 +80,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer1->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
 	mySectionTitles = new wxDataViewListCtrl( this, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
-	bSizer1->Add( mySectionTitles, 1, wxALL|wxEXPAND, 5 );
+	bSizer1->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer1 );
