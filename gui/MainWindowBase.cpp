@@ -24,6 +24,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_DATAVIEW_SELECTION_CHANGED( wxID_SECTION_TITLES, MainWindowBase::_wxFB_OnSelectionDidChange )
 	EVT_TOOL( wxID_TB_COMPENDIUM, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_TB_FAVORITES, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_TB_INTERACTIONS, MainWindowBase::_wxFB_OnToolbarAction )
@@ -75,11 +76,11 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer1->Add( bSizerLeft, 1, wxEXPAND, 5 );
 
-	myWebView = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	myWebView = new wxHtmlWindow( this, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 	bSizer1->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
-	mySectionTitles = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( 200,-1 ), wxDV_HORIZ_RULES|wxDV_NO_HEADER );
-	bSizer1->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
+	mySectionTitles = new wxDataViewListCtrl( this, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
+	bSizer1->Add( mySectionTitles, 1, wxALL|wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer1 );

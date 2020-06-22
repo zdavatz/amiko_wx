@@ -580,11 +580,11 @@
                                 <event name="OnButtonClick">OnButtonPressed</event>
                             </object>
                         </object>
-                        <object class="sizeritem" expanded="1">
+                        <object class="sizeritem" expanded="0">
                             <property name="border">0</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">2</property>
-                            <object class="CustomControl" expanded="1">
+                            <object class="CustomControl" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -614,7 +614,7 @@
                                 <property name="font"></property>
                                 <property name="gripper">0</property>
                                 <property name="hidden">0</property>
-                                <property name="id">wxID_ANY</property>
+                                <property name="id">wxID_MY_TV</property>
                                 <property name="include">#include &quot;TableViewDelegate.hpp&quot;</property>
                                 <property name="max_size"></property>
                                 <property name="maximize_button">0</property>
@@ -675,7 +675,7 @@
                         <property name="font"></property>
                         <property name="gripper">0</property>
                         <property name="hidden">0</property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_FI_WEBVIEW</property>
                         <property name="max_size"></property>
                         <property name="maximize_button">0</property>
                         <property name="maximum_size"></property>
@@ -705,7 +705,7 @@
                 <object class="sizeritem" expanded="0">
                     <property name="border">5</property>
                     <property name="flag">wxALL|wxEXPAND</property>
-                    <property name="proportion">0</property>
+                    <property name="proportion">1</property>
                     <object class="wxDataViewListCtrl" expanded="0">
                         <property name="bg"></property>
                         <property name="context_help"></property>
@@ -714,23 +714,24 @@
                         <property name="fg"></property>
                         <property name="font"></property>
                         <property name="hidden">0</property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_SECTION_TITLES</property>
                         <property name="maximum_size"></property>
                         <property name="minimum_size"></property>
                         <property name="name">mySectionTitles</property>
                         <property name="permission">public</property>
                         <property name="pos"></property>
                         <property name="size">200,-1</property>
-                        <property name="style">wxDV_HORIZ_RULES|wxDV_NO_HEADER</property>
+                        <property name="style">wxDV_NO_HEADER</property>
                         <property name="subclass">; ; forward_declare</property>
                         <property name="tooltip"></property>
                         <property name="window_extra_style"></property>
                         <property name="window_name"></property>
                         <property name="window_style"></property>
+                        <event name="OnDataViewListCtrlSelectionChanged">OnSelectionDidChange</event>
                     </object>
                 </object>
             </object>
-            <object class="wxToolBar" expanded="1">
+            <object class="wxToolBar" expanded="0">
                 <property name="BottomDockable">1</property>
                 <property name="LeftDockable">1</property>
                 <property name="RightDockable">1</property>

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <wx/wx.h>
-#include "wx/htmllbox.h"
+#include <wx/htmllbox.h>
 
 class DataObject;
 

@@ -24,6 +24,7 @@ class MainWindow : public MainWindowBase
 		// Handlers for MainWindowBase events.
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
+		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
@@ -75,6 +76,8 @@ private:
 
     // .m 168
     std::vector<Medication *> searchResults;
+    wxArrayString mListOfSectionIds;  // full paths
+    wxArrayString mListOfSectionTitles;
     
     // .m 183
     bool mSearchInProgress;

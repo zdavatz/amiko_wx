@@ -11,6 +11,10 @@ class Medication
 public:
     Medication();
     virtual ~Medication() {}
+    
+    wxArrayString listOfSectionIds();
+    wxArrayString listOfSectionTitles();
+    const wxString &shortTitle(wxString &longTitle);
 
     long medId; // pk in DB file
     char *title;

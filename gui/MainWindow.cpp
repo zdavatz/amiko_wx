@@ -5,6 +5,9 @@
 #include <wx/stdpaths.h>
 #include <wx/busyinfo.h>
 
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
+
 #include <sqlite3.h>
 
 #include "MainWindow.h"
@@ -52,7 +55,9 @@ MainWindow::MainWindow( wxWindow* parent )
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }
     
-    SetTitle(APP_NAME);
+    mySectionTitles->AppendTextColumn( "Sections" );
+    
+    SetTitle(APP_NAME + wxString(" Desitin"));
     const wxEventTable *et = GetEventTable();
     
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
@@ -80,14 +85,14 @@ MainWindow::MainWindow( wxWindow* parent )
     
     fadeInAndShow();
 
-    myWebView->SetPage("<html><body>Fachinfo</body></html>");
+    myWebView->SetPage("<html><head></head><body></body></html>");
     myWebView->Fit();
 }
 
 // 483
 void MainWindow::hideTextFinder()
 {
-    std::clog << __PRETTY_FUNCTION__  << "TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << "TODO" << std::endl;
 
 #if 0
     // Inform NSTextFinder the text is going to change
@@ -383,6 +388,36 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     // 2547
     myWebView->SetPage(htmlStr);
     //myWebView->Fit();
+    
+    // 2553
+    if (!mPrescriptionMode) {
+        // Extract section ids
+        if (mMed->sectionIds)
+            mListOfSectionIds = mMed->listOfSectionIds();
+
+        // Extract section titles
+        if (mMed->sectionTitles)
+            mListOfSectionTitles = mMed->listOfSectionTitles();
+        
+        //std::clog << "Line " << __LINE__  << " size " << mListOfSectionTitles.size() << std::endl; // 20
+        
+#if 0
+        mySectionTitles->reloadData();
+#else
+        // 2827
+        mySectionTitles->DeleteAllItems();
+        int n = mListOfSectionTitles.size();
+        wxVector<wxVariant> values;
+        for (int i=0; i<n; i++) {
+            //std::clog << "Line " << i  << ", <" << mListOfSectionTitles[i].ToStdString() << ">" << std::endl;
+
+            values.clear();
+            values.push_back(wxVariant(mListOfSectionTitles[i]));
+            mySectionTitles->AppendItem(values);
+        }
+        //mySectionTitles->Fit(); // ng
+#endif
+    }
 }
 
 // 2565
@@ -461,6 +496,24 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     }
 }
 
+// 2917
+void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
+    std::clog << "event " << event.GetEventObject() << std::endl;
+    std::clog << "event Id " << event.GetId() << std::endl; // wxID_SECTION_TITLES
+    std::clog << "Id "<< mySectionTitles->GetId() <<  std::endl;
+    
+    if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
+        std::clog << "Skip event Id " << event.GetId() << std::endl;
+        event.Skip();
+        return;
+    }
+    
+    // 2973
+    // TODO: JavaScript to scroll webview
+}
+
 void MainWindow::OnToolbarAction( wxCommandEvent& event )
 {
     // TODO: launchProgressIndicator();
@@ -510,6 +563,12 @@ void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 {
+    if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
+        std::clog << "Skip event Id " << event.GetId() << std::endl;
+        event.Skip();
+        return;
+    }
+
     int row = myTableView->GetSelection();
 
     std::clog
