@@ -45,6 +45,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mSearchInteractions(false)
 , mPrescriptionMode(false)
 , mSearchInProgress(false)
+, mMed(nullptr)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -79,8 +80,8 @@ MainWindow::MainWindow( wxWindow* parent )
     
     fadeInAndShow();
 
-    fiPanel->SetPage("<html><body>Fachinfo</body></html>");
-    fiPanel->Fit();
+    myWebView->SetPage("<html><body>Fachinfo</body></html>");
+    myWebView->Fit();
 }
 
 // 483
@@ -276,7 +277,7 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 {
     std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
 
-    MYRESULTS searchResObsolete;
+    ALL_RESULTS searchResObsolete;
     std::vector<Medication *> searchRes;
 
     if (mCurrentSearchState == kss_Title)
@@ -358,6 +359,36 @@ void MainWindow::updateTableView()
     }
 
     stopProgressIndicator();
+}
+
+// 2412
+// Add med in the buffer to the interaction basket
+void MainWindow::pushToMedBasket(Medication *med)
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+}
+
+// 2473
+void MainWindow::updateExpertInfoView(wxString anchor)
+{
+    // TODO:
+
+    // 2502
+    // Generate html string
+    wxString htmlStr(mMed->contentStr);
+    //std::clog << "Line " << __LINE__  << " <" << htmlStr.ToStdString() << ">" << std::endl;
+
+    // TODO:
+    
+    // 2547
+    myWebView->SetPage(htmlStr);
+    //myWebView->Fit();
+}
+
+// 2565
+void MainWindow::updateInteractionsView()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -475,15 +506,36 @@ void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 }
 
 // 2917
+// See tableViewSelectionDidChange
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 {
+    int row = myTableView->GetSelection();
+
     std::clog
         << "Click over cell " << event.GetCell()
         << ", ID " << event.GetCell()->GetId().ToStdString()
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
-        << ", sel " << myTableView->GetSelection()
+        << ", sel " << row
         << std::endl;
+    
+    // 2936
+    if ( mCurrentSearchState != kss_FullText) {
+        // Search in AIPS DB or Interactions DB
+        long mId = doArray[row]->medId;
+        // Get medi
+        mMed = mDb->getMediWithId(mId);
+        // TODO: Hide textfinder
+        
+        // 2946
+        if (mSearchInteractions==false) {
+            updateExpertInfoView(wxEmptyString);
+        }
+        else {
+            pushToMedBasket(mMed);
+            updateInteractionsView();
+        }
+    }
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!
     event.Skip();
@@ -495,6 +547,7 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
         << event.GetLinkInfo().GetHref()
         << "' has been clicked!"
         << std::endl;
+    
 
     //myTableView->RefreshRow(1);
     event.Skip();

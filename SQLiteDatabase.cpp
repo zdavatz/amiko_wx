@@ -57,11 +57,11 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 }
 
 // 169
-MYRESULTS SQLiteDatabase::performQuery(wxString query)
+ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
 {
     //std::clog << __FUNCTION__ << ", query: " << query.ToStdString() << std::endl;
 
-    MYRESULTS result;
+    ALL_RESULTS result;
 
     sqlite3_stmt *compiledStatement = NULL;
     // Convert wxString to a C String

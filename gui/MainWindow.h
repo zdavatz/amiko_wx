@@ -50,6 +50,9 @@ private:
     void openInteractionsCsvFile();
     std::vector<Medication *> searchAnyDatabasesWith(wxString searchQuery);
     std::vector<Medication *> retrieveAllFavorites();
+    void updateExpertInfoView(wxString anchor);
+    void pushToMedBasket(Medication *med);
+    void updateInteractionsView();
 
     // 105
     int mUsedDatabase;
@@ -60,6 +63,9 @@ private:
     DBAdapter *mDb;
     // 153
     FullTextDBAdapter *mFullTextDb;
+
+    // .m 149
+    Medication *mMed;
 
     // .m 151
     InteractionsAdapter *mInteractions;

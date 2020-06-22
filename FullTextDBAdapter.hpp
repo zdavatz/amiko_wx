@@ -19,7 +19,7 @@ public:
 
     bool openDatabase(wxString dbName);
     int getNumRecords();
-    MYRESULTS searchKeyword(wxString keyword);
+    ALL_RESULTS searchKeyword(wxString keyword);
 
 private:
     SQLiteDatabase *myFullTextDb;

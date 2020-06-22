@@ -117,7 +117,8 @@ void downloadFileWithName(wxString filename)
         return;
 
     wxFileOutputStream theOutputFile(localUnzippedFilePath);
-    if (!theOutputFile.IsOk())
+    if (!
+        theOutputFile.IsOk())
         return;
 
     zip.Read(theOutputFile);

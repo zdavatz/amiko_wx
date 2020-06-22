@@ -108,6 +108,26 @@ int DBAdapter::getNumRecords()
     return numRecords;
 }
 
+// 136
+ALL_RESULTS DBAdapter::getFullRecord(long rowId)
+{
+    wxString query = wxString::Format("select %s from %s where %s=%ld",
+                                      FULL_TABLE.ToStdString(),
+                                      DATABASE_TABLE.ToStdString(),
+                                      KEY_ROWID,
+                                      rowId);
+    
+    return mySqliteDb->performQuery(query);
+}
+
+// 144
+Medication * DBAdapter::getMediWithId(long rowId)
+{
+    ALL_RESULTS results = getFullRecord(rowId);
+    ONE_RESULT firstObject = results[0];
+    return cursorToFullMedInfo( firstObject );
+}
+
 // 169
 std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 {
@@ -123,48 +143,48 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 
     //std::clog << "query: " << query.ToStdString() << std::endl;
 
-    MYRESULTS results = mySqliteDb->performQuery(query);
+    ALL_RESULTS results = mySqliteDb->performQuery(query);
     return extractShortMedInfoFrom(results);
 }
 
 // 177
 // Search Inhaber
-MYRESULTS DBAdapter::searchAuthor(wxString author)
+ALL_RESULTS DBAdapter::searchAuthor(wxString author)
 {
     // TODO:
-    MYRESULTS results;
+    ALL_RESULTS results;
     return results;
 }
 
 // 187
 // Search ATC Code
-MYRESULTS DBAdapter::searchATCCode(wxString atccode)
+ALL_RESULTS DBAdapter::searchATCCode(wxString atccode)
 {
     // TODO:
-    MYRESULTS results;
+    ALL_RESULTS results;
     return results;
 }
 
 // 209
 // Search Reg. Nr.
-MYRESULTS DBAdapter::searchRegNr(wxString regnr)
+ALL_RESULTS DBAdapter::searchRegNr(wxString regnr)
 {
     // TODO:
-    MYRESULTS results;
+    ALL_RESULTS results;
     return results;
 }
 
 // 230
 // Search Application
-MYRESULTS DBAdapter::searchApplication(wxString application)
+ALL_RESULTS DBAdapter::searchApplication(wxString application)
 {
     // TODO:
-    MYRESULTS results;
+    ALL_RESULTS results;
     return results;
 }
 
 // 307
-Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
+Medication * DBAdapter::cursorToShortMedInfo(ONE_RESULT &cursor)
 {
     Medication *medi = new Medication;
 
@@ -188,19 +208,41 @@ Medication * DBAdapter::cursorToShortMedInfo(MYARRAY &cursor)
     medi->medId = cursor[kMedId].u.i;
     medi->title = cursor[kTitle].u.c;
     medi->auth = cursor[kAuth].u.c;
-
-    medi->packInfo = cursor[kPackInfo].u.c;
-    // TODO: finish up
+    medi->atccode = cursor[kAtcCode].u.c;
+//    [medi setSubstances:(NSString *)[cursor objectAtIndex:kSubstances]];
+//    [medi setRegnrs:(NSString *)[cursor objectAtIndex:kRegnrs]];
+//    [medi setAtcClass:(NSString *)[cursor objectAtIndex:kAtcClass]];
+//    [medi setTherapy:(NSString *)[cursor objectAtIndex:kTherapy]];
+//    [medi setApplication:(NSString *)[cursor objectAtIndex:kApplication]];
+//    [medi setIndications:(NSString *)[cursor objectAtIndex:kIndications]];
+//    [medi setCustomerId:[(NSString *)[cursor objectAtIndex:kCustomerId] intValue]];
     
     // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
     if (cursor[kCustomerId].type == SQLITE_INTEGER)
         medi->customerId = cursor[kCustomerId].u.i;
 
+    medi->packInfo = cursor[kPackInfo].u.c;
+//    [medi setPackages:(NSString *)[cursor objectAtIndex:kPackages]];
+
+    return medi;
+}
+
+// 328
+Medication * DBAdapter::cursorToFullMedInfo(ONE_RESULT &cursor)
+{
+    Medication *medi = cursorToShortMedInfo(cursor);
+    // TODO: extra fields. TBC no 'kPackages'
+//    [medi setAddInfo:(NSString *)[cursor objectAtIndex:kAddInfo]];
+//    [medi setSectionIds:(NSString *)[cursor objectAtIndex:kIdsStr]];
+//    [medi setSectionTitles:(NSString *)[cursor objectAtIndex:kSectionsStr]];
+    medi->contentStr = cursor[kContentStr].u.c;
+//    [medi setStyleStr:(NSString *)[cursor objectAtIndex:kStyleStr]];
+
     return medi;
 }
 
 // 365
-std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(MYRESULTS &results)
+std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(ALL_RESULTS &results)
 {
     std::vector<Medication *> medList;
     

@@ -61,12 +61,12 @@ int FullTextDBAdapter::getNumRecords()
 
 // 97
 // Search fulltext containing keyword
-MYRESULTS FullTextDBAdapter::searchKeyword(wxString keyword)
+ALL_RESULTS FullTextDBAdapter::searchKeyword(wxString keyword)
 {
     wxString query = wxString::Format("select * from %s where %s like '%s%%'",
                                       DATABASE_TABLE.ToStdString(),
                                       KEY_KEYWORD,
                                       keyword.c_str());
-    MYRESULTS results = myFullTextDb->performQuery(query);
+    ALL_RESULTS results = myFullTextDb->performQuery(query);
     return results;
 }

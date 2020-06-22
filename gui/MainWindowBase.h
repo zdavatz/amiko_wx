@@ -96,7 +96,7 @@ class MainWindowBase : public wxFrame
 
 
 	public:
-		wxHtmlWindow* fiPanel;
+		wxHtmlWindow* myWebView;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;

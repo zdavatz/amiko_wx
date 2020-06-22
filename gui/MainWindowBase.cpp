@@ -75,8 +75,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer1->Add( bSizerLeft, 1, wxEXPAND, 5 );
 
-	fiPanel = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	bSizer1->Add( fiPanel, 1, wxALL|wxEXPAND, 5 );
+	myWebView = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	bSizer1->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
 	mySectionTitles = new wxDataViewListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( 200,-1 ), wxDV_HORIZ_RULES|wxDV_NO_HEADER );
 	bSizer1->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
