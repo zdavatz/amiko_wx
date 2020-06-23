@@ -20,6 +20,9 @@
 #include "TableViewDelegate.hpp"
 #include "Medication.hpp"
 #include "DataObject.hpp"
+#include "PrescriptionsAdapter.hpp"
+#include "PatientSheetController.hpp"
+#include "OperatorIDSheetController.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -50,6 +53,9 @@ MainWindow::MainWindow( wxWindow* parent )
 , mPrescriptionMode(false)
 , mSearchInProgress(false)
 , mMed(nullptr)
+, mPrescriptionAdapter(nullptr)
+, mPatientSheet(nullptr)
+, mOperatorIDSheet(nullptr)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -77,7 +83,8 @@ MainWindow::MainWindow( wxWindow* parent )
 #ifndef NDEBUG
     std::clog << "Number of records in fulltext database: " << mFullTextDb->getNumRecords() << std::endl;
 #endif
-        
+       
+    // 286
     // Open drug interactions csv file
     openInteractionsCsvFile();
 #ifndef NDEBUG
@@ -85,9 +92,44 @@ MainWindow::MainWindow( wxWindow* parent )
 #endif
     
     fadeInAndShow();
+    
+    // 292
+    // TODO: Initialize interactions cart
+    
+    // 295
+    // TODO: Create bridge between JScript and ObjC
+    
+    // 298
+    // TODO: Initialize full text search
+    
+    // 301
+    // TODO: Initialize all three prescription baskets
 
+    // 306
+    mPrescriptionAdapter = new PrescriptionsAdapter;
+    
+    // 308
+    // TODO: Register drag and drop on prescription table view
+    
+    // 315
+    // TODO: Initialize webview
     myWebView->SetPage("<html><head></head><body></body></html>");
     myWebView->Fit();
+    
+    // 321
+    // TODO: Initialize favorites (articles + full text entries)
+    
+    // 327
+    // Set default database
+    //mUsedDatabase = kdbt_Aips; // already done above
+    
+    // 331
+    // Set search state
+    setSearchState(kss_Title);
+    
+    // 381
+    // TODO:
+    //healthCard = new HealthCard;
 }
 
 // 483
@@ -130,6 +172,37 @@ void MainWindow::openFullTextDatabase()
 {
     mFullTextDb = new FullTextDBAdapter;
     bool ok = mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
+}
+
+// 741
+void MainWindow::updatePrescriptionHistory()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+
+    if (!mPrescriptionMode) {
+#ifndef NDEBUG
+        std::clog << __FUNCTION__ << " not prescription mode" << std::endl;
+#endif
+        return;
+    }
+    
+    // Extract section ids
+    if (!mMed)
+        return;
+
+    if (mMed->sectionIds) {
+        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionURLsForPatient( mPatientSheet->retrievePatient());
+        mListOfSectionIds = listOfPrescriptions;  // array of full paths
+    }
+
+    // Extract section titles
+    if (mMed->sectionTitles) {
+        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionsForPatient( mPatientSheet->retrievePatient());
+        mListOfSectionTitles = listOfPrescriptions; // array of just the basenames
+    }
+
+    // TODO:
+    //mySectionTitles->reloadData();
 }
 
 // 847
@@ -204,6 +277,10 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = false;
             mPrescriptionMode = true;
             // TODO:
+            stopProgressIndicator();
+            updatePrescriptionsView();
+            updatePrescriptionHistory();
+
             myTabView->ChangeSelection(2); // 1868
             break;
             
@@ -431,6 +508,26 @@ void MainWindow::updateInteractionsView()
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
+// 2589
+void MainWindow::updatePrescriptionsView()
+{
+    myTabView->ChangeSelection(2); // 2592
+
+    // Update date
+    wxString placeDate = mPrescriptionAdapter->placeDate;
+    if (!placeDate.IsEmpty())
+        myPlaceDateField->SetLabel(placeDate);
+
+#if 0    // TODO:
+    myPrescriptionsTableView->reloadData();
+#endif
+
+    mPrescriptionMode = true;
+    
+    // TODO:
+    //myToolbar->setSelectedItemIdentifier("Rezept");
+}
+
 // /////////////////////////////////////////////////////////////////////////////
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
@@ -501,6 +598,13 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     }
 }
 
+// 1390
+// TODO: consolidate with OnManagePatients()
+void MainWindow::OnSearchPatient( wxCommandEvent& event )
+{
+    OnManagePatients(event);
+}
+
 // 2917
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
@@ -563,6 +667,29 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+}
+
+// 1229
+// TODO: consolidate with OnSearchPatient()
+void MainWindow::OnManagePatients( wxCommandEvent& event )
+{
+    if (!mPatientSheet)
+        mPatientSheet = new PatientSheetController;
+    
+    // TODO:
+    std::clog << __PRETTY_FUNCTION__ << " TODO: show sheet" << std::endl;
+    //mPatientSheet->show(NSApp->mainWindow);
+}
+
+// 1237
+void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
+{
+    if (!mOperatorIDSheet)
+        mOperatorIDSheet = new OperatorIDSheetController;
+
+    // TODO:
+    std::clog << __PRETTY_FUNCTION__ << " TODO: show sheet" << std::endl;
+    //mOperatorIDSheet->show(NSApp->mainWindow);
 }
 
 // 2917

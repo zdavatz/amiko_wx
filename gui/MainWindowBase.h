@@ -45,13 +45,15 @@
 #define wxID_BTN_FULL_TEXT 1006
 #define wxID_MY_TV 1007
 #define wxID_FI_WEBVIEW 1008
-#define wxID_SECTION_TITLES 1009
-#define wxID_TB_COMPENDIUM 1010
-#define wxID_TB_FAVORITES 1011
-#define wxID_TB_INTERACTIONS 1012
-#define wxID_TB_PRESCRIPTION 1013
-#define wxID_UPDATE_DB 1014
-#define wxID_LOAD_DB 1015
+#define wxID_PATIENT_SEARCH 1009
+#define wxID_SECTION_TITLES 1010
+#define wxID_TB_COMPENDIUM 1011
+#define wxID_TB_FAVORITES 1012
+#define wxID_TB_INTERACTIONS 1013
+#define wxID_TB_PRESCRIPTION 1014
+#define wxID_UPDATE_DB 1015
+#define wxID_LOAD_DB 1016
+#define wxID_SET_OPERATOR_ID 1017
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -64,12 +66,15 @@ class MainWindowBase : public wxFrame
 		// Private event handlers
 		void _wxFB_OnSearchNow( wxCommandEvent& event ){ OnSearchNow( event ); }
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
+		void _wxFB_OnSearchPatient( wxCommandEvent& event ){ OnSearchPatient( event ); }
 		void _wxFB_OnSelectionDidChange( wxDataViewEvent& event ){ OnSelectionDidChange( event ); }
 		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
 		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
 		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
 		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
+		void _wxFB_OnManagePatients( wxCommandEvent& event ){ OnManagePatients( event ); }
+		void _wxFB_OnSetOperatorIdentity( wxCommandEvent& event ){ OnSetOperatorIdentity( event ); }
 
 
 	protected:
@@ -90,7 +95,6 @@ class MainWindowBase : public wxFrame
 		wxPanel* m_panel11;
 		wxButton* m_button7;
 		wxTextCtrl* m_textCtrl1;
-		wxStaticText* m_staticText1;
 		wxTextCtrl* m_textCtrl2;
 		wxBitmapButton* m_bpButton1;
 		wxButton* m_button8;
@@ -114,16 +118,20 @@ class MainWindowBase : public wxFrame
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSearchPatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectionDidChange( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPrintDocument( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnManagePatients( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSetOperatorIdentity( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
 		wxHtmlWindow* myWebView;
+		wxStaticText* myPlaceDateField;
 		wxDataViewCtrl* myPrescriptionsTable;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;

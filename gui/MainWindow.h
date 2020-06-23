@@ -16,6 +16,9 @@ class InteractionsAdapter;
 class FullTextDBAdapter;
 class Medication;
 class TableViewDelegate;
+class PrescriptionsAdapter;
+class PatientSheetController;
+class OperatorIDSheetController;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -24,12 +27,15 @@ class MainWindow : public MainWindowBase
 		// Handlers for MainWindowBase events.
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
+		void OnSearchPatient( wxCommandEvent& event );
 		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
+		void OnManagePatients( wxCommandEvent& event );
+		void OnSetOperatorIdentity( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		MainWindow( wxWindow* parent );
@@ -54,6 +60,8 @@ private:
     void updateExpertInfoView(wxString anchor);
     void pushToMedBasket(Medication *med);
     void updateInteractionsView();
+    void updatePrescriptionsView();
+    void updatePrescriptionHistory();
 
     // 105
     int mUsedDatabase;
@@ -71,7 +79,10 @@ private:
     // .m 151
     InteractionsAdapter *mInteractions;
 
-    // .m 162
+    // .m 157
+    PatientSheetController *mPatientSheet;
+    OperatorIDSheetController *mOperatorIDSheet;
+    PrescriptionsAdapter *mPrescriptionAdapter;
     std::vector<DataObject *> doArray;
 
     // .m 168

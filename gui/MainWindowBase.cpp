@@ -24,6 +24,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnSearchPatient )
 	EVT_DATAVIEW_SELECTION_CHANGED( wxID_SECTION_TITLES, MainWindowBase::_wxFB_OnSelectionDidChange )
 	EVT_TOOL( wxID_TB_COMPENDIUM, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_TB_FAVORITES, MainWindowBase::_wxFB_OnToolbarAction )
@@ -33,6 +34,8 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_OnShowAboutPanel )
 	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
 	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
+	EVT_MENU( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnManagePatients )
+	EVT_MENU( wxID_SET_OPERATOR_ID, MainWindowBase::_wxFB_OnSetOperatorIdentity )
 END_EVENT_TABLE()
 
 MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -117,15 +120,15 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer11_patient;
 	bSizer11_patient = new wxBoxSizer( wxVERTICAL );
 
-	m_button7 = new wxButton( m_panel11, wxID_ANY, _("MyButton"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button7 = new wxButton( m_panel11, wxID_PATIENT_SEARCH, _("Patient search"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer11_patient->Add( m_button7, 0, wxALL, 5 );
 
-	m_textCtrl1 = new wxTextCtrl( m_panel11, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,102 ), wxTE_MULTILINE );
+	m_textCtrl1 = new wxTextCtrl( m_panel11, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,102 ), wxTE_MULTILINE|wxTE_NO_VSCROLL );
 	bSizer11_patient->Add( m_textCtrl1, 0, wxALL|wxEXPAND, 5 );
 
-	m_staticText1 = new wxStaticText( m_panel11, wxID_ANY, _("City"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText1->Wrap( -1 );
-	bSizer11_patient->Add( m_staticText1, 0, wxALL, 5 );
+	myPlaceDateField = new wxStaticText( m_panel11, wxID_ANY, _("Place and Date"), wxDefaultPosition, wxDefaultSize, 0 );
+	myPlaceDateField->Wrap( -1 );
+	bSizer11_patient->Add( myPlaceDateField, 0, wxALL, 5 );
 
 
 	bSizer10->Add( bSizer11_patient, 1, wxEXPAND, 5 );
@@ -133,7 +136,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer12_doctor;
 	bSizer12_doctor = new wxBoxSizer( wxVERTICAL );
 
-	m_textCtrl2 = new wxTextCtrl( m_panel11, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE );
+	m_textCtrl2 = new wxTextCtrl( m_panel11, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE|wxTE_NO_VSCROLL );
 	bSizer12_doctor->Add( m_textCtrl2, 0, wxALL|wxEXPAND, 5 );
 
 	m_bpButton1 = new wxBitmapButton( m_panel11, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 150,57 ), wxBU_AUTODRAW|0 );
@@ -274,11 +277,11 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menuContacts = new wxMenu();
 	wxMenuItem* m_menuItem12;
-	m_menuItem12 = new wxMenuItem( m_menuContacts, wxID_ANY, wxString( _("Patient management...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem12 = new wxMenuItem( m_menuContacts, wxID_PATIENT_SEARCH, wxString( _("Patient management...") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuContacts->Append( m_menuItem12 );
 
 	wxMenuItem* m_menuItem13;
-	m_menuItem13 = new wxMenuItem( m_menuContacts, wxID_ANY, wxString( _("Doctor signature") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem13 = new wxMenuItem( m_menuContacts, wxID_SET_OPERATOR_ID, wxString( _("Doctor signature") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuContacts->Append( m_menuItem13 );
 
 	m_menubar1->Append( m_menuContacts, _("Contacts") );

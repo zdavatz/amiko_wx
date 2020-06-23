@@ -815,7 +815,7 @@
                                         <property name="border">0</property>
                                         <property name="flag">wxEXPAND | wxALL</property>
                                         <property name="proportion">1</property>
-                                        <object class="wxSimplebook" expanded="0">
+                                        <object class="wxSimplebook" expanded="1">
                                             <property name="BottomDockable">1</property>
                                             <property name="LeftDockable">1</property>
                                             <property name="RightDockable">1</property>
@@ -1048,10 +1048,10 @@
                                                     </object>
                                                 </object>
                                             </object>
-                                            <object class="simplebookpage" expanded="0">
+                                            <object class="simplebookpage" expanded="1">
                                                 <property name="label">a page</property>
                                                 <property name="select">0</property>
-                                                <object class="wxPanel" expanded="0">
+                                                <object class="wxPanel" expanded="1">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -1102,25 +1102,25 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style">wxTAB_TRAVERSAL</property>
-                                                    <object class="wxBoxSizer" expanded="0">
+                                                    <object class="wxBoxSizer" expanded="1">
                                                         <property name="minimum_size"></property>
                                                         <property name="name">bSizer7</property>
                                                         <property name="orient">wxVERTICAL</property>
                                                         <property name="permission">none</property>
-                                                        <object class="sizeritem" expanded="0">
+                                                        <object class="sizeritem" expanded="1">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxEXPAND</property>
                                                             <property name="proportion">1</property>
-                                                            <object class="wxBoxSizer" expanded="0">
+                                                            <object class="wxBoxSizer" expanded="1">
                                                                 <property name="minimum_size"></property>
                                                                 <property name="name">bSizer10</property>
                                                                 <property name="orient">wxHORIZONTAL</property>
                                                                 <property name="permission">none</property>
-                                                                <object class="sizeritem" expanded="0">
+                                                                <object class="sizeritem" expanded="1">
                                                                     <property name="border">5</property>
                                                                     <property name="flag">wxEXPAND</property>
                                                                     <property name="proportion">1</property>
-                                                                    <object class="wxBoxSizer" expanded="0">
+                                                                    <object class="wxBoxSizer" expanded="1">
                                                                         <property name="minimum_size"></property>
                                                                         <property name="name">bSizer11_patient</property>
                                                                         <property name="orient">wxVERTICAL</property>
@@ -1162,8 +1162,8 @@
                                                                                 <property name="font"></property>
                                                                                 <property name="gripper">0</property>
                                                                                 <property name="hidden">0</property>
-                                                                                <property name="id">wxID_ANY</property>
-                                                                                <property name="label">MyButton</property>
+                                                                                <property name="id">wxID_PATIENT_SEARCH</property>
+                                                                                <property name="label">Patient search</property>
                                                                                 <property name="margins"></property>
                                                                                 <property name="markup">0</property>
                                                                                 <property name="max_size"></property>
@@ -1196,6 +1196,7 @@
                                                                                 <property name="window_extra_style"></property>
                                                                                 <property name="window_name"></property>
                                                                                 <property name="window_style"></property>
+                                                                                <event name="OnButtonClick">OnSearchPatient</event>
                                                                             </object>
                                                                         </object>
                                                                         <object class="sizeritem" expanded="0">
@@ -1248,7 +1249,7 @@
                                                                                 <property name="resize">Resizable</property>
                                                                                 <property name="show">1</property>
                                                                                 <property name="size">-1,102</property>
-                                                                                <property name="style">wxTE_MULTILINE</property>
+                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL</property>
                                                                                 <property name="subclass">; ; forward_declare</property>
                                                                                 <property name="toolbar_pane">0</property>
                                                                                 <property name="tooltip"></property>
@@ -1294,7 +1295,7 @@
                                                                                 <property name="gripper">0</property>
                                                                                 <property name="hidden">0</property>
                                                                                 <property name="id">wxID_ANY</property>
-                                                                                <property name="label">City</property>
+                                                                                <property name="label">Place and Date</property>
                                                                                 <property name="markup">0</property>
                                                                                 <property name="max_size"></property>
                                                                                 <property name="maximize_button">0</property>
@@ -1303,11 +1304,11 @@
                                                                                 <property name="minimize_button">0</property>
                                                                                 <property name="minimum_size"></property>
                                                                                 <property name="moveable">1</property>
-                                                                                <property name="name">m_staticText1</property>
+                                                                                <property name="name">myPlaceDateField</property>
                                                                                 <property name="pane_border">1</property>
                                                                                 <property name="pane_position"></property>
                                                                                 <property name="pane_size"></property>
-                                                                                <property name="permission">protected</property>
+                                                                                <property name="permission">public</property>
                                                                                 <property name="pin_button">1</property>
                                                                                 <property name="pos"></property>
                                                                                 <property name="resize">Resizable</property>
@@ -1325,11 +1326,11 @@
                                                                         </object>
                                                                     </object>
                                                                 </object>
-                                                                <object class="sizeritem" expanded="0">
+                                                                <object class="sizeritem" expanded="1">
                                                                     <property name="border">5</property>
                                                                     <property name="flag">wxEXPAND</property>
                                                                     <property name="proportion">1</property>
-                                                                    <object class="wxBoxSizer" expanded="0">
+                                                                    <object class="wxBoxSizer" expanded="1">
                                                                         <property name="minimum_size"></property>
                                                                         <property name="name">bSizer12_doctor</property>
                                                                         <property name="orient">wxVERTICAL</property>
@@ -1384,7 +1385,7 @@
                                                                                 <property name="resize">Resizable</property>
                                                                                 <property name="show">1</property>
                                                                                 <property name="size">-1,91</property>
-                                                                                <property name="style">wxTE_MULTILINE</property>
+                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL</property>
                                                                                 <property name="subclass">; ; forward_declare</property>
                                                                                 <property name="toolbar_pane">0</property>
                                                                                 <property name="tooltip"></property>
@@ -1986,7 +1987,7 @@
                     <event name="OnToolClicked">OnShowAboutPanel</event>
                 </object>
             </object>
-            <object class="wxMenuBar" expanded="0">
+            <object class="wxMenuBar" expanded="1">
                 <property name="bg"></property>
                 <property name="context_help"></property>
                 <property name="context_menu">1</property>
@@ -2155,7 +2156,7 @@
                     <property name="name">m_menuEdit</property>
                     <property name="permission">protected</property>
                 </object>
-                <object class="wxMenu" expanded="0">
+                <object class="wxMenu" expanded="1">
                     <property name="label">Prescription</property>
                     <property name="name">m_menuPrescr</property>
                     <property name="permission">protected</property>
@@ -2186,7 +2187,7 @@
                         <property name="unchecked_bitmap"></property>
                     </object>
                 </object>
-                <object class="wxMenu" expanded="0">
+                <object class="wxMenu" expanded="1">
                     <property name="label">Contacts</property>
                     <property name="name">m_menuContacts</property>
                     <property name="permission">protected</property>
@@ -2195,26 +2196,28 @@
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_PATIENT_SEARCH</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">Patient management...</property>
                         <property name="name">m_menuItem12</property>
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnManagePatients</event>
                     </object>
                     <object class="wxMenuItem" expanded="0">
                         <property name="bitmap"></property>
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_SET_OPERATOR_ID</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">Doctor signature</property>
                         <property name="name">m_menuItem13</property>
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnSetOperatorIdentity</event>
                     </object>
                 </object>
                 <object class="wxMenu" expanded="0">
