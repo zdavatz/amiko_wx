@@ -28,7 +28,7 @@
 #include <wx/stattext.h>
 #include <wx/bmpbuttn.h>
 #include <wx/dataview.h>
-#include <wx/notebook.h>
+#include <wx/simplebook.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
@@ -84,9 +84,10 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button6;
 		TableViewDelegate* myTableView;
 		wxPanel* m_panelRight;
-		wxPanel* m_panel3;
-		wxPanel* m_panel4;
-		wxPanel* m_panel5;
+		wxSimplebook* myTabView;
+		wxPanel* m_panel9;
+		wxPanel* m_panel10;
+		wxPanel* m_panel11;
 		wxButton* m_button7;
 		wxTextCtrl* m_textCtrl1;
 		wxStaticText* m_staticText1;
@@ -122,7 +123,6 @@ class MainWindowBase : public wxFrame
 
 
 	public:
-		wxNotebook* myTabView;
 		wxHtmlWindow* myWebView;
 		wxDataViewCtrl* myPrescriptionsTable;
 		wxDataViewListCtrl* mySectionTitles;

@@ -176,7 +176,8 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            // TODO
+            // TODO:
+            myTabView->ChangeSelection(0); // 1800
             break;
             
         case wxID_TB_FAVORITES:
@@ -185,6 +186,7 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO:
+            myTabView->ChangeSelection(0); // 1840
             break;
             
         case wxID_TB_INTERACTIONS:
@@ -193,6 +195,7 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = true;
             mPrescriptionMode = false;
             // TODO:
+            myTabView->ChangeSelection(0); // 1855
             break;
             
         case wxID_TB_PRESCRIPTION:
@@ -201,6 +204,7 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = false;
             mPrescriptionMode = true;
             // TODO:
+            myTabView->ChangeSelection(2); // 1868
             break;
             
 #if 0 // TODO
