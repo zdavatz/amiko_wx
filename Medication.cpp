@@ -88,7 +88,7 @@ wxArrayString Medication::listOfSectionTitles()
     //std::clog << "Line " << __LINE__  << " sectionTitles: " << sectionTitles << std::endl;
 
     wxArrayString titles = wxSplit(wxString(sectionTitles), ';');
-    NSUInteger n = titles.size();
+    int n = titles.size();
     for (int i=0; i<n; ++i)
         titles[i] = shortTitle(titles[i]);
 
