@@ -64,26 +64,46 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     label += wxString::Format("<b><font size=+2> %s</font></b>", m->title);
 
     for (int i=0; i<listOfPackages.size(); i++) {
+        // Set colors: O original red, G Generika green, default gray
         wxColour packageColor = typicalGray;
-        if (listOfPackages[i].Contains(", O]"))
+        const char *packageColorCSS = "gray";
+        if (listOfPackages[i].Contains(", O]")) {
             packageColor = typicalRed;
-        else if (listOfPackages[i].Contains(", G]"))
+            packageColorCSS = "red";
+        }
+        else if (listOfPackages[i].Contains(", G]")) {
             packageColor = typicalGreen;
-        // Set colors
-        // O original red
-        // G Generika green
-        // default gray
+            packageColorCSS = "green";
+        }
+#if 0
         label += wxString::Format("<br><font color=%s>%s</font>",
                                   packageColor.GetAsString(wxC2S_HTML_SYNTAX),
                                   listOfPackages[i].c_str());
+#else
+        // Packages are clickable
+        
+        // This way we lose the color coding and gain an ugly underline
+//        label += wxString::Format("<br><font color=%s><a href='%d'>%s</a></font>",
+//                                  packageColor.GetAsString(wxC2S_HTML_SYNTAX),
+//                                  i,
+//                                  listOfPackages[i].c_str());
+
+        // Ok color coding but adding "text-decoration: none;" is not effective in removing the underline
+        label += wxString::Format("<br><a href='%d' style=\"color: %s;\">%s</a>",
+                                  i,
+                                  packageColorCSS,
+                                  listOfPackages[i].c_str());
+#endif
     }
 
+#if 0
     if ( n == 1 ) {
         if ( !m_linkClicked )
             label += "<br><a href='1'>Click here...</a>";
         else
             label += "<br><font color='#9999ff'>Clicked here...</font>";
     }
+#endif
 
     return label;
 }
