@@ -60,7 +60,8 @@ foreach(APP_NAME CoMed AmiKo)
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
     gui/MainWindow.cpp gui/MainWindow.h
-    gui/PatientSheet.cpp gui/PatientSheet.h)
+    gui/PatientSheet.cpp gui/PatientSheet.h
+    gui/OperatorIDSheet.cpp gui/OperatorIDSheet.h )
     
 set( SRCS_SQL
     DBAdapter.cpp DBAdapter.hpp
@@ -79,7 +80,6 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     Medication.cpp Medication.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
     PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
-    OperatorIDSheetController.cpp OperatorIDSheetController.hpp
     ${SRCS_GUI} ${SRCS_SQL}
     customURLConnection.cpp customURLConnection.hpp
     )

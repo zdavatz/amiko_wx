@@ -23,7 +23,7 @@
 #include "DataObject.hpp"
 #include "PrescriptionsAdapter.hpp"
 #include "PatientSheet.h"
-#include "OperatorIDSheetController.hpp"
+#include "OperatorIDSheet.h"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -246,7 +246,7 @@ void MainWindow::switchTabs(int item)
 {
     switch (item) {
         case wxID_TB_COMPENDIUM:
-            std::clog << "AIPS Database" << std::endl;
+            //std::clog << "AIPS Database" << std::endl;
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = false;
@@ -255,7 +255,7 @@ void MainWindow::switchTabs(int item)
             break;
             
         case wxID_TB_FAVORITES:
-            std::clog << "Favorites" << std::endl;
+            //std::clog << "Favorites" << std::endl;
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
@@ -264,7 +264,7 @@ void MainWindow::switchTabs(int item)
             break;
             
         case wxID_TB_INTERACTIONS:
-            std::clog << "Interactions" << std::endl;
+            //std::clog << "Interactions" << std::endl;
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = true;
             mPrescriptionMode = false;
@@ -273,7 +273,7 @@ void MainWindow::switchTabs(int item)
             break;
             
         case wxID_TB_PRESCRIPTION:
-            std::clog << "Rezept" << std::endl;
+            //std::clog << "Rezept" << std::endl;
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = true;
@@ -684,11 +684,9 @@ void MainWindow::OnManagePatients( wxCommandEvent& event )
 void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
 {
     if (!mOperatorIDSheet)
-        mOperatorIDSheet = new OperatorIDSheetController;
+        mOperatorIDSheet = new OperatorIDSheet(this);
 
-    // TODO:
-    std::clog << __PRETTY_FUNCTION__ << " TODO: show sheet" << std::endl;
-    //mOperatorIDSheet->show(NSApp->mainWindow);
+    mOperatorIDSheet->ShowWindowModal();
 }
 
 // 2917

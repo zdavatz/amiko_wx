@@ -18,7 +18,7 @@ class Medication;
 class TableViewDelegate;
 class PrescriptionsAdapter;
 class PatientSheet;
-class OperatorIDSheetController;
+class OperatorIDSheet;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -81,7 +81,7 @@ private:
 
     // .m 157
     PatientSheet *mPatientSheet;
-    OperatorIDSheetController *mOperatorIDSheet;
+    OperatorIDSheet *mOperatorIDSheet;
     PrescriptionsAdapter *mPrescriptionAdapter;
     std::vector<DataObject *> doArray;
 

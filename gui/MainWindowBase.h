@@ -33,9 +33,11 @@
 #include <wx/toolbar.h>
 #include <wx/menu.h>
 #include <wx/frame.h>
+#include <wx/radiobox.h>
 #include <wx/listctrl.h>
 #include <wx/spinbutt.h>
 #include <wx/dialog.h>
+#include <wx/statbmp.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -178,6 +180,16 @@ class PatientSheetBase : public wxDialog
 		wxTextCtrl* m_textCtrl10;
 		wxStaticText* m_staticText12;
 		wxTextCtrl* m_textCtrl11;
+		wxStaticText* m_staticText23;
+		wxRadioBox* m_radioBox1;
+		wxStaticText* m_staticText24;
+		wxTextCtrl* m_textCtrl20;
+		wxStaticText* m_staticText25;
+		wxTextCtrl* m_textCtrl21;
+		wxStaticText* m_staticText26;
+		wxTextCtrl* m_textCtrl22;
+		wxStaticText* m_staticText27;
+		wxTextCtrl* m_textCtrl23;
 		wxButton* m_button14;
 		wxButton* m_button15;
 		wxPanel* m_panel7Right;
@@ -189,7 +201,7 @@ class PatientSheetBase : public wxDialog
 
 	public:
 
-		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 589,387 ), long style = wxDEFAULT_DIALOG_STYLE );
+		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Patient Management"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 700,511 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~PatientSheetBase();
 
 		void m_splitter2OnIdle( wxIdleEvent& )
@@ -197,6 +209,41 @@ class PatientSheetBase : public wxDialog
 			m_splitter2->SetSashPosition( 0 );
 			m_splitter2->Disconnect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::m_splitter2OnIdle ), NULL, this );
 		}
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class OperatorIDSheetBase
+///////////////////////////////////////////////////////////////////////////////
+class OperatorIDSheetBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxStaticText* m_staticText14;
+		wxStaticText* m_staticText15;
+		wxTextCtrl* m_textCtrl12;
+		wxStaticText* m_staticText16;
+		wxTextCtrl* m_textCtrl13;
+		wxStaticText* m_staticText17;
+		wxTextCtrl* m_textCtrl14;
+		wxStaticText* m_staticText22;
+		wxTextCtrl* m_textCtrl16;
+		wxStaticText* m_staticText18;
+		wxTextCtrl* m_textCtrl17;
+		wxStaticText* m_staticText19;
+		wxTextCtrl* m_textCtrl18;
+		wxStaticText* m_staticText20;
+		wxTextCtrl* m_textCtrl19;
+		wxStaticBitmap* m_bitmap1;
+		wxButton* m_button16;
+		wxButton* m_button18;
+		wxButton* m_button17;
+
+	public:
+
+		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 451,512 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~OperatorIDSheetBase();
 
 };
 

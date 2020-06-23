@@ -21,11 +21,10 @@ class PatientSheet : public PatientSheetBase
 	//// end generated class members
 
         Patient *retrievePatient();
-        
+
     private:
         // .m 35
         Patient *mSelectedPatient;
-
 };
 
 #endif // __PatientSheet__
