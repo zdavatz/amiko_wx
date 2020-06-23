@@ -28,7 +28,7 @@ void TableViewDelegate::OnDrawSeparator(wxDC& dc, wxRect& rect, size_t) const
             GetMenuBar()->IsChecked(HtmlLbox_DrawSeparator) )
 #endif
     {
-        dc.SetPen(*wxBLACK_DASHED_PEN);
+        dc.SetPen(*wxBLACK_PEN);
         dc.DrawLine(rect.x, rect.y, rect.GetRight(), rect.y);
         dc.DrawLine(rect.x, rect.GetBottom(), rect.GetRight(), rect.GetBottom());
     }
@@ -57,9 +57,12 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     wxColour starColor = lightYellow;
     if (n % 5)
         starColor = typicalGray;
+    
+    wxString label;
+    //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
 
-    wxString label = wxString::Format("<font color=%s size=+3>★</font>",
-                                      starColor.GetAsString(wxC2S_HTML_SYNTAX));
+    label += wxString::Format("<font color=%s size=+3>★</font>",
+                             starColor.GetAsString(wxC2S_HTML_SYNTAX));
 
     label += wxString::Format("<b><font size=+2> %s</font></b>", m->title);
 

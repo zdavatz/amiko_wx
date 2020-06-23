@@ -37,7 +37,8 @@ enum {
 static int mCurrentSearchState = kss_Title;
 static wxString mCurrentSearchKey;
 
-BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+// Events not processed by MainWindow will, by default, be handled by MainWindowBase
+BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_HTML_LINK_CLICKED(wxID_ANY, MainWindow::OnHtmlLinkClicked)
     EVT_HTML_CELL_CLICKED(wxID_ANY, MainWindow::OnHtmlCellClicked)
 END_EVENT_TABLE()
@@ -499,17 +500,19 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 // 2917
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
-    std::clog << "event " << event.GetEventObject() << std::endl;
-    std::clog << "event Id " << event.GetId() << std::endl;
-    std::clog << "Id "<< mySectionTitles->GetId() <<  std::endl;
+//    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
+//    std::clog << "event " << event.GetEventObject() << std::endl;
+//    std::clog << "event Id " << event.GetId() << std::endl;
+//    std::clog << "Id "<< mySectionTitles->GetId() << std::endl;
     
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
         std::clog << "Skip event Id " << event.GetId() << std::endl;
         event.Skip();
         return;
     }
-    
+
+    std::clog << __FUNCTION__ << " row: "<< mySectionTitles->GetSelectedRow() << std::endl;
+
     // 2973
     // TODO: JavaScript to scroll webview
 }
@@ -602,11 +605,12 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
-    std::clog << "The url '"
-        << event.GetLinkInfo().GetHref()
-        << "' has been clicked!"
-        << std::endl;
-    
+    std::clog << __FUNCTION__
+    << ", event Id: " << event.GetId()
+    << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
+    << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId().ToStdString()
+    << ", package at index " << event.GetLinkInfo().GetHref()
+    << std::endl;
 
     //myTableView->RefreshRow(1);
     event.Skip();
