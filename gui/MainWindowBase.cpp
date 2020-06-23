@@ -42,60 +42,149 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE );
 	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
 
-	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panelLeft = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizerLeft;
 	bSizerLeft = new wxBoxSizer( wxVERTICAL );
 
-	mySearchField = new wxSearchCtrl( m_panel1, wxID_MY_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	mySearchField = new wxSearchCtrl( m_panelLeft, wxID_MY_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	#ifndef __WXMAC__
 	mySearchField->ShowSearchButton( true );
 	#endif
 	mySearchField->ShowCancelButton( false );
 	bSizerLeft->Add( mySearchField, 0, wxALL|wxEXPAND, 5 );
 
-	m_button1 = new wxButton( m_panel1, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button1 = new wxButton( m_panelLeft, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
 
-	m_button2 = new wxButton( m_panel1, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button2 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
 
-	m_button3 = new wxButton( m_panel1, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button3 = new wxButton( m_panelLeft, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
 
-	m_button4 = new wxButton( m_panel1, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button4 = new wxButton( m_panelLeft, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
 
-	m_button5 = new wxButton( m_panel1, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button5 = new wxButton( m_panelLeft, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
 
-	m_button6 = new wxButton( m_panel1, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button6 = new wxButton( m_panelLeft, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
 	myTableView = new TableViewDelegate(this, false);
 	bSizerLeft->Add( myTableView, 2, wxEXPAND, 0 );
 
 
-	m_panel1->SetSizer( bSizerLeft );
-	m_panel1->Layout();
-	bSizerLeft->Fit( m_panel1 );
-	m_panel2 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panelLeft->SetSizer( bSizerLeft );
+	m_panelLeft->Layout();
+	bSizerLeft->Fit( m_panelLeft );
+	m_panelRight = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
-	myWebView = new wxHtmlWindow( m_panel2, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	bSizer4->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
+	myTabView = new wxNotebook( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_panel3 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxVERTICAL );
 
-	mySectionTitles = new wxDataViewListCtrl( m_panel2, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
+	myWebView = new wxHtmlWindow( m_panel3, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	bSizer5->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
+
+
+	m_panel3->SetSizer( bSizer5 );
+	m_panel3->Layout();
+	bSizer5->Fit( m_panel3 );
+	myTabView->AddPage( m_panel3, _("Compendium"), false );
+	m_panel4 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+
+
+	m_panel4->SetSizer( bSizer6 );
+	m_panel4->Layout();
+	bSizer6->Fit( m_panel4 );
+	myTabView->AddPage( m_panel4, _("Interactions"), false );
+	m_panel5 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer7;
+	bSizer7 = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* bSizer10;
+	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+
+	wxBoxSizer* bSizer11_patient;
+	bSizer11_patient = new wxBoxSizer( wxVERTICAL );
+
+	m_button7 = new wxButton( m_panel5, wxID_ANY, _("MyButton"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer11_patient->Add( m_button7, 0, wxALL, 5 );
+
+	m_textCtrl1 = new wxTextCtrl( m_panel5, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,102 ), wxTE_MULTILINE );
+	bSizer11_patient->Add( m_textCtrl1, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticText1 = new wxStaticText( m_panel5, wxID_ANY, _("City"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1->Wrap( -1 );
+	bSizer11_patient->Add( m_staticText1, 0, wxALL, 5 );
+
+
+	bSizer10->Add( bSizer11_patient, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer12_doctor;
+	bSizer12_doctor = new wxBoxSizer( wxVERTICAL );
+
+	m_textCtrl2 = new wxTextCtrl( m_panel5, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE );
+	bSizer12_doctor->Add( m_textCtrl2, 0, wxALL|wxEXPAND, 5 );
+
+	m_bpButton1 = new wxBitmapButton( m_panel5, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 150,57 ), wxBU_AUTODRAW|0 );
+	bSizer12_doctor->Add( m_bpButton1, 0, wxALL, 5 );
+
+
+	bSizer10->Add( bSizer12_doctor, 1, wxEXPAND, 5 );
+
+
+	bSizer7->Add( bSizer10, 1, wxEXPAND, 5 );
+
+	myPrescriptionsTable = new wxDataViewCtrl( m_panel5, wxID_ANY, wxDefaultPosition, wxSize( -1,340 ), 0 );
+	bSizer7->Add( myPrescriptionsTable, 0, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_button8 = new wxButton( m_panel5, wxID_ANY, _("New Prescription"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button8, 0, wxALL, 5 );
+
+	m_button9 = new wxButton( m_panel5, wxID_ANY, _("Check interactions"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button9, 0, wxALL, 5 );
+
+
+	bSizer13->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_button10 = new wxButton( m_panel5, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button10, 0, wxALL, 5 );
+
+	m_button11 = new wxButton( m_panel5, wxID_ANY, _("Send"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer13->Add( m_button11, 0, wxALL, 5 );
+
+
+	bSizer7->Add( bSizer13, 1, wxEXPAND, 5 );
+
+
+	m_panel5->SetSizer( bSizer7 );
+	m_panel5->Layout();
+	bSizer7->Fit( m_panel5 );
+	myTabView->AddPage( m_panel5, _("Prescription"), false );
+
+	bSizer4->Add( myTabView, 1, wxEXPAND | wxALL, 5 );
+
+	mySectionTitles = new wxDataViewListCtrl( m_panelRight, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
 	bSizer4->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
 
 
-	m_panel2->SetSizer( bSizer4 );
-	m_panel2->Layout();
-	bSizer4->Fit( m_panel2 );
-	m_splitter1->SplitVertically( m_panel1, m_panel2, 0 );
+	m_panelRight->SetSizer( bSizer4 );
+	m_panelRight->Layout();
+	bSizer4->Fit( m_panelRight );
+	m_splitter1->SplitVertically( m_panelLeft, m_panelRight, 0 );
 	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
 
 

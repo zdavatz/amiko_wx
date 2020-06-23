@@ -24,7 +24,11 @@
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/html/htmlwin.h>
+#include <wx/textctrl.h>
+#include <wx/stattext.h>
+#include <wx/bmpbuttn.h>
 #include <wx/dataview.h>
+#include <wx/notebook.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
@@ -70,7 +74,7 @@ class MainWindowBase : public wxFrame
 
 	protected:
 		wxSplitterWindow* m_splitter1;
-		wxPanel* m_panel1;
+		wxPanel* m_panelLeft;
 		wxSearchCtrl* mySearchField;
 		wxButton* m_button1;
 		wxButton* m_button2;
@@ -79,7 +83,19 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button5;
 		wxButton* m_button6;
 		TableViewDelegate* myTableView;
-		wxPanel* m_panel2;
+		wxPanel* m_panelRight;
+		wxPanel* m_panel3;
+		wxPanel* m_panel4;
+		wxPanel* m_panel5;
+		wxButton* m_button7;
+		wxTextCtrl* m_textCtrl1;
+		wxStaticText* m_staticText1;
+		wxTextCtrl* m_textCtrl2;
+		wxBitmapButton* m_bpButton1;
+		wxButton* m_button8;
+		wxButton* m_button9;
+		wxButton* m_button10;
+		wxButton* m_button11;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
@@ -106,7 +122,9 @@ class MainWindowBase : public wxFrame
 
 
 	public:
+		wxNotebook* myTabView;
 		wxHtmlWindow* myWebView;
+		wxDataViewCtrl* myPrescriptionsTable;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;
