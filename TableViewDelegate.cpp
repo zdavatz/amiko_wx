@@ -44,10 +44,10 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
                  (unsigned char)(abs((int)n - 256) % 256),
                  (unsigned char)(abs((int)n - 128) % 256));
     
-    wxColour typicalGray(127,127,127); // MLColors.m:26
-    wxColour typicalGreen(0,0.8F*255,0.2F*255);
-    wxColour typicalRed(255,0,0);
-    wxColour lightYellow(255,255,0); // MLColors.m:32
+    const wxColour typicalGray(127,127,127); // MLColors.m:26
+    const wxColour typicalGreen(0,0.8F*255,0.2F*255);
+    const wxColour typicalRed(255,0,0);
+    const wxColour lightYellow(255,255,0); // MLColors.m:32
 
     DataObject *m = searchRes[n];
 

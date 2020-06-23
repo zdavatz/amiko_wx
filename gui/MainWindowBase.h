@@ -22,8 +22,10 @@
 #include <wx/icon.h>
 #include "TableViewDelegate.hpp"
 #include <wx/sizer.h>
+#include <wx/panel.h>
 #include <wx/html/htmlwin.h>
 #include <wx/dataview.h>
+#include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
 #include <wx/frame.h>
@@ -67,6 +69,8 @@ class MainWindowBase : public wxFrame
 
 
 	protected:
+		wxSplitterWindow* m_splitter1;
+		wxPanel* m_panel1;
 		wxSearchCtrl* mySearchField;
 		wxButton* m_button1;
 		wxButton* m_button2;
@@ -75,6 +79,7 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button5;
 		wxButton* m_button6;
 		TableViewDelegate* myTableView;
+		wxPanel* m_panel2;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
@@ -109,6 +114,12 @@ class MainWindowBase : public wxFrame
 		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1033,767 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MainWindowBase();
+
+		void m_splitter1OnIdle( wxIdleEvent& )
+		{
+			m_splitter1->SetSashPosition( 0 );
+			m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
+		}
 
 };
 

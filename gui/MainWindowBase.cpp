@@ -42,45 +42,61 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 
+	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
+
+	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizerLeft;
 	bSizerLeft = new wxBoxSizer( wxVERTICAL );
 
-	mySearchField = new wxSearchCtrl( this, wxID_MY_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	mySearchField = new wxSearchCtrl( m_panel1, wxID_MY_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	#ifndef __WXMAC__
 	mySearchField->ShowSearchButton( true );
 	#endif
 	mySearchField->ShowCancelButton( false );
 	bSizerLeft->Add( mySearchField, 0, wxALL|wxEXPAND, 5 );
 
-	m_button1 = new wxButton( this, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button1 = new wxButton( m_panel1, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
 
-	m_button2 = new wxButton( this, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button2 = new wxButton( m_panel1, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
 
-	m_button3 = new wxButton( this, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button3 = new wxButton( m_panel1, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
 
-	m_button4 = new wxButton( this, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button4 = new wxButton( m_panel1, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
 
-	m_button5 = new wxButton( this, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button5 = new wxButton( m_panel1, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
 
-	m_button6 = new wxButton( this, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button6 = new wxButton( m_panel1, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
 
 	myTableView = new TableViewDelegate(this, false);
 	bSizerLeft->Add( myTableView, 2, wxEXPAND, 0 );
 
 
-	bSizer1->Add( bSizerLeft, 1, wxEXPAND, 5 );
+	m_panel1->SetSizer( bSizerLeft );
+	m_panel1->Layout();
+	bSizerLeft->Fit( m_panel1 );
+	m_panel2 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer4;
+	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
-	myWebView = new wxHtmlWindow( this, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	bSizer1->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
+	myWebView = new wxHtmlWindow( m_panel2, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	bSizer4->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
-	mySectionTitles = new wxDataViewListCtrl( this, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
-	bSizer1->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
+	mySectionTitles = new wxDataViewListCtrl( m_panel2, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
+	bSizer4->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
+
+
+	m_panel2->SetSizer( bSizer4 );
+	m_panel2->Layout();
+	bSizer4->Fit( m_panel2 );
+	m_splitter1->SplitVertically( m_panel1, m_panel2, 0 );
+	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer1 );
