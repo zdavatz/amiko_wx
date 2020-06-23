@@ -33,6 +33,9 @@
 #include <wx/toolbar.h>
 #include <wx/menu.h>
 #include <wx/frame.h>
+#include <wx/listctrl.h>
+#include <wx/spinbutt.h>
+#include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -145,6 +148,54 @@ class MainWindowBase : public wxFrame
 		{
 			m_splitter1->SetSashPosition( 0 );
 			m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
+		}
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class PatientSheetBase
+///////////////////////////////////////////////////////////////////////////////
+class PatientSheetBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxSplitterWindow* m_splitter2;
+		wxPanel* m_panel6Left;
+		wxStaticText* m_staticText2;
+		wxStaticText* m_staticText3;
+		wxStaticText* m_staticText4;
+		wxTextCtrl* m_textCtrl3;
+		wxStaticText* m_staticText5;
+		wxTextCtrl* m_textCtrl4;
+		wxStaticText* m_staticText6;
+		wxTextCtrl* m_textCtrl5;
+		wxStaticText* m_staticText9;
+		wxTextCtrl* m_textCtrl8;
+		wxStaticText* m_staticText10;
+		wxTextCtrl* m_textCtrl9;
+		wxStaticText* m_staticText11;
+		wxTextCtrl* m_textCtrl10;
+		wxStaticText* m_staticText12;
+		wxTextCtrl* m_textCtrl11;
+		wxButton* m_button14;
+		wxButton* m_button15;
+		wxPanel* m_panel7Right;
+		wxSearchCtrl* m_searchCtrl2;
+		wxListCtrl* m_listCtrl1;
+		wxSpinButton* m_spinBtn1;
+		wxStaticText* m_staticText13;
+		wxBitmapButton* m_bpButton2;
+
+	public:
+
+		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 589,387 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~PatientSheetBase();
+
+		void m_splitter2OnIdle( wxIdleEvent& )
+		{
+			m_splitter2->SetSashPosition( 0 );
+			m_splitter2->Disconnect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::m_splitter2OnIdle ), NULL, this );
 		}
 
 };

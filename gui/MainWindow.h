@@ -17,7 +17,7 @@ class FullTextDBAdapter;
 class Medication;
 class TableViewDelegate;
 class PrescriptionsAdapter;
-class PatientSheetController;
+class PatientSheet;
 class OperatorIDSheetController;
 
 /** Implementing MainWindowBase */
@@ -80,7 +80,7 @@ private:
     InteractionsAdapter *mInteractions;
 
     // .m 157
-    PatientSheetController *mPatientSheet;
+    PatientSheet *mPatientSheet;
     OperatorIDSheetController *mOperatorIDSheet;
     PrescriptionsAdapter *mPrescriptionAdapter;
     std::vector<DataObject *> doArray;

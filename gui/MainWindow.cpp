@@ -11,6 +11,7 @@
 #include <sqlite3.h>
 
 #include "MainWindow.h"
+#include "PatientSheet.h"
 
 #include "FullTextDBAdapter.hpp"
 #include "customURLConnection.hpp"
@@ -21,7 +22,7 @@
 #include "Medication.hpp"
 #include "DataObject.hpp"
 #include "PrescriptionsAdapter.hpp"
-#include "PatientSheetController.hpp"
+#include "PatientSheet.h"
 #include "OperatorIDSheetController.hpp"
 
 #include "../res/xpm/CoMed.xpm"
@@ -674,11 +675,9 @@ void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 void MainWindow::OnManagePatients( wxCommandEvent& event )
 {
     if (!mPatientSheet)
-        mPatientSheet = new PatientSheetController;
+        mPatientSheet = new PatientSheet(this);
     
-    // TODO:
-    std::clog << __PRETTY_FUNCTION__ << " TODO: show sheet" << std::endl;
-    //mPatientSheet->show(NSApp->mainWindow);
+    mPatientSheet->ShowWindowModal();
 }
 
 // 1237

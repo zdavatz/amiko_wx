@@ -319,3 +319,170 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 MainWindowBase::~MainWindowBase()
 {
 }
+
+PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* bSizer11;
+	bSizer11 = new wxBoxSizer( wxVERTICAL );
+
+	m_splitter2 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	m_splitter2->Connect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::m_splitter2OnIdle ), NULL, this );
+
+	m_panel6Left = new wxPanel( m_splitter2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer12;
+	bSizer12 = new wxBoxSizer( wxVERTICAL );
+
+	wxBoxSizer* bSizer15;
+	bSizer15 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText2 = new wxStaticText( m_panel6Left, wxID_ANY, _("Patient Management"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	bSizer15->Add( m_staticText2, 0, wxALL|wxEXPAND, 5 );
+
+
+	bSizer15->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText3 = new wxStaticText( m_panel6Left, wxID_ANY, _("* Required fields"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText3->Wrap( -1 );
+	bSizer15->Add( m_staticText3, 0, wxALL, 5 );
+
+
+	bSizer12->Add( bSizer15, 1, wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer1;
+	fgSizer1 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer1->SetFlexibleDirection( wxBOTH );
+	fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_staticText4 = new wxStaticText( m_panel6Left, wxID_ANY, _("Surname*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	fgSizer1->Add( m_staticText4, 0, wxALL, 5 );
+
+	m_textCtrl3 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( m_textCtrl3, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticText5 = new wxStaticText( m_panel6Left, wxID_ANY, _("Name*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText5->Wrap( -1 );
+	fgSizer1->Add( m_staticText5, 0, wxALL, 5 );
+
+	m_textCtrl4 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( m_textCtrl4, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticText6 = new wxStaticText( m_panel6Left, wxID_ANY, _("Street*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6->Wrap( -1 );
+	fgSizer1->Add( m_staticText6, 0, wxALL, 5 );
+
+	m_textCtrl5 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( m_textCtrl5, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticText9 = new wxStaticText( m_panel6Left, wxID_ANY, _("City*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9->Wrap( -1 );
+	fgSizer1->Add( m_staticText9, 0, wxALL, 5 );
+
+	wxBoxSizer* bSizer16;
+	bSizer16 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_textCtrl8 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( m_textCtrl8, 0, wxALL, 5 );
+
+	m_staticText10 = new wxStaticText( m_panel6Left, wxID_ANY, _("ZIP*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText10->Wrap( -1 );
+	bSizer16->Add( m_staticText10, 0, wxALL, 5 );
+
+	m_textCtrl9 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( m_textCtrl9, 0, wxALL, 5 );
+
+
+	fgSizer1->Add( bSizer16, 1, wxEXPAND, 5 );
+
+	m_staticText11 = new wxStaticText( m_panel6Left, wxID_ANY, _("Country"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText11->Wrap( -1 );
+	fgSizer1->Add( m_staticText11, 0, wxALL, 5 );
+
+	m_textCtrl10 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( m_textCtrl10, 0, wxALL, 5 );
+
+	m_staticText12 = new wxStaticText( m_panel6Left, wxID_ANY, _("Birthday*"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText12->Wrap( -1 );
+	fgSizer1->Add( m_staticText12, 0, wxALL, 5 );
+
+	m_textCtrl11 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( m_textCtrl11, 0, wxALL, 5 );
+
+
+	bSizer12->Add( fgSizer1, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer18;
+	bSizer18 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_button14 = new wxButton( m_panel6Left, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer18->Add( m_button14, 0, wxALL, 5 );
+
+
+	bSizer18->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_button15 = new wxButton( m_panel6Left, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer18->Add( m_button15, 0, wxALL, 5 );
+
+
+	bSizer12->Add( bSizer18, 1, wxEXPAND, 5 );
+
+
+	m_panel6Left->SetSizer( bSizer12 );
+	m_panel6Left->Layout();
+	bSizer12->Fit( m_panel6Left );
+	m_panel7Right = new wxPanel( m_splitter2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxVERTICAL );
+
+	m_searchCtrl2 = new wxSearchCtrl( m_panel7Right, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	#ifndef __WXMAC__
+	m_searchCtrl2->ShowSearchButton( true );
+	#endif
+	m_searchCtrl2->ShowCancelButton( false );
+	bSizer13->Add( m_searchCtrl2, 0, wxALL|wxEXPAND, 5 );
+
+	m_listCtrl1 = new wxListCtrl( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_ICON );
+	bSizer13->Add( m_listCtrl1, 1, wxALL|wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer17;
+	bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_spinBtn1 = new wxSpinButton( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_HORIZONTAL );
+	bSizer17->Add( m_spinBtn1, 0, wxALL, 5 );
+
+
+	bSizer17->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText13 = new wxStaticText( m_panel7Right, wxID_ANY, _("Label"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText13->Wrap( -1 );
+	bSizer17->Add( m_staticText13, 0, wxALL, 5 );
+
+
+	bSizer17->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_bpButton2 = new wxBitmapButton( m_panel7Right, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 24,24 ), wxBU_AUTODRAW|0 );
+	bSizer17->Add( m_bpButton2, 0, wxALL, 5 );
+
+
+	bSizer13->Add( bSizer17, 1, wxEXPAND, 5 );
+
+
+	m_panel7Right->SetSizer( bSizer13 );
+	m_panel7Right->Layout();
+	bSizer13->Fit( m_panel7Right );
+	m_splitter2->SplitVertically( m_panel6Left, m_panel7Right, 0 );
+	bSizer11->Add( m_splitter2, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( bSizer11 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+}
+
+PatientSheetBase::~PatientSheetBase()
+{
+}
