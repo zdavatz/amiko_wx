@@ -142,15 +142,18 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
             title.ToStdString());
 
     //std::clog << "query:\n" << query.ToStdString() << std::endl;
-    std::clog << "mySqliteDb: " << mySqliteDb << std::endl; // Issue #8 null in Linux
-	if (mySqliteDb)
+
+#ifdef __linux__
+	if (!mySqliteDb)  // Issue #8 null in Linux
+    {
+        std::vector<Medication *> temp;
+        return temp;
+    }
+    else
+#endif
 	{
 		ALL_RESULTS results = mySqliteDb->performQuery(query);
 		return extractShortMedInfoFrom(results);
-	}
-	else {
-		std::vector<Medication *> temp;
-		return temp;		
 	}
 }
 

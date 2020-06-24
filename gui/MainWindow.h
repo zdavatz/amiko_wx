@@ -92,6 +92,8 @@ private:
     
     // .m 183
     bool mSearchInProgress;
+    float m_alpha;
+    float m_delta;
     
     // Delegate
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);

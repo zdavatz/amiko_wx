@@ -57,6 +57,8 @@ MainWindow::MainWindow( wxWindow* parent )
 , mPrescriptionAdapter(nullptr)
 , mPatientSheet(nullptr)
 , mOperatorIDSheet(nullptr)
+, m_alpha(0.0F)
+, m_delta(0.01F)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -92,6 +94,8 @@ MainWindow::MainWindow( wxWindow* parent )
     std::clog << "Number of records in interaction file: " << mInteractions->getNumInteractions() << std::endl;
 #endif
 
+    // Issue #8
+    // TBC: it's not in the call stack when running on Linux
     fadeInAndShow();
 
     // 292
@@ -151,6 +155,15 @@ void MainWindow::hideTextFinder()
 // 548
 void MainWindow::fadeInAndShow()
 {
+#ifdef __linux__
+    while (m_alpha < 1.0F) {  // Hopefully this delay helps with Issue #8 in Linux
+        m_alpha += m_delta;
+        // TODO: fade in window with m_alpha
+        wxMilliSleep(10);
+        wxTheApp->Yield();
+    }
+#endif
+
     resetDataInTableView();
 }
 
@@ -608,6 +621,7 @@ void MainWindow::OnSearchPatient( wxCommandEvent& event )
 }
 
 // 2917
+// tableViewSelectionDidChange
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
 //    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
@@ -624,7 +638,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     std::clog << __FUNCTION__ << " row: "<< mySectionTitles->GetSelectedRow() << std::endl;
 
     // 2973
-    // TODO: JavaScript to scroll webview
+    // TODO: JavaScript RunScript to scroll webview
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )

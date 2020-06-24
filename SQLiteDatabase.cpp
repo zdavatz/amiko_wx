@@ -59,7 +59,7 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 // 169
 ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
 {
-    std::clog << __FUNCTION__ << ", query:\n" << query.ToStdString() << std::endl;
+    //std::clog << __FUNCTION__ << ", query:\n" << query.ToStdString() << std::endl;
 
     ALL_RESULTS result;
 
