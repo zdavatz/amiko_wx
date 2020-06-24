@@ -10,7 +10,7 @@
 SQLiteDatabase::SQLiteDatabase()
 : database(nullptr)
 {
-    
+
 }
 
 // 68
@@ -20,7 +20,7 @@ void SQLiteDatabase::initReadOnlyWithPath(wxString path)
     //std::clog << __PRETTY_FUNCTION__ << " " << path.ToStdString() << std::endl;
 #endif
     sqlite3 *dbConnection;
-    
+
     int rc = sqlite3_open_v2(path.c_str(), &dbConnection, SQLITE_OPEN_READONLY, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << __PRETTY_FUNCTION__ << " Unable to open database!\n";
@@ -40,7 +40,7 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 {
     int numTableRecords = -1;
     sqlite3_stmt *sqlClause = NULL;
-    
+
     wxString sqlStatement = wxString::Format("SELECT COUNT(*) FROM %s", table.ToStdString());
     const char *sql = sqlStatement.c_str();
     if (sqlite3_prepare_v2(database, sql, -1, &sqlClause, NULL) == SQLITE_OK) {
@@ -59,16 +59,17 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 // 169
 ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
 {
-    //std::clog << __FUNCTION__ << ", query: " << query.ToStdString() << std::endl;
+    std::clog << __FUNCTION__ << ", query:\n" << query.ToStdString() << std::endl;
 
     ALL_RESULTS result;
 
     sqlite3_stmt *compiledStatement = NULL;
     // Convert wxString to a C String
     const char *sql = query.c_str();
-    
+
     int error_code = SQLITE_OK;
     // Open database from users filesystem
+
     error_code = sqlite3_prepare_v2(database, sql, -1, &compiledStatement, NULL);
     if ( error_code != SQLITE_OK) {
         std::cerr << __FUNCTION__ << " Error with code " << error_code << " when preparing query!\n";

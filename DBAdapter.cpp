@@ -20,10 +20,10 @@ enum {
     kMedId = 0, kTitle, kAuth, kAtcCode, kSubstances,
     kRegnrs, kAtcClass, kTherapy, kApplication, kIndications,
     kCustomerId, kPackInfo, kPackages,    // short query up to here
-    
+
     // full query includes the following:
     kAddInfo, kIdsStr, kSectionsStr, kContentStr, kStyleStr,
-    
+
     kNumberOfKeys
 };
 
@@ -67,7 +67,7 @@ DBAdapter::DBAdapter()
                       KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES,
                       KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
     }
-    
+
 }
 
 // 85
@@ -88,7 +88,7 @@ bool DBAdapter::openDatabase(wxString dbName)
         mySqliteDb->initReadOnlyWithPath(filePath);
         return true;
     }
-    
+
     // B. If no database is available, check if db is in app bundle
     documentsDir = wxStandardPaths::Get().GetResourcesDir();
     // TODO:
@@ -104,7 +104,7 @@ bool DBAdapter::openDatabase(wxString dbName)
 int DBAdapter::getNumRecords()
 {
     int numRecords = mySqliteDb->numberRecordsForTable(DATABASE_TABLE);
-    
+
     return numRecords;
 }
 
@@ -116,7 +116,7 @@ ALL_RESULTS DBAdapter::getFullRecord(long rowId)
                                       DATABASE_TABLE.ToStdString(),
                                       KEY_ROWID,
                                       rowId);
-    
+
     return mySqliteDb->performQuery(query);
 }
 
@@ -132,7 +132,7 @@ Medication * DBAdapter::getMediWithId(long rowId)
 std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 {
     std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
-    
+
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
             SHORT_TABLE.ToStdString(),
             DATABASE_TABLE.ToStdString(),
@@ -141,10 +141,17 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
             KEY_TITLE,
             title.ToStdString());
 
-    //std::clog << "query: " << query.ToStdString() << std::endl;
-
-    ALL_RESULTS results = mySqliteDb->performQuery(query);
-    return extractShortMedInfoFrom(results);
+    //std::clog << "query:\n" << query.ToStdString() << std::endl;
+    std::clog << "mySqliteDb: " << mySqliteDb << std::endl; // Issue #8 null in Linux
+	if (mySqliteDb)
+	{
+		ALL_RESULTS results = mySqliteDb->performQuery(query);
+		return extractShortMedInfoFrom(results);
+	}
+	else {
+		std::vector<Medication *> temp;
+		return temp;		
+	}
 }
 
 // 177
@@ -216,7 +223,7 @@ Medication * DBAdapter::cursorToShortMedInfo(ONE_RESULT &cursor)
 //    [medi setApplication:(NSString *)[cursor objectAtIndex:kApplication]];
 //    [medi setIndications:(NSString *)[cursor objectAtIndex:kIndications]];
 //    [medi setCustomerId:[(NSString *)[cursor objectAtIndex:kCustomerId] intValue]];
-    
+
     // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
     if (cursor[kCustomerId].type == SQLITE_INTEGER)
         medi->customerId = cursor[kCustomerId].u.i;
@@ -245,7 +252,7 @@ Medication * DBAdapter::cursorToFullMedInfo(ONE_RESULT &cursor)
 std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(ALL_RESULTS &results)
 {
     std::vector<Medication *> medList;
-    
+
     for (auto cursor : results)  {
         Medication *medi = cursorToShortMedInfo(cursor);
         medList.push_back(medi);

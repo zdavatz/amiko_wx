@@ -62,12 +62,12 @@ MainWindow::MainWindow( wxWindow* parent )
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }
-    
+
     mySectionTitles->AppendTextColumn( "Sections" );
-    
+
     SetTitle(APP_NAME + wxString(" Desitin"));
     const wxEventTable *et = GetEventTable();
-    
+
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // TODO: Register applications defaults if necessary
@@ -78,56 +78,56 @@ MainWindow::MainWindow( wxWindow* parent )
 #ifndef NDEBUG
     std::clog << "Number of records in AIPS database: " << mDb->getNumRecords() << std::endl;
 #endif
-    
+
     // Open fulltext database
     openFullTextDatabase();
 #ifndef NDEBUG
     std::clog << "Number of records in fulltext database: " << mFullTextDb->getNumRecords() << std::endl;
 #endif
-       
+
     // 286
     // Open drug interactions csv file
     openInteractionsCsvFile();
 #ifndef NDEBUG
     std::clog << "Number of records in interaction file: " << mInteractions->getNumInteractions() << std::endl;
 #endif
-    
+
     fadeInAndShow();
-    
+
     // 292
     // TODO: Initialize interactions cart
-    
+
     // 295
     // TODO: Create bridge between JScript and ObjC
-    
+
     // 298
     // TODO: Initialize full text search
-    
+
     // 301
     // TODO: Initialize all three prescription baskets
 
     // 306
     mPrescriptionAdapter = new PrescriptionsAdapter;
-    
+
     // 308
     // TODO: Register drag and drop on prescription table view
-    
+
     // 315
     // TODO: Initialize webview
     myWebView->SetPage("<html><head></head><body></body></html>");
     myWebView->Fit();
-    
+
     // 321
     // TODO: Initialize favorites (articles + full text entries)
-    
+
     // 327
     // Set default database
     //mUsedDatabase = kdbt_Aips; // already done above
-    
+
     // 331
     // Set search state
     setSearchState(kss_Title);
-    
+
     // 381
     // TODO:
     //healthCard = new HealthCard;
@@ -186,7 +186,7 @@ void MainWindow::updatePrescriptionHistory()
 #endif
         return;
     }
-    
+
     // Extract section IDs
     if (!mMed)
         return;
@@ -223,10 +223,10 @@ void MainWindow::resetDataInTableView()
 {
     // Reset search state
     setSearchState(kss_Title);
-    
+
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
-    
+
     if (searchResults.size()>0) {
         updateTableView();
 
@@ -254,7 +254,7 @@ void MainWindow::switchTabs(int item)
             // TODO:
             myTabView->ChangeSelection(0); // 1800
             break;
-            
+
         case wxID_TB_FAVORITES:
             //std::clog << "Favorites" << std::endl;
             mUsedDatabase = kdbt_Favorites;
@@ -263,7 +263,7 @@ void MainWindow::switchTabs(int item)
             // TODO:
             myTabView->ChangeSelection(0); // 1840
             break;
-            
+
         case wxID_TB_INTERACTIONS:
             //std::clog << "Interactions" << std::endl;
             mUsedDatabase = kdbt_Aips;
@@ -272,7 +272,7 @@ void MainWindow::switchTabs(int item)
             // TODO:
             myTabView->ChangeSelection(0); // 1855
             break;
-            
+
         case wxID_TB_PRESCRIPTION:
             //std::clog << "Rezept" << std::endl;
             mUsedDatabase = kdbt_Aips;
@@ -285,11 +285,11 @@ void MainWindow::switchTabs(int item)
 
             myTabView->ChangeSelection(2); // 1868
             break;
-            
+
 #if 0 // TODO
         case wxID_EXPORT:
             break;
-            
+
         case wxID_TB_AMIKO:
             break;
 #endif
@@ -386,7 +386,7 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
     }
 
     mCurrentSearchKey = searchQuery;
-    
+
     return searchRes;
 }
 
@@ -398,7 +398,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
         m->title = title;
     else
         m->title = "Not specified"; // TODO: localize
-    
+
     if (packinfo && strlen(packinfo) > 0) {
         if (!mSearchInteractions)
             m->subTitle = packinfo;
@@ -423,7 +423,7 @@ void MainWindow::updateTableView()
         stopProgressIndicator();
         return;
     }
-    
+
     if (doArray.size() > 0)
         doArray.clear(); // to be obsolete
 
@@ -468,11 +468,11 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     //std::clog << "Line " << __LINE__  << " <" << htmlStr.ToStdString() << ">" << std::endl;
 
     // TODO:
-    
+
     // 2547
     myWebView->SetPage(htmlStr);
     //myWebView->Fit();
-    
+
     // 2553
     if (!mPrescriptionMode) {
         // Extract section ids
@@ -482,9 +482,9 @@ void MainWindow::updateExpertInfoView(wxString anchor)
         // Extract section titles
         if (mMed->sectionTitles)
             mListOfSectionTitles = mMed->listOfSectionTitles();
-        
+
         //std::clog << "Line " << __LINE__  << " size " << mListOfSectionTitles.size() << std::endl; // 20
-        
+
 #if 0
         mySectionTitles->reloadData();
 #else
@@ -525,7 +525,7 @@ void MainWindow::updatePrescriptionsView()
 #endif
 
     mPrescriptionMode = true;
-    
+
     // TODO:
     //myToolbar->setSelectedItemIdentifier("Rezept");
 }
@@ -535,28 +535,28 @@ void MainWindow::updatePrescriptionsView()
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << " " << mySearchField->GetValue().ToStdString() << std::endl;
-
+return;
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
         return;
-    
+
     while (mSearchInProgress) {
         //[NSThread sleepForTimeInterval:0.005];  // Wait for 5ms
         wxMilliSleep(10);
         wxTheApp->Yield();
     }
-    
+
     if (!mSearchInProgress) {
         mSearchInProgress = true;
     }
-    
+
     if (searchText.length() > 0) // TODO: > 2 ?
          searchResults = searchAnyDatabasesWith(searchText);
     else {
          if (mUsedDatabase == kdbt_Favorites)
              searchResults = retrieveAllFavorites();
     }
-    
+
     // TODO: Update tableview
     mSearchInProgress = false;
 }
@@ -569,31 +569,31 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
         case wxID_BTN_PREPARATION:
             setSearchState(kss_Title);
             break;
-            
+
         case wxID_BTN_REGISTRATION_OWNER:
             setSearchState(kss_Author);
             break;
-            
+
         case wxID_BTN_ACTIVE_SUBSTANCE:
             setSearchState(kss_AtcCode);
             break;
-            
+
         case wxID_BTN_REGISTATION_NUMBER:
             setSearchState(kss_RegNr);
             break;
-            
+
         case wxID_BTN_THERAPY:
             setSearchState(kss_Therapy);
             break;
-            
+
         case wxID_BTN_FULL_TEXT:
             setSearchState(kss_FullText);
             break;
     }
-    
+
     if (prevState == kss_FullText || mCurrentSearchState == kss_FullText)
         updateSearchResults();
-    
+
     if (searchResults.size() > 0) {
         updateTableView();
         // myTableView->reloadData(); // TODO:
@@ -614,7 +614,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 //    std::clog << "event " << event.GetEventObject() << std::endl;
 //    std::clog << "event Id " << event.GetId() << std::endl;
 //    std::clog << "Id "<< mySectionTitles->GetId() << std::endl;
-    
+
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
         std::clog << "Skip event Id " << event.GetId() << std::endl;
         event.Skip();
@@ -659,7 +659,7 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
     const char * languageCode = UTI::appLanguage();
 
     downloadTextFileWithName(wxString::Format("amiko_report_%s.html", languageCode));
-    
+
     downloadFileWithName(wxString::Format("drug_interactions_csv_%s.zip", languageCode));
     downloadFileWithName(wxString::Format("amiko_frequency_%s.db.zip", languageCode));
     downloadFileWithName(wxString::Format("amiko_db_full_idx_%s.zip", languageCode));
@@ -677,7 +677,7 @@ void MainWindow::OnManagePatients( wxCommandEvent& event )
 {
     if (!mPatientSheet)
         mPatientSheet = new PatientSheet(this);
-    
+
     mPatientSheet->ShowWindowModal();
 }
 
@@ -709,7 +709,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
         << ", sel " << row
         << std::endl;
-    
+
     // 2936
     if ( mCurrentSearchState != kss_FullText) {
         // Search in AIPS DB or Interactions DB
@@ -717,7 +717,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         // Get medi
         mMed = mDb->getMediWithId(mId);
         // TODO: Hide textfinder
-        
+
         // 2946
         if (mSearchInteractions==false) {
             updateExpertInfoView(wxEmptyString);
