@@ -17,6 +17,7 @@ source steps.conf
 source seed.conf
 
 WXWIDGETS_VERSION=3.1.3
+SQLITE_VERSION=3320300
 
 if [ $CONFIG_GENERATOR_XC ] ; then
     GENERATOR="Xcode"
@@ -33,8 +34,10 @@ elif [ $CONFIG_GENERATOR_CB ] ; then
 fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
+SQLITE=sqlite-amalgamation-$SQLITE_VERSION
 
 eval SRC=$CONFIG_SRC_DIR
+SRC_SQLITE=$SRC/$SQLITE
 SRC_WXWIDGETS=$SRC/$WXWIDGETS
 SRC_APP=$(pwd)
 
@@ -69,13 +72,35 @@ CMAKE=cmake
 mkdir -p $SRC
 
 #-------------------------------------------------------------------------------
+if [ $STEP_DOWNLOAD_SOURCES_SQLITE ] ; then
+if [ -d $SRC_SQLITE ] ; then
+    echo "=== Download $SQLITE exists"
+else
+    cd $SRC
+    echo "=== Download $SQLITE"
+    wget https://www.sqlite.org/2020/$SQLITE.zip
+    unzip $SQLITE.zip
+    rm $SQLITE.zip
+
+    # Remove symlink if it exists
+    if [ -L $SRC_APP/sqlite ] ; then
+        rm -f $SRC_APP/sqlite
+    fi
+    
+    # Recreate symlink
+    ln -s $SRC_SQLITE $SRC_APP/sqlite
+fi
+fi
+
+
+#-------------------------------------------------------------------------------
 if [ $STEP_DOWNLOAD_SOURCES_WXWIDGETS ] ; then
 if [ -d $SRC_WXWIDGETS ] ; then
 echo "=== Download $WXWIDGETS exists"
 else
 cd $SRC
 echo "=== Download $WXWIDGETS"
-    wget https://github.com/wxWidgets/wxWidgets/releases/download/v$WXWIDGETS_VERSION/wxWidgets-$WXWIDGETS_VERSION.tar.bz2
+    wget https://github.com/wxWidgets/wxWidgets/releases/download/v$WXWIDGETS_VERSION/$WXWIDGETS.tar.bz2
     tar -xjf $WXWIDGETS.tar.bz2
     rm $WXWIDGETS.tar.bz2
 fi

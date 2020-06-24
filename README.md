@@ -7,9 +7,7 @@ Prerequisites:
 
         $ sudo apt install libgtk-3-dev
 
-- [SQlite](https://www.sqlite.org/)
-
-        $ sudo apt install libsqlite3-dev
+- [SQlite](https://www.sqlite.org/) is built-in into the application, so there is no dependency on system libraries.
 
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.

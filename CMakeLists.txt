@@ -47,15 +47,6 @@ endif(UNIX)
 endif(NOT APPLE)
 
 #=============================================================================
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SQLITE3 REQUIRED sqlite3)
-message(STATUS "SQLITE3_INCLUDEDIR: ${SQLITE3_INCLUDEDIR}")
-message(STATUS "SQLITE3_LIBRARIES: ${SQLITE3_LIBRARIES}")
-message(STATUS "SQLite3_FOUND: ${SQLite3_FOUND}")
-
-#=============================================================================
-
-foreach(APP_NAME CoMed AmiKo)
 
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
@@ -68,10 +59,15 @@ set( SRCS_SQL
     SQLiteDatabase.cpp SQLiteDatabase.hpp
     FullTextDBAdapter.cpp FullTextDBAdapter.hpp
     InteractionsAdapter.cpp InteractionsAdapter.hpp )
-    
+
+set( SRCS_SQLITE
+    sqlite/sqlite3.c sqlite/sqlite3.h sqlite/sqlite3ext.h )
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
+source_group(sqlite FILES ${SRCS_SQLITE})
 
+foreach(APP_NAME CoMed AmiKo)    
 MESSAGE("=== TARGET: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
@@ -81,7 +77,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     Patient.cpp Patient.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
     PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
-    ${SRCS_GUI} ${SRCS_SQL}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     customURLConnection.cpp customURLConnection.hpp
     )
 
@@ -89,14 +85,13 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
 target_include_directories( ${APP_NAME} PUBLIC 
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/gui
-    ${wxWidgets_INCLUDE_DIRS}
-    ${SQLITE3_INCLUDEDIR} )
+    ${CMAKE_SOURCE_DIR}/sqlite
+    ${wxWidgets_INCLUDE_DIRS} )
 
 target_link_libraries( ${APP_NAME}
-  ${wxWidgets_LIBRARIES}
-  ${SQLITE3_LIBRARIES})
+  ${wxWidgets_LIBRARIES})
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 
-endforeach(loop_var)
+endforeach()
 
