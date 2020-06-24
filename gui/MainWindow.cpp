@@ -187,7 +187,7 @@ void MainWindow::updatePrescriptionHistory()
         return;
     }
     
-    // Extract section ids
+    // Extract section IDs
     if (!mMed)
         return;
 
@@ -198,7 +198,8 @@ void MainWindow::updatePrescriptionHistory()
 
     // Extract section titles
     if (mMed->sectionTitles) {
-        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionsForPatient( mPatientSheet->retrievePatient());
+        Patient *p = mPatientSheet->retrievePatient();
+        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionsForPatient(p);
         mListOfSectionTitles = listOfPrescriptions; // array of just the basenames
     }
 

@@ -20,6 +20,8 @@ PrescriptionsAdapter::PrescriptionsAdapter()
 wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    wxArrayString a;
+    return a;
 }
 
 // 79
