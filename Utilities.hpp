@@ -6,9 +6,12 @@
 
 #pragma once
 
+#include <wx/wx.h>
+
 namespace UTI
 {
 
 const char * appLanguage();
+wxString getColorCss();
 
 }

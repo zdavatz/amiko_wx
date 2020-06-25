@@ -91,6 +91,10 @@ target_include_directories( ${APP_NAME} PUBLIC
 
 target_link_libraries( ${APP_NAME}
   ${wxWidgets_LIBRARIES})
+  
+if (APPLE)
+  target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a)
+endif (APPLE)
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 

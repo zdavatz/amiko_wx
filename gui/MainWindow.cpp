@@ -138,7 +138,7 @@ MainWindow::MainWindow( wxWindow* parent )
     // 315
     // TODO: Initialize webview
     myWebView->SetPage("<html><head></head><body></body></html>");
-    myWebView->Fit();
+    //myWebView->Fit();
 
     // 321
     // TODO: Initialize favorites (articles + full text entries)
@@ -548,17 +548,53 @@ void MainWindow::pushToMedBasket(Medication *med)
 // 2473
 void MainWindow::updateExpertInfoView(wxString anchor)
 {
-    // TODO:
+    // 2476
+    wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
+    
+    // 2479
+    wxString amiko_Style;
+    {
+        // TODO: wxString amiko_Style;
+    }
+    
+    // 2492
+    wxString js_Script;
+    {
+        // TODO: Load JavaScript from file
+    }
 
     // 2502
     // Generate html string
     wxString htmlStr(mMed->contentStr);
     //std::clog << "Line " << __LINE__  << " <" << htmlStr.ToStdString() << ">" << std::endl;
 
-    // TODO:
+    // 2508
+    const char *charset_Meta = "<meta charset=\"utf-8\" />";
+    const char *colorScheme_Meta = "<meta name=\"supported-color-schemes\" content=\"light dark\" />";
+    wxString headHtml = wxString::Format("<head>%s\n%s\n%s\n%s\n%s\n</head>",
+                                         charset_Meta,
+                                         colorScheme_Meta,
+                                         js_Script.c_str(),
+                                         color_Style.c_str(),
+                                         amiko_Style.c_str());
+
+    // 2517
+   htmlStr.Replace("<head></head>", headHtml, false);
+
+    // 2529
+    // TODO: Some tables have the color set in the HTML string (not set with CSS)
+
+    if (mCurrentSearchState == kss_FullText)
+    {
+        // 2534
+        // TODO: wxString keyword = mFullTextEntry->keyword;
+
+        // TODO:
+    }
 
     // 2547
     myWebView->SetPage(htmlStr);
+    myWebView2->SetPage(htmlStr, wxString());
     //myWebView->Fit();
 
     // 2553
