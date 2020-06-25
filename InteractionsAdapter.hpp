@@ -16,6 +16,7 @@ public:
     virtual ~InteractionsAdapter() {}
     
     bool openInteractionsCsvFile(wxString name);
+    void closeInteractionsCsvFile();
     int getNumInteractions();
     
 private:

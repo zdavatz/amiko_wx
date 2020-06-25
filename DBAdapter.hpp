@@ -19,6 +19,7 @@ public:
     virtual ~DBAdapter() {}
     
     bool openDatabase(wxString dbName);
+    void closeDatabase();
     std::vector<Medication *> searchTitle(wxString title);
     ALL_RESULTS getFullRecord(long rowId);
     ALL_RESULTS searchAuthor(wxString author);
@@ -32,5 +33,6 @@ public:
     Medication * getMediWithId(long rowId);
     
 private:
-     SQLiteDatabase *mySqliteDb;
+     
+    SQLiteDatabase *mySqliteDb;
 };

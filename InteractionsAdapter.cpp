@@ -22,7 +22,7 @@
 
 InteractionsAdapter::InteractionsAdapter()
 {
-    
+    //std::cerr << __PRETTY_FUNCTION__ << " constructor, this: " << this << std::endl;
 }
 
 // 36
@@ -37,8 +37,8 @@ bool InteractionsAdapter::openInteractionsCsvFile(wxString name)
     wxString filePath( documentsDir + wxFILE_SEP_PATH + name + ".csv");
     if (wxFileName::Exists(filePath)) {
         std::clog << "Drug interactions csv found in UserData dir: " << filePath.ToStdString() << std::endl;
+
         return readDrugInteractionMap(filePath);
-        
     }
     
     // ** B. If no database is available, check if db is in app bundle
@@ -50,6 +50,13 @@ bool InteractionsAdapter::openInteractionsCsvFile(wxString name)
 #endif
     
     return false;
+}
+
+// 62
+void InteractionsAdapter::closeInteractionsCsvFile()
+{
+    if (myDrugInteractionMap.size() > 0)
+        myDrugInteractionMap.clear(); // removeAllObjects()
 }
 
 // 69

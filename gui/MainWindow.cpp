@@ -68,6 +68,9 @@ MainWindow::MainWindow( wxWindow* parent )
 , m_alpha(0.0F)
 , m_delta(0.01F)
 , mFullTextSearch(nullptr)
+, mDb(nullptr)
+, mFullTextDb(nullptr)
+, mInteractions(nullptr)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -84,23 +87,30 @@ MainWindow::MainWindow( wxWindow* parent )
     // TODO: Register applications defaults if necessary
     // TODO: Start timer to check if database needs to be updatd (checks every hour)
 
-    // Open sqlite database
-    openSQLiteDatabase();
+    // 275
+    // Open AIPS database
+    bool ok = openSQLiteDatabase();
 #ifndef NDEBUG
-    std::clog << "Number of records in AIPS database: " << mDb->getNumRecords() << std::endl;
+    if (ok)
+        std::cerr << "Number of records in AIPS database: "
+        << mDb->getNumRecords() << std::endl;
 #endif
 
-    // Open fulltext database
-    openFullTextDatabase();
+    // Open full-text database
+    ok = openFullTextDatabase();
 #ifndef NDEBUG
-    std::clog << "Number of records in fulltext database: " << mFullTextDb->getNumRecords() << std::endl;
+    if (ok)
+        std::cerr << "Number of records in fulltext database: "
+        << mFullTextDb->getNumRecords() << std::endl;
 #endif
 
     // 286
     // Open drug interactions csv file
-    openInteractionsCsvFile();
+    ok = openInteractionsCsvFile();
 #ifndef NDEBUG
-    std::clog << "Number of records in interaction file: " << mInteractions->getNumInteractions() << std::endl;
+    if (ok)
+        std::cerr << "Number of records in interaction file: "
+        << mInteractions->getNumInteractions() << std::endl;
 #endif
 
     // Issue #8
@@ -177,24 +187,30 @@ void MainWindow::fadeInAndShow()
 }
 
 // 591
-void MainWindow::openInteractionsCsvFile()
+bool MainWindow::openInteractionsCsvFile()
 {
-    mInteractions = new InteractionsAdapter;
-    bool ok = mInteractions->openInteractionsCsvFile( wxString::Format("drug_interactions_csv_%s", UTI::appLanguage()));
+    if (!mInteractions)
+        mInteractions = new InteractionsAdapter;
+
+    return mInteractions->openInteractionsCsvFile( wxString::Format("drug_interactions_csv_%s", UTI::appLanguage()));
 }
 
 // 605
-void MainWindow::openSQLiteDatabase()
+bool MainWindow::openSQLiteDatabase()
 {
-    mDb = new DBAdapter;
-    bool ok = mDb->openDatabase( wxString::Format("amiko_db_full_idx_%s", UTI::appLanguage()));
+    if (!mDb)
+        mDb = new DBAdapter();
+
+    return mDb->openDatabase( wxString::Format("amiko_db_full_idx_%s", UTI::appLanguage()));
 }
 
 // 621
-void MainWindow::openFullTextDatabase()
+bool MainWindow::openFullTextDatabase()
 {
-    mFullTextDb = new FullTextDBAdapter;
-    bool ok = mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
+    if (!mFullTextDb)
+        mFullTextDb = new FullTextDBAdapter();
+
+    return mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
 }
 
 // 741
@@ -229,6 +245,55 @@ void MainWindow::updatePrescriptionHistory()
     //mySectionTitles->reloadData();
 }
 
+// 768
+// Notification called when updates have been downloaded
+void MainWindow::finishedDownloading()
+{
+    std::clog << __FUNCTION__ << std::endl;
+    bool ok;
+
+    {
+        if (mDb)
+            mDb->closeDatabase();
+
+        // 775
+        // Re-open database
+        ok = openSQLiteDatabase();
+    }
+
+    {
+        if ( mFullTextDb)
+            mFullTextDb->closeDatabase();
+        
+        // 780
+        // Re-open database
+        ok = openFullTextDatabase();
+    }
+    
+    {
+        if (mInteractions)
+            mInteractions->closeInteractionsCsvFile();
+        
+        // 784
+        // Re-open interaction database
+        ok = openInteractionsCsvFile();
+    }
+    
+    if (!ok)
+        std::cerr << __FUNCTION__ << " some problem opening DB files" << std::endl;
+    
+    // TODO: Reload table
+    
+    // 791
+    // Reset data in table view and get number of rows in table (=searchResults)
+    resetDataInTableView();
+    
+    // TODO: Update
+    
+    // TODO: Display friendly message
+
+}
+
 // 847
 void MainWindow::updateSearchResults()
 {
@@ -243,6 +308,7 @@ void MainWindow::updateSearchResults()
 // 858
 void MainWindow::resetDataInTableView()
 {
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
     // Reset search state
     setSearchState(kss_Title);
 
@@ -563,7 +629,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << " " << mySearchField->GetValue().ToStdString() << std::endl;
-return;
+
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
         return;
@@ -719,6 +785,8 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
     downloadFileWithName(wxString::Format("drug_interactions_csv_%s.zip", languageCode));
     downloadFileWithName(wxString::Format("amiko_frequency_%s.db.zip", languageCode));
     downloadFileWithName(wxString::Format("amiko_db_full_idx_%s.zip", languageCode));
+    
+    finishedDownloading();
 }
 
 // 1192

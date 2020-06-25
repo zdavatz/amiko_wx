@@ -68,14 +68,17 @@ DBAdapter::DBAdapter()
                       KEY_ADDINFO, KEY_IDS, KEY_SECTIONS, KEY_CONTENT, KEY_STYLE);
     }
 
+    //std::cerr << __PRETTY_FUNCTION__ << " constructor, this: " << this << std::endl;
 }
 
 // 85
 bool DBAdapter::openDatabase(wxString dbName)
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
 #endif
+    if (!mySqliteDb)
+        mySqliteDb = new SQLiteDatabase();
 
     // A. Check first user's documents folder
 
@@ -84,7 +87,6 @@ bool DBAdapter::openDatabase(wxString dbName)
 
     if (wxFileName::Exists(filePath)) {
         std::clog << "AIPS DB found in UserData dir: " << filePath.ToStdString() << std::endl;
-        mySqliteDb = new SQLiteDatabase;
         mySqliteDb->initReadOnlyWithPath(filePath);
         return true;
     }
@@ -98,6 +100,13 @@ bool DBAdapter::openDatabase(wxString dbName)
 #endif
 
     return false;
+}
+
+// 112
+void DBAdapter::closeDatabase()
+{
+    if (mySqliteDb)
+        mySqliteDb->close();
 }
 
 // 118
@@ -143,7 +152,7 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 
     //std::clog << "query:\n" << query.ToStdString() << std::endl;
 
-#ifdef __linux__
+#if 0 //def __linux__
 	if (!mySqliteDb)  // Issue #8 null in Linux
     {
         std::vector<Medication *> temp;

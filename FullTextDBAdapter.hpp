@@ -9,7 +9,7 @@
 #include <wx/wx.h>
 #include "SQLiteDatabase.hpp"
 
-class SQLiteDatabase;
+//class SQLiteDatabase;
 
 class FullTextDBAdapter
 {
@@ -18,9 +18,11 @@ public:
     virtual ~FullTextDBAdapter() {}
 
     bool openDatabase(wxString dbName);
+    void closeDatabase();
     int getNumRecords();
     ALL_RESULTS searchKeyword(wxString keyword);
 
 private:
+
     SQLiteDatabase *myFullTextDb;
 };

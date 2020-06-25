@@ -10,7 +10,7 @@
 SQLiteDatabase::SQLiteDatabase()
 : database(nullptr)
 {
-
+    //std::cerr << __PRETTY_FUNCTION__ << " constructor, this: " << this << std::endl;
 }
 
 // 68
@@ -59,9 +59,12 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 // 169
 ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
 {
-    //std::clog << __FUNCTION__ << ", query:\n" << query.ToStdString() << std::endl;
-
     ALL_RESULTS result;
+
+    if (!database) {
+        std::clog << __FUNCTION__ << ", database is not open" << std::endl;
+        return result;
+    }
 
     sqlite3_stmt *compiledStatement = NULL;
     // Convert wxString to a C String
@@ -121,4 +124,9 @@ ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
     }
 
     return result;
+}
+
+void SQLiteDatabase::close()
+{
+    sqlite3_close(database);
 }

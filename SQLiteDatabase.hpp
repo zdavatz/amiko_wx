@@ -35,6 +35,7 @@ public:
     void initReadOnlyWithPath(wxString path);
     ALL_RESULTS performQuery(wxString query);
     int numberRecordsForTable(wxString table);
+    void close();
     
 private:
     sqlite3 *database;

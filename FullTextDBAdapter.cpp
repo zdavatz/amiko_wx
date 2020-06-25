@@ -21,7 +21,7 @@ static wxString DATABASE_TABLE("frequency");
 FullTextDBAdapter::FullTextDBAdapter()
 : myFullTextDb(nullptr)
 {
-    
+    //std::cerr << __PRETTY_FUNCTION__ << " constructor, this: " << this << std::endl;
 }
 
 // 49
@@ -29,17 +29,18 @@ FullTextDBAdapter::FullTextDBAdapter()
 bool FullTextDBAdapter::openDatabase(wxString dbName)
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
 #endif
     // A. Check first users documents folder
     wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
     wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName + ".db");
     if (wxFileName::Exists(filePath)) {
         std::clog << "Fulltext DB found in UserData dir: " << filePath.ToStdString() << std::endl;
-        myFullTextDb = new SQLiteDatabase;
+        if (!myFullTextDb)
+            myFullTextDb = new SQLiteDatabase();
+
         myFullTextDb->initReadOnlyWithPath(filePath);
         return true;
-
     }
 
     // B. If no database is available, check if db is in app bundle
@@ -51,6 +52,13 @@ bool FullTextDBAdapter::openDatabase(wxString dbName)
 #endif
 
     return false;
+}
+
+// 76
+void FullTextDBAdapter::closeDatabase()
+{
+    if (myFullTextDb)
+        myFullTextDb->close();
 }
 
 // 82

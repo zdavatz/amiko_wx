@@ -53,9 +53,9 @@ private:
     void stopProgressIndicator();
     void addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId);
 
-    void openSQLiteDatabase();
-    void openFullTextDatabase();
-    void openInteractionsCsvFile();
+    bool openSQLiteDatabase();
+    bool openFullTextDatabase();
+    bool openInteractionsCsvFile();
     std::vector<Medication *> searchAnyDatabasesWith(wxString searchQuery);
     std::vector<Medication *> retrieveAllFavorites();
     void updateExpertInfoView(wxString anchor);
@@ -64,6 +64,7 @@ private:
     void updatePrescriptionsView();
     void updatePrescriptionHistory();
     void updateFullTextSearchView(wxString contentStr);
+    void finishedDownloading();
 
     // 105
     int mUsedDatabase;
