@@ -14,5 +14,11 @@ Prerequisites:
 2. Build script also has to download all data files, see OSX version.
 3. Build script has to build executables named `AmiKo` and `CoMed`.
 
+## Setup
+1. Run `build.sh`
+2. Edit `steps.conf`
+3. Edit `seed.conf`
+4. Run `build.sh` again.
+
 ## macOS Installer
-1. Create a .pkg Installer for macOS that installs all the DB files in to `~/.AmiKo` or `~/.Comed`
+1. Create a .pkg Installer for macOS that installs all the DB files in to `~/.AmiKo` or `~/.CoMed`
