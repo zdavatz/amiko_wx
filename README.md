@@ -20,7 +20,7 @@ Prerequisites:
 3. Edit `seed.conf`
 4. Run `build.sh` again.
 
-### Notes when building the wxwidgets and sqlite
+### Notes when building wxwidgets and sqlite
 1. For Mac in `steps.conf` 
 ```
 STEP_CONFIGURE_WXWIDGETS=y
