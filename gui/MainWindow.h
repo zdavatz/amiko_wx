@@ -19,6 +19,7 @@ class TableViewDelegate;
 class PrescriptionsAdapter;
 class PatientSheet;
 class OperatorIDSheet;
+class FullTextSearch;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -62,6 +63,7 @@ private:
     void updateInteractionsView();
     void updatePrescriptionsView();
     void updatePrescriptionHistory();
+    void updateFullTextSearchView(wxString contentStr);
 
     // 105
     int mUsedDatabase;
@@ -79,7 +81,9 @@ private:
     // .m 151
     InteractionsAdapter *mInteractions;
 
-    // .m 157
+    // .m 155
+    FullTextSearch *mFullTextSearch;
+
     PatientSheet *mPatientSheet;
     OperatorIDSheet *mOperatorIDSheet;
     PrescriptionsAdapter *mPrescriptionAdapter;

@@ -24,6 +24,7 @@
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/html/htmlwin.h>
+#include <wx/webview.h>
 #include <wx/textctrl.h>
 #include <wx/stattext.h>
 #include <wx/bmpbuttn.h>
@@ -95,7 +96,8 @@ class MainWindowBase : public wxFrame
 		TableViewDelegate* myTableView;
 		wxPanel* m_panelRight;
 		wxSimplebook* myTabView;
-		wxPanel* m_panel9;
+		wxPanel* m_panelWeb;
+		wxWebView* myWebView2;
 		wxPanel* m_panel10;
 		wxPanel* m_panel11;
 		wxButton* m_button7;
@@ -137,7 +139,7 @@ class MainWindowBase : public wxFrame
 	public:
 		wxHtmlWindow* myWebView;
 		wxStaticText* myPlaceDateField;
-		wxDataViewCtrl* myPrescriptionsTable;
+		wxDataViewCtrl* myPrescriptionsTableView;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;

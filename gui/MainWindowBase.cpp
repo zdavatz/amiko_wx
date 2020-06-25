@@ -89,18 +89,21 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
 	myTabView = new wxSimplebook( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	m_panel9 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panelWeb = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer( wxVERTICAL );
 
-	myWebView = new wxHtmlWindow( m_panel9, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	myWebView = new wxHtmlWindow( m_panelWeb, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
 	bSizer5->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
+	myWebView2 = wxWebView::New(m_panelWeb, wxID_ANY);
+	bSizer5->Add( myWebView2, 1, wxALL|wxEXPAND, 5 );
 
-	m_panel9->SetSizer( bSizer5 );
-	m_panel9->Layout();
-	bSizer5->Fit( m_panel9 );
-	myTabView->AddPage( m_panel9, _("a page"), false );
+
+	m_panelWeb->SetSizer( bSizer5 );
+	m_panelWeb->Layout();
+	bSizer5->Fit( m_panelWeb );
+	myTabView->AddPage( m_panelWeb, _("a page"), false );
 	m_panel10 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxVERTICAL );
@@ -148,8 +151,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer7->Add( bSizer10, 1, wxEXPAND, 5 );
 
-	myPrescriptionsTable = new wxDataViewCtrl( m_panel11, wxID_ANY, wxDefaultPosition, wxSize( -1,340 ), 0 );
-	bSizer7->Add( myPrescriptionsTable, 0, wxALL|wxEXPAND, 5 );
+	myPrescriptionsTableView = new wxDataViewCtrl( m_panel11, wxID_ANY, wxDefaultPosition, wxSize( -1,340 ), 0 );
+	bSizer7->Add( myPrescriptionsTableView, 0, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxHORIZONTAL );

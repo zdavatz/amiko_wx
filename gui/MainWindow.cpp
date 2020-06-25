@@ -24,6 +24,7 @@
 #include "PrescriptionsAdapter.hpp"
 #include "PatientSheet.h"
 #include "OperatorIDSheet.h"
+#include "FullTextSearch.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -37,8 +38,15 @@ enum {
     kss_Title=0, kss_Author=1, kss_AtcCode=2, kss_RegNr=3, kss_Therapy=4, kss_WebView=5, kss_FullText=6
 };
 
+// Webview
+enum {
+    kExpertInfoView=0, kFullTextSearchView=1, kInteractionsCartView=2
+};
+
+
 // 106
 static int mCurrentSearchState = kss_Title;
+static int mCurrentWebView = kExpertInfoView;
 static wxString mCurrentSearchKey;
 
 // Events not processed by MainWindow will, by default, be handled by MainWindowBase
@@ -59,6 +67,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mOperatorIDSheet(nullptr)
 , m_alpha(0.0F)
 , m_delta(0.01F)
+, mFullTextSearch(nullptr)
 {
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -543,6 +552,12 @@ void MainWindow::updatePrescriptionsView()
     //myToolbar->setSelectedItemIdentifier("Rezept");
 }
 
+// 2603
+void MainWindow::updateFullTextSearchView(wxString contentStr)
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+}
+
 // /////////////////////////////////////////////////////////////////////////////
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
@@ -574,6 +589,7 @@ return;
     mSearchInProgress = false;
 }
 
+/// 997
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
 {
     int prevState = mCurrentSearchState;
@@ -601,6 +617,7 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
         case wxID_BTN_FULL_TEXT:
             setSearchState(kss_FullText);
+            mCurrentWebView = kFullTextSearchView;
             break;
     }
 
@@ -635,10 +652,35 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
         return;
     }
 
-    std::clog << __FUNCTION__ << " row: "<< mySectionTitles->GetSelectedRow() << std::endl;
+    int row = mySectionTitles->GetSelectedRow();
+    std::clog << __FUNCTION__ << " row: "<< row << std::endl;
 
-    // 2973
-    // TODO: JavaScript RunScript to scroll webview
+    // 2973 wxID_SECTION_TITLES
+
+    // 2981
+    if (mPrescriptionMode) {
+        //NSLog(@"%s row:%ld, %@", __FUNCTION__, row, mListOfSectionIds[row]);
+        // TODO: loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
+    }
+    else if (mCurrentSearchState != kss_FullText ||
+             mCurrentWebView != kFullTextSearchView)
+    {
+        // NSString *javaScript = [NSString stringWithFormat:@"window.location.hash='#%@'", mListOfSectionIds[row]];
+
+        // TODO: debug that mListOfSectionIds has valid data
+
+        wxString javaScript = wxString::Format("var hashElement=document.getElementById('%@');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
+
+        std::clog << __FUNCTION__ << " javaScript: "<< javaScript.ToStdString() << std::endl;
+        // TODO: run wxWebView->RunScript() to scroll webview
+
+        // TODO: myWebView->stringByEvaluatingJavaScriptFromString(javaScript);
+    }
+    else {
+        // Update webviewer's content without changing anything else
+        wxString contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
+        updateFullTextSearchView(contentStr);
+    }
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )
@@ -650,7 +692,7 @@ void MainWindow::OnToolbarAction( wxCommandEvent& event )
 // 1148
 void MainWindow::OnPrintDocument( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << event.GetId() << std::endl;
 }
 
 // 1537
