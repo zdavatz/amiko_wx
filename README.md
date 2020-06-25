@@ -12,4 +12,7 @@ Prerequisites:
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.
-3. Build script has to build executables named `AmiKo` and `CoMed`
+3. Build script has to build executables named `AmiKo` and `CoMed`.
+
+## macOS Installer
+1. Create a .pkg Installer for macOS that installs all the DB files in to `~/.AmiKo` or `~/.Comed`
