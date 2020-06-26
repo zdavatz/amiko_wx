@@ -308,7 +308,6 @@ void MainWindow::updateSearchResults()
 // 858
 void MainWindow::resetDataInTableView()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
     // Reset search state
     setSearchState(kss_Title);
 
@@ -485,7 +484,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
     if (title)
         m->title = title;
     else
-        m->title = "Not specified"; // TODO: localize
+        m->title = (char *)"Not specified"; // TODO: localize
 
     if (packinfo && strlen(packinfo) > 0) {
         if (!mSearchInteractions)
@@ -496,7 +495,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
         }
     }
     else
-        m->subTitle = "Not specified"; // TODO: localize
+        m->subTitle = (char *)"Not specified"; // TODO: localize
 
     m->medId = medId;
     doArray.push_back(m); // to be obsolete
@@ -506,7 +505,8 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
 // 2286
 void MainWindow::updateTableView()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::cerr << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+ 
     if (searchResults.size() == 0) {
         stopProgressIndicator();
         return;
