@@ -7,6 +7,10 @@ Prerequisites:
 
         $ sudo apt install libgtk-3-dev
 
+- WebKit
+
+        $ sudo apt install libwebkitgtk-3.0-dev
+
 - [SQlite](https://www.sqlite.org/) is built-in into the application, so there is no dependency on system libraries.
 
 ## Build Script
@@ -20,8 +24,8 @@ Prerequisites:
 3. Edit `seed.conf`
 4. Run `build.sh` again.
 
-### Notes when building wxwidgets and sqlite
-1. For Mac in `steps.conf` 
+### Notes when building wxWidgets and SQLite
+1. For Mac in `steps.conf`
 ```
 STEP_CONFIGURE_WXWIDGETS=y
 STEP_COMPILE_WXWIDGETS=y

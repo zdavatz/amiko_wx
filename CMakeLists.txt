@@ -47,6 +47,15 @@ endif(UNIX)
 endif(NOT APPLE)
 
 #=============================================================================
+if (UNIX)
+if (NOT APPLE)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(WEBKIT REQUIRED webkitgtk-3.0)
+#pkg_check_modules(WEBKIT REQUIRED webkit2gtk-4.0)
+endif (NOT APPLE)
+endif (UNIX)
+
+#=============================================================================
 
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
@@ -88,13 +97,22 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/gui
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS} )
-
+  
 target_link_libraries( ${APP_NAME}
   ${wxWidgets_LIBRARIES})
-  
+
+if (UNIX)
 if (APPLE)
+  # macOS
   target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a)
+else (APPLE)
+  # Linux
+  target_link_libraries( ${APP_NAME} 
+	${wxWidgets_LIBRARY_DIRS}/libwx_gtk3u_webview-3.1.a
+	${WEBKIT_LIBRARIES}
+	)
 endif (APPLE)
+endif (UNIX)
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 

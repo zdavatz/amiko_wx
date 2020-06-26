@@ -1,5 +1,5 @@
 /* XPM */
-static char *CoMed_xpm[] = {
+static const char *CoMed_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "64 64 187 2 ",
 "   c #A68F55",
