@@ -73,7 +73,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mInteractions(nullptr)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
-    if (APP_NAME == "CoMed") {
+    if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }

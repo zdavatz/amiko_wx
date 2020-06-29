@@ -134,6 +134,11 @@ endif (APPLE)
 install(DIRECTORY lang
 	DESTINATION ${APP_NAME}
 	FILES_MATCHING PATTERN "*.mo")
+
+install(FILES
+	"${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
+	"${CMAKE_SOURCE_DIR}/res/color-scheme-dark.css"
+	DESTINATION ${APP_NAME})
 endforeach()
 
 
