@@ -125,8 +125,11 @@ endforeach()
 #=============================================================================
 foreach(APP_NAME CoMed AmiKo) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
-install(TARGETS ${APP_NAME}
-	RUNTIME DESTINATION ${APP_NAME})
+if (APPLE)
+install(TARGETS ${APP_NAME}	BUNDLE DESTINATION ${APP_NAME})
+else (APPLE)
+install(TARGETS ${APP_NAME}	RUNTIME DESTINATION ${APP_NAME})
+endif (APPLE)
 
 install(DIRECTORY lang
 	DESTINATION ${APP_NAME}
