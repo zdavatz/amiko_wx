@@ -313,32 +313,17 @@ void MainWindow::resetDataInTableView()
 
 	// Reset search state
     setSearchState(kss_Title);
-#ifdef __linux__
-    std::cerr << __PRETTY_FUNCTION__
-			<< " line " << __LINE__
-			<< ", searchResults.size() " << searchResults.size()
-			<< ", Early return !!!"
-			<< std::endl;
-    return;
-#endif
 
     mCurrentSearchKey = "";
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
 
-#ifdef __linux__
-    std::cerr << __PRETTY_FUNCTION__
-			<< " line " << __LINE__
-			<< ", searchResults.size() " << searchResults.size()
-			<< ", Early return !!!"
-			<< std::endl;
-    return;
-#endif
-
     if (searchResults.size()>0) {
         updateTableView();
 
+#ifndef __linux__ // FIXME: it crashes here
         myTableView->SetItemCount(searchResults.size());
         myTableView->SetSelection(0);
+#endif
     }
 }
 
@@ -416,7 +401,7 @@ std::vector<Medication *> MainWindow::retrieveAllFavorites()
 // 1967
 void MainWindow::setSearchState(int searchState)
 {
-	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
     switch (searchState)
     {
         case kss_Title:
@@ -469,6 +454,7 @@ void MainWindow::setSearchState(int searchState)
 
     mCurrentSearchKey = "";
     mCurrentSearchState = searchState;
+    std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
 
 // 2029
@@ -478,11 +464,6 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 
     ALL_RESULTS searchResObsolete;
     std::vector<Medication *> searchRes;
-
-#ifdef __linux__
-	std::cerr << __PRETTY_FUNCTION__  << " line " << __LINE__ << " Early return !!!" << std::endl;
-    return searchRes;
-#endif
 
     if (mCurrentSearchState == kss_Title)
         searchRes = mDb->searchTitle(searchQuery);  // array of Medication
@@ -533,7 +514,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
 // 2286
 void MainWindow::updateTableView()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
     if (searchResults.size() == 0) {
         stopProgressIndicator();
@@ -570,7 +551,7 @@ void MainWindow::updateTableView()
     }
 
     stopProgressIndicator();
-    std::cerr << __FUNCTION__ << " Line " << __LINE__ << std::endl;
+    std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
 
 // 2412
@@ -699,8 +680,8 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
-
+    std::cerr << __PRETTY_FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
+return;
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
         return;

@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
-project (AmiKo-wx)
+project (AmiKo-wx
+	VERSION "0.1.72")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -55,6 +56,9 @@ pkg_check_modules(WEBKIT REQUIRED webkitgtk-3.0)
 endif (NOT APPLE)
 endif (UNIX)
 
+#MESSAGE(STATUS "WEBKIT_Found: ${WEBKIT_FOUND}")
+#MESSAGE(STATUS "WEBKIT_VERSION: ${WEBKIT_VERSION}")
+
 #=============================================================================
 
 set( SRCS_GUI
@@ -77,7 +81,7 @@ source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
 
 foreach(APP_NAME CoMed AmiKo)    
-MESSAGE("=== TARGET: ${APP_NAME}")
+MESSAGE(STATUS "Configure target: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
@@ -120,7 +124,7 @@ endforeach()
 
 #=============================================================================
 foreach(APP_NAME CoMed AmiKo) 
-MESSAGE("=== Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
 install(TARGETS ${APP_NAME}
 	RUNTIME DESTINATION ${APP_NAME})
 
