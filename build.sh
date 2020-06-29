@@ -8,7 +8,7 @@ for f in seed steps
 do
 if [ ! -f $f.conf ] ; then
     cp $f.in.conf $f.conf
-    echo "Please edit $f.conf to suite your preferences"
+    echo "Please edit $f.conf to suit your preferences"
     exit 0
 fi
 done
@@ -84,6 +84,7 @@ else
     wget https://www.sqlite.org/2020/$SQLITE.zip
     unzip $SQLITE.zip
     rm $SQLITE.zip
+fi
 
     # Remove symlink if it exists
     if [ -L $SRC_APP/sqlite ] ; then
@@ -92,7 +93,6 @@ else
     
     # Recreate symlink
     ln -s $SRC_SQLITE $SRC_APP/sqlite
-fi
 fi
 
 
