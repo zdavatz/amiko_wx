@@ -118,3 +118,15 @@ target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 
 endforeach()
 
+#=============================================================================
+foreach(APP_NAME CoMed AmiKo) 
+MESSAGE("=== Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+install(TARGETS ${APP_NAME}
+	RUNTIME DESTINATION ${APP_NAME})
+
+install(DIRECTORY lang
+	DESTINATION ${APP_NAME}
+	FILES_MATCHING PATTERN "*.mo")
+endforeach()
+
+

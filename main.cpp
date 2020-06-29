@@ -30,8 +30,10 @@ bool MyApp::OnInit()
     if (!wxApp::OnInit())
         return false;
     
+	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
+
 #if 1
-    if (APP_NAME == "CoMed")
+    if (wxString(APP_NAME) == "CoMed")
         m_lang = wxLANGUAGE_FRENCH;
     else
         m_lang = wxLANGUAGE_GERMAN;
@@ -56,7 +58,7 @@ bool MyApp::OnInit()
     // Now try to add wxstd.mo so that loading "NOTEXIST.ING" file will produce
     // a localized error message:
     m_locale.AddCatalog("wxstd");
-        // NOTE: it's not an error if we couldn't find it!
+    // NOTE: it's not an error if we couldn't find it!
 
     // This catalog is installed in standard location on Linux systems and
     // shows that you may make use of the standard message catalogs as well

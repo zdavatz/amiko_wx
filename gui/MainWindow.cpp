@@ -72,6 +72,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mFullTextDb(nullptr)
 , mInteractions(nullptr)
 {
+	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
     if (APP_NAME == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
@@ -85,7 +86,7 @@ MainWindow::MainWindow( wxWindow* parent )
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // TODO: Register applications defaults if necessary
-    // TODO: Start timer to check if database needs to be updatd (checks every hour)
+    // TODO: Start timer to check if database needs to be updated (checks every hour)
 
     // 275
     // Open AIPS database
@@ -308,11 +309,30 @@ void MainWindow::updateSearchResults()
 // 858
 void MainWindow::resetDataInTableView()
 {
-    // Reset search state
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+
+	// Reset search state
     setSearchState(kss_Title);
+#ifdef __linux__
+    std::cerr << __PRETTY_FUNCTION__
+			<< " line " << __LINE__
+			<< ", searchResults.size() " << searchResults.size()
+			<< ", Early return !!!"
+			<< std::endl;
+    return;
+#endif
 
     mCurrentSearchKey = "";
-    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
+    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
+
+#ifdef __linux__
+    std::cerr << __PRETTY_FUNCTION__
+			<< " line " << __LINE__
+			<< ", searchResults.size() " << searchResults.size()
+			<< ", Early return !!!"
+			<< std::endl;
+    return;
+#endif
 
     if (searchResults.size()>0) {
         updateTableView();
@@ -389,18 +409,21 @@ void MainWindow::switchTabs(int item)
 std::vector<Medication *> MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::vector<Medication *> temp;
+    return temp;
 }
 
 // 1967
 void MainWindow::setSearchState(int searchState)
 {
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
     switch (searchState)
     {
         case kss_Title:
             mySearchField->SetValue("");
             mCurrentSearchState = kss_Title;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Preparation")));
-             break;
+            break;
 
         case kss_Author:
             mySearchField->SetValue("");
@@ -451,13 +474,18 @@ void MainWindow::setSearchState(int searchState)
 // 2029
 std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
-    std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
+    std::clog << __FUNCTION__ << ", searchQuery < " << searchQuery.ToStdString() << ">"  << std::endl;
 
     ALL_RESULTS searchResObsolete;
     std::vector<Medication *> searchRes;
 
+#ifdef __linux__
+	std::cerr << __PRETTY_FUNCTION__  << " line " << __LINE__ << " Early return !!!" << std::endl;
+    return searchRes;
+#endif
+
     if (mCurrentSearchState == kss_Title)
-        searchRes = mDb->searchTitle(searchQuery);  // array of MLMedication
+        searchRes = mDb->searchTitle(searchQuery);  // array of Medication
     else if (mCurrentSearchState == kss_Author)
         searchResObsolete = mDb->searchAuthor(searchQuery);
     else if (mCurrentSearchState == kss_AtcCode)
@@ -509,6 +537,7 @@ void MainWindow::updateTableView()
  
     if (searchResults.size() == 0) {
         stopProgressIndicator();
+        std::cerr << __FUNCTION__ << " Line " << __LINE__ << std::endl;
         return;
     }
 
@@ -525,6 +554,11 @@ void MainWindow::updateTableView()
 
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
+            std::cerr << __FUNCTION__
+            		<< " searchResults.size " << searchResults.size()
+            		<< " Line " << __LINE__
+					<< std::endl;
+
             for (auto m : searchResults) {
                 // TODO: [favoriteKeyData addObject:m.regnrs];
                 if (mSearchInteractions == false)
@@ -536,6 +570,7 @@ void MainWindow::updateTableView()
     }
 
     stopProgressIndicator();
+    std::cerr << __FUNCTION__ << " Line " << __LINE__ << std::endl;
 }
 
 // 2412
@@ -664,7 +699,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " " << mySearchField->GetValue().ToStdString() << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
 
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
@@ -694,6 +729,7 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
 /// 997
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
 {
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
     int prevState = mCurrentSearchState;
 
     switch (event.GetId()) {
@@ -801,14 +837,14 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
-             wxGetOsDescription(), wxVERSION_STRING, SQLITE_VERSION),
-    APP_NAME, wxOK | wxICON_INFORMATION);
+             wxGetOsDescription().ToStdString(), wxVERSION_STRING, SQLITE_VERSION),
+    wxString(APP_NAME), wxOK | wxICON_INFORMATION);
 }
 
 // 1168
 void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 {
-    // TODO: check if there is an active internet connection
+    // TODO: check if there is an active Internet connection
     //std::clog << wxDialupManager::IsOnline() << std::endl;
 
     //wxBusyCursor wait;

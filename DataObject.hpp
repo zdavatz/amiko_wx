@@ -13,5 +13,5 @@ struct DataObject
     long medId;
     char *hashId;
     
-    DataObject() {title = subTitle = hashId = nullptr;} // constructor
+    DataObject() {title = subTitle = hashId = nullptr; medId = 0;} // constructor
 };

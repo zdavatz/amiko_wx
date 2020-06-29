@@ -70,9 +70,11 @@ WX_OPTIONS_OS_AUTOTOOLS="--with-msw"
 WX_OPTIONS_OS_CMAKE="--with-msw -D wxBUILD_USE_STATIC_RUNTIME=ON"
 fi
 
+if [ -z $BUILD_TYPE ]; then BUILD_TYPE=Release; fi
 MAKE_FLAGS="-j $NCPU VERBOSE=1"
 CMAKE=cmake
 mkdir -p $SRC
+$CMAKE --version | head -n 1
 
 #-------------------------------------------------------------------------------
 if [ $STEP_DOWNLOAD_SOURCES_SQLITE ] ; then
@@ -128,7 +130,7 @@ else
 rm -f CMakeCache.txt
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX="$BIN_WXWIDGETS" \
-    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
     $WX_OPTIONS_OS_CMAKE \
     -D wxBUILD_SHARED=OFF \
     $SRC_WXWIDGETS
@@ -154,7 +156,7 @@ rm -f CMakeCache.txt
 #COMPILER_FLAGS="$COMPILER_FLAGS -DGL_SILENCE_DEPRECATION=1"
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX=$BIN_APP \
-    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
     -D CMAKE_CXX_FLAGS="$COMPILER_FLAGS" \
     -D WX_ROOT=$BIN_WXWIDGETS \
     $SRC_APP
@@ -162,8 +164,8 @@ fi
 
 if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
 cd $BLD_APP
-echo "=== Build $APP_NAME"
+echo "=== Build"
 make $MAKE_FLAGS
-echo "=== Install $APP_NAME"
+echo "=== Install into $BIN_APP"
 make install
 fi

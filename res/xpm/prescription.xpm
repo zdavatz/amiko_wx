@@ -1,5 +1,5 @@
 /* XPM */
-static char *prescription_xpm[] = {
+static const char *prescription_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "64 64 2 1 ",
 "  c None",
