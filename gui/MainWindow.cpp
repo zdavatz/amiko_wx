@@ -589,8 +589,8 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
     // 2502
     // Generate html string
-    wxString htmlStr(mMed->contentStr);
-    //std::clog << "Line " << __LINE__  << " <" << htmlStr.ToStdString() << ">" << std::endl;
+    wxString htmlStr = wxString::FromUTF8(mMed->contentStr);
+    //std::cerr << "Line " << __LINE__  << " <" << htmlStr << ">" << std::endl;
 
     // 2508
     const char *charset_Meta = "<meta charset=\"utf-8\" />";
