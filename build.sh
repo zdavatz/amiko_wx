@@ -62,7 +62,10 @@ WX_OPTIONS_OS_AUTOTOOLS="--with-cocoa --with-mac"
 WX_OPTIONS_OS_CMAKE=
 elif [[ $(uname -s) == "Linux" ]] ; then
 NCPU=$(nproc --all)
-WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3"
+  if [ $BUILD_TYPE == "Debug" ]; then
+    WX_OPTIONS_OS_AUTOTOOLS_DEBUG="--enable-debug --enable-debug_gdb"
+  fi
+WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3 --with-cxx=17 --enable-utf8 --with-regex --enable-html --enable-webview ${WX_OPTIONS_OS_AUTOTOOLS_DEBUG}"
 WX_OPTIONS_OS_CMAKE=" -D wxBUILD_USE_STATIC_RUNTIME=ON -D wxBUILD_SAMPLES=ALL"
 else
 NCPU=$NUMBER_OF_PROCESSORS

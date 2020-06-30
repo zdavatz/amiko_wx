@@ -21,6 +21,9 @@ public:
     TableViewDelegate() { }
     TableViewDelegate(wxWindow *parent, bool multi = false);
 
+//    virtual void SetItemCount(size_t count) wxOVERRIDE
+//    		{wxHtmlListBox::SetItemCount(count);}
+
 protected:
     // override this method to return data to be shown in the listbox (this is
     // mandatory)

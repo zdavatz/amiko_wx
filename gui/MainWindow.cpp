@@ -320,10 +320,8 @@ void MainWindow::resetDataInTableView()
     if (searchResults.size()>0) {
         updateTableView();
 
-#ifndef __linux__ // FIXME: it crashes here
         myTableView->SetItemCount(searchResults.size());
         myTableView->SetSelection(0);
-#endif
     }
 }
 
@@ -487,19 +485,26 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 }
 
 // 2064
-void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId)
+void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId)
 {
-    DataObject *m = new DataObject;
-    if (title)
+#if 1 //ndef NDEBUG
+	std::cerr << __FUNCTION__ << " Line: " << __LINE__
+			<< ", title: <" << title << ">"
+			<< ", packinfo: <" << packinfo << ">"
+			<< std::endl;
+#endif
+
+DataObject *m = new DataObject;
+    if (title.size() > 0)
         m->title = title;
     else
-        m->title = (char *)"Not specified"; // TODO: localize
+        m->title = L"Not specified"; // TODO: localize
 
-    if (packinfo && strlen(packinfo) > 0) {
+    if (packinfo.size() > 0) {
         if (!mSearchInteractions)
             m->subTitle = packinfo;
         else {
-            // We pass atccode instead, which needs to be unpacked
+            // We pass 'atccode' instead, which needs to be unpacked
             // TODO:
         }
     }
@@ -543,7 +548,10 @@ void MainWindow::updateTableView()
             for (auto m : searchResults) {
                 // TODO: [favoriteKeyData addObject:m.regnrs];
                 if (mSearchInteractions == false)
-                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                    addTitle_andPackInfo_andMedId(
+                    		wxString::FromUTF8(m->title),
+                    		wxString::FromUTF8(m->packInfo),
+							m->medId);
                 else
                     addTitle_andPackInfo_andMedId(m->title, m->atccode, m->medId);
             }

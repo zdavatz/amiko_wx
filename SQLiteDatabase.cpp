@@ -95,6 +95,7 @@ ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
                     int len = sqlite3_column_bytes(compiledStatement, i);
                     if (str && len > 0)
                         ms.u.c = strdup((const char *)str);
+
                     row.push_back(ms);
                 }
                 else if (ms.type == SQLITE_INTEGER) {
