@@ -487,14 +487,9 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 // 2064
 void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId)
 {
-#if 1 //ndef NDEBUG
-	std::cerr << __FUNCTION__ << " Line: " << __LINE__
-			<< ", title: <" << title << ">"
-			<< ", packinfo: <" << packinfo << ">"
-			<< std::endl;
-#endif
+	//std::cerr << __PRETTY_FUNCTION__ << std::endl;
 
-DataObject *m = new DataObject;
+	DataObject *m = new DataObject;
     if (title.size() > 0)
         m->title = title;
     else
@@ -519,7 +514,7 @@ DataObject *m = new DataObject;
 // 2286
 void MainWindow::updateTableView()
 {
-    std::cerr << __PRETTY_FUNCTION__  << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
     if (searchResults.size() == 0) {
         stopProgressIndicator();
@@ -553,7 +548,10 @@ void MainWindow::updateTableView()
                     		wxString::FromUTF8(m->packInfo),
 							m->medId);
                 else
-                    addTitle_andPackInfo_andMedId(m->title, m->atccode, m->medId);
+                    addTitle_andPackInfo_andMedId(
+                    		wxString::FromUTF8(m->title),
+							m->atccode,
+							m->medId);
             }
         }
     }
@@ -572,7 +570,9 @@ void MainWindow::pushToMedBasket(Medication *med)
 // 2473
 void MainWindow::updateExpertInfoView(wxString anchor)
 {
-    // 2476
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+
+	// 2476
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
     
     // 2479
