@@ -85,9 +85,9 @@ wxArrayString Medication::listOfSectionIds()
 // 61
 wxArrayString Medication::listOfSectionTitles()
 {
-    //std::clog << "Line " << __LINE__  << " sectionTitles: " << sectionTitles << std::endl;
+    std::clog << "Line " << __LINE__  << " sectionTitles: " << sectionTitles << std::endl;
 
-    wxArrayString titles = wxSplit(wxString(sectionTitles), ';');
+    wxArrayString titles = wxSplit(wxString(sectionTitles, wxConvUTF8), ';');
     int n = titles.size();
     for (int i=0; i<n; ++i)
         titles[i] = shortTitle(titles[i]);

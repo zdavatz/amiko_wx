@@ -50,7 +50,7 @@ BLD_APP=$BLD/$APP-$IDE
 
 eval BIN=$CONFIG_BIN_DIR/$APP
 BIN_WXWIDGETS=$BIN/$WXWIDGETS
-BIN_APP=$BIN/$APP
+BIN_APP=$BIN # each of the two targets will be in its own subdirectory
 
 echo "SRC: $SRC"
 echo "BLD: $BLD"
