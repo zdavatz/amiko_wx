@@ -607,6 +607,27 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     wxString js_Script;
     {
         // TODO: Load JavaScript from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString jscriptPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        
+        jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
+        wxString jscriptStr;
+        //= [NSString stringWithContentsOfFile:jscriptPath encoding:NSUTF8StringEncoding error:nil];
+        if (wxFileName::Exists(jscriptPath)) {
+            wxFileInputStream input( jscriptPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                jscriptStr += text.ReadLine();
+        }
+
+        //std::cerr << "jscriptStr: " << jscriptStr << std::endl;
+
+        js_Script = wxString::Format("<script type=\"text/javascript\">%s</script>", jscriptStr);
     }
 
     // 2502

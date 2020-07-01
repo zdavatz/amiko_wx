@@ -140,6 +140,7 @@ install(FILES
     "${CMAKE_SOURCE_DIR}/res/amiko_stylesheet.css"
 	"${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
     "${CMAKE_SOURCE_DIR}/res/color-scheme-dark.css"
+    "${CMAKE_SOURCE_DIR}/res/main_callbacks.js"
 	DESTINATION ${APP_NAME})
 endforeach()
 
