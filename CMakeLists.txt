@@ -5,8 +5,25 @@ project (AmiKo-wx
 
 SET(CMAKE_CXX_STANDARD 17)
 
-#-----------------------------------------------------------------------------
+#=============================================================================
+if (UNIX)
+if (NOT APPLE)
+# Linux
+find_package(PkgConfig REQUIRED)
+#pkg_check_modules(WEBKIT REQUIRED webkitgtk-3.0)
+pkg_check_modules(WEBKIT REQUIRED webkit2gtk-4.0)
+
+MESSAGE(STATUS "WEBKIT_Found: ${WEBKIT_FOUND}")
+MESSAGE(STATUS "WEBKIT_VERSION: ${WEBKIT_VERSION}")
+MESSAGE(STATUS "WEBKIT_LIBRARIES: ${WEBKIT_LIBRARIES}")
+endif (NOT APPLE)
+endif (UNIX)
+
+#=============================================================================
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
+
+SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
+SET(wxWidgets_wxrc_EXECUTABLE "${WX_ROOT}/bin/wxrc")
 
 if (APPLE)
 IF(NOT CMAKE_BUILD_TYPE)
@@ -15,8 +32,6 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
-SET(wxWidgets_wxrx_EXECUTABLE "${WX_ROOT}/bin/wxrc")
 FIND_PACKAGE(wxWidgets REQUIRED)
 include(${wxWidgets_USE_FILE})
 
@@ -25,13 +40,14 @@ if(wxWidgets_CXX_FLAGS)
 endif()
 endif (APPLE)
 
-if(NOT APPLE)
 if(UNIX)
-SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
-SET(wxWidgets_wxrc_EXECUTABLE "${WX_ROOT}/bin/wxrc")
-FIND_PACKAGE(wxWidgets REQUIRED )
-endif(UNIX)
+if(NOT APPLE)
+# Linux
+FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS core base net html webview)
 endif(NOT APPLE)
+endif(UNIX)
+
+#MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
 
 if (APPLE)
 # From wx-config
@@ -46,18 +62,6 @@ if(UNIX)
 ADD_DEFINITIONS("-D__WXGTK__")
 endif(UNIX)
 endif(NOT APPLE)
-
-#=============================================================================
-if (UNIX)
-if (NOT APPLE)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(WEBKIT REQUIRED webkitgtk-3.0)
-#pkg_check_modules(WEBKIT REQUIRED webkit2gtk-4.0)
-endif (NOT APPLE)
-endif (UNIX)
-
-#MESSAGE(STATUS "WEBKIT_Found: ${WEBKIT_FOUND}")
-#MESSAGE(STATUS "WEBKIT_VERSION: ${WEBKIT_VERSION}")
 
 #=============================================================================
 
@@ -111,10 +115,7 @@ if (APPLE)
   target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a)
 else (APPLE)
   # Linux
-  target_link_libraries( ${APP_NAME} 
-	${wxWidgets_LIBRARY_DIRS}/libwx_gtk3u_webview-3.1.a
-	${WEBKIT_LIBRARIES}
-	)
+  target_link_libraries( ${APP_NAME} ${WEBKIT_LIBRARIES})
 endif (APPLE)
 endif (UNIX)
 

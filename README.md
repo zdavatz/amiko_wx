@@ -3,13 +3,15 @@ AmiKo/CoMed for Linux done with wxWidgets and C++, 64 bit.
 
 Prerequisites:
 
+- [CMake](https://cmake.org/)
+
 - GTK 3
 
         $ sudo apt install libgtk-3-dev
 
-- WebKit
+- WebKit2
 
-        $ sudo apt install libwebkitgtk-3.0-dev
+        $ sudo apt install libwebkit2gtk-4.0-dev
 
 - [SQlite](https://www.sqlite.org/) is built-in into the application, so there is no dependency on system libraries.
 
