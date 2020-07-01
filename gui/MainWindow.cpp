@@ -779,8 +779,15 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
         return;
     }
 
-    int row = mySectionTitles->GetSelectedRow();
-    std::clog << __FUNCTION__ << " row: "<< row << std::endl;
+    int row = mySectionTitles->GetSelectedRow(); // 0 based
+
+    if (row > mListOfSectionIds.size()) {
+        std::cerr << __FUNCTION__ << " Under development."
+                << " row: "<< row
+                << " > mListOfSectionIds.size(): "<< mListOfSectionIds.size()
+                << std::endl;
+        return;
+    }
 
     // 2973 wxID_SECTION_TITLES
 
