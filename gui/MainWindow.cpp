@@ -823,13 +823,15 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
     int row = mySectionTitles->GetSelectedRow(); // 0 based
 
+#if 1 // TODO: tidy up this debug code
     if (row > mListOfSectionIds.size()) {
-        std::cerr << __FUNCTION__ << " Under development."
-                << " row: "<< row
-                << " > mListOfSectionIds.size(): "<< mListOfSectionIds.size()
+        std::cerr << __FUNCTION__ << " WARNING: "
+                << " row: " << row
+                << " > mListOfSectionIds.size(): " << mListOfSectionIds.size()
                 << std::endl;
         return;
     }
+#endif
 
     // 2973 wxID_SECTION_TITLES
 
@@ -845,12 +847,10 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
         // TODO: debug that mListOfSectionIds has valid data
 
-        wxString javaScript = wxString::Format("var hashElement=document.getElementById('%@');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
+        wxString javaScript = wxString::Format("var hashElement=document.getElementById('%s');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
 
-        std::clog << __FUNCTION__ << " javaScript: "<< javaScript.ToStdString() << std::endl;
-        // TODO: run wxWebView->RunScript() to scroll webview
-
-        // TODO: myWebView->stringByEvaluatingJavaScriptFromString(javaScript);
+        //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
+        myWebView->RunScript(javaScript);
     }
     else {
         // Update webviewer's content without changing anything else
