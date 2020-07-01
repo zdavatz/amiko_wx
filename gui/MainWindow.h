@@ -51,7 +51,7 @@ private:
     void updateTableView();
     void switchTabs(int item);
     void stopProgressIndicator();
-    void addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId);
+    void addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId);
 
     bool openSQLiteDatabase();
     bool openFullTextDatabase();

@@ -1,11 +1,30 @@
 cmake_minimum_required (VERSION 3.10)
 
-project (AmiKo-wx)
+project (AmiKo-wx
+	VERSION "0.1.79")
 
 SET(CMAKE_CXX_STANDARD 17)
 
-#-----------------------------------------------------------------------------
+#=============================================================================
+
+if (UNIX)
+if (NOT APPLE)
+# Linux
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(WEBKIT REQUIRED webkit2gtk-4.0)
+
+MESSAGE(STATUS "WEBKIT_Found: ${WEBKIT_FOUND}")
+MESSAGE(STATUS "WEBKIT_VERSION: ${WEBKIT_VERSION}")
+MESSAGE(STATUS "WEBKIT_LIBRARIES: ${WEBKIT_LIBRARIES}")
+endif (NOT APPLE)
+endif (UNIX)
+
+#=============================================================================
+
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
+
+SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
+SET(wxWidgets_wxrc_EXECUTABLE "${WX_ROOT}/bin/wxrc")
 
 if (APPLE)
 IF(NOT CMAKE_BUILD_TYPE)
@@ -14,46 +33,35 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
-SET(wxWidgets_wxrx_EXECUTABLE "${WX_ROOT}/bin/wxrc")
 FIND_PACKAGE(wxWidgets REQUIRED)
 include(${wxWidgets_USE_FILE})
 
 if(wxWidgets_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${wxWidgets_CXX_FLAGS}")
 endif()
+ADD_DEFINITIONS("-D__WXMAC__")
 endif (APPLE)
 
-if(NOT APPLE)
 if(UNIX)
-SET(wxWidgets_CONFIG_EXECUTABLE "${WX_ROOT}/bin/wx-config")
-SET(wxWidgets_wxrc_EXECUTABLE "${WX_ROOT}/bin/wxrc")
-FIND_PACKAGE(wxWidgets REQUIRED )
-endif(UNIX)
-endif(NOT APPLE)
-
-if (APPLE)
-# From wx-config
-ADD_DEFINITIONS("-D_FILE_OFFSET_BITS=64")
-ADD_DEFINITIONS("-D_LARGE_FILES")
-ADD_DEFINITIONS("-D__WXMAC__")
-ADD_DEFINITIONS("-DGL_SILENCE_DEPRECATION=1")
-endif(APPLE)
-
 if(NOT APPLE)
-if(UNIX)
+# Linux
+FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS core base net html webview)
 ADD_DEFINITIONS("-D__WXGTK__")
-endif(UNIX)
 endif(NOT APPLE)
+endif(UNIX)
+
+#MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
+#MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
+#MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
+#MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
 
 #=============================================================================
-if (UNIX)
-if (NOT APPLE)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(WEBKIT REQUIRED webkitgtk-3.0)
-#pkg_check_modules(WEBKIT REQUIRED webkit2gtk-4.0)
-endif (NOT APPLE)
-endif (UNIX)
+
+if (APPLE)
+ADD_DEFINITIONS("-D_FILE_OFFSET_BITS=64")
+ADD_DEFINITIONS("-D_LARGE_FILES")
+ADD_DEFINITIONS("-DGL_SILENCE_DEPRECATION=1")
+endif(APPLE)
 
 #=============================================================================
 
@@ -77,7 +85,7 @@ source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
 
 foreach(APP_NAME CoMed AmiKo)    
-MESSAGE("=== TARGET: ${APP_NAME}")
+MESSAGE(STATUS "Configure target: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
@@ -98,8 +106,7 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS} )
   
-target_link_libraries( ${APP_NAME}
-  ${wxWidgets_LIBRARIES})
+target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES})
 
 if (UNIX)
 if (APPLE)
@@ -107,14 +114,32 @@ if (APPLE)
   target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a)
 else (APPLE)
   # Linux
-  target_link_libraries( ${APP_NAME} 
-	${wxWidgets_LIBRARY_DIRS}/libwx_gtk3u_webview-3.1.a
-	${WEBKIT_LIBRARIES}
-	)
+  target_link_libraries( ${APP_NAME} ${WEBKIT_LIBRARIES})
 endif (APPLE)
 endif (UNIX)
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 
 endforeach()
+
+#=============================================================================
+
+foreach(APP_NAME CoMed AmiKo) 
+MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+if (APPLE)
+install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
+else (APPLE)
+install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${APP_NAME})
+endif (APPLE)
+
+install(DIRECTORY lang
+	DESTINATION ${APP_NAME}
+	FILES_MATCHING PATTERN "*.mo")
+
+install(FILES
+	"${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
+	"${CMAKE_SOURCE_DIR}/res/color-scheme-dark.css"
+	DESTINATION ${APP_NAME})
+endforeach()
+
 

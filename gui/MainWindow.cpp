@@ -72,7 +72,8 @@ MainWindow::MainWindow( wxWindow* parent )
 , mFullTextDb(nullptr)
 , mInteractions(nullptr)
 {
-    if (APP_NAME == "CoMed") {
+	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
+    if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }
@@ -85,7 +86,7 @@ MainWindow::MainWindow( wxWindow* parent )
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // TODO: Register applications defaults if necessary
-    // TODO: Start timer to check if database needs to be updatd (checks every hour)
+    // TODO: Start timer to check if database needs to be updated (checks every hour)
 
     // 275
     // Open AIPS database
@@ -137,7 +138,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 315
     // TODO: Initialize webview
-    myWebView->SetPage("<html><head></head><body></body></html>");
+    myWebView->SetPage("<html><head></head><body></body></html>", wxString());
     //myWebView->Fit();
 
     // 321
@@ -308,11 +309,13 @@ void MainWindow::updateSearchResults()
 // 858
 void MainWindow::resetDataInTableView()
 {
-    // Reset search state
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+
+	// Reset search state
     setSearchState(kss_Title);
 
     mCurrentSearchKey = "";
-    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
+    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
 
     if (searchResults.size()>0) {
         updateTableView();
@@ -389,18 +392,21 @@ void MainWindow::switchTabs(int item)
 std::vector<Medication *> MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::vector<Medication *> temp;
+    return temp;
 }
 
 // 1967
 void MainWindow::setSearchState(int searchState)
 {
+	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
     switch (searchState)
     {
         case kss_Title:
             mySearchField->SetValue("");
             mCurrentSearchState = kss_Title;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Preparation")));
-             break;
+            break;
 
         case kss_Author:
             mySearchField->SetValue("");
@@ -446,18 +452,19 @@ void MainWindow::setSearchState(int searchState)
 
     mCurrentSearchKey = "";
     mCurrentSearchState = searchState;
+    std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
 
 // 2029
 std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
-    std::clog << __FUNCTION__ << ", searchQuery: " << searchQuery.ToStdString() << std::endl;
+    std::clog << __FUNCTION__ << ", searchQuery < " << searchQuery.ToStdString() << ">"  << std::endl;
 
     ALL_RESULTS searchResObsolete;
     std::vector<Medication *> searchRes;
 
     if (mCurrentSearchState == kss_Title)
-        searchRes = mDb->searchTitle(searchQuery);  // array of MLMedication
+        searchRes = mDb->searchTitle(searchQuery);  // array of Medication
     else if (mCurrentSearchState == kss_Author)
         searchResObsolete = mDb->searchAuthor(searchQuery);
     else if (mCurrentSearchState == kss_AtcCode)
@@ -478,19 +485,21 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 }
 
 // 2064
-void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long medId)
+void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId)
 {
-    DataObject *m = new DataObject;
-    if (title)
+	//std::cerr << __PRETTY_FUNCTION__ << std::endl;
+
+	DataObject *m = new DataObject;
+    if (title.size() > 0)
         m->title = title;
     else
-        m->title = (char *)"Not specified"; // TODO: localize
+        m->title = L"Not specified"; // TODO: localize
 
-    if (packinfo && strlen(packinfo) > 0) {
+    if (packinfo.size() > 0) {
         if (!mSearchInteractions)
             m->subTitle = packinfo;
         else {
-            // We pass atccode instead, which needs to be unpacked
+            // We pass 'atccode' instead, which needs to be unpacked
             // TODO:
         }
     }
@@ -505,10 +514,11 @@ void MainWindow::addTitle_andPackInfo_andMedId(char *title, char *packinfo, long
 // 2286
 void MainWindow::updateTableView()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
     if (searchResults.size() == 0) {
         stopProgressIndicator();
+        std::cerr << __FUNCTION__ << " Line " << __LINE__ << std::endl;
         return;
     }
 
@@ -525,17 +535,29 @@ void MainWindow::updateTableView()
 
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
+            std::cerr << __FUNCTION__
+            		<< " searchResults.size " << searchResults.size()
+            		<< " Line " << __LINE__
+					<< std::endl;
+
             for (auto m : searchResults) {
                 // TODO: [favoriteKeyData addObject:m.regnrs];
                 if (mSearchInteractions == false)
-                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                    addTitle_andPackInfo_andMedId(
+                    		wxString::FromUTF8(m->title),
+                    		wxString::FromUTF8(m->packInfo),
+							m->medId);
                 else
-                    addTitle_andPackInfo_andMedId(m->title, m->atccode, m->medId);
+                    addTitle_andPackInfo_andMedId(
+                    		wxString::FromUTF8(m->title),
+							m->atccode,
+							m->medId);
             }
         }
     }
 
     stopProgressIndicator();
+    std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
 
 // 2412
@@ -548,7 +570,9 @@ void MainWindow::pushToMedBasket(Medication *med)
 // 2473
 void MainWindow::updateExpertInfoView(wxString anchor)
 {
-    // 2476
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+
+	// 2476
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
     
     // 2479
@@ -565,8 +589,8 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
     // 2502
     // Generate html string
-    wxString htmlStr(mMed->contentStr);
-    //std::clog << "Line " << __LINE__  << " <" << htmlStr.ToStdString() << ">" << std::endl;
+    wxString htmlStr = wxString::FromUTF8(mMed->contentStr);
+    //std::cerr << "Line " << __LINE__  << " <" << htmlStr << ">" << std::endl;
 
     // 2508
     const char *charset_Meta = "<meta charset=\"utf-8\" />";
@@ -593,8 +617,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     }
 
     // 2547
-    myWebView->SetPage(htmlStr);
-    myWebView2->SetPage(htmlStr, wxString());
+    myWebView->SetPage(htmlStr, wxString());
     //myWebView->Fit();
 
     // 2553
@@ -664,8 +687,8 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " " << mySearchField->GetValue().ToStdString() << std::endl;
-
+    std::cerr << __PRETTY_FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
+return;
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
         return;
@@ -694,6 +717,7 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
 /// 997
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
 {
+	std::cerr << __PRETTY_FUNCTION__ << std::endl;
     int prevState = mCurrentSearchState;
 
     switch (event.GetId()) {
@@ -754,8 +778,15 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
         return;
     }
 
-    int row = mySectionTitles->GetSelectedRow();
-    std::clog << __FUNCTION__ << " row: "<< row << std::endl;
+    int row = mySectionTitles->GetSelectedRow(); // 0 based
+
+    if (row > mListOfSectionIds.size()) {
+        std::cerr << __FUNCTION__ << " Under development."
+                << " row: "<< row
+                << " > mListOfSectionIds.size(): "<< mListOfSectionIds.size()
+                << std::endl;
+        return;
+    }
 
     // 2973 wxID_SECTION_TITLES
 
@@ -801,14 +832,14 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
-             wxGetOsDescription(), wxVERSION_STRING, SQLITE_VERSION),
-    APP_NAME, wxOK | wxICON_INFORMATION);
+             wxGetOsDescription().ToStdString(), wxVERSION_STRING, SQLITE_VERSION),
+    wxString(APP_NAME), wxOK | wxICON_INFORMATION);
 }
 
 // 1168
 void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 {
-    // TODO: check if there is an active internet connection
+    // TODO: check if there is an active Internet connection
     //std::clog << wxDialupManager::IsOnline() << std::endl;
 
     //wxBusyCursor wait;

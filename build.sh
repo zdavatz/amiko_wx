@@ -8,7 +8,7 @@ for f in seed steps
 do
 if [ ! -f $f.conf ] ; then
     cp $f.in.conf $f.conf
-    echo "Please edit $f.conf to suite your preferences"
+    echo "Please edit $f.conf to suit your preferences"
     exit 0
 fi
 done
@@ -50,7 +50,7 @@ BLD_APP=$BLD/$APP-$IDE
 
 eval BIN=$CONFIG_BIN_DIR/$APP
 BIN_WXWIDGETS=$BIN/$WXWIDGETS
-BIN_APP=$BIN/$APP
+BIN_APP=$BIN # each of the two targets will be in its own subdirectory
 
 echo "SRC: $SRC"
 echo "BLD: $BLD"
@@ -62,7 +62,10 @@ WX_OPTIONS_OS_AUTOTOOLS="--with-cocoa --with-mac"
 WX_OPTIONS_OS_CMAKE=
 elif [[ $(uname -s) == "Linux" ]] ; then
 NCPU=$(nproc --all)
-WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3"
+  if [ $BUILD_TYPE == "Debug" ]; then
+    WX_OPTIONS_OS_AUTOTOOLS_DEBUG="--enable-debug --enable-debug_gdb"
+  fi
+WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3 --with-cxx=17 --enable-utf8 --with-regex --enable-html --enable-webview ${WX_OPTIONS_OS_AUTOTOOLS_DEBUG}"
 WX_OPTIONS_OS_CMAKE=" -D wxBUILD_USE_STATIC_RUNTIME=ON -D wxBUILD_SAMPLES=ALL"
 else
 NCPU=$NUMBER_OF_PROCESSORS
@@ -70,9 +73,11 @@ WX_OPTIONS_OS_AUTOTOOLS="--with-msw"
 WX_OPTIONS_OS_CMAKE="--with-msw -D wxBUILD_USE_STATIC_RUNTIME=ON"
 fi
 
+if [ -z $BUILD_TYPE ]; then BUILD_TYPE=Release; fi
 MAKE_FLAGS="-j $NCPU VERBOSE=1"
 CMAKE=cmake
 mkdir -p $SRC
+$CMAKE --version | head -n 1
 
 #-------------------------------------------------------------------------------
 if [ $STEP_DOWNLOAD_SOURCES_SQLITE ] ; then
@@ -84,6 +89,7 @@ else
     wget https://www.sqlite.org/2020/$SQLITE.zip
     unzip $SQLITE.zip
     rm $SQLITE.zip
+fi
 
     # Remove symlink if it exists
     if [ -L $SRC_APP/sqlite ] ; then
@@ -92,7 +98,6 @@ else
     
     # Recreate symlink
     ln -s $SRC_SQLITE $SRC_APP/sqlite
-fi
 fi
 
 
@@ -128,7 +133,7 @@ else
 rm -f CMakeCache.txt
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX="$BIN_WXWIDGETS" \
-    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
     $WX_OPTIONS_OS_CMAKE \
     -D wxBUILD_SHARED=OFF \
     $SRC_WXWIDGETS
@@ -150,11 +155,9 @@ if [ $STEP_CONFIGURE_APP ] ; then
 echo "=== Configure $APP_NAME in $BLD_APP"
 mkdir -p $BLD_APP ; cd $BLD_APP
 rm -f CMakeCache.txt
-#COMPILER_FLAGS="$COMPILER_FLAGS -DGL_SILENCE_DEPRECATION=1 -DWITH_OGL_CORE"
-#COMPILER_FLAGS="$COMPILER_FLAGS -DGL_SILENCE_DEPRECATION=1"
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX=$BIN_APP \
-    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
     -D CMAKE_CXX_FLAGS="$COMPILER_FLAGS" \
     -D WX_ROOT=$BIN_WXWIDGETS \
     $SRC_APP
@@ -162,8 +165,8 @@ fi
 
 if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
 cd $BLD_APP
-echo "=== Build $APP_NAME"
+echo "=== Build"
 make $MAKE_FLAGS
-echo "=== Install $APP_NAME"
+echo "=== Install into $BIN_APP"
 make install
 fi

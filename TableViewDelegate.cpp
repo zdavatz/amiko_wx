@@ -37,12 +37,7 @@ void TableViewDelegate::OnDrawSeparator(wxDC& dc, wxRect& rect, size_t) const
 // see MLMainWindowController.m:2783 tableView:viewForTableColumn:row
 wxString TableViewDelegate::OnGetItem(size_t n) const
 {
-//    if ( !n && m_firstItemUpdated )
-//        return "<h1><b>Just updated</b></h1>";
-
-//    wxColour clr((unsigned char)(abs((int)n - 192) % 256),
-//                 (unsigned char)(abs((int)n - 256) % 256),
-//                 (unsigned char)(abs((int)n - 128) % 256));
+	//std::cerr << "=== n:" << n << " === " << __PRETTY_FUNCTION__ << std::endl;
     
     const wxColour typicalGray(127,127,127); // MLColors.m:26
     const wxColour typicalGreen(0,0.8F*255,0.2F*255);
@@ -61,8 +56,9 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     wxString label;
     //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
 
-    label += wxString::Format("<font color=%s size=+3>★</font>",
-                             starColor.GetAsString(wxC2S_HTML_SYNTAX));
+    // Note the string literal defined as: L"" because it contains a Unicode character
+    label += wxString::Format(L"<font color=%s size=+3>★</font>",
+								starColor.GetAsString(wxC2S_HTML_SYNTAX));
 
     label += wxString::Format("<b><font size=+2> %s</font></b>", m->title);
 
@@ -98,15 +94,6 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
                                   listOfPackages[i].c_str());
 #endif
     }
-
-#if 0
-    if ( n == 1 ) {
-        if ( !m_linkClicked )
-            label += "<br><a href='1'>Click here...</a>";
-        else
-            label += "<br><font color='#9999ff'>Clicked here...</font>";
-    }
-#endif
 
     return label;
 }

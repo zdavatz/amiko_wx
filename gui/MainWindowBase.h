@@ -23,7 +23,6 @@
 #include "TableViewDelegate.hpp"
 #include <wx/sizer.h>
 #include <wx/panel.h>
-#include <wx/html/htmlwin.h>
 #include <wx/webview.h>
 #include <wx/textctrl.h>
 #include <wx/stattext.h>
@@ -97,7 +96,7 @@ class MainWindowBase : public wxFrame
 		wxPanel* m_panelRight;
 		wxSimplebook* myTabView;
 		wxPanel* m_panelWeb;
-		wxWebView* myWebView2;
+		wxWebView* myWebView;
 		wxPanel* m_panel10;
 		wxPanel* m_panel11;
 		wxButton* m_button7;
@@ -137,7 +136,6 @@ class MainWindowBase : public wxFrame
 
 
 	public:
-		wxHtmlWindow* myWebView;
 		wxStaticText* myPlaceDateField;
 		wxDataViewCtrl* myPrescriptionsTableView;
 		wxDataViewListCtrl* mySectionTitles;

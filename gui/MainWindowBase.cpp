@@ -93,11 +93,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer( wxVERTICAL );
 
-	myWebView = new wxHtmlWindow( m_panelWeb, wxID_FI_WEBVIEW, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
+	myWebView = wxWebView::New(m_panelWeb, wxID_FI_WEBVIEW);
 	bSizer5->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
-
-	myWebView2 = wxWebView::New(m_panelWeb, wxID_ANY);
-	bSizer5->Add( myWebView2, 1, wxALL|wxEXPAND, 5 );
 
 
 	m_panelWeb->SetSizer( bSizer5 );

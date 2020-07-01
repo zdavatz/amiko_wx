@@ -8,10 +8,10 @@
 
 struct DataObject
 {
-    char *title;
-    char *subTitle;
+	wxString title;
+	wxString subTitle;
     long medId;
     char *hashId;
     
-    DataObject() {title = subTitle = hashId = nullptr;} // constructor
+    DataObject() {hashId = nullptr; medId = 0;} // constructor
 };

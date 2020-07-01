@@ -140,7 +140,7 @@ Medication * DBAdapter::getMediWithId(long rowId)
 // 169
 std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 {
-    std::clog << __PRETTY_FUNCTION__ << ", title: " << title.ToStdString() << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__ << std::endl;
 
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
             SHORT_TABLE.ToStdString(),
@@ -150,11 +150,12 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
             KEY_TITLE,
             title.ToStdString());
 
-    //std::clog << "query:\n" << query.ToStdString() << std::endl;
+    //std::cerr << "query:\n" << query.ToStdString() << std::endl;
 
-#if 0 //def __linux__
+#ifdef __linux__
 	if (!mySqliteDb)  // Issue #8 null in Linux
     {
+		std::cerr << __PRETTY_FUNCTION__ << " Line " << __LINE__ << std::endl;
         std::vector<Medication *> temp;
         return temp;
     }
