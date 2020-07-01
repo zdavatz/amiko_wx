@@ -30,18 +30,18 @@ wxString getColorCss()
 {
     wxString colorSchemeFilename = "color-scheme-light.css";
     const wxSystemAppearance appearance = wxSystemSettings::GetAppearance();
-#if 0
-    const wxString osxMode = appearance.GetName();
-    std::cerr << __FUNCTION__ << " appearanceName " << osxMode.ToStdString() << std::endl; // NSAppearanceNameAqua, NSAppearanceNameDarkAqua
-    if (osxMode == "NSAppearanceNameDarkAqua")
-        colorSchemeFilename = "color-scheme-dark.css";
-#else
+
     if (appearance.IsDark())
         colorSchemeFilename = "color-scheme-dark.css";
-#endif
 
-    wxString colorCssPath = wxStandardPaths::Get().GetUserDataDir() +
-    wxFILE_SEP_PATH + colorSchemeFilename;
+#ifdef __linux__
+    wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+    wxString colorCssPath(f.GetPath());
+#else
+    // TODO: use GetResourcesDir()
+    wxString colorCssPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+    colorCssPath += wxFILE_SEP_PATH + colorSchemeFilename;
 
     // Read CSS file into string
     wxString colorCss;
