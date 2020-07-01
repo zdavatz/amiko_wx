@@ -252,8 +252,9 @@ Medication * DBAdapter::cursorToFullMedInfo(ONE_RESULT &cursor)
 {
     Medication *medi = cursorToShortMedInfo(cursor);
     // TODO: extra fields. TBC no 'kPackages'
+
 //    [medi setAddInfo:(NSString *)[cursor objectAtIndex:kAddInfo]];
-//    [medi setSectionIds:(NSString *)[cursor objectAtIndex:kIdsStr]];
+    medi->sectionIds = cursor[kIdsStr].u.c;
     medi->sectionTitles = cursor[kSectionsStr].u.c;
     medi->contentStr = cursor[kContentStr].u.c;
 //    [medi setStyleStr:(NSString *)[cursor objectAtIndex:kStyleStr]];

@@ -79,7 +79,7 @@ Medication::Medication()
 // 56
 wxArrayString Medication::listOfSectionIds()
 {
-    return wxSplit(wxString(sectionIds), ','); // wxSplit can only take a single char
+    return wxSplit(wxString(sectionIds, wxConvUTF8), ','); // wxSplit can only take a single char
 }
 
 // 61

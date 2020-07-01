@@ -576,15 +576,58 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
     
     // 2479
-    wxString amiko_Style;
+    wxString amiko_Style; // TODO: read it once only and store it, instead of doing this for every fachinfo
     {
-        // TODO: wxString amiko_Style;
+        // Load style sheet from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString amikoCssPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString amikoCssPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        amikoCssPath += wxFILE_SEP_PATH + wxString("amiko_stylesheet.css");
+
+        wxString amikoCss;
+        if (wxFileName::Exists(amikoCssPath)) {
+            wxFileInputStream input( amikoCssPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                amikoCss += text.ReadLine();
+        }
+        else
+            amikoCss = mMed->styleStr; // TODO: Unused ?
+        
+        amiko_Style = wxString::Format("<style type=\"text/css\">%s</style>", amikoCss);
     }
+    
+    //std::cerr << "amiko_Style: " << amiko_Style << std::endl;
     
     // 2492
     wxString js_Script;
     {
         // TODO: Load JavaScript from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString jscriptPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        
+        jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
+        wxString jscriptStr;
+        //= [NSString stringWithContentsOfFile:jscriptPath encoding:NSUTF8StringEncoding error:nil];
+        if (wxFileName::Exists(jscriptPath)) {
+            wxFileInputStream input( jscriptPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                jscriptStr += text.ReadLine();
+        }
+
+        //std::cerr << "jscriptStr: " << jscriptStr << std::endl;
+
+        js_Script = wxString::Format("<script type=\"text/javascript\">%s</script>", jscriptStr);
     }
 
     // 2502
@@ -780,13 +823,15 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
     int row = mySectionTitles->GetSelectedRow(); // 0 based
 
+#if 1 // TODO: tidy up this debug code
     if (row > mListOfSectionIds.size()) {
-        std::cerr << __FUNCTION__ << " Under development."
-                << " row: "<< row
-                << " > mListOfSectionIds.size(): "<< mListOfSectionIds.size()
+        std::cerr << __FUNCTION__ << " WARNING: "
+                << " row: " << row
+                << " > mListOfSectionIds.size(): " << mListOfSectionIds.size()
                 << std::endl;
         return;
     }
+#endif
 
     // 2973 wxID_SECTION_TITLES
 
@@ -802,12 +847,10 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
         // TODO: debug that mListOfSectionIds has valid data
 
-        wxString javaScript = wxString::Format("var hashElement=document.getElementById('%@');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
+        wxString javaScript = wxString::Format("var hashElement=document.getElementById('%s');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
 
-        std::clog << __FUNCTION__ << " javaScript: "<< javaScript.ToStdString() << std::endl;
-        // TODO: run wxWebView->RunScript() to scroll webview
-
-        // TODO: myWebView->stringByEvaluatingJavaScriptFromString(javaScript);
+        //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
+        myWebView->RunScript(javaScript);
     }
     else {
         // Update webviewer's content without changing anything else
