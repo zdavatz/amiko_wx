@@ -576,10 +576,32 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
     
     // 2479
-    wxString amiko_Style;
+    wxString amiko_Style; // TODO: read it once only and store it, instead of doing this for every fachinfo
     {
-        // TODO: wxString amiko_Style;
+        // Load style sheet from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString amikoCssPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString amikoCssPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        amikoCssPath += wxFILE_SEP_PATH + wxString("amiko_stylesheet.css");
+
+        wxString amikoCss;
+        if (wxFileName::Exists(amikoCssPath)) {
+            wxFileInputStream input( amikoCssPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                amikoCss += text.ReadLine();
+        }
+        else
+            amikoCss = mMed->styleStr; // TODO: Unused ?
+        
+        amiko_Style = wxString::Format("<style type=\"text/css\">%s</style>", amikoCss);
     }
+    
+    //std::cerr << "amiko_Style: " << amiko_Style << std::endl;
     
     // 2492
     wxString js_Script;
