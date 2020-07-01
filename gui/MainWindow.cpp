@@ -138,7 +138,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 315
     // TODO: Initialize webview
-    myWebView->SetPage("<html><head></head><body></body></html>");
+    myWebView->SetPage("<html><head></head><body></body></html>", wxString());
     //myWebView->Fit();
 
     // 321
@@ -617,8 +617,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     }
 
     // 2547
-    myWebView->SetPage(htmlStr);
-    myWebView2->SetPage(htmlStr, wxString());
+    myWebView->SetPage(htmlStr, wxString());
     //myWebView->Fit();
 
     // 2553
