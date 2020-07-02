@@ -80,6 +80,9 @@ MainWindow::MainWindow( wxWindow* parent )
 
     mySectionTitles->AppendTextColumn( "Sections" );
 
+    myTextFinder->Hide();
+    fiSizer->Layout();
+
     SetTitle(APP_NAME + wxString(" Desitin"));
     const wxEventTable *et = GetEventTable();
 
@@ -895,7 +898,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
         wxString javaScript = wxString::Format("var hashElement=document.getElementById('%s');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
 
         //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
-        myWebView->RunScript(javaScript);
+        myWebView->RunScript(javaScript); // stringByEvaluatingJavaScriptFromString
     }
     else {
         // Update webviewer's content without changing anything else
@@ -927,28 +930,44 @@ void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 // 495
 void MainWindow::OnPerformFindAction( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << event.GetId() << std::endl;
+    std::clog << __FUNCTION__ << " event ID: " << event.GetId() << std::endl;
 
+    long findResult;
     switch (event.GetId()) {
-        case wxID_FI_FIND:
-            // tag 1
+        case wxID_FI_FIND_SHOW: // tag 1 = NSTextFinderActionShowFindInterface
+            myTextFinder->Show();
+            fiSizer->Layout();
             break;
             
-        case wxID_FIND_NEXT:
-            // tag 2
+        case wxID_FI_FIND_NEXT: // tag 2 = NSTextFinderActionNextMatch
+            if (myTextFinder->IsShown()) {
+                #ifndef NDEBUG
+                findResult = myWebView->Find("Intera", wxWEBVIEW_FIND_HIGHLIGHT_RESULT);
+                std::clog << __FUNCTION__ << " findResult " << findResult << std::endl;
+                #endif
+            }
+            break;
+
+        case wxID_FI_FIND_PREVIOUS: // tag 3 = NSTextFinderActionPreviousMatch
+            if (myTextFinder->IsShown()) {
+                #ifndef NDEBUG
+                findResult = myWebView->Find("Intera", wxWEBVIEW_FIND_HIGHLIGHT_RESULT | wxWEBVIEW_FIND_BACKWARDS);
+                std::clog << __FUNCTION__ << " findResult " << findResult << std::endl;
+                #endif
+            }
             break;
             
-        case wxID_FIND_PREVIOUS:
-            // tag 3
+        case wxID_FI_FIND_DONE: // tag 11 = NSTextFinderActionHideFindInterface
+            if (myTextFinder->IsShown()) {
+                myTextFinder->Hide();
+                fiSizer->Layout();
+            }
             break;
-            
+                
         default:
+            // tag 7 = NSTextFinderActionSetSearchString
             break;
     }
-
-    // 512
-    // TODO:
-    //myTextFinder->performAction(menuItem.tag);
 }
 
 // 1168
