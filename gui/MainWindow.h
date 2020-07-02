@@ -33,6 +33,7 @@ class MainWindow : public MainWindowBase
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
+		void OnPerformFindAction( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );

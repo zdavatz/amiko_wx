@@ -56,9 +56,12 @@
 #define wxID_TB_FAVORITES 1012
 #define wxID_TB_INTERACTIONS 1013
 #define wxID_TB_PRESCRIPTION 1014
-#define wxID_UPDATE_DB 1015
-#define wxID_LOAD_DB 1016
-#define wxID_SET_OPERATOR_ID 1017
+#define wxID_FI_FIND 1015
+#define wxID_FIND_NEXT 1016
+#define wxID_FIND_PREVIOUS 1017
+#define wxID_UPDATE_DB 1018
+#define wxID_LOAD_DB 1019
+#define wxID_SET_OPERATOR_ID 1020
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -76,6 +79,7 @@ class MainWindowBase : public wxFrame
 		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
 		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
 		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
+		void _wxFB_OnPerformFindAction( wxCommandEvent& event ){ OnPerformFindAction( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
 		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
 		void _wxFB_OnManagePatients( wxCommandEvent& event ){ OnManagePatients( event ); }
@@ -129,6 +133,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPrintDocument( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnPerformFindAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnManagePatients( wxCommandEvent& event ) { event.Skip(); }

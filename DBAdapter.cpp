@@ -150,7 +150,9 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
             KEY_TITLE,
             title.ToStdString());
 
-    //std::cerr << "query:\n" << query.ToStdString() << std::endl;
+#ifndef NDEBUG
+    std::cerr << "query:\n" << query.ToStdString() << std::endl;
+#endif
 
 #ifdef __linux__
 	if (!mySqliteDb)  // Issue #8 null in Linux
@@ -229,13 +231,13 @@ Medication * DBAdapter::cursorToShortMedInfo(ONE_RESULT &cursor)
     medi->title = cursor[kTitle].u.c;
     medi->auth = cursor[kAuth].u.c;
     medi->atccode = cursor[kAtcCode].u.c;
-//    [medi setSubstances:(NSString *)[cursor objectAtIndex:kSubstances]];
-//    [medi setRegnrs:(NSString *)[cursor objectAtIndex:kRegnrs]];
-//    [medi setAtcClass:(NSString *)[cursor objectAtIndex:kAtcClass]];
-//    [medi setTherapy:(NSString *)[cursor objectAtIndex:kTherapy]];
-//    [medi setApplication:(NSString *)[cursor objectAtIndex:kApplication]];
-//    [medi setIndications:(NSString *)[cursor objectAtIndex:kIndications]];
-//    [medi setCustomerId:[(NSString *)[cursor objectAtIndex:kCustomerId] intValue]];
+    medi->substances = cursor [kSubstances].u.c;
+    medi->regnrs = cursor [kRegnrs].u.c;
+    medi->atcClass = cursor [kAtcClass].u.c;
+    medi->therapy = cursor [kTherapy].u.c;
+    medi->application = cursor [kApplication].u.c;
+    medi->indications = cursor [kIndications].u.c;
+    //medi->customerId = cursor [kCustomerId].u.i;    // TBC do we need to convert c to i first ?;
 
     // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
     if (cursor[kCustomerId].type == SQLITE_INTEGER)

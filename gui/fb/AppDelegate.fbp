@@ -56,16 +56,16 @@
             <property name="window_name"></property>
             <property name="window_style">wxTAB_TRAVERSAL</property>
             <property name="xrc_skip_sizer">1</property>
-            <object class="wxBoxSizer" expanded="1">
+            <object class="wxBoxSizer" expanded="0">
                 <property name="minimum_size"></property>
                 <property name="name">bSizer1</property>
                 <property name="orient">wxHORIZONTAL</property>
                 <property name="permission">none</property>
-                <object class="sizeritem" expanded="1">
+                <object class="sizeritem" expanded="0">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxSplitterWindow" expanded="1">
+                    <object class="wxSplitterWindow" expanded="0">
                         <property name="BottomDockable">1</property>
                         <property name="LeftDockable">1</property>
                         <property name="RightDockable">1</property>
@@ -122,8 +122,8 @@
                         <property name="window_extra_style"></property>
                         <property name="window_name"></property>
                         <property name="window_style"></property>
-                        <object class="splitteritem" expanded="1">
-                            <object class="wxPanel" expanded="1">
+                        <object class="splitteritem" expanded="0">
+                            <object class="wxPanel" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -174,7 +174,7 @@
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style">wxTAB_TRAVERSAL</property>
-                                <object class="wxBoxSizer" expanded="1">
+                                <object class="wxBoxSizer" expanded="0">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizerLeft</property>
                                     <property name="orient">wxVERTICAL</property>
@@ -194,7 +194,7 @@
                                             <property name="aui_row"></property>
                                             <property name="best_size"></property>
                                             <property name="bg"></property>
-                                            <property name="cancel_button">0</property>
+                                            <property name="cancel_button">1</property>
                                             <property name="caption"></property>
                                             <property name="caption_visible">1</property>
                                             <property name="center_pane">0</property>
@@ -754,8 +754,8 @@
                                 </object>
                             </object>
                         </object>
-                        <object class="splitteritem" expanded="1">
-                            <object class="wxPanel" expanded="1">
+                        <object class="splitteritem" expanded="0">
+                            <object class="wxPanel" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -806,16 +806,16 @@
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style">wxTAB_TRAVERSAL</property>
-                                <object class="wxBoxSizer" expanded="1">
+                                <object class="wxBoxSizer" expanded="0">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizer4</property>
                                     <property name="orient">wxHORIZONTAL</property>
                                     <property name="permission">none</property>
-                                    <object class="sizeritem" expanded="1">
+                                    <object class="sizeritem" expanded="0">
                                         <property name="border">0</property>
                                         <property name="flag">wxEXPAND | wxALL</property>
                                         <property name="proportion">1</property>
-                                        <object class="wxSimplebook" expanded="1">
+                                        <object class="wxSimplebook" expanded="0">
                                             <property name="BottomDockable">1</property>
                                             <property name="LeftDockable">1</property>
                                             <property name="RightDockable">1</property>
@@ -866,10 +866,10 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
-                                            <object class="simplebookpage" expanded="1">
+                                            <object class="simplebookpage" expanded="0">
                                                 <property name="label">a page</property>
                                                 <property name="select">0</property>
-                                                <object class="wxPanel" expanded="1">
+                                                <object class="wxPanel" expanded="0">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -920,16 +920,16 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style">wxTAB_TRAVERSAL</property>
-                                                    <object class="wxBoxSizer" expanded="1">
+                                                    <object class="wxBoxSizer" expanded="0">
                                                         <property name="minimum_size"></property>
                                                         <property name="name">bSizer5</property>
                                                         <property name="orient">wxVERTICAL</property>
                                                         <property name="permission">none</property>
-                                                        <object class="sizeritem" expanded="1">
+                                                        <object class="sizeritem" expanded="0">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxALL|wxEXPAND</property>
                                                             <property name="proportion">1</property>
-                                                            <object class="CustomControl" expanded="1">
+                                                            <object class="CustomControl" expanded="0">
                                                                 <property name="BottomDockable">1</property>
                                                                 <property name="LeftDockable">1</property>
                                                                 <property name="RightDockable">1</property>
@@ -1052,7 +1052,7 @@
                                                     </object>
                                                 </object>
                                             </object>
-                                            <object class="simplebookpage" expanded="1">
+                                            <object class="simplebookpage" expanded="0">
                                                 <property name="label">a page</property>
                                                 <property name="select">0</property>
                                                 <object class="wxPanel" expanded="0">
@@ -1991,7 +1991,7 @@
                     <event name="OnToolClicked">OnShowAboutPanel</event>
                 </object>
             </object>
-            <object class="wxMenuBar" expanded="0">
+            <object class="wxMenuBar" expanded="1">
                 <property name="bg"></property>
                 <property name="context_help"></property>
                 <property name="context_menu">1</property>
@@ -2013,11 +2013,11 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <object class="wxMenu" expanded="0">
+                <object class="wxMenu" expanded="1">
                     <property name="label">File</property>
                     <property name="name">m_menuFile</property>
                     <property name="permission">protected</property>
-                    <object class="submenu" expanded="0">
+                    <object class="submenu" expanded="1">
                         <property name="bitmap"></property>
                         <property name="label">Prescription Info</property>
                         <property name="name">m_menu11</property>
@@ -2027,39 +2027,42 @@
                             <property name="checked">0</property>
                             <property name="enabled">1</property>
                             <property name="help"></property>
-                            <property name="id">wxID_ANY</property>
+                            <property name="id">wxID_FI_FIND</property>
                             <property name="kind">wxITEM_NORMAL</property>
                             <property name="label">Find...</property>
                             <property name="name">m_menuItem1</property>
                             <property name="permission">none</property>
-                            <property name="shortcut"></property>
+                            <property name="shortcut">CTRL+F</property>
                             <property name="unchecked_bitmap"></property>
+                            <event name="OnMenuSelection">OnPerformFindAction</event>
                         </object>
                         <object class="wxMenuItem" expanded="0">
                             <property name="bitmap"></property>
                             <property name="checked">0</property>
                             <property name="enabled">1</property>
                             <property name="help"></property>
-                            <property name="id">wxID_ANY</property>
+                            <property name="id">wxID_FIND_NEXT</property>
                             <property name="kind">wxITEM_NORMAL</property>
                             <property name="label">Find Next...</property>
                             <property name="name">m_menuItem2</property>
                             <property name="permission">none</property>
-                            <property name="shortcut"></property>
+                            <property name="shortcut">CTRL+G</property>
                             <property name="unchecked_bitmap"></property>
+                            <event name="OnMenuSelection">OnPerformFindAction</event>
                         </object>
                         <object class="wxMenuItem" expanded="0">
                             <property name="bitmap"></property>
                             <property name="checked">0</property>
                             <property name="enabled">1</property>
                             <property name="help"></property>
-                            <property name="id">wxID_ANY</property>
+                            <property name="id">wxID_FIND_PREVIOUS</property>
                             <property name="kind">wxITEM_NORMAL</property>
                             <property name="label">Find Previous...</property>
                             <property name="name">m_menuItem3</property>
                             <property name="permission">none</property>
-                            <property name="shortcut"></property>
+                            <property name="shortcut">CTRL+SHIFT+G</property>
                             <property name="unchecked_bitmap"></property>
+                            <event name="OnMenuSelection">OnPerformFindAction</event>
                         </object>
                     </object>
                     <object class="separator" expanded="0">
@@ -2119,7 +2122,7 @@
                         <property name="label">Update via Internet</property>
                         <property name="name">m_miUpdateDB</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">CTRL+A</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnUpdateAipsDatabase</event>
                     </object>
@@ -2133,7 +2136,7 @@
                         <property name="label">Update from file</property>
                         <property name="name">m_miLoadDB</property>
                         <property name="permission">none</property>
-                        <property name="shortcut"></property>
+                        <property name="shortcut">CTRL+L</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnLoadAipsDatabase</event>
                     </object>

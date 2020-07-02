@@ -320,8 +320,8 @@ void MainWindow::resetDataInTableView()
     if (searchResults.size()>0) {
         updateTableView();
 
-        myTableView->SetItemCount(searchResults.size());
-        myTableView->SetSelection(0);
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        myTableView->SetSelection(0); // scrollRectToVisible
     }
 }
 
@@ -458,7 +458,9 @@ void MainWindow::setSearchState(int searchState)
 // 2029
 std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
-    std::clog << __FUNCTION__ << ", searchQuery < " << searchQuery.ToStdString() << ">"  << std::endl;
+#ifndef NDEBUG
+    std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
+#endif
 
     ALL_RESULTS searchResObsolete;
     std::vector<Medication *> searchRes;
@@ -518,9 +520,15 @@ void MainWindow::updateTableView()
  
     if (searchResults.size() == 0) {
         stopProgressIndicator();
-        std::cerr << __FUNCTION__ << " Line " << __LINE__ << std::endl;
+        std::cerr << __FUNCTION__ << " 0 results" << std::endl;
         return;
     }
+    
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << " Line " << __LINE__
+            << " searchResults.size " << searchResults.size()
+            << std::endl;
+#endif
 
     if (doArray.size() > 0)
         doArray.clear(); // to be obsolete
@@ -533,13 +541,11 @@ void MainWindow::updateTableView()
         [favoriteKeyData removeAllObjects];
 #endif
 
+    // 2298
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
-            std::cerr << __FUNCTION__
-            		<< " searchResults.size " << searchResults.size()
-            		<< " Line " << __LINE__
-					<< std::endl;
 
+            // 2300
             for (auto m : searchResults) {
                 // TODO: [favoriteKeyData addObject:m.regnrs];
                 if (mSearchInteractions == false)
@@ -554,6 +560,34 @@ void MainWindow::updateTableView()
 							m->medId);
             }
         }
+    }
+    // 2321
+    else if (mCurrentSearchState == kss_Author) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO Author" << std::endl;
+    }
+    // 2338
+    else if (mCurrentSearchState == kss_AtcCode) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO AtcCode" << std::endl;
+    }
+    // 2355
+    else if (mCurrentSearchState == kss_RegNr) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO RegNr" << std::endl;
+    }
+    // 2373
+    else if (mCurrentSearchState == kss_Therapy) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO Therapy" << std::endl;
+    }
+    // 2391
+    else if (mCurrentSearchState == kss_FullText) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO FullText" << std::endl;
+    }
+    
+    // 2402
+    // Sort alphabetically
+    if (mUsedDatabase == kdbt_Favorites) {
+        std::clog << __PRETTY_FUNCTION__ << " TODO: Sort alphabetically" << std::endl;
+        //NSSortDescriptor *titleSort = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES];
+        //[doArray sortUsingDescriptors:[NSArray arrayWithObject:titleSort]];
     }
 
     stopProgressIndicator();
@@ -683,7 +717,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
         int n = mListOfSectionTitles.size();
         wxVector<wxVariant> values;
         for (int i=0; i<n; i++) {
-            //std::clog << "Line " << i  << ", <" << mListOfSectionTitles[i].ToStdString() << ">" << std::endl;
+            //std::clog << "Line " << i  << ", <" << mListOfSectionTitles[i] << ">" << std::endl;
 
             values.clear();
             values.push_back(wxVariant(mListOfSectionTitles[i]));
@@ -730,8 +764,10 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
-    std::cerr << __PRETTY_FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
-return;
+#ifndef NDEBUG
+    std::cerr << "=== " << __FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
+#endif
+
     wxString searchText = mySearchField->GetValue();
     if (mCurrentSearchState == kss_WebView)
         return;
@@ -753,11 +789,18 @@ return;
              searchResults = retrieveAllFavorites();
     }
 
-    // TODO: Update tableview
+    // 977
+    // Update tableview
+    updateTableView();
+    
+    myTableView->SetItemCount(searchResults.size()); // reloadData
+    if (searchResults.size()>0)
+        myTableView->SetSelection(0); // scrollRectToVisible
+
     mSearchInProgress = false;
 }
 
-/// 997
+// 997
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
 {
 	std::cerr << __PRETTY_FUNCTION__ << std::endl;
@@ -795,7 +838,9 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
     if (searchResults.size() > 0) {
         updateTableView();
-        // myTableView->reloadData(); // TODO:
+
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        myTableView->SetSelection(0); // scrollRectToVisible
     }
 }
 
@@ -877,6 +922,33 @@ void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
              wxGetOsDescription().ToStdString(), wxVERSION_STRING, SQLITE_VERSION),
     wxString(APP_NAME), wxOK | wxICON_INFORMATION);
+}
+
+// 495
+void MainWindow::OnPerformFindAction( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << event.GetId() << std::endl;
+
+    switch (event.GetId()) {
+        case wxID_FI_FIND:
+            // tag 1
+            break;
+            
+        case wxID_FIND_NEXT:
+            // tag 2
+            break;
+            
+        case wxID_FIND_PREVIOUS:
+            // tag 3
+            break;
+            
+        default:
+            break;
+    }
+
+    // 512
+    // TODO:
+    //myTextFinder->performAction(menuItem.tag);
 }
 
 // 1168
