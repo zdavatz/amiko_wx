@@ -24,6 +24,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_FI_FIND_DONE, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_BUTTON( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnSearchPatient )
 	EVT_DATAVIEW_SELECTION_CHANGED( wxID_SECTION_TITLES, MainWindowBase::_wxFB_OnSelectionDidChange )
 	EVT_TOOL( wxID_TB_COMPENDIUM, MainWindowBase::_wxFB_OnToolbarAction )
@@ -32,6 +33,9 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_TOOL( wxID_TB_PRESCRIPTION, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_PRINT, MainWindowBase::_wxFB_OnPrintDocument )
 	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_OnShowAboutPanel )
+	EVT_MENU( wxID_FI_FIND_SHOW, MainWindowBase::_wxFB_OnPerformFindAction )
+	EVT_MENU( wxID_FI_FIND_NEXT, MainWindowBase::_wxFB_OnPerformFindAction )
+	EVT_MENU( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
 	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
 	EVT_MENU( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnManagePatients )
@@ -56,7 +60,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	#ifndef __WXMAC__
 	mySearchField->ShowSearchButton( true );
 	#endif
-	mySearchField->ShowCancelButton( false );
+	mySearchField->ShowCancelButton( true );
 	bSizerLeft->Add( mySearchField, 0, wxALL|wxEXPAND, 5 );
 
 	m_button1 = new wxButton( m_panelLeft, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -90,16 +94,41 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	myTabView = new wxSimplebook( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 	m_panelWeb = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer5;
-	bSizer5 = new wxBoxSizer( wxVERTICAL );
+	fiSizer = new wxBoxSizer( wxVERTICAL );
+
+	myTextFinder = new wxPanel( m_panelWeb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer23;
+	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_searchCtrl6 = new wxSearchCtrl( myTextFinder, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	#ifndef __WXMAC__
+	m_searchCtrl6->ShowSearchButton( true );
+	#endif
+	m_searchCtrl6->ShowCancelButton( true );
+	bSizer23->Add( m_searchCtrl6, 1, wxALL|wxEXPAND, 5 );
+
+	m_button20 = new wxButton( myTextFinder, wxID_ANY, _("<"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer23->Add( m_button20, 0, wxALL, 5 );
+
+	m_button21 = new wxButton( myTextFinder, wxID_ANY, _(">"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer23->Add( m_button21, 0, wxALL, 5 );
+
+	m_button22 = new wxButton( myTextFinder, wxID_FI_FIND_DONE, _("Done"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer23->Add( m_button22, 0, wxALL, 5 );
+
+
+	myTextFinder->SetSizer( bSizer23 );
+	myTextFinder->Layout();
+	bSizer23->Fit( myTextFinder );
+	fiSizer->Add( myTextFinder, 0, wxEXPAND | wxALL, 5 );
 
 	myWebView = wxWebView::New(m_panelWeb, wxID_FI_WEBVIEW);
-	bSizer5->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
+	fiSizer->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
 
 
-	m_panelWeb->SetSizer( bSizer5 );
+	m_panelWeb->SetSizer( fiSizer );
 	m_panelWeb->Layout();
-	bSizer5->Fit( m_panelWeb );
+	fiSizer->Fit( m_panelWeb );
 	myTabView->AddPage( m_panelWeb, _("a page"), false );
 	m_panel10 = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer6;
@@ -215,15 +244,15 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_menu11 = new wxMenu();
 	wxMenuItem* m_menu11Item = new wxMenuItem( m_menuFile, wxID_ANY, _("Prescription Info"), wxEmptyString, wxITEM_NORMAL, m_menu11 );
 	wxMenuItem* m_menuItem1;
-	m_menuItem1 = new wxMenuItem( m_menu11, wxID_ANY, wxString( _("Find...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem1 = new wxMenuItem( m_menu11, wxID_FI_FIND_SHOW, wxString( _("Find...") ) + wxT('\t') + wxT("CTRL+F"), wxEmptyString, wxITEM_NORMAL );
 	m_menu11->Append( m_menuItem1 );
 
 	wxMenuItem* m_menuItem2;
-	m_menuItem2 = new wxMenuItem( m_menu11, wxID_ANY, wxString( _("Find Next...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem2 = new wxMenuItem( m_menu11, wxID_FI_FIND_NEXT, wxString( _("Find Next...") ) + wxT('\t') + wxT("CTRL+G"), wxEmptyString, wxITEM_NORMAL );
 	m_menu11->Append( m_menuItem2 );
 
 	wxMenuItem* m_menuItem3;
-	m_menuItem3 = new wxMenuItem( m_menu11, wxID_ANY, wxString( _("Find Previous...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem3 = new wxMenuItem( m_menu11, wxID_FI_FIND_PREVIOUS, wxString( _("Find Previous...") ) + wxT('\t') + wxT("CTRL+SHIFT+G"), wxEmptyString, wxITEM_NORMAL );
 	m_menu11->Append( m_menuItem3 );
 
 	m_menuFile->Append( m_menu11Item );
@@ -246,11 +275,11 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_miUpdateDB;
-	m_miUpdateDB = new wxMenuItem( m_menuFile, wxID_UPDATE_DB, wxString( _("Update via Internet") ) , wxEmptyString, wxITEM_NORMAL );
+	m_miUpdateDB = new wxMenuItem( m_menuFile, wxID_UPDATE_DB, wxString( _("Update via Internet") ) + wxT('\t') + wxT("CTRL+A"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_miUpdateDB );
 
 	wxMenuItem* m_miLoadDB;
-	m_miLoadDB = new wxMenuItem( m_menuFile, wxID_LOAD_DB, wxString( _("Update from file") ) , wxEmptyString, wxITEM_NORMAL );
+	m_miLoadDB = new wxMenuItem( m_menuFile, wxID_LOAD_DB, wxString( _("Update from file") ) + wxT('\t') + wxT("CTRL+L"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_miLoadDB );
 
 	m_menuFile->AppendSeparator();
