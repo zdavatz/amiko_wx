@@ -25,6 +25,7 @@
 #include "PatientSheet.h"
 #include "OperatorIDSheet.h"
 #include "FullTextSearch.hpp"
+#include "FullTextEntry.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -83,7 +84,6 @@ MainWindow::MainWindow( wxWindow* parent )
 
     myTextFinder->Hide();
     fiSearchFieldBGColor = myTextFinder->GetBackgroundColour();
-    //fiSearchCount->SetWindowVariant(wxWINDOW_VARIANT_MINI);
     fiSizer->Layout();
 
     SetTitle(APP_NAME + wxString(" Desitin"));
@@ -320,7 +320,7 @@ void MainWindow::resetDataInTableView()
 	// Reset search state
     setSearchState(kss_Title);
 
-    mCurrentSearchKey = "";
+    mCurrentSearchKey = wxEmptyString;
     searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
 
     if (searchResults.size()>0) {
@@ -328,6 +328,7 @@ void MainWindow::resetDataInTableView()
 
         myTableView->SetItemCount(searchResults.size()); // reloadData
         myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->Refresh();
     }
 }
 
@@ -409,31 +410,31 @@ void MainWindow::setSearchState(int searchState)
     switch (searchState)
     {
         case kss_Title:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_Title;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Preparation")));
             break;
 
         case kss_Author:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_Author;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Owner")));
             break;
 
         case kss_AtcCode:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_AtcCode;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("ATC Code")));
             break;
 
         case kss_RegNr:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_RegNr;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Reg. No")));
             break;
 
         case kss_Therapy:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_Therapy;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Therapy")));
             break;
@@ -443,20 +444,20 @@ void MainWindow::setSearchState(int searchState)
             hideTextFinder();
             // NOTE: Commented out because we're using SHCWebView now (02.03.2015)
             /*
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kWebView;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("in Fachinformation"))); // fr: @"Notice Infopro"
             */
             break;
 
         case kss_FullText:
-            mySearchField->SetValue("");
+            mySearchField->SetValue(wxEmptyString);
             mCurrentSearchState = kss_FullText;
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Full Text")));
             break;
     }
 
-    mCurrentSearchKey = "";
+    mCurrentSearchKey = wxEmptyString;
     mCurrentSearchState = searchState;
     std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
@@ -495,13 +496,11 @@ std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuer
 // 2064
 void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId)
 {
-	//std::cerr << __PRETTY_FUNCTION__ << std::endl;
-
 	DataObject *m = new DataObject;
     if (title.size() > 0)
         m->title = title;
     else
-        m->title = L"Not specified"; // TODO: localize
+        m->title = _("Not specified");
 
     if (packinfo.size() > 0) {
         if (!mSearchInteractions)
@@ -518,6 +517,173 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
+
+// 2105
+void MainWindow::addTitle_andAuthor_andMedId(wxString title, wxString author, long medId)
+{
+    DataObject *m = new DataObject;
+
+    if (title.size() > 0)
+        m->title = title;
+    else
+        m->title =  _("Not specified");
+    
+    if (author.size() > 0) {
+        m->subTitle = author;
+    }
+    else
+        m->title = L"Not specified"; // "k.A."
+    
+    m->medId = medId;
+    doArray.push_back(m); // to be obsolete
+    myTableView->searchRes.push_back(m);
+}
+
+// 2126
+void MainWindow::addTitle_andAtcCode_andAtcClass_andMedId(wxString title, wxString atccode, wxString atcclass, long medId)
+{
+    DataObject *m = new DataObject;
+
+    if (title.size() > 0)
+        m->title = title;
+    else
+        m->title = _("Not specified");
+    
+    // 2135
+    if (atccode.IsEmpty())
+        atccode = _("Not specified");
+
+    if (atcclass.IsEmpty())
+        atcclass = _("Not specified");
+    
+    // 2141
+    wxArrayString m_atc = wxSplit(wxString::FromUTF8(atccode), ';');
+    wxArrayString m_class = wxSplit(wxString::FromUTF8(atcclass), ';');
+    wxString m_atccode_str;
+    wxString m_atcclass_str;
+    if (m_atc.size() > 1) {
+        if (!m_atc[0].IsEmpty())
+            m_atccode_str = m_atc[0];
+
+        if (!m_atc[1].IsEmpty())
+            m_atcclass_str = m_atc[1];
+    }
+    else {
+        m_atccode_str = _("Not specified");
+    }
+    
+    // 2154
+    if (m_atccode_str.IsEmpty())
+        m_atccode_str = _("Not specified");
+
+    if (m_atcclass_str.IsEmpty())
+        m_atcclass_str = _("Not specified");
+    
+    wxString m_atcclass;
+    if (m_class.size() == 2) {  // *** Ver.<1.2
+        m_atcclass = m_class[1];
+        if (m_atcclass.IsEmpty())
+            m_atcclass = _("Not specified");
+
+        m->subTitle = wxString::Format("%s - %s\n%s", m_atccode_str, m_atcclass_str, m_atcclass); // TBC \n or <br> ?
+    }
+    else if (m_class.size() == 3) {  // *** Ver.>=1.2
+        wxArrayString m_atc_class_l4_and_l5 = wxSplit(wxString::FromUTF8(m_class[2]), '#');
+        int n = (int)m_atc_class_l4_and_l5.size();
+        if (n>1)
+            m_atcclass = m_atc_class_l4_and_l5[n-2];
+
+        if (m_atcclass.IsEmpty())
+            m_atcclass = _("Not specified");
+
+        m->subTitle = wxString::Format("%s - %s\n%s\n%s", m_atccode_str, m_atcclass_str, m_atcclass, m_class[1]);
+    }
+    else {
+        m_atcclass = _("Not specified");
+        m->subTitle = _("Not specified");
+    }
+
+    m->medId = medId;
+    doArray.push_back(m); // to be obsolete
+    myTableView->searchRes.push_back(m);
+}
+
+// 2188
+void MainWindow::addTitle_andRegnrs_andAuthor_andMedId(wxString title, wxString regnrs, wxString author, long medId)
+{
+    DataObject *m = new DataObject;
+    if (title.size() > 0)
+        m->title = title;
+    else
+        m->title = _("Not specified");
+
+    wxString m_regnrs = regnrs;
+    wxString m_auth = author;
+    if (m_regnrs.IsEmpty())
+        m_regnrs = _("Not specified");
+
+    if (m_auth.IsEmpty())
+        m_auth = _("Not specified");
+
+    m->subTitle = wxString::Format("%s - %s", m_regnrs, m_auth);
+    m->medId = medId;
+    
+    doArray.push_back(m); // to be obsolete
+    myTableView->searchRes.push_back(m);
+}
+
+// 2237
+void MainWindow::addTitle_andApplications_andMedId(wxString title, wxString applications, long medId)
+{
+    DataObject *m = new DataObject;
+    if (title.size() > 0)
+        m->title = title;
+    else
+        m->title = _("Not specified");
+
+    //
+    wxArrayString m_applications = wxSplit(wxString::FromUTF8(applications), ';');
+    wxString m_swissmedic;
+    wxString m_bag;
+    if (m_applications.size() > 0) {
+        if (!m_applications[0].IsEmpty())
+            m_swissmedic = m_applications[0];
+
+        if (m_applications.size() > 1) {
+            if (!m_applications[1].IsEmpty())
+                m_bag = m_applications[1];
+        }
+    }
+    if (m_swissmedic.IsEmpty())
+        m_swissmedic = _("Not specified");
+
+    if (m_bag.IsEmpty())
+        m_bag  = _("Not specified"); // @"k.A.";
+
+    m->subTitle = wxString::Format("%s\n%s", m_swissmedic, m_bag);
+    m->medId = medId;
+    
+    doArray.push_back(m); // to be obsolete
+    myTableView->searchRes.push_back(m);
+}
+
+// 2271
+void MainWindow::addKeyword_andNumHits_andHash(wxString keyword, unsigned long numHits, wxString hash)
+{
+    DataObject *m = new DataObject;
+
+    if (keyword.size() > 0)
+        m->title = keyword;
+    else
+        m->title = _("Not specified");
+
+    m->subTitle = wxString::Format("%ld Treffer", numHits);  // TODO: localize
+    m->hashId = hash;
+    
+    doArray.push_back(m); // to be obsolete
+    myTableView->searchRes.push_back(m);
+}
+
 
 // 2286
 void MainWindow::updateTableView()
@@ -550,7 +716,6 @@ void MainWindow::updateTableView()
     // 2298
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
-
             // 2300
             for (auto m : searchResults) {
                 // TODO: [favoriteKeyData addObject:m.regnrs];
@@ -569,23 +734,86 @@ void MainWindow::updateTableView()
     }
     // 2321
     else if (mCurrentSearchState == kss_Author) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO Author" << std::endl;
+        for (auto m : searchResults) {
+            // 2323
+            if (mUsedDatabase == kdbt_Aips) {
+                if (m->regnrs) {
+                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    addTitle_andAuthor_andMedId(wxString::FromUTF8(m->title), m->auth, m->medId);
+                }
+            }
+            // 2328
+            else if (mUsedDatabase == kdbt_Favorites) {
+                std::clog << __FUNCTION__ << " TODO Author Favorites" << std::endl;
+            }
+        }
     }
     // 2338
     else if (mCurrentSearchState == kss_AtcCode) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO AtcCode" << std::endl;
+        for (auto m : searchResults) {
+            // 2340
+            if (mUsedDatabase == kdbt_Aips) {
+                if (m->regnrs) {
+                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
+                }
+            }
+            // 2345
+            else if (mUsedDatabase == kdbt_Favorites) {
+                std::clog << __PRETTY_FUNCTION__ << " TODO AtcCode Favorites" << std::endl;
+            }
+        }
     }
     // 2355
     else if (mCurrentSearchState == kss_RegNr) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO RegNr" << std::endl;
+        for (auto m : searchResults) {
+            // 2357
+            if (mUsedDatabase == kdbt_Aips) {
+                if (m->regnrs) {
+                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    addTitle_andRegnrs_andAuthor_andMedId(
+                            wxString::FromUTF8(m->title),
+                            m->regnrs,
+                            m->auth, m->medId);
+                }
+            }
+            // 2363
+            else if (mUsedDatabase == kdbt_Favorites) {
+                std::clog << __PRETTY_FUNCTION__ << " TODO RegNr Favorites" << std::endl;
+            }
+        }
     }
     // 2373
     else if (mCurrentSearchState == kss_Therapy) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO Therapy" << std::endl;
+        for (auto m : searchResults) {
+            // 2375
+            if (mUsedDatabase == kdbt_Aips) {
+                if (m->regnrs) {
+                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    addTitle_andApplications_andMedId(m->title, m->application, m->medId);
+                }
+            }
+            // 2381
+            else if (mUsedDatabase == kdbt_Favorites) {
+                std::clog << __PRETTY_FUNCTION__ << " TODO Therapy Favorites" << std::endl;
+            }
+        }
     }
     // 2391
     else if (mCurrentSearchState == kss_FullText) {
         std::clog << __PRETTY_FUNCTION__ << " TODO FullText" << std::endl;
+#if 0
+        // TODO: No viable conversion from 'Medication *' to 'FullTextEntry'
+        // TODO: maybe define and use searchResultsFT instead of searchResults
+        for (FullTextEntry e : searchResults) {
+            if (mUsedDatabase == kdbt_Aips || mUsedDatabase == kdbt_Favorites) {
+                if (!e.hash.IsEmpty()) {
+                    // TODO:: [favoriteKeyData addObject:e.hash];
+                    addKeyword_andNumHits_andHash(e.keyword, e.numHits, e.hash);
+                }
+            }
+        }
+#endif
     }
     
     // 2402
@@ -806,6 +1034,8 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
     if (searchResults.size()>0)
         myTableView->SetSelection(0); // scrollRectToVisible
 
+    myTableView->Refresh();
+
     mSearchInProgress = false;
 }
 
@@ -850,6 +1080,7 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
         myTableView->SetItemCount(searchResults.size()); // reloadData
         myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->Refresh();
     }
 }
 
@@ -861,7 +1092,7 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     wxString find_text = fiSearchField->GetValue();
     
     if (find_text.IsEmpty())
-        m_findCount = myWebView->Find(wxEmptyString); // reset the search
+        m_findCount = myWebView->Find(wxEmptyString); // reset the search and highlights
     else
         m_findCount = myWebView->Find(find_text, wxWEBVIEW_FIND_HIGHLIGHT_RESULT);
 
@@ -931,7 +1162,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
     // 2981
     if (mPrescriptionMode) {
-        //NSLog(@"%s row:%ld, %@", __FUNCTION__, row, mListOfSectionIds[row]);
+        //NSLog(@"%s row:%ld, %s", __FUNCTION__, row, mListOfSectionIds[row]);
         // TODO: loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
     }
     else if (mCurrentSearchState != kss_FullText ||
@@ -985,6 +1216,7 @@ void MainWindow::OnPerformFindAction( wxCommandEvent& event )
             myTextFinder->Show();
             fiSearchField->SetValue(wxEmptyString);
             fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
+            fiSearchField->SetFocus();
             fiSearchCount->Hide(); // No need to show the count when the string is empty
             fiSizer->Layout();
             break;

@@ -11,7 +11,7 @@ struct DataObject
 	wxString title;
 	wxString subTitle;
     long medId;
-    char *hashId;
+    wxString hashId;
     
-    DataObject() {hashId = nullptr; medId = 0;} // constructor
+    DataObject() { medId = 0;} // constructor
 };

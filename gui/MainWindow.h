@@ -54,6 +54,11 @@ private:
     void switchTabs(int item);
     void stopProgressIndicator();
     void addTitle_andPackInfo_andMedId(wxString title, wxString packinfo, long medId);
+    void addTitle_andAuthor_andMedId(wxString title, wxString author, long medId);
+    void addTitle_andAtcCode_andAtcClass_andMedId(wxString title, wxString atccode, wxString atcclass, long medId);
+    void addTitle_andRegnrs_andAuthor_andMedId(wxString title, wxString regnrs, wxString author, long medId);
+    void addTitle_andApplications_andMedId(wxString title, wxString applications, long medId);
+    void addKeyword_andNumHits_andHash(wxString keyword, unsigned long numHits, wxString hash);
 
     bool openSQLiteDatabase();
     bool openFullTextDatabase();
