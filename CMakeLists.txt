@@ -95,6 +95,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     TableViewDelegate.cpp TableViewDelegate.hpp
     PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
     FullTextSearch.cpp FullTextSearch.hpp
+    FullTextEntry.cpp FullTextEntry.hpp
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     customURLConnection.cpp customURLConnection.hpp
     )

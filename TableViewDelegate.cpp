@@ -49,9 +49,13 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     // MLItemCellView.m 120 tableView:viewForTableColumn:row
     wxArrayString listOfPackages = wxSplit(wxString(m->subTitle), '\n');
 
+#ifndef NDEBUG
     wxColour starColor = lightYellow;
     if (n % 5)
         starColor = typicalGray;
+#else
+    wxColour starColor = typicalGray;
+#endif
     
     wxString label;
     //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
