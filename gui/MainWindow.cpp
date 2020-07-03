@@ -71,6 +71,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , mDb(nullptr)
 , mFullTextDb(nullptr)
 , mInteractions(nullptr)
+, m_findCount(wxNOT_FOUND)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
     if (wxString(APP_NAME) == "CoMed") {
@@ -81,6 +82,8 @@ MainWindow::MainWindow( wxWindow* parent )
     mySectionTitles->AppendTextColumn( "Sections" );
 
     myTextFinder->Hide();
+    fiSearchFieldBGColor = myTextFinder->GetBackgroundColour();
+    fiSearchCount->SetWindowVariant(wxWINDOW_VARIANT_MINI);
     fiSizer->Layout();
 
     SetTitle(APP_NAME + wxString(" Desitin"));
@@ -768,7 +771,10 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
 #ifndef NDEBUG
-    std::cerr << "=== " << __FUNCTION__ << " <" << mySearchField->GetValue().ToStdString() << ">" << std::endl;
+    std::cerr << "=== " << __FUNCTION__
+    << " from ID: " << event.GetId()  // wxID_MY_SEARCH_FIELD
+    << " <" << mySearchField->GetValue() << ">"
+    << std::endl;
 #endif
 
     wxString searchText = mySearchField->GetValue();
@@ -844,6 +850,43 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
         myTableView->SetItemCount(searchResults.size()); // reloadData
         myTableView->SetSelection(0); // scrollRectToVisible
+    }
+}
+
+// There is no corresponding code in amiko-osx, because there it's implemented
+// by injecting JavaScript code into the webview
+// Called when the text changes in the search control
+void MainWindow::OnSearchFiNow( wxCommandEvent& event )
+{
+    wxString find_text = fiSearchField->GetValue();
+    
+    if (find_text.IsEmpty())
+        m_findCount = wxNOT_FOUND;
+    else
+        m_findCount = myWebView->Find(find_text, wxWEBVIEW_FIND_HIGHLIGHT_RESULT);
+
+#ifndef NDEBUG
+    std::cerr << "=== " << __FUNCTION__
+    << " from ID: " << event.GetId() // wxID_FI_SEARCH_FIELD
+    << " <" << find_text << ">"
+    << " m_findCount " << m_findCount
+    << std::endl;
+#endif
+
+    if (!fiSearchCount->IsShown()) {
+        fiSearchCount->Show();
+    }
+
+    fiSearchCount->SetLabel(wxString::Format(wxT("%i"), m_findCount));
+    fiSizer->Layout();
+    
+    if (m_findCount != wxNOT_FOUND || find_text.IsEmpty())
+    {
+        fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
+    }
+    else
+    {
+        fiSearchField->SetBackgroundColour(wxColour(255, 101, 101));
     }
 }
 
@@ -930,32 +973,35 @@ void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 // 495
 void MainWindow::OnPerformFindAction( wxCommandEvent& event )
 {
+#ifndef NDEBUG
     std::clog << __FUNCTION__ << " event ID: " << event.GetId() << std::endl;
+#endif
 
-    long findResult;
     switch (event.GetId()) {
         case wxID_FI_FIND_SHOW: // tag 1 = NSTextFinderActionShowFindInterface
             myTextFinder->Show();
+            fiSearchField->SetValue(wxEmptyString);
+            fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
+            fiSearchCount->Hide(); // No need to show the count when the string is empty
             fiSizer->Layout();
             break;
             
-        case wxID_FI_FIND_NEXT: // tag 2 = NSTextFinderActionNextMatch
-            if (myTextFinder->IsShown()) {
-                #ifndef NDEBUG
-                findResult = myWebView->Find("Intera", wxWEBVIEW_FIND_HIGHLIGHT_RESULT);
-                std::clog << __FUNCTION__ << " findResult " << findResult << std::endl;
-                #endif
+        case wxID_FI_FIND_NEXT:     // tag 2 = NSTextFinderActionNextMatch
+        case wxID_FI_FIND_PREVIOUS: // tag 3 = NSTextFinderActionPreviousMatch
+            if (myTextFinder->IsShown() && m_findCount != wxNOT_FOUND) {
+                int flags = wxWEBVIEW_FIND_HIGHLIGHT_RESULT;
+                if (event.GetId() == wxID_FI_FIND_PREVIOUS)
+                    flags |= wxWEBVIEW_FIND_BACKWARDS;
+
+                long count = myWebView->Find(fiSearchField->GetValue(), flags);
+                fiSearchCount->SetLabel(wxString::Format(wxT("%li/%i"), count, m_findCount));
+                fiSizer->Layout();
+#ifndef NDEBUG
+                std::clog << __FUNCTION__ << " count " << count << std::endl;
+#endif
             }
             break;
 
-        case wxID_FI_FIND_PREVIOUS: // tag 3 = NSTextFinderActionPreviousMatch
-            if (myTextFinder->IsShown()) {
-                #ifndef NDEBUG
-                findResult = myWebView->Find("Intera", wxWEBVIEW_FIND_HIGHLIGHT_RESULT | wxWEBVIEW_FIND_BACKWARDS);
-                std::clog << __FUNCTION__ << " findResult " << findResult << std::endl;
-                #endif
-            }
-            break;
             
         case wxID_FI_FIND_DONE: // tag 11 = NSTextFinderActionHideFindInterface
             if (myTextFinder->IsShown()) {

@@ -23,9 +23,9 @@
 #include "TableViewDelegate.hpp"
 #include <wx/sizer.h>
 #include <wx/panel.h>
+#include <wx/stattext.h>
 #include <wx/webview.h>
 #include <wx/textctrl.h>
-#include <wx/stattext.h>
 #include <wx/bmpbuttn.h>
 #include <wx/dataview.h>
 #include <wx/simplebook.h>
@@ -49,20 +49,21 @@
 #define wxID_BTN_THERAPY 1005
 #define wxID_BTN_FULL_TEXT 1006
 #define wxID_MY_TV 1007
-#define wxID_FI_FIND_DONE 1008
-#define wxID_FI_WEBVIEW 1009
-#define wxID_PATIENT_SEARCH 1010
-#define wxID_SECTION_TITLES 1011
-#define wxID_TB_COMPENDIUM 1012
-#define wxID_TB_FAVORITES 1013
-#define wxID_TB_INTERACTIONS 1014
-#define wxID_TB_PRESCRIPTION 1015
-#define wxID_FI_FIND_SHOW 1016
-#define wxID_FI_FIND_NEXT 1017
-#define wxID_FI_FIND_PREVIOUS 1018
-#define wxID_UPDATE_DB 1019
-#define wxID_LOAD_DB 1020
-#define wxID_SET_OPERATOR_ID 1021
+#define wxID_FI_SEARCH_FIELD 1008
+#define wxID_FI_FIND_PREVIOUS 1009
+#define wxID_FI_FIND_NEXT 1010
+#define wxID_FI_FIND_DONE 1011
+#define wxID_FI_WEBVIEW 1012
+#define wxID_PATIENT_SEARCH 1013
+#define wxID_SECTION_TITLES 1014
+#define wxID_TB_COMPENDIUM 1015
+#define wxID_TB_FAVORITES 1016
+#define wxID_TB_INTERACTIONS 1017
+#define wxID_TB_PRESCRIPTION 1018
+#define wxID_FI_FIND_SHOW 1019
+#define wxID_UPDATE_DB 1020
+#define wxID_LOAD_DB 1021
+#define wxID_SET_OPERATOR_ID 1022
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -75,6 +76,7 @@ class MainWindowBase : public wxFrame
 		// Private event handlers
 		void _wxFB_OnSearchNow( wxCommandEvent& event ){ OnSearchNow( event ); }
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
+		void _wxFB_OnSearchFiNow( wxCommandEvent& event ){ OnSearchFiNow( event ); }
 		void _wxFB_OnPerformFindAction( wxCommandEvent& event ){ OnPerformFindAction( event ); }
 		void _wxFB_OnSearchPatient( wxCommandEvent& event ){ OnSearchPatient( event ); }
 		void _wxFB_OnSelectionDidChange( wxDataViewEvent& event ){ OnSelectionDidChange( event ); }
@@ -101,7 +103,7 @@ class MainWindowBase : public wxFrame
 		wxPanel* m_panelRight;
 		wxSimplebook* myTabView;
 		wxPanel* m_panelWeb;
-		wxSearchCtrl* m_searchCtrl6;
+		wxSearchCtrl* fiSearchField;
 		wxButton* m_button20;
 		wxButton* m_button21;
 		wxButton* m_button22;
@@ -133,6 +135,7 @@ class MainWindowBase : public wxFrame
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSearchFiNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPerformFindAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSearchPatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectionDidChange( wxDataViewEvent& event ) { event.Skip(); }
@@ -146,8 +149,10 @@ class MainWindowBase : public wxFrame
 
 
 	public:
+		wxBoxSizer* bSizerLeft;
 		wxBoxSizer* fiSizer;
 		wxPanel* myTextFinder;
+		wxStaticText* fiSearchCount;
 		wxStaticText* myPlaceDateField;
 		wxDataViewCtrl* myPrescriptionsTableView;
 		wxDataViewListCtrl* mySectionTitles;

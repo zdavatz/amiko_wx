@@ -28,12 +28,13 @@ class MainWindow : public MainWindowBase
 		// Handlers for MainWindowBase events.
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
+		void OnSearchFiNow( wxCommandEvent& event );
+		void OnPerformFindAction( wxCommandEvent& event );
 		void OnSearchPatient( wxCommandEvent& event );
 		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
-		void OnPerformFindAction( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );
@@ -66,6 +67,10 @@ private:
     void updatePrescriptionHistory();
     void updateFullTextSearchView(wxString contentStr);
     void finishedDownloading();
+    
+    // not in amiko-osx
+    int m_findCount;
+    wxColour fiSearchFieldBGColor;//GetBackgroundColour()
 
     // 105
     int mUsedDatabase;
