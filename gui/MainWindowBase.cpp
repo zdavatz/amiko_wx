@@ -24,6 +24,9 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_TEXT( wxID_FI_SEARCH_FIELD, MainWindowBase::_wxFB_OnSearchFiNow )
+	EVT_BUTTON( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
+	EVT_BUTTON( wxID_FI_FIND_NEXT, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_BUTTON( wxID_FI_FIND_DONE, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_BUTTON( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnSearchPatient )
 	EVT_DATAVIEW_SELECTION_CHANGED( wxID_SECTION_TITLES, MainWindowBase::_wxFB_OnSelectionDidChange )
@@ -53,7 +56,6 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
 
 	m_panelLeft = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizerLeft;
 	bSizerLeft = new wxBoxSizer( wxVERTICAL );
 
 	mySearchField = new wxSearchCtrl( m_panelLeft, wxID_MY_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
@@ -100,17 +102,23 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer23;
 	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_searchCtrl6 = new wxSearchCtrl( myTextFinder, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fiSearchField = new wxSearchCtrl( myTextFinder, wxID_FI_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	#ifndef __WXMAC__
-	m_searchCtrl6->ShowSearchButton( true );
+	fiSearchField->ShowSearchButton( true );
 	#endif
-	m_searchCtrl6->ShowCancelButton( true );
-	bSizer23->Add( m_searchCtrl6, 1, wxALL|wxEXPAND, 5 );
+	fiSearchField->ShowCancelButton( true );
+	bSizer23->Add( fiSearchField, 1, wxALL|wxEXPAND, 5 );
 
-	m_button20 = new wxButton( myTextFinder, wxID_ANY, _("<"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	m_button20 = new wxButton( myTextFinder, wxID_FI_FIND_PREVIOUS, _("<"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
 	bSizer23->Add( m_button20, 0, wxALL, 5 );
 
-	m_button21 = new wxButton( myTextFinder, wxID_ANY, _(">"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	fiSearchCount = new wxStaticText( myTextFinder, wxID_ANY, _("count"), wxDefaultPosition, wxDefaultSize, 0 );
+	fiSearchCount->Wrap( -1 );
+	fiSearchCount->Hide();
+
+	bSizer23->Add( fiSearchCount, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_button21 = new wxButton( myTextFinder, wxID_FI_FIND_NEXT, _(">"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
 	bSizer23->Add( m_button21, 0, wxALL, 5 );
 
 	m_button22 = new wxButton( myTextFinder, wxID_FI_FIND_DONE, _("Done"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
