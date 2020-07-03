@@ -83,7 +83,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     myTextFinder->Hide();
     fiSearchFieldBGColor = myTextFinder->GetBackgroundColour();
-    fiSearchCount->SetWindowVariant(wxWINDOW_VARIANT_MINI);
+    //fiSearchCount->SetWindowVariant(wxWINDOW_VARIANT_MINI);
     fiSizer->Layout();
 
     SetTitle(APP_NAME + wxString(" Desitin"));
@@ -861,7 +861,7 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     wxString find_text = fiSearchField->GetValue();
     
     if (find_text.IsEmpty())
-        m_findCount = wxNOT_FOUND;
+        m_findCount = myWebView->Find(wxEmptyString); // reset the search
     else
         m_findCount = myWebView->Find(find_text, wxWEBVIEW_FIND_HIGHLIGHT_RESULT);
 
@@ -873,21 +873,24 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     << std::endl;
 #endif
 
-    if (!fiSearchCount->IsShown()) {
+    if (!fiSearchCount->IsShown())
         fiSearchCount->Show();
-    }
 
-    fiSearchCount->SetLabel(wxString::Format(wxT("%i"), m_findCount));
+    if (m_findCount > 0) {
+        fiSearchCount->SetLabel(wxString::Format("%i", m_findCount)); 
+        if (!fiSearchCount->IsShown())
+            fiSearchCount->Show();
+    }
+    else {
+        if (fiSearchCount->IsShown())
+            fiSearchCount->Hide();        
+    }
     fiSizer->Layout();
     
-    if (m_findCount != wxNOT_FOUND || find_text.IsEmpty())
-    {
+    if (m_findCount > 0 || find_text.IsEmpty())
         fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
-    }
     else
-    {
         fiSearchField->SetBackgroundColour(wxColour(255, 101, 101));
-    }
 }
 
 // 1390
@@ -988,16 +991,16 @@ void MainWindow::OnPerformFindAction( wxCommandEvent& event )
             
         case wxID_FI_FIND_NEXT:     // tag 2 = NSTextFinderActionNextMatch
         case wxID_FI_FIND_PREVIOUS: // tag 3 = NSTextFinderActionPreviousMatch
-            if (myTextFinder->IsShown() && m_findCount != wxNOT_FOUND) {
+            if (myTextFinder->IsShown() && m_findCount > 0) {
                 int flags = wxWEBVIEW_FIND_HIGHLIGHT_RESULT;
                 if (event.GetId() == wxID_FI_FIND_PREVIOUS)
                     flags |= wxWEBVIEW_FIND_BACKWARDS;
 
-                long count = myWebView->Find(fiSearchField->GetValue(), flags);
-                fiSearchCount->SetLabel(wxString::Format(wxT("%li/%i"), count, m_findCount));
+                long currentMatch = myWebView->Find(fiSearchField->GetValue(), flags);
+                fiSearchCount->SetLabel(wxString::Format(wxT("%li/%i"), currentMatch+1, m_findCount));
                 fiSizer->Layout();
 #ifndef NDEBUG
-                std::clog << __FUNCTION__ << " count " << count << std::endl;
+                std::clog << __FUNCTION__ << " current match: " << currentMatch << std::endl;
 #endif
             }
             break;
