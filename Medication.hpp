@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <map>
+#include <wx/wx.h>
+
 class Medication
 {
 public:
@@ -15,6 +18,7 @@ public:
     wxArrayString listOfSectionIds();
     wxArrayString listOfSectionTitles();
     const wxString &shortTitle(wxString &longTitle);
+    std::map<wxString, wxString> indexToTitlesDict();
 
     long medId; // pk in DB file
     char *title;
