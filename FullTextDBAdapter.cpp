@@ -108,9 +108,6 @@ FullTextDBAdapter::cursorToFullTextEntry(ONE_SQL_RESULT &cursor)
     entry->hash = cursor[kRowId].u.c; // TBC .u.i
     entry->keyword = cursor[kKeyword].u.c;
 
-//    std::clog << "hash: " << entry->hash << std::endl;
-//    std::clog << "keyword: " << entry->keyword << std::endl;
-
     wxString regnrsAndChapters = cursor [kRegnrs].u.c;
 
     if (!regnrsAndChapters.IsEmpty()) {

@@ -320,14 +320,12 @@ Medication * DBAdapter::cursorToVeryShortMedInfo(ONE_SQL_RESULT &cursor)
 {
     Medication *medi = new Medication;
     
-#if 0 // TODO: @@@
-    [medi setMedId:[(NSString *)[cursor objectAtIndex:kMedId] longLongValue]];
-    [medi setTitle:(NSString *)[cursor objectAtIndex:kTitle]];
-    [medi setAuth:(NSString *)[cursor objectAtIndex:kAuth]];
-    [medi setRegnrs:(NSString *)[cursor objectAtIndex:kRegnrs]];
-    [medi setSectionIds:(NSString *)[cursor objectAtIndex:kIdsStr]];
-    [medi setSectionTitles:(NSString *)[cursor objectAtIndex:kSectionsStr]];
-#endif
+    medi->medId = cursor[kMedId].u.i;
+    medi->title = cursor[kTitle].u.c;
+    medi->auth = cursor[kAuth].u.c;
+    medi->regnrs = cursor [kRegnrs].u.c;
+    medi->sectionIds = cursor[kIdsStr].u.c;
+    medi->sectionTitles = cursor[kSectionsStr].u.c;
 
     return medi;
 }

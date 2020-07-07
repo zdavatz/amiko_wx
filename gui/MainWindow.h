@@ -107,7 +107,7 @@ private:
     std::vector<Medication *> searchResults;
     std::vector<FullTextEntry *> searchResultsFT;
 
-    // 170
+    // .m 170
     wxArrayString mListOfSectionIds;  // full paths
     wxArrayString mListOfSectionTitles;
     

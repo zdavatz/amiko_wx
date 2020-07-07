@@ -131,7 +131,8 @@ MainWindow::MainWindow( wxWindow* parent )
     // TODO: Create bridge between JScript and ObjC
 
     // 298
-    // TODO: Initialize full text search
+    // Initialize full text search
+    mFullTextSearch = new FullTextSearch;
 
     // 301
     // TODO: Initialize all three prescription baskets
@@ -702,6 +703,7 @@ void MainWindow::updateTableView()
 {
     //std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
+#if 0
     if (mCurrentSearchState == kss_FullText) {
         if (searchResultsFT.size() == 0) {
             stopProgressIndicator();
@@ -716,6 +718,7 @@ void MainWindow::updateTableView()
             return;
         }
     }
+#endif
     
 #ifndef NDEBUG
     std::cerr << __FUNCTION__ << " Line " << __LINE__
@@ -893,7 +896,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     // 2492
     wxString js_Script;
     {
-        // TODO: Load JavaScript from file
+        // Load JavaScript from file
 #ifdef __linux__
         wxFileName f(wxStandardPaths::Get().GetExecutablePath());
         wxString jscriptPath(f.GetPath());
@@ -948,7 +951,6 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
     // 2547
     myWebView->SetPage(htmlStr, wxString());
-    //myWebView->Fit();
 
     // 2553
     if (!mPrescriptionMode) {
@@ -1010,7 +1012,74 @@ void MainWindow::updatePrescriptionsView()
 // 2603
 void MainWindow::updateFullTextSearchView(wxString contentStr)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::clog << __FUNCTION__ << " contentStr: <" << contentStr << ">" << std::endl;
+
+    wxString colorCss = UTI::getColorCss();
+
+    // Load style sheet from file
+#ifdef __linux__
+    wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+    wxString fullTextCssPath(f.GetPath());
+#else
+    // TODO: use GetResourcesDir()
+    wxString fullTextCssPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+    fullTextCssPath += wxFILE_SEP_PATH + wxString("fulltext_style.css");
+
+    wxString fullTextCss;
+    if (wxFileName::Exists(fullTextCssPath)) {
+        wxFileInputStream input( fullTextCssPath );
+        wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+        while (input.IsOk() && !input.Eof() )
+            fullTextCss += text.ReadLine();
+    }
+
+    wxString js_Script;
+    {
+// Load javascript from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString jscriptPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
+        
+        wxString jscriptStr;
+        //= [NSString stringWithContentsOfFile:jscriptPath encoding:NSUTF8StringEncoding error:nil];
+        if (wxFileName::Exists(jscriptPath)) {
+            wxFileInputStream input( jscriptPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                jscriptStr += text.ReadLine();
+        }
+        
+        js_Script = wxString::Format("<script type=\"text/javascript\">%s</script>", jscriptStr);
+    }
+
+    wxString htmlStr = wxString::Format("<html><head><meta charset=\"utf-8\" /><meta name=\"supported-color-schemes\" content=\"light dark\" />");
+    htmlStr += wxString::Format("%s\n<style type=\"text/css\">%s</style><style type=\"text/css\">%s</style></head><body><div id=\"fulltext\">%s</div></body></html>",
+             js_Script,
+             colorCss,
+             fullTextCss,
+             contentStr);
+
+    std::clog << "htmlStr: <" << htmlStr << ">" << std::endl;
+
+    // 2622
+    myWebView->SetPage(htmlStr, wxString());
+
+#if 0 // TODO: @@@
+    // 2626
+    // Update right pane (section titles)
+    if (![mFullTextSearch.listOfSectionIds isEqual:[NSNull null]])
+      mListOfSectionIds = mFullTextSearch.listOfSectionIds;
+    if (![mFullTextSearch.listOfSectionTitles isEqual:[NSNull null]])
+      mListOfSectionTitles = mFullTextSearch.listOfSectionTitles;
+
+    [mySectionTitles reloadData];
+#endif
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -1103,25 +1172,20 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     if (prevState == kss_FullText || mCurrentSearchState == kss_FullText)
         updateSearchResults();
 
-    if (mCurrentSearchState == kss_FullText) {
-        if (searchResultsFT.size() > 0) {
-            updateTableView();
+    updateTableView();
 
-            myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+    if (mCurrentSearchState == kss_FullText) {
+        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+        if (searchResultsFT.size() > 0)
             myTableView->SetSelection(0); // scrollRectToVisible
-            myTableView->Refresh();
-        }
     }
     else {
-        if (searchResults.size() > 0) {
-            updateTableView();
-
-            myTableView->SetItemCount(searchResults.size()); // reloadData
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        if (searchResults.size() > 0)
             myTableView->SetSelection(0); // scrollRectToVisible
-            myTableView->Refresh();
-        }
-
     }
+
+    myTableView->Refresh();
 }
 
 // There is no corresponding code in amiko-osx, because there it's implemented
@@ -1208,7 +1272,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     else if (mCurrentSearchState != kss_FullText ||
              mCurrentWebView != kFullTextSearchView)
     {
-        // NSString *javaScript = [NSString stringWithFormat:@"window.location.hash='#%@'", mListOfSectionIds[row]];
+        // NSString *javaScript = [NSString stringWithFormat:@"window.location.hash='#%s'", mListOfSectionIds[row]];
 
         // TODO: debug that mListOfSectionIds has valid data
 
@@ -1219,7 +1283,11 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     }
     else {
         // Update webviewer's content without changing anything else
-        wxString contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
+        wxString contentStr;
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#if 0 // TODO: @@@
+        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
+#endif
         updateFullTextSearchView(contentStr);
     }
 }
@@ -1385,13 +1453,12 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         wxArrayString listOfRegnrs = mFullTextEntry->getRegnrsAsArray();
         MEDICATION_RESULTS listOfArticles = mDb->searchRegnrsFromList(listOfRegnrs);
 
-#if 0 // TODO: @@@
-        NSDictionary *dict = mFullTextEntry->getRegChaptersDict();
+        std::map<wxString, std::set<wxString>> dict = mFullTextEntry->regChaptersDict;
         
-        mFullTextContentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( listOfArticles, dict, "");
+        mFullTextContentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( listOfArticles, dict, wxEmptyString);
+
         mCurrentWebView = kFullTextSearchView;
         updateFullTextSearchView(mFullTextContentStr);
-#endif
     }
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!

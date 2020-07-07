@@ -34,13 +34,8 @@ wxArrayString FullTextEntry::getRegnrsAsArray()
     //return [regChaptersDict allKeys];
     wxArrayString regStr;
     std::map<wxString, std::set<wxString>>::iterator it;
-    for (it = regChaptersDict.begin(); it != regChaptersDict.end(); ++it) {
-        std::set<wxString> value = it->second;
-        for (auto s : value) {
-            regStr.Add(s);
-            std::cout << "Add " << s << std::endl;
-        }
-    }
+    for (it = regChaptersDict.begin(); it != regChaptersDict.end(); ++it)
+        regStr.Add( it->first );
 
     return regStr;
 }

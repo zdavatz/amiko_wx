@@ -4,6 +4,8 @@
 //  Created by Alex Bettarini on 18 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+#include <map>
+
 #include <wx/wx.h>
 #include <wx/arrstr.h>
 
@@ -85,15 +87,37 @@ wxArrayString Medication::listOfSectionIds()
 // 61
 wxArrayString Medication::listOfSectionTitles()
 {
-    //std::clog << "Line " << __LINE__ << " sectionTitles: " << sectionTitles << std::endl;
-
     wxArrayString titles = wxSplit(wxString(sectionTitles, wxConvUTF8), ';');
     int n = titles.size();
-    std::clog << "Line " << __LINE__ << " # sectionTitles: " << n << std::endl;
+    //std::clog << __FUNCTION__ << " Line " << __LINE__ << " # sectionTitles: " << n << std::endl;
     for (int i=0; i<n; ++i)
         titles[i] = shortTitle(titles[i]);
 
     return titles;
+}
+
+// 71
+std::map<wxString, wxString>
+Medication::indexToTitlesDict()
+{
+    std::map<wxString, wxString> dict;// = [[NSMutableDictionary alloc] init];
+    
+    wxArrayString ids = listOfSectionIds();
+    wxArrayString titles = listOfSectionTitles();
+    
+    int n1 = ids .size();
+    int n2 = titles.size();
+    int n = n1 < n2 ? n1 : n2;
+    for (int i=0; i<n; ++i) {
+        wxString id = ids[i];
+        id.Replace("section", "");
+        id.Replace("Section", "");
+        if (id.length() > 0) {
+            dict[id] = shortTitle(titles[i]);
+        }
+    }
+    
+    return dict;
 }
 
 // 93
