@@ -10,8 +10,8 @@
 #include <sqlite3.h>
 
 // TODO wxVector<wxVariant>
-#define ONE_RESULT          std::vector<struct myStruct>
-#define ALL_RESULTS         std::vector<ONE_RESULT>
+#define ONE_SQL_RESULT          std::vector<struct myStruct>
+#define ALL_SQL_RESULTS         std::vector<ONE_SQL_RESULT>
 
 union myType { // only simple types allowed
     char *c;
@@ -33,7 +33,7 @@ public:
     virtual ~SQLiteDatabase() {}
     
     void initReadOnlyWithPath(wxString path);
-    ALL_RESULTS performQuery(wxString query);
+    ALL_SQL_RESULTS performQuery(wxString query);
     int numberRecordsForTable(wxString table);
     void close();
     

@@ -15,6 +15,7 @@ class DBAdapter;
 class InteractionsAdapter;
 class FullTextDBAdapter;
 class Medication;
+class FullTextEntry;
 class TableViewDelegate;
 class PrescriptionsAdapter;
 class PatientSheet;
@@ -63,7 +64,8 @@ private:
     bool openSQLiteDatabase();
     bool openFullTextDatabase();
     bool openInteractionsCsvFile();
-    std::vector<Medication *> searchAnyDatabasesWith(wxString searchQuery);
+    //std::vector<Medication *>
+    void searchAnyDatabasesWith(wxString searchQuery);
     std::vector<Medication *> retrieveAllFavorites();
     void updateExpertInfoView(wxString anchor);
     void pushToMedBasket(Medication *med);
@@ -86,6 +88,7 @@ private:
     DBAdapter *mDb;
     // 153
     FullTextDBAdapter *mFullTextDb;
+    FullTextEntry *mFullTextEntry;
 
     // .m 149
     Medication *mMed;
@@ -103,8 +106,14 @@ private:
 
     // .m 168
     std::vector<Medication *> searchResults;
+    std::vector<FullTextEntry *> searchResultsFT;
+
+    // 170
     wxArrayString mListOfSectionIds;  // full paths
     wxArrayString mListOfSectionTitles;
+    
+    // .m 180
+    wxString mFullTextContentStr;
     
     // .m 183
     bool mSearchInProgress;

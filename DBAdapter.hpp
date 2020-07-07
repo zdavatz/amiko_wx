@@ -20,16 +20,19 @@ public:
     
     bool openDatabase(wxString dbName);
     void closeDatabase();
+
     std::vector<Medication *> searchTitle(wxString title);
-    ALL_RESULTS getFullRecord(long rowId);
-    ALL_RESULTS searchAuthor(wxString author);
-    ALL_RESULTS searchATCCode(wxString atccode);
-    ALL_RESULTS searchRegNr(wxString regnr);
-    ALL_RESULTS searchApplication(wxString application);
+    std::vector<Medication *> searchAuthor(wxString author);
+    std::vector<Medication *> searchATCCode(wxString atccode);
+    std::vector<Medication *> searchRegNr(wxString regnr);
+    std::vector<Medication *> searchApplication(wxString application);
+    std::vector<Medication *> searchRegnrsFromList(wxArrayString listOfRegnrs);
+    ALL_SQL_RESULTS getFullRecord(long rowId);
     int getNumRecords();
-    std::vector<Medication *> extractShortMedInfoFrom(ALL_RESULTS &results);
-    Medication * cursorToShortMedInfo(ONE_RESULT & cursor);
-    Medication * cursorToFullMedInfo(ONE_RESULT &cursor);
+    std::vector<Medication *> extractShortMedInfoFrom(ALL_SQL_RESULTS &results);
+    Medication * cursorToVeryShortMedInfo(ONE_SQL_RESULT &cursor);
+    Medication * cursorToShortMedInfo(ONE_SQL_RESULT &cursor);
+    Medication * cursorToFullMedInfo(ONE_SQL_RESULT &cursor);
     Medication * getMediWithId(long rowId);
     
 private:

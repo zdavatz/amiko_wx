@@ -168,7 +168,7 @@ void MainWindow::hideTextFinder()
 {
     std::clog << __PRETTY_FUNCTION__ << "TODO" << std::endl;
 
-#if 0
+#if 0 // TODO:
     // Inform NSTextFinder the text is going to change
     [myTextFinder noteClientStringWillChange];
     // Hide text finder
@@ -306,10 +306,14 @@ void MainWindow::updateSearchResults()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 
-    if (mUsedDatabase == kdbt_Aips)
-        searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
-    else if (mUsedDatabase == kdbt_Favorites)
-        searchResults = retrieveAllFavorites();
+    if (mUsedDatabase == kdbt_Aips) {
+        //searchResults =
+        searchAnyDatabasesWith(mCurrentSearchKey); // it updates searchResults and searchResultsFT
+    }
+    else if (mUsedDatabase == kdbt_Favorites){
+        searchResults = // TODO:
+        retrieveAllFavorites();
+    }
 }
 
 // 858
@@ -321,7 +325,8 @@ void MainWindow::resetDataInTableView()
     setSearchState(kss_Title);
 
     mCurrentSearchKey = wxEmptyString;
-    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
+    //searchResults =
+    searchAnyDatabasesWith(mCurrentSearchKey);  // it updates searchResults and searchResultsFT
 
     if (searchResults.size()>0) {
         updateTableView();
@@ -463,34 +468,47 @@ void MainWindow::setSearchState(int searchState)
 }
 
 // 2029
-std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+//std::vector<Medication *>
+void
+MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
 #ifndef NDEBUG
     std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
 #endif
 
-    ALL_RESULTS searchResObsolete;
-    std::vector<Medication *> searchRes;
+//    std::vector<FullTextEntry *> searchResFT;
+//    std::vector<Medication *> searchRes;
 
     if (mCurrentSearchState == kss_Title)
-        searchRes = mDb->searchTitle(searchQuery);  // array of Medication
+        searchResults = mDb->searchTitle(searchQuery);  // array of Medication
     else if (mCurrentSearchState == kss_Author)
-        searchResObsolete = mDb->searchAuthor(searchQuery);
+        searchResults = mDb->searchAuthor(searchQuery);
     else if (mCurrentSearchState == kss_AtcCode)
-        searchResObsolete = mDb->searchATCCode(searchQuery);
+        searchResults = mDb->searchATCCode(searchQuery);
     else if (mCurrentSearchState == kss_RegNr)
-        searchResObsolete = mDb->searchRegNr(searchQuery);
+        searchResults = mDb->searchRegNr(searchQuery);
     else if (mCurrentSearchState == kss_Therapy)
-        searchResObsolete = mDb->searchApplication(searchQuery);
-    else if (mCurrentSearchState == kss_FullText)
-    {
+        searchResults = mDb->searchApplication(searchQuery);
+
+    else if (mCurrentSearchState == kss_FullText) {
+        // 2048
         if (searchQuery.length() > 2)
-            searchResObsolete = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
+            searchResultsFT = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
     }
 
     mCurrentSearchKey = searchQuery;
+    
+#ifndef NDEBUG
+    int resultCount;
+    if (mCurrentSearchState == kss_FullText)
+        resultCount = searchResultsFT.size();
+    else
+        resultCount = searchResults.size();
 
-    return searchRes;
+    std::clog << resultCount << " results" << std::endl;
+#endif
+
+    return; // searchRes;
 }
 
 // 2064
@@ -677,23 +695,31 @@ void MainWindow::addKeyword_andNumHits_andHash(wxString keyword, unsigned long n
     else
         m->title = _("Not specified");
 
-    m->subTitle = wxString::Format("%ld Treffer", numHits);  // TODO: localize
+    m->subTitle = wxString::Format("%ld %s", numHits, _("Results"));  // Treffer
     m->hashId = hash;
     
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
 
-
 // 2286
 void MainWindow::updateTableView()
 {
     //std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
-    if (searchResults.size() == 0) {
-        stopProgressIndicator();
-        std::cerr << __FUNCTION__ << " 0 results" << std::endl;
-        return;
+    if (mCurrentSearchState == kss_FullText) {
+        if (searchResultsFT.size() == 0) {
+            stopProgressIndicator();
+            std::cerr << __FUNCTION__ << " 0 results" << std::endl;
+            return;
+        }
+    }
+    else {
+        if (searchResults.size() == 0) {
+            stopProgressIndicator();
+            std::cerr << __FUNCTION__ << " 0 results" << std::endl;
+            return;
+        }
     }
     
 #ifndef NDEBUG
@@ -801,19 +827,17 @@ void MainWindow::updateTableView()
     }
     // 2391
     else if (mCurrentSearchState == kss_FullText) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO FullText" << std::endl;
-#if 0
-        // TODO: No viable conversion from 'Medication *' to 'FullTextEntry'
-        // TODO: maybe define and use searchResultsFT instead of searchResults
-        for (FullTextEntry e : searchResults) {
-            if (mUsedDatabase == kdbt_Aips || mUsedDatabase == kdbt_Favorites) {
-                if (!e.hash.IsEmpty()) {
+        std::clog << __PRETTY_FUNCTION__ << " FullText" << std::endl;
+        for (auto e : searchResultsFT) {
+            if (mUsedDatabase == kdbt_Aips ||
+                mUsedDatabase == kdbt_Favorites)
+            {
+                if (!e->hash.IsEmpty()) {
                     // TODO:: [favoriteKeyData addObject:e.hash];
-                    addKeyword_andNumHits_andHash(e.keyword, e.numHits, e.hash);
+                    addKeyword_andNumHits_andHash(e->keyword, e->getNumHits(), e->hash);
                 }
             }
         }
-#endif
     }
     
     // 2402
@@ -1019,23 +1043,32 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
         mSearchInProgress = true;
     }
 
-    if (searchText.length() > 0) // TODO: > 2 ?
-         searchResults = searchAnyDatabasesWith(searchText);
+    if (searchText.length() > 0) { // TODO: > 2 ?
+        //searchResults =
+        searchAnyDatabasesWith(searchText);// it updates searchResults and searchResultsFT
+    }
     else {
          if (mUsedDatabase == kdbt_Favorites)
-             searchResults = retrieveAllFavorites();
+             searchResults = // TODO:
+             retrieveAllFavorites();
     }
 
     // 977
     // Update tableview
     updateTableView();
     
-    myTableView->SetItemCount(searchResults.size()); // reloadData
-    if (searchResults.size()>0)
-        myTableView->SetSelection(0); // scrollRectToVisible
+    if (mCurrentSearchState == kss_FullText) {
+        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+        if (searchResultsFT.size()>0)
+            myTableView->SetSelection(0); // scrollRectToVisible
+    }
+    else {
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        if (searchResults.size()>0)
+            myTableView->SetSelection(0); // scrollRectToVisible
+    }
 
     myTableView->Refresh();
-
     mSearchInProgress = false;
 }
 
@@ -1075,12 +1108,24 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     if (prevState == kss_FullText || mCurrentSearchState == kss_FullText)
         updateSearchResults();
 
-    if (searchResults.size() > 0) {
-        updateTableView();
+    if (mCurrentSearchState == kss_FullText) {
+        if (searchResultsFT.size() > 0) {
+            updateTableView();
 
-        myTableView->SetItemCount(searchResults.size()); // reloadData
-        myTableView->SetSelection(0); // scrollRectToVisible
-        myTableView->Refresh();
+            myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+            myTableView->SetSelection(0); // scrollRectToVisible
+            myTableView->Refresh();
+        }
+    }
+    else {
+        if (searchResults.size() > 0) {
+            updateTableView();
+
+            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->SetSelection(0); // scrollRectToVisible
+            myTableView->Refresh();
+        }
+
     }
 }
 
@@ -1332,6 +1377,26 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
             pushToMedBasket(mMed);
             updateInteractionsView();
         }
+    }
+    // 2953
+    else {
+        // Search in full text search DB
+        wxString hashId = doArray[row]->hashId;
+        // Get entry
+        mFullTextEntry = mFullTextDb->searchHash(hashId);
+        // Hide text finder
+        hideTextFinder();
+        
+        wxArrayString listOfRegnrs = mFullTextEntry->getRegnrsAsArray();
+        std::vector<Medication *> listOfArticles = mDb->searchRegnrsFromList(listOfRegnrs);
+
+#if 0 // TODO: @@@
+        NSDictionary *dict = mFullTextEntry->getRegChaptersDict();
+        
+        mFullTextContentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( listOfArticles, dict, "");
+        mCurrentWebView = kFullTextSearchView;
+        updateFullTextSearchView(mFullTextContentStr);
+#endif
     }
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!

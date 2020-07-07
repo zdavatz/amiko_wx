@@ -118,7 +118,7 @@ int DBAdapter::getNumRecords()
 }
 
 // 136
-ALL_RESULTS DBAdapter::getFullRecord(long rowId)
+ALL_SQL_RESULTS DBAdapter::getFullRecord(long rowId)
 {
     wxString query = wxString::Format("select %s from %s where %s=%ld",
                                       FULL_TABLE.ToStdString(),
@@ -132,27 +132,21 @@ ALL_RESULTS DBAdapter::getFullRecord(long rowId)
 // 144
 Medication * DBAdapter::getMediWithId(long rowId)
 {
-    ALL_RESULTS results = getFullRecord(rowId);
-    ONE_RESULT firstObject = results[0];
+    ALL_SQL_RESULTS results = getFullRecord(rowId);
+    ONE_SQL_RESULT firstObject = results[0];
     return cursorToFullMedInfo( firstObject );
 }
 
 // 169
 std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 {
-    //std::cerr << __PRETTY_FUNCTION__ << std::endl;
-
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
-            SHORT_TABLE.ToStdString(),
-            DATABASE_TABLE.ToStdString(),
+            SHORT_TABLE,
+            DATABASE_TABLE,
             KEY_TITLE,
-            title.ToStdString(),
+            title,
             KEY_TITLE,
-            title.ToStdString());
-
-#ifndef NDEBUG
-    std::cerr << "query:\n" << query.ToStdString() << std::endl;
-#endif
+            title);
 
 #ifdef __linux__
 	if (!mySqliteDb)  // Issue #8 null in Linux
@@ -164,49 +158,172 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
     else
 #endif
 	{
-		ALL_RESULTS results = mySqliteDb->performQuery(query);
+		ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
 		return extractShortMedInfoFrom(results);
 	}
 }
 
 // 177
 // Search Inhaber
-ALL_RESULTS DBAdapter::searchAuthor(wxString author)
+std::vector<Medication *> DBAdapter::searchAuthor(wxString author)
 {
-    // TODO:
-    ALL_RESULTS results;
-    return results;
+    wxString query = wxString::Format("select %s from %s where %s like '%s%%'",
+                                      SHORT_TABLE,
+                                      DATABASE_TABLE,
+                                      KEY_AUTH,
+                                      author);
+    ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
 }
 
 // 187
 // Search ATC Code
-ALL_RESULTS DBAdapter::searchATCCode(wxString atccode)
+std::vector<Medication *> DBAdapter::searchATCCode(wxString atccode)
 {
-    // TODO:
-    ALL_RESULTS results;
-    return results;
+    wxString query = wxString::Format("select %s from %s where %s like '%%;%s%%' or %s like '%s%%' or %s like '%% %s%%' or %s like '%%%s%%' or %s like '%%;%%%s%%'",
+                                      SHORT_TABLE,
+                                      DATABASE_TABLE,
+                                      KEY_ATCCODE, atccode,
+                                      KEY_ATCCODE, atccode,
+                                      KEY_ATCCODE, atccode,
+                                      KEY_ATCCLASS, atccode,
+                                      KEY_ATCCLASS, atccode);
+    ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
 }
+
+// 200
+// Search Wirkstoff (unused)
+//std::vector<Medication *> DBAdapter::searchIngredients(wxString ingredients) {}
 
 // 209
 // Search Reg. Nr.
-ALL_RESULTS DBAdapter::searchRegNr(wxString regnr)
+std::vector<Medication *> DBAdapter::searchRegNr(wxString regnr)
 {
-    // TODO:
-    ALL_RESULTS results;
-    return results;
+    wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%'",
+                                      SHORT_TABLE,
+                                      DATABASE_TABLE,
+                                      KEY_REGNRS, regnr,
+                                      KEY_REGNRS, regnr);
+
+    ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
 }
+
+// 222
+// Search Therapie (unused)
+//std::vector<Medication *> DBAdapter::searchTherapy(wxString therapy) {}
 
 // 230
 // Search Application
-ALL_RESULTS DBAdapter::searchApplication(wxString application)
+std::vector<Medication *>
+DBAdapter::searchApplication(wxString application)
 {
-    // TODO:
-    ALL_RESULTS results;
-    return results;
+    wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%' or %s like '%% %s%%' or %s like '%%;%s%%' or %s like '%s%%' or %s like '%%;%s%%'",
+                                      SHORT_TABLE,
+                                      DATABASE_TABLE,
+                                      KEY_APPLICATION, application,
+                                      KEY_APPLICATION, application,
+                                      KEY_APPLICATION, application,
+                                      KEY_APPLICATION, application,
+                                      KEY_INDICATIONS, application,
+                                      KEY_INDICATIONS, application);
+
+    ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+    return extractShortMedInfoFrom(results);
+}
+
+// 240
+// Search Reg. Nrs. given a list of reg. nr.
+std::vector<Medication *>
+DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
+{
+    const unsigned int N = 40;
+    std::vector<Medication *> listOfMedis;
+    
+    int C = listOfRegnrs.size();    // E.g. 100
+    int capacityA = (C / N) * N;     // E.g. 100/40 * 40 = 80
+    int capacityB = C - capacityA;   // 100 - 80 = 20
+    wxArrayString listA;// = [NSMutableArray arrayWithCapacity:capacityA];
+    wxArrayString listB;// = [NSMutableArray arrayWithCapacity:capacityB];
+    
+#if 0 // TODO @@@
+    [listOfRegnrs enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
+        NSMutableArray *output = (index < capacityA) ? listA : listB;
+        [output addObject:object];
+    }];
+#endif
+
+    wxString subQuery = wxEmptyString;
+    int count = 0;
+    // Loop through first (long) list
+    for (wxString reg : listA) {
+        subQuery += wxString::Format("%s like '%%, %s%%' or %s like '%s%%'",
+                                     KEY_REGNRS, reg,
+                                     KEY_REGNRS, reg);
+        count++;
+        if (count % N == 0) {
+            wxString query = wxString::Format("select %s from %s where %s",
+                                              FULL_TABLE,
+                                              DATABASE_TABLE,
+                                              subQuery);
+            ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+            for (auto cursor : results) {
+                Medication *m = cursorToVeryShortMedInfo(cursor);
+                listOfMedis.push_back(m);
+            }
+            subQuery = wxEmptyString;
+        }
+        else {
+            subQuery += wxT(" or ");
+        }
+    }
+    // Loop through second (short) list
+    for (wxString reg : listB) {
+        subQuery += wxString::Format("%s like '%%, %s%%' or %s like '%s%%' or ",
+                                     KEY_REGNRS, reg,
+                                     KEY_REGNRS, reg);
+    }
+
+    if (subQuery.size() > 4) {
+        
+#if 0 // TODO: @@@
+        // Remove last 'or'
+        subQuery = [subQuery substringWithRange:NSMakeRange(0, [subQuery length]-4)];
+#endif
+        wxString query = wxString::Format("select %s from %s where %s",
+                                           FULL_TABLE,
+                                           DATABASE_TABLE,
+                                           subQuery);
+        ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+        for (auto cursor : results) {
+            Medication *m = cursorToVeryShortMedInfo(cursor);
+            listOfMedis.push_back(m);
+        }
+    }
+    
+    return listOfMedis;
+}
+
+// 293
+Medication * DBAdapter::cursorToVeryShortMedInfo(ONE_SQL_RESULT &cursor)
+{
+    Medication *medi = new Medication;
+    
+#if 0 // TODO: @@@
+    [medi setMedId:[(NSString *)[cursor objectAtIndex:kMedId] longLongValue]];
+    [medi setTitle:(NSString *)[cursor objectAtIndex:kTitle]];
+    [medi setAuth:(NSString *)[cursor objectAtIndex:kAuth]];
+    [medi setRegnrs:(NSString *)[cursor objectAtIndex:kRegnrs]];
+    [medi setSectionIds:(NSString *)[cursor objectAtIndex:kIdsStr]];
+    [medi setSectionTitles:(NSString *)[cursor objectAtIndex:kSectionsStr]];
+#endif
+
+    return medi;
 }
 
 // 307
-Medication * DBAdapter::cursorToShortMedInfo(ONE_RESULT &cursor)
+Medication * DBAdapter::cursorToShortMedInfo(ONE_SQL_RESULT &cursor)
 {
     Medication *medi = new Medication;
 
@@ -250,7 +367,7 @@ Medication * DBAdapter::cursorToShortMedInfo(ONE_RESULT &cursor)
 }
 
 // 328
-Medication * DBAdapter::cursorToFullMedInfo(ONE_RESULT &cursor)
+Medication * DBAdapter::cursorToFullMedInfo(ONE_SQL_RESULT &cursor)
 {
     Medication *medi = cursorToShortMedInfo(cursor);
     // TODO: extra fields. TBC no 'kPackages'
@@ -265,7 +382,7 @@ Medication * DBAdapter::cursorToFullMedInfo(ONE_RESULT &cursor)
 }
 
 // 365
-std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(ALL_RESULTS &results)
+std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(ALL_SQL_RESULTS &results)
 {
     std::vector<Medication *> medList;
 
