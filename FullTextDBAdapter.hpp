@@ -13,7 +13,8 @@
 #include "SQLiteDatabase.hpp"
 #include "FullTextSearch.hpp"  // for NSDictionary
 
-//class SQLiteDatabase;
+#define FULLTEXT_RESULTS         std::vector<FullTextEntry *>
+
 class FullTextEntry;
 
 class FullTextDBAdapter
@@ -25,8 +26,8 @@ public:
     bool openDatabase(wxString dbName);
     void closeDatabase();
     int getNumRecords();
-    std::vector<FullTextEntry *> searchKeyword(wxString keyword);
-    std::vector<FullTextEntry *> extractFullTextEntryFrom(ALL_SQL_RESULTS &results);
+    FULLTEXT_RESULTS searchKeyword(wxString keyword);
+    FULLTEXT_RESULTS extractFullTextEntryFrom(ALL_SQL_RESULTS &results);
     std::map<wxString, std::set<wxString>> regChapterDict(wxString regChapterStr);
     FullTextEntry * searchHash(wxString hash);
     FullTextEntry * cursorToFullTextEntry(ONE_SQL_RESULT &cursor);

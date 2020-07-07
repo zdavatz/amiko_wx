@@ -88,8 +88,7 @@ FullTextEntry * FullTextDBAdapter::searchHash(wxString hash)
 
 // 97
 // Search fulltext containing keyword
-std::vector<FullTextEntry *>
-FullTextDBAdapter::searchKeyword(wxString keyword)
+FULLTEXT_RESULTS FullTextDBAdapter::searchKeyword(wxString keyword)
 {
     wxString query = wxString::Format("select * from %s where %s like '%s%%'",
                                       DATABASE_TABLE.ToStdString(),
@@ -125,11 +124,11 @@ FullTextDBAdapter::cursorToFullTextEntry(ONE_SQL_RESULT &cursor)
 }
 
 // 123
-std::vector<FullTextEntry *>
-FullTextDBAdapter::extractFullTextEntryFrom(ALL_SQL_RESULTS &results)
+FULLTEXT_RESULTS FullTextDBAdapter::extractFullTextEntryFrom(ALL_SQL_RESULTS &results)
 {
     std::clog << __FUNCTION__ << " results size: " << results.size() << std::endl;
-    std::vector<FullTextEntry *> entryList;
+
+    FULLTEXT_RESULTS entryList;
     
     for (auto cursor : results) {
         
@@ -158,7 +157,6 @@ std::map<wxString, std::set<wxString>>
 FullTextDBAdapter::regChapterDict(wxString regChapterStr)
 {
     std::clog << __FUNCTION__ << " regChapterStr: <" << regChapterStr << ">" << std::endl;
-    // regChapterStr: "59876(13)|55682(13)|66480(13)|44625(13)"
 
     wxString regnr;
     wxString chapters;
@@ -167,49 +165,20 @@ FullTextDBAdapter::regChapterDict(wxString regChapterStr)
 
     // Format: 65000(13)|65001(14)|...
     wxArrayString rac = wxSplit(regChapterStr ,'|');
-    /* rac:
-     59876(13)
-     55682(13)
-     66480(13)
-     44625(13)
-    */
 
     std::unordered_set<wxString> set;
     for (wxString r : rac)
         set.insert(r);
-    //std::clog << "Line " << __LINE__ << " set.size(): " << set.size() << std::endl;
-    /* set:
-     59876(13)
-     55682(13)
-     66480(13)
-     44625(13)
-    */
 
     // Loop through all regnr-chapter pairs
     for (wxString r : set) {
-        //std::clog << "Line " << __LINE__ << " split r: <" << r << ">" << std::endl;
         // Extract chapters located between parentheses
         wxArrayString str1 = wxSplit(r, '(');
-        //std::clog << "Line " << __LINE__ << " str1.size(): " << str1.size() << std::endl;
-        /* str1:
-         44625,
-         13)
-         */
-        /* str1:    second time
-         55682,
-         13)
-         */
         if (str1.size() > 0) {
             regnr = str1[0];
-            //std::clog << "Line " << __LINE__ << " regnr=str1[0]: <" << regnr << ">" << std::endl;
-            // regnr: 44625
             if (str1.size() > 1) {
                 wxArrayString str2 = wxSplit(str1[1], ')');
-                //std::clog << "Line " << __LINE__ << " str1[1]: <" << str1[1] << ">" << std::endl;
-                //std::clog << "Line " << __LINE__ << " str2.size(): " << str2.size() << std::endl;
-                // str2: 13
                 chapters = str2[0];
-                //std::clog << "Line " << __LINE__ << " chapters=str2[0]: <" << chapters << ">" << std::endl;
             }
 
             // 165
@@ -225,17 +194,12 @@ FullTextDBAdapter::regChapterDict(wxString regChapterStr)
             // 169
             // Split chapters listed as comma-separated string
             wxArrayString c = wxSplit(chapters, ',');
-            //std::clog << "Line " << __LINE__ << " c.size(): " << c.size() << std::endl;
             // c: 13
             for (wxString chapter : c)
                 chaptersSet.insert(chapter);
 
-            // chaptersSet: 13
-
             // Update dictionary
             dict[regnr] = chaptersSet;
-            
-            // dict: 44625 = "{(\n    13\n)}"
         }
         else {
             // No chapters for this regnr -> do nothing
@@ -249,7 +213,7 @@ FullTextDBAdapter::regChapterDict(wxString regChapterStr)
         std::cout << '\t' << it->first << ", set: ";
         for (auto s : setVerify)
             std::cout  << s << ",";
-        //<< '\t' << it->second
+
         std::cout << '\n';
     }
 

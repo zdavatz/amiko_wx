@@ -138,7 +138,7 @@ Medication * DBAdapter::getMediWithId(long rowId)
 }
 
 // 169
-std::vector<Medication *> DBAdapter::searchTitle(wxString title)
+MEDICATION_RESULTS DBAdapter::searchTitle(wxString title)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
             SHORT_TABLE,
@@ -152,7 +152,7 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 	if (!mySqliteDb)  // Issue #8 null in Linux
     {
 		std::cerr << __PRETTY_FUNCTION__ << " Line " << __LINE__ << std::endl;
-        std::vector<Medication *> temp;
+        MEDICATION_RESULTS temp;
         return temp;
     }
     else
@@ -165,7 +165,7 @@ std::vector<Medication *> DBAdapter::searchTitle(wxString title)
 
 // 177
 // Search Inhaber
-std::vector<Medication *> DBAdapter::searchAuthor(wxString author)
+MEDICATION_RESULTS DBAdapter::searchAuthor(wxString author)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%s%%'",
                                       SHORT_TABLE,
@@ -178,7 +178,7 @@ std::vector<Medication *> DBAdapter::searchAuthor(wxString author)
 
 // 187
 // Search ATC Code
-std::vector<Medication *> DBAdapter::searchATCCode(wxString atccode)
+MEDICATION_RESULTS DBAdapter::searchATCCode(wxString atccode)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%%;%s%%' or %s like '%s%%' or %s like '%% %s%%' or %s like '%%%s%%' or %s like '%%;%%%s%%'",
                                       SHORT_TABLE,
@@ -194,11 +194,11 @@ std::vector<Medication *> DBAdapter::searchATCCode(wxString atccode)
 
 // 200
 // Search Wirkstoff (unused)
-//std::vector<Medication *> DBAdapter::searchIngredients(wxString ingredients) {}
+//MEDICATION_RESULTS DBAdapter::searchIngredients(wxString ingredients) {}
 
 // 209
 // Search Reg. Nr.
-std::vector<Medication *> DBAdapter::searchRegNr(wxString regnr)
+MEDICATION_RESULTS DBAdapter::searchRegNr(wxString regnr)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%'",
                                       SHORT_TABLE,
@@ -212,12 +212,11 @@ std::vector<Medication *> DBAdapter::searchRegNr(wxString regnr)
 
 // 222
 // Search Therapie (unused)
-//std::vector<Medication *> DBAdapter::searchTherapy(wxString therapy) {}
+//MEDICATION_RESULTS DBAdapter::searchTherapy(wxString therapy) {}
 
 // 230
 // Search Application
-std::vector<Medication *>
-DBAdapter::searchApplication(wxString application)
+MEDICATION_RESULTS DBAdapter::searchApplication(wxString application)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%' or %s like '%% %s%%' or %s like '%%;%s%%' or %s like '%s%%' or %s like '%%;%s%%'",
                                       SHORT_TABLE,
@@ -235,15 +234,14 @@ DBAdapter::searchApplication(wxString application)
 
 // 240
 // Search Reg. Nrs. given a list of reg. nr.
-std::vector<Medication *>
-DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
+MEDICATION_RESULTS DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
 {
     const unsigned int N = 40;
-    std::vector<Medication *> listOfMedis;
+    MEDICATION_RESULTS listOfMedis;
     
     int C = listOfRegnrs.size();    // E.g. 100
-    int capacityA = (C / N) * N;     // E.g. 100/40 * 40 = 80
-    int capacityB = C - capacityA;   // 100 - 80 = 20
+    int capacityA = (C / N) * N;    // E.g. 100/40 * 40 = 80
+    int capacityB = C - capacityA;  // 100 - 80 = 20
     wxArrayString listA;// = [NSMutableArray arrayWithCapacity:capacityA];
     wxArrayString listB;// = [NSMutableArray arrayWithCapacity:capacityB];
     
@@ -252,10 +250,19 @@ DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
         NSMutableArray *output = (index < capacityA) ? listA : listB;
         [output addObject:object];
     }];
+#else
+    int index = 0;
+    for (auto object : listOfRegnrs) {
+        if (index < capacityA)
+            listA.Add(object);
+        else
+            listB.Add(object);
+    }
 #endif
 
     wxString subQuery = wxEmptyString;
     int count = 0;
+
     // Loop through first (long) list
     for (wxString reg : listA) {
         subQuery += wxString::Format("%s like '%%, %s%%' or %s like '%s%%'",
@@ -278,6 +285,7 @@ DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
             subQuery += wxT(" or ");
         }
     }
+
     // Loop through second (short) list
     for (wxString reg : listB) {
         subQuery += wxString::Format("%s like '%%, %s%%' or %s like '%s%%' or ",
@@ -290,6 +298,8 @@ DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
 #if 0 // TODO: @@@
         // Remove last 'or'
         subQuery = [subQuery substringWithRange:NSMakeRange(0, [subQuery length]-4)];
+#else
+        subQuery.RemoveLast(4);
 #endif
         wxString query = wxString::Format("select %s from %s where %s",
                                            FULL_TABLE,
@@ -382,9 +392,9 @@ Medication * DBAdapter::cursorToFullMedInfo(ONE_SQL_RESULT &cursor)
 }
 
 // 365
-std::vector<Medication *> DBAdapter::extractShortMedInfoFrom(ALL_SQL_RESULTS &results)
+MEDICATION_RESULTS DBAdapter::extractShortMedInfoFrom(ALL_SQL_RESULTS &results)
 {
-    std::vector<Medication *> medList;
+    MEDICATION_RESULTS medList;
 
     for (auto cursor : results)  {
         Medication *medi = cursorToShortMedInfo(cursor);

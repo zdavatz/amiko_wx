@@ -64,7 +64,6 @@ private:
     bool openSQLiteDatabase();
     bool openFullTextDatabase();
     bool openInteractionsCsvFile();
-    //std::vector<Medication *>
     void searchAnyDatabasesWith(wxString searchQuery);
     std::vector<Medication *> retrieveAllFavorites();
     void updateExpertInfoView(wxString anchor);

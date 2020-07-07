@@ -401,10 +401,10 @@ void MainWindow::switchTabs(int item)
 }
 
 // 1897
-std::vector<Medication *> MainWindow::retrieveAllFavorites()
+MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    std::vector<Medication *> temp;
+    MEDICATION_RESULTS temp;
     return temp;
 }
 
@@ -468,16 +468,11 @@ void MainWindow::setSearchState(int searchState)
 }
 
 // 2029
-//std::vector<Medication *>
-void
-MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
 #ifndef NDEBUG
     std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
 #endif
-
-//    std::vector<FullTextEntry *> searchResFT;
-//    std::vector<Medication *> searchRes;
 
     if (mCurrentSearchState == kss_Title)
         searchResults = mDb->searchTitle(searchQuery);  // array of Medication
@@ -1388,7 +1383,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         hideTextFinder();
         
         wxArrayString listOfRegnrs = mFullTextEntry->getRegnrsAsArray();
-        std::vector<Medication *> listOfArticles = mDb->searchRegnrsFromList(listOfRegnrs);
+        MEDICATION_RESULTS listOfArticles = mDb->searchRegnrsFromList(listOfRegnrs);
 
 #if 0 // TODO: @@@
         NSDictionary *dict = mFullTextEntry->getRegChaptersDict();
