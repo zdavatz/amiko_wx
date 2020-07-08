@@ -86,7 +86,7 @@ bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
     wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
     while(input.IsOk() && !input.Eof() )
     {
-        wxString line = text.ReadLine();
+        wxString line = text.ReadLine() + wxT("\n");
         if (line.length() == 0)
             continue;
 

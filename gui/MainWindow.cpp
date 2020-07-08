@@ -131,7 +131,8 @@ MainWindow::MainWindow( wxWindow* parent )
     // TODO: Create bridge between JScript and ObjC
 
     // 298
-    // TODO: Initialize full text search
+    // Initialize full text search
+    mFullTextSearch = new FullTextSearch;
 
     // 301
     // TODO: Initialize all three prescription baskets
@@ -166,9 +167,9 @@ MainWindow::MainWindow( wxWindow* parent )
 // 483
 void MainWindow::hideTextFinder()
 {
-    std::clog << __PRETTY_FUNCTION__ << "TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 
-#if 0
+#if 0 // TODO:
     // Inform NSTextFinder the text is going to change
     [myTextFinder noteClientStringWillChange];
     // Hide text finder
@@ -306,10 +307,14 @@ void MainWindow::updateSearchResults()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 
-    if (mUsedDatabase == kdbt_Aips)
-        searchResults = searchAnyDatabasesWith(mCurrentSearchKey);
-    else if (mUsedDatabase == kdbt_Favorites)
-        searchResults = retrieveAllFavorites();
+    if (mUsedDatabase == kdbt_Aips) {
+        //searchResults =
+        searchAnyDatabasesWith(mCurrentSearchKey); // it updates searchResults and searchResultsFT
+    }
+    else if (mUsedDatabase == kdbt_Favorites){
+        searchResults = // TODO:
+        retrieveAllFavorites();
+    }
 }
 
 // 858
@@ -321,7 +326,8 @@ void MainWindow::resetDataInTableView()
     setSearchState(kss_Title);
 
     mCurrentSearchKey = wxEmptyString;
-    searchResults = searchAnyDatabasesWith(mCurrentSearchKey);  // FIXME:
+    //searchResults =
+    searchAnyDatabasesWith(mCurrentSearchKey);  // it updates searchResults and searchResultsFT
 
     if (searchResults.size()>0) {
         updateTableView();
@@ -396,10 +402,10 @@ void MainWindow::switchTabs(int item)
 }
 
 // 1897
-std::vector<Medication *> MainWindow::retrieveAllFavorites()
+MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    std::vector<Medication *> temp;
+    MEDICATION_RESULTS temp;
     return temp;
 }
 
@@ -463,34 +469,42 @@ void MainWindow::setSearchState(int searchState)
 }
 
 // 2029
-std::vector<Medication *> MainWindow::searchAnyDatabasesWith(wxString searchQuery)
+void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
 #ifndef NDEBUG
     std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
 #endif
 
-    ALL_RESULTS searchResObsolete;
-    std::vector<Medication *> searchRes;
-
     if (mCurrentSearchState == kss_Title)
-        searchRes = mDb->searchTitle(searchQuery);  // array of Medication
+        searchResults = mDb->searchTitle(searchQuery);  // array of Medication
     else if (mCurrentSearchState == kss_Author)
-        searchResObsolete = mDb->searchAuthor(searchQuery);
+        searchResults = mDb->searchAuthor(searchQuery);
     else if (mCurrentSearchState == kss_AtcCode)
-        searchResObsolete = mDb->searchATCCode(searchQuery);
+        searchResults = mDb->searchATCCode(searchQuery);
     else if (mCurrentSearchState == kss_RegNr)
-        searchResObsolete = mDb->searchRegNr(searchQuery);
+        searchResults = mDb->searchRegNr(searchQuery);
     else if (mCurrentSearchState == kss_Therapy)
-        searchResObsolete = mDb->searchApplication(searchQuery);
-    else if (mCurrentSearchState == kss_FullText)
-    {
+        searchResults = mDb->searchApplication(searchQuery);
+
+    else if (mCurrentSearchState == kss_FullText) {
+        // 2048
         if (searchQuery.length() > 2)
-            searchResObsolete = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
+            searchResultsFT = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
     }
 
     mCurrentSearchKey = searchQuery;
+    
+#ifndef NDEBUG
+    int resultCount;
+    if (mCurrentSearchState == kss_FullText)
+        resultCount = searchResultsFT.size();
+    else
+        resultCount = searchResults.size();
 
-    return searchRes;
+    std::clog << resultCount << " results" << std::endl;
+#endif
+
+    return; // searchRes;
 }
 
 // 2064
@@ -677,24 +691,34 @@ void MainWindow::addKeyword_andNumHits_andHash(wxString keyword, unsigned long n
     else
         m->title = _("Not specified");
 
-    m->subTitle = wxString::Format("%ld Treffer", numHits);  // TODO: localize
+    m->subTitle = wxString::Format("%ld %s", numHits, _("Results"));  // Treffer
     m->hashId = hash;
     
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
 
-
 // 2286
 void MainWindow::updateTableView()
 {
     //std::cerr << __PRETTY_FUNCTION__  << std::endl;
  
-    if (searchResults.size() == 0) {
-        stopProgressIndicator();
-        std::cerr << __FUNCTION__ << " 0 results" << std::endl;
-        return;
+#if 0
+    if (mCurrentSearchState == kss_FullText) {
+        if (searchResultsFT.size() == 0) {
+            stopProgressIndicator();
+            std::cerr << __FUNCTION__ << " 0 results" << std::endl;
+            return;
+        }
     }
+    else {
+        if (searchResults.size() == 0) {
+            stopProgressIndicator();
+            std::cerr << __FUNCTION__ << " 0 results" << std::endl;
+            return;
+        }
+    }
+#endif
     
 #ifndef NDEBUG
     std::cerr << __FUNCTION__ << " Line " << __LINE__
@@ -801,19 +825,17 @@ void MainWindow::updateTableView()
     }
     // 2391
     else if (mCurrentSearchState == kss_FullText) {
-        std::clog << __PRETTY_FUNCTION__ << " TODO FullText" << std::endl;
-#if 0
-        // TODO: No viable conversion from 'Medication *' to 'FullTextEntry'
-        // TODO: maybe define and use searchResultsFT instead of searchResults
-        for (FullTextEntry e : searchResults) {
-            if (mUsedDatabase == kdbt_Aips || mUsedDatabase == kdbt_Favorites) {
-                if (!e.hash.IsEmpty()) {
+        std::clog << __PRETTY_FUNCTION__ << " FullText" << std::endl;
+        for (auto e : searchResultsFT) {
+            if (mUsedDatabase == kdbt_Aips ||
+                mUsedDatabase == kdbt_Favorites)
+            {
+                if (!e->hash.IsEmpty()) {
                     // TODO:: [favoriteKeyData addObject:e.hash];
-                    addKeyword_andNumHits_andHash(e.keyword, e.numHits, e.hash);
+                    addKeyword_andNumHits_andHash(e->keyword, e->getNumHits(), e->hash);
                 }
             }
         }
-#endif
     }
     
     // 2402
@@ -861,7 +883,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             wxFileInputStream input( amikoCssPath );
             wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
             while (input.IsOk() && !input.Eof() )
-                amikoCss += text.ReadLine();
+                amikoCss += text.ReadLine() + wxT("\n");
         }
         else
             amikoCss = mMed->styleStr; // TODO: Unused ?
@@ -874,7 +896,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     // 2492
     wxString js_Script;
     {
-        // TODO: Load JavaScript from file
+        // Load JavaScript from file
 #ifdef __linux__
         wxFileName f(wxStandardPaths::Get().GetExecutablePath());
         wxString jscriptPath(f.GetPath());
@@ -890,7 +912,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             wxFileInputStream input( jscriptPath );
             wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
             while (input.IsOk() && !input.Eof() )
-                jscriptStr += text.ReadLine();
+                jscriptStr += text.ReadLine() + wxT("\n");
         }
 
         //std::cerr << "jscriptStr: " << jscriptStr << std::endl;
@@ -929,7 +951,6 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
     // 2547
     myWebView->SetPage(htmlStr, wxString());
-    //myWebView->Fit();
 
     // 2553
     if (!mPrescriptionMode) {
@@ -943,22 +964,17 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
         //std::clog << "Line " << __LINE__  << " size " << mListOfSectionTitles.size() << std::endl; // 20
 
-#if 0
-        mySectionTitles->reloadData();
-#else
-        // 2827
+        // 2561
+        // reloadData
         mySectionTitles->DeleteAllItems();
         int n = mListOfSectionTitles.size();
         wxVector<wxVariant> values;
         for (int i=0; i<n; i++) {
-            //std::clog << "Line " << i  << ", <" << mListOfSectionTitles[i] << ">" << std::endl;
-
             values.clear();
             values.push_back(wxVariant(mListOfSectionTitles[i]));
             mySectionTitles->AppendItem(values);
         }
         //mySectionTitles->Fit(); // ng
-#endif
     }
 }
 
@@ -991,7 +1007,83 @@ void MainWindow::updatePrescriptionsView()
 // 2603
 void MainWindow::updateFullTextSearchView(wxString contentStr)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    //std::clog << __FUNCTION__ << " contentStr: <" << contentStr << ">" << std::endl;
+
+    wxString colorCss = UTI::getColorCss();
+
+    // Load style sheet from file
+#ifdef __linux__
+    wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+    wxString fullTextCssPath(f.GetPath());
+#else
+    // TODO: use GetResourcesDir()
+    wxString fullTextCssPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+    fullTextCssPath += wxFILE_SEP_PATH + wxString("fulltext_style.css");
+
+    wxString fullTextCss;
+    if (wxFileName::Exists(fullTextCssPath)) {
+        wxFileInputStream input( fullTextCssPath );
+        wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+        while (input.IsOk() && !input.Eof() )
+            fullTextCss += text.ReadLine() + wxT("\n");
+    }
+
+    wxString js_Script;
+    {
+// Load javascript from file
+#ifdef __linux__
+        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
+        wxString jscriptPath(f.GetPath());
+#else
+        // TODO: use GetResourcesDir()
+        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
+#endif
+        jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
+        
+        wxString jscriptStr;
+        //= [NSString stringWithContentsOfFile:jscriptPath encoding:NSUTF8StringEncoding error:nil];
+        if (wxFileName::Exists(jscriptPath)) {
+            wxFileInputStream input( jscriptPath );
+            wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+            while (input.IsOk() && !input.Eof() )
+                jscriptStr += text.ReadLine() + wxT("\n");
+        }
+        
+        js_Script = wxString::Format("<script type=\"text/javascript\">%s</script>", jscriptStr);
+    }
+
+    wxString htmlStr = wxString::Format("<html><head><meta charset=\"utf-8\" /><meta name=\"supported-color-schemes\" content=\"light dark\" />");
+    htmlStr += wxString::Format("%s\n<style type=\"text/css\">%s</style><style type=\"text/css\">%s</style></head><body><div id=\"fulltext\">%s</div></body></html>",
+             js_Script,
+             colorCss,
+             fullTextCss,
+             contentStr);
+
+    //std::clog << __FUNCTION__ << " line " << __LINE__ << " htmlStr: <" << htmlStr << ">" << std::endl;
+
+    // 2622
+    myWebView->SetPage(htmlStr, wxString());
+
+    // 2626
+    // Update right pane (section titles)
+    if (mFullTextSearch->listOfSectionIds.size() > 0)
+        mListOfSectionIds = mFullTextSearch->listOfSectionIds;
+
+    if (mFullTextSearch->listOfSectionTitles.size() > 0)
+        mListOfSectionTitles = mFullTextSearch->listOfSectionTitles;
+
+    // 2631
+    // reloadData
+    mySectionTitles->DeleteAllItems();
+    int n = mListOfSectionTitles.size();
+    wxVector<wxVariant> values;
+    for (int i=0; i<n; i++) {
+        values.clear();
+        values.push_back(wxVariant(mListOfSectionTitles[i]));
+        mySectionTitles->AppendItem(values);
+    }
+    //mySectionTitles->Fit(); // ng
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -1019,23 +1111,32 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
         mSearchInProgress = true;
     }
 
-    if (searchText.length() > 0) // TODO: > 2 ?
-         searchResults = searchAnyDatabasesWith(searchText);
+    if (searchText.length() > 0) { // TODO: > 2 ?
+        //searchResults =
+        searchAnyDatabasesWith(searchText);// it updates searchResults and searchResultsFT
+    }
     else {
          if (mUsedDatabase == kdbt_Favorites)
-             searchResults = retrieveAllFavorites();
+             searchResults = // TODO:
+             retrieveAllFavorites();
     }
 
     // 977
     // Update tableview
     updateTableView();
     
-    myTableView->SetItemCount(searchResults.size()); // reloadData
-    if (searchResults.size()>0)
-        myTableView->SetSelection(0); // scrollRectToVisible
+    if (mCurrentSearchState == kss_FullText) {
+        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+        if (searchResultsFT.size()>0)
+            myTableView->SetSelection(0); // scrollRectToVisible
+    }
+    else {
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        if (searchResults.size()>0)
+            myTableView->SetSelection(0); // scrollRectToVisible
+    }
 
     myTableView->Refresh();
-
     mSearchInProgress = false;
 }
 
@@ -1075,13 +1176,20 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     if (prevState == kss_FullText || mCurrentSearchState == kss_FullText)
         updateSearchResults();
 
-    if (searchResults.size() > 0) {
-        updateTableView();
+    updateTableView();
 
-        myTableView->SetItemCount(searchResults.size()); // reloadData
-        myTableView->SetSelection(0); // scrollRectToVisible
-        myTableView->Refresh();
+    if (mCurrentSearchState == kss_FullText) {
+        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
+        if (searchResultsFT.size() > 0)
+            myTableView->SetSelection(0); // scrollRectToVisible
     }
+    else {
+        myTableView->SetItemCount(searchResults.size()); // reloadData
+        if (searchResults.size() > 0)
+            myTableView->SetSelection(0); // scrollRectToVisible
+    }
+
+    myTableView->Refresh();
 }
 
 // There is no corresponding code in amiko-osx, because there it's implemented
@@ -1101,6 +1209,9 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     << " from ID: " << event.GetId() // wxID_FI_SEARCH_FIELD
     << " <" << find_text << ">"
     << " m_findCount " << m_findCount
+#if __APPLE__
+    << " (not supported yet on macos)"
+#endif
     << std::endl;
 #endif
 
@@ -1149,6 +1260,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     int row = mySectionTitles->GetSelectedRow(); // 0 based
 
 #if 1 // TODO: tidy up this debug code
+    // FIXME: why do we get row -1 when clicking the full-text list ?
     if (row > mListOfSectionIds.size()) {
         std::cerr << __FUNCTION__ << " WARNING: "
                 << " row: " << row
@@ -1168,7 +1280,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     else if (mCurrentSearchState != kss_FullText ||
              mCurrentWebView != kFullTextSearchView)
     {
-        // NSString *javaScript = [NSString stringWithFormat:@"window.location.hash='#%@'", mListOfSectionIds[row]];
+        // NSString *javaScript = [NSString stringWithFormat:@"window.location.hash='#%s'", mListOfSectionIds[row]];
 
         // TODO: debug that mListOfSectionIds has valid data
 
@@ -1179,7 +1291,11 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     }
     else {
         // Update webviewer's content without changing anything else
-        wxString contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
+        wxString contentStr;
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#if 0 // TODO: @@@
+        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
+#endif
         updateFullTextSearchView(contentStr);
     }
 }
@@ -1332,6 +1448,25 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
             pushToMedBasket(mMed);
             updateInteractionsView();
         }
+    }
+    // 2953
+    else {
+        // Search in full text search DB
+        wxString hashId = doArray[row]->hashId;
+        // Get entry
+        mFullTextEntry = mFullTextDb->searchHash(hashId);
+        // Hide text finder
+        hideTextFinder();
+        
+        wxArrayString listOfRegnrs = mFullTextEntry->getRegnrsAsArray();
+        MEDICATION_RESULTS listOfArticles = mDb->searchRegnrsFromList(listOfRegnrs);
+
+        std::map<wxString, std::set<wxString>> dict = mFullTextEntry->regChaptersDict;
+        
+        mFullTextContentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( listOfArticles, dict, wxEmptyString);
+
+        mCurrentWebView = kFullTextSearchView;
+        updateFullTextSearchView(mFullTextContentStr);
     }
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!

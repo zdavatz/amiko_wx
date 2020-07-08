@@ -9,6 +9,8 @@
 #include <wx/wx.h>
 #include "SQLiteDatabase.hpp"
 
+#define MEDICATION_RESULTS         std::vector<Medication *>
+
 class SQLiteDatabase;
 class Medication;
 
@@ -20,16 +22,19 @@ public:
     
     bool openDatabase(wxString dbName);
     void closeDatabase();
-    std::vector<Medication *> searchTitle(wxString title);
-    ALL_RESULTS getFullRecord(long rowId);
-    ALL_RESULTS searchAuthor(wxString author);
-    ALL_RESULTS searchATCCode(wxString atccode);
-    ALL_RESULTS searchRegNr(wxString regnr);
-    ALL_RESULTS searchApplication(wxString application);
+
+    MEDICATION_RESULTS searchTitle(wxString title);
+    MEDICATION_RESULTS searchAuthor(wxString author);
+    MEDICATION_RESULTS searchATCCode(wxString atccode);
+    MEDICATION_RESULTS searchRegNr(wxString regnr);
+    MEDICATION_RESULTS searchApplication(wxString application);
+    MEDICATION_RESULTS searchRegnrsFromList(wxArrayString listOfRegnrs);
+    ALL_SQL_RESULTS getFullRecord(long rowId);
     int getNumRecords();
-    std::vector<Medication *> extractShortMedInfoFrom(ALL_RESULTS &results);
-    Medication * cursorToShortMedInfo(ONE_RESULT & cursor);
-    Medication * cursorToFullMedInfo(ONE_RESULT &cursor);
+    MEDICATION_RESULTS extractShortMedInfoFrom(ALL_SQL_RESULTS &results);
+    Medication * cursorToVeryShortMedInfo(ONE_SQL_RESULT &cursor);
+    Medication * cursorToShortMedInfo(ONE_SQL_RESULT &cursor);
+    Medication * cursorToFullMedInfo(ONE_SQL_RESULT &cursor);
     Medication * getMediWithId(long rowId);
     
 private:

@@ -57,14 +57,18 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
 }
 
 // 169
-ALL_RESULTS SQLiteDatabase::performQuery(wxString query)
+ALL_SQL_RESULTS SQLiteDatabase::performQuery(wxString query)
 {
-    ALL_RESULTS result;
+    ALL_SQL_RESULTS result;
 
     if (!database) {
-        std::clog << __FUNCTION__ << ", database is not open" << std::endl;
+        std::cerr << __FUNCTION__ << ", database is not open" << std::endl;
         return result;
     }
+
+#ifndef NDEBUG
+    //std::cerr << __FUNCTION__ << " query:\n" << query << std::endl;
+#endif
 
     sqlite3_stmt *compiledStatement = NULL;
     // Convert wxString to a C String
