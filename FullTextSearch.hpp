@@ -36,7 +36,10 @@ public:
     wxString tableWithArticles_andRegChaptersDict_andFilter(std::vector<Medication *> listOfArticles,
                                                             std::map<wxString, std::set<wxString>> dict,
                                                             wxString filter);
-    
+    // 28
+    wxArrayString listOfSectionIds;
+    wxArrayString listOfSectionTitles;
+
     // .m 30
 #ifdef USE_MLIST
     std::vector<Medication *> mListOfArticles; // do we really need this ?

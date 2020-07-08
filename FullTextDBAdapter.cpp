@@ -153,7 +153,7 @@ FULLTEXT_RESULTS FullTextDBAdapter::extractFullTextEntryFrom(ALL_SQL_RESULTS &re
 std::map<wxString, std::set<wxString>>
 FullTextDBAdapter::regChapterDict(wxString regChapterStr)
 {
-    std::clog << __FUNCTION__ << " regChapterStr: <" << regChapterStr << ">" << std::endl;
+    //std::clog << __FUNCTION__ << " regChapterStr: <" << regChapterStr << ">" << std::endl;
 
     wxString regnr;
     wxString chapters;
