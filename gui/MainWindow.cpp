@@ -26,6 +26,7 @@
 #include "OperatorIDSheet.h"
 #include "FullTextSearch.hpp"
 #include "FullTextEntry.hpp"
+#include "DataStore.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -150,6 +151,10 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 321
     // TODO: Initialize favorites (articles + full text entries)
+    DataStore *favorites = new DataStore;
+    loadFavorites(favorites);
+    favoriteMedsSet = favorites->favMedsSet;
+    favoriteFTEntrySet = favorites->favFTEntrySet;
 
     // 327
     // Set default database
@@ -338,6 +343,36 @@ void MainWindow::resetDataInTableView()
     }
 }
 
+// 925
+void MainWindow::tappedOnStar(int row)
+{
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << " row: " << row << std::endl;
+#endif
+    std::set<wxString>::iterator it;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString medRegnrs;
+        // TODO: medRegnrs = [NSString stringWithString:[favoriteKeyData objectAtIndex:row]];
+        it = favoriteMedsSet.find(medRegnrs);
+        if (it != favoriteMedsSet.end())
+            favoriteMedsSet.erase(it);
+        else
+            favoriteMedsSet.insert(medRegnrs);
+    }
+    else {
+        wxString hashId;
+        // TODO: hashId = [NSString stringWithString:[favoriteKeyData objectAtIndex:row]];
+        it = favoriteFTEntrySet.find(hashId);
+        if (it != favoriteFTEntrySet.end())
+            favoriteFTEntrySet.erase(it);
+        else
+            favoriteFTEntrySet.insert(hashId);
+    }
+    
+    saveFavorites();
+}
+
 // 1749
 void MainWindow::stopProgressIndicator()
 {
@@ -364,6 +399,10 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO:
+            
+            // 1826
+            searchResults = retrieveAllFavorites();
+
             myTabView->ChangeSelection(0); // 1840
             break;
 
@@ -404,9 +443,75 @@ void MainWindow::switchTabs(int item)
 // 1897
 MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    MEDICATION_RESULTS temp;
-    return temp;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+
+    MEDICATION_RESULTS medList;
+
+    // 1905
+    if (mCurrentSearchState != kss_FullText) {
+        if (mDb) {
+            for (auto regnrs : favoriteMedsSet) {
+                auto med = mDb->searchRegNr(regnrs);
+                if (/*med!=nullptr &&*/ med.size()>0)
+                    medList.push_back(med[0]);
+            }
+        }
+    }
+#if 0 // TODO  @@@
+    else {
+        if (mFullTextDb) {
+            for (auto hashId : favoriteFTEntrySet) {
+                auto entry = mFullTextDb->searchHash(hashId);
+                if (entry != nullptr)
+                    medList.push_back(entry);
+            }
+        }
+    }
+#endif
+
+    return medList;
+}
+
+// 1933
+void MainWindow::saveFavorites()
+{
+    std::clog << __FUNCTION__ << " TODO" << std::endl;
+    wxString path = "~/Library/Preferences/data";
+#if 0 // @@@
+    path = [path stringByExpandingTildeInPath];
+    
+    NSMutableDictionary *rootObject = [NSMutableDictionary dictionary];
+    
+    if (favoriteMedsSet!=nil)
+        [rootObject setValue:favoriteMedsSet forKey:@"kFavMedsSet"];
+    
+    if (favoriteFTEntrySet!=nil)
+        [rootObject setValue:favoriteFTEntrySet forKey:@"kFavFTEntrySet"];
+    
+    // Save contents of rootObject by key, value must conform to NSCoding protocolw
+    [NSKeyedArchiver archiveRootObject:rootObject toFile:path];
+#endif
+}
+
+// 1950
+void MainWindow::loadFavorites(DataStore *favorites)
+{
+    std::clog << __FUNCTION__ << " TODO" << std::endl;
+#if 0 //
+    wxString path = "~/Library/Preferences/data";
+    path = [path stringByExpandingTildeInPath];
+    
+    // Retrieves unarchived dictionary into rootObject
+    NSMutableDictionary *rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+    
+    if ([rootObject valueForKey:@"kFavMedsSet"]) {
+        favorites.favMedsSet = (NSSet *)[rootObject valueForKey:@"kFavMedsSet"];
+    }
+    
+    if ([rootObject valueForKey:@"kFavFTEntrySet"]) {
+        favorites.favFTEntrySet = (NSSet *)[rootObject valueForKey:@"kFavFTEntrySet"];
+    }
+#endif
 }
 
 // 1967
@@ -525,7 +630,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
         }
     }
     else
-        m->subTitle = (char *)"Not specified"; // TODO: localize
+        m->subTitle = _("Not specified");
 
     m->medId = medId;
     doArray.push_back(m); // to be obsolete
@@ -742,7 +847,7 @@ void MainWindow::updateTableView()
         if (mUsedDatabase == kdbt_Aips) {
             // 2300
             for (auto m : searchResults) {
-                // TODO: [favoriteKeyData addObject:m.regnrs];
+                favoriteKeyData.Add(m->regnrs);
                 if (mSearchInteractions == false)
                     addTitle_andPackInfo_andMedId(
                     		wxString::FromUTF8(m->title),
@@ -1506,6 +1611,12 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         << ", sel " << row
         << std::endl;
     #endif
+    
+    if (event.GetPoint().x < 20 &&
+        event.GetPoint().y < 20)
+    {
+        tappedOnStar(row);
+    }
 
     // 2936
     if ( mCurrentSearchState != kss_FullText) {

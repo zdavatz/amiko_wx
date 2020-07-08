@@ -46,7 +46,7 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
 
     DataObject *m = searchRes[n];
 
-    // MLItemCellView.m 120 tableView:viewForTableColumn:row
+    // ItemCellView.m 120 tableView:viewForTableColumn:row
     wxArrayString listOfPackages = wxSplit(wxString(m->subTitle), '\n');
 
 #ifndef NDEBUG
