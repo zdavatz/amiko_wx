@@ -50,7 +50,7 @@ wxString getColorCss()
         wxFileInputStream input( colorCssPath );
         wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
         while (input.IsOk() && !input.Eof() )
-            colorCss += text.ReadLine();
+            colorCss += text.ReadLine() + wxT("\n");
     }
 
     return colorCss;

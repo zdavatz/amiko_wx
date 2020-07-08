@@ -167,7 +167,7 @@ MainWindow::MainWindow( wxWindow* parent )
 // 483
 void MainWindow::hideTextFinder()
 {
-    std::clog << __PRETTY_FUNCTION__ << "TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 
 #if 0 // TODO:
     // Inform NSTextFinder the text is going to change
@@ -883,7 +883,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             wxFileInputStream input( amikoCssPath );
             wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
             while (input.IsOk() && !input.Eof() )
-                amikoCss += text.ReadLine();
+                amikoCss += text.ReadLine() + wxT("\n");
         }
         else
             amikoCss = mMed->styleStr; // TODO: Unused ?
@@ -912,7 +912,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             wxFileInputStream input( jscriptPath );
             wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
             while (input.IsOk() && !input.Eof() )
-                jscriptStr += text.ReadLine();
+                jscriptStr += text.ReadLine() + wxT("\n");
         }
 
         //std::cerr << "jscriptStr: " << jscriptStr << std::endl;
@@ -964,22 +964,17 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
         //std::clog << "Line " << __LINE__  << " size " << mListOfSectionTitles.size() << std::endl; // 20
 
-#if 0
-        mySectionTitles->reloadData();
-#else
-        // 2827
+        // 2561
+        // reloadData
         mySectionTitles->DeleteAllItems();
         int n = mListOfSectionTitles.size();
         wxVector<wxVariant> values;
         for (int i=0; i<n; i++) {
-            //std::clog << "Line " << i  << ", <" << mListOfSectionTitles[i] << ">" << std::endl;
-
             values.clear();
             values.push_back(wxVariant(mListOfSectionTitles[i]));
             mySectionTitles->AppendItem(values);
         }
         //mySectionTitles->Fit(); // ng
-#endif
     }
 }
 
@@ -1012,7 +1007,7 @@ void MainWindow::updatePrescriptionsView()
 // 2603
 void MainWindow::updateFullTextSearchView(wxString contentStr)
 {
-    std::clog << __FUNCTION__ << " contentStr: <" << contentStr << ">" << std::endl;
+    //std::clog << __FUNCTION__ << " contentStr: <" << contentStr << ">" << std::endl;
 
     wxString colorCss = UTI::getColorCss();
 
@@ -1031,7 +1026,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
         wxFileInputStream input( fullTextCssPath );
         wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
         while (input.IsOk() && !input.Eof() )
-            fullTextCss += text.ReadLine();
+            fullTextCss += text.ReadLine() + wxT("\n");
     }
 
     wxString js_Script;
@@ -1052,7 +1047,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
             wxFileInputStream input( jscriptPath );
             wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
             while (input.IsOk() && !input.Eof() )
-                jscriptStr += text.ReadLine();
+                jscriptStr += text.ReadLine() + wxT("\n");
         }
         
         js_Script = wxString::Format("<script type=\"text/javascript\">%s</script>", jscriptStr);
@@ -1065,21 +1060,30 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
              fullTextCss,
              contentStr);
 
-    std::clog << "htmlStr: <" << htmlStr << ">" << std::endl;
+    //std::clog << __FUNCTION__ << " line " << __LINE__ << " htmlStr: <" << htmlStr << ">" << std::endl;
 
     // 2622
     myWebView->SetPage(htmlStr, wxString());
 
-#if 0 // TODO: @@@
     // 2626
     // Update right pane (section titles)
-    if (![mFullTextSearch.listOfSectionIds isEqual:[NSNull null]])
-      mListOfSectionIds = mFullTextSearch.listOfSectionIds;
-    if (![mFullTextSearch.listOfSectionTitles isEqual:[NSNull null]])
-      mListOfSectionTitles = mFullTextSearch.listOfSectionTitles;
+    if (mFullTextSearch->listOfSectionIds.size() > 0)
+        mListOfSectionIds = mFullTextSearch->listOfSectionIds;
 
-    [mySectionTitles reloadData];
-#endif
+    if (mFullTextSearch->listOfSectionTitles.size() > 0)
+        mListOfSectionTitles = mFullTextSearch->listOfSectionTitles;
+
+    // 2631
+    // reloadData
+    mySectionTitles->DeleteAllItems();
+    int n = mListOfSectionTitles.size();
+    wxVector<wxVariant> values;
+    for (int i=0; i<n; i++) {
+        values.clear();
+        values.push_back(wxVariant(mListOfSectionTitles[i]));
+        mySectionTitles->AppendItem(values);
+    }
+    //mySectionTitles->Fit(); // ng
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -1205,6 +1209,9 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     << " from ID: " << event.GetId() // wxID_FI_SEARCH_FIELD
     << " <" << find_text << ">"
     << " m_findCount " << m_findCount
+#if __APPLE__
+    << " (not supported yet on macos)"
+#endif
     << std::endl;
 #endif
 
@@ -1253,6 +1260,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     int row = mySectionTitles->GetSelectedRow(); // 0 based
 
 #if 1 // TODO: tidy up this debug code
+    // FIXME: why do we get row -1 when clicking the full-text list ?
     if (row > mListOfSectionIds.size()) {
         std::cerr << __FUNCTION__ << " WARNING: "
                 << " row: " << row
