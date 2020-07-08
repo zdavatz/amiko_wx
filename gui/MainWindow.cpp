@@ -1,5 +1,7 @@
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
@@ -347,13 +349,16 @@ void MainWindow::resetDataInTableView()
 void MainWindow::tappedOnStar(int row)
 {
 #ifndef NDEBUG
-    std::cerr << __FUNCTION__ << " row: " << row << std::endl;
+    std::cerr << __FUNCTION__
+    << " row: " << row
+    << ", favoriteKeyData size: " << favoriteKeyData.size()
+    << std::endl;
 #endif
     std::set<wxString>::iterator it;
 
     if (mCurrentSearchState != kss_FullText) {
-        wxString medRegnrs;
-        // TODO: medRegnrs = [NSString stringWithString:[favoriteKeyData objectAtIndex:row]];
+        wxString medRegnrs = favoriteKeyData[row];
+        std::clog << __FUNCTION__ << " line " << __LINE__ << " add medRegnrs to fav: <" << medRegnrs << ">\n";
         it = favoriteMedsSet.find(medRegnrs);
         if (it != favoriteMedsSet.end())
             favoriteMedsSet.erase(it);
@@ -361,8 +366,8 @@ void MainWindow::tappedOnStar(int row)
             favoriteMedsSet.insert(medRegnrs);
     }
     else {
-        wxString hashId;
-        // TODO: hashId = [NSString stringWithString:[favoriteKeyData objectAtIndex:row]];
+        wxString hashId = favoriteKeyData[row];
+        std::clog << __FUNCTION__ << " line " << __LINE__ << " add hashId to fav: <" << hashId << ">\n";
         it = favoriteFTEntrySet.find(hashId);
         if (it != favoriteFTEntrySet.end())
             favoriteFTEntrySet.erase(it);
@@ -472,46 +477,61 @@ MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
     return medList;
 }
 
+// In Amiko-osx it's "~/Library/Preferences/"
+#define FAVORITES_DIR       GetUserDataDir
+
+// In Amiko-osx it's "data" for both
+#define FAV_MED_FILE        "FavMed.txt"
+#define FAV_FT_ENTRY_FILE   "FavFTEntry.txt"
+
 // 1933
 void MainWindow::saveFavorites()
 {
-    std::clog << __FUNCTION__ << " TODO" << std::endl;
-    wxString path = "~/Library/Preferences/data";
-#if 0 // @@@
-    path = [path stringByExpandingTildeInPath];
-    
-    NSMutableDictionary *rootObject = [NSMutableDictionary dictionary];
-    
-    if (favoriteMedsSet!=nil)
-        [rootObject setValue:favoriteMedsSet forKey:@"kFavMedsSet"];
-    
-    if (favoriteFTEntrySet!=nil)
-        [rootObject setValue:favoriteFTEntrySet forKey:@"kFavFTEntrySet"];
-    
-    // Save contents of rootObject by key, value must conform to NSCoding protocolw
-    [NSKeyedArchiver archiveRootObject:rootObject toFile:path];
-#endif
+    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    std::clog << __FUNCTION__ << " to dir " << path << std::endl;
+    std::set<wxString>::iterator it;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        std::ofstream myfile(path1);
+        for (it = favoriteMedsSet.begin(); it != favoriteMedsSet.end(); ++it)
+            myfile << *it << "\n";
+
+        myfile.close();
+    }
+    else {
+        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        std::ofstream myfile(path2);
+        for (it = favoriteFTEntrySet.begin(); it != favoriteFTEntrySet.end(); ++it)
+            myfile << *it << "\n";
+
+        myfile.close();
+    }
 }
 
 // 1950
 void MainWindow::loadFavorites(DataStore *favorites)
 {
-    std::clog << __FUNCTION__ << " TODO" << std::endl;
-#if 0 //
-    wxString path = "~/Library/Preferences/data";
-    path = [path stringByExpandingTildeInPath];
-    
-    // Retrieves unarchived dictionary into rootObject
-    NSMutableDictionary *rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
-    
-    if ([rootObject valueForKey:@"kFavMedsSet"]) {
-        favorites.favMedsSet = (NSSet *)[rootObject valueForKey:@"kFavMedsSet"];
+    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    std::clog << __FUNCTION__ << " from dir " << path << std::endl;
+    std::string line;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        std::ifstream myfile(path1);
+        while ( getline (myfile, line) )
+            favorites->favMedsSet.insert(line);
+
+        myfile.close();
     }
-    
-    if ([rootObject valueForKey:@"kFavFTEntrySet"]) {
-        favorites.favFTEntrySet = (NSSet *)[rootObject valueForKey:@"kFavFTEntrySet"];
+    else {
+        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        std::ifstream myfile(path2);
+        while ( getline (myfile, line) )
+            favorites->favFTEntrySet.insert(line);
+
+        myfile.close();
     }
-#endif
 }
 
 // 1967
@@ -837,10 +857,9 @@ void MainWindow::updateTableView()
     if (myTableView->searchRes.size() > 0)
         myTableView->searchRes.clear();
 
-#if 0 // TODO:
-    if (favoriteKeyData != nil)
-        [favoriteKeyData removeAllObjects];
-#endif
+    // 2295
+    if (favoriteKeyData.size() > 0)
+        favoriteKeyData.Clear(); // removeAllObjects
 
     // 2298
     if (mCurrentSearchState == kss_Title) {
@@ -860,6 +879,17 @@ void MainWindow::updateTableView()
 							m->medId);
             }
         }
+        // 2310
+        else if (mUsedDatabase == kdbt_Favorites) {
+            for (auto m : searchResults) {
+                std::set<wxString>::iterator it;
+                it = favoriteMedsSet.find(m->regnrs);
+                if (it != favoriteMedsSet.end()) {
+                    favoriteKeyData.Add(m->regnrs);
+                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                }
+            }
+        }
     }
     // 2321
     else if (mCurrentSearchState == kss_Author) {
@@ -867,7 +897,7 @@ void MainWindow::updateTableView()
             // 2323
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andAuthor_andMedId(wxString::FromUTF8(m->title), m->auth, m->medId);
                 }
             }
@@ -883,7 +913,7 @@ void MainWindow::updateTableView()
             // 2340
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
                 }
             }
@@ -899,7 +929,7 @@ void MainWindow::updateTableView()
             // 2357
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andRegnrs_andAuthor_andMedId(
                             wxString::FromUTF8(m->title),
                             m->regnrs,
@@ -918,7 +948,7 @@ void MainWindow::updateTableView()
             // 2375
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andApplications_andMedId(m->title, m->application, m->medId);
                 }
             }
@@ -936,7 +966,7 @@ void MainWindow::updateTableView()
                 mUsedDatabase == kdbt_Favorites)
             {
                 if (!e->hash.IsEmpty()) {
-                    // TODO:: [favoriteKeyData addObject:e.hash];
+                    favoriteKeyData.Add(e->hash);
                     addKeyword_andNumHits_andHash(e->keyword, e->getNumHits(), e->hash);
                 }
             }
