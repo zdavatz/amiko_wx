@@ -38,13 +38,13 @@ FullTextDBAdapter::FullTextDBAdapter()
 bool FullTextDBAdapter::openDatabase(wxString dbName)
 {
 #ifndef NDEBUG
-    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName << std::endl;
 #endif
     // A. Check first users documents folder
     wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
     wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName + ".db");
     if (wxFileName::Exists(filePath)) {
-        std::clog << "Fulltext DB found in UserData dir: " << filePath.ToStdString() << std::endl;
+        std::clog << "Fulltext DB found in UserData dir: " << filePath << std::endl;
         if (!myFullTextDb)
             myFullTextDb = new SQLiteDatabase();
 
@@ -57,7 +57,7 @@ bool FullTextDBAdapter::openDatabase(wxString dbName)
     // TODO:
 
 #ifndef NDEBUG
-    std::cerr << "Didn't find " << filePath.ToStdString() << std::endl;
+    std::cerr << "Didn't find " << filePath << std::endl;
 #endif
 
     return false;
@@ -91,7 +91,7 @@ FullTextEntry * FullTextDBAdapter::searchHash(wxString hash)
 FULLTEXT_RESULTS FullTextDBAdapter::searchKeyword(wxString keyword)
 {
     wxString query = wxString::Format("select * from %s where %s like '%s%%'",
-                                      DATABASE_TABLE.ToStdString(),
+                                      DATABASE_TABLE,
                                       KEY_KEYWORD,
                                       keyword.c_str());
 

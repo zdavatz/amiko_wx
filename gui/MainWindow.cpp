@@ -577,7 +577,7 @@ void MainWindow::setSearchState(int searchState)
 void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
 #ifndef NDEBUG
-    std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
+    std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery << ">"  << std::endl;
 #endif
 
     if (mCurrentSearchState == kss_Title)
@@ -1458,7 +1458,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
         wxString javaScript = wxString::Format("var hashElement=document.getElementById('%s');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
 
-        //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
+        //std::clog << __FUNCTION__ << " javaScript: " << javaScript << std::endl;
         myWebView->RunScript(javaScript); // stringByEvaluatingJavaScriptFromString
     }
     // 2990
@@ -1494,7 +1494,7 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
-             wxGetOsDescription().ToStdString(), wxVERSION_STRING, SQLITE_VERSION),
+             wxGetOsDescription(), wxVERSION_STRING, SQLITE_VERSION),
     wxString(APP_NAME), wxOK | wxICON_INFORMATION);
 }
 
@@ -1606,7 +1606,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     #ifndef NDEBUG
     std::clog
         << "Click over cell " << event.GetCell()
-        << ", ID " << event.GetCell()->GetId().ToStdString()
+        << ", ID " << event.GetCell()->GetId()
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
         << ", sel " << row
         << std::endl;
@@ -1667,7 +1667,7 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
-    << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId().ToStdString()
+    << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
     << ", package at index " << event.GetLinkInfo().GetHref()
     << std::endl;
 

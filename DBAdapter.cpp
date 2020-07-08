@@ -75,7 +75,7 @@ DBAdapter::DBAdapter()
 bool DBAdapter::openDatabase(wxString dbName)
 {
 #ifndef NDEBUG
-    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName.ToStdString() << std::endl;
+    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName << std::endl;
 #endif
     if (!mySqliteDb)
         mySqliteDb = new SQLiteDatabase();
@@ -86,7 +86,7 @@ bool DBAdapter::openDatabase(wxString dbName)
     wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName + ".db");
 
     if (wxFileName::Exists(filePath)) {
-        std::clog << "AIPS DB found in UserData dir: " << filePath.ToStdString() << std::endl;
+        std::clog << "AIPS DB found in UserData dir: " << filePath << std::endl;
         mySqliteDb->initReadOnlyWithPath(filePath);
         return true;
     }
@@ -96,7 +96,7 @@ bool DBAdapter::openDatabase(wxString dbName)
     // TODO:
 
 #ifndef NDEBUG
-    std::cerr << "Didn't find " << filePath.ToStdString() << std::endl;
+    std::cerr << "Didn't find " << filePath << std::endl;
 #endif
 
     return false;
@@ -121,8 +121,8 @@ int DBAdapter::getNumRecords()
 ALL_SQL_RESULTS DBAdapter::getFullRecord(long rowId)
 {
     wxString query = wxString::Format("select %s from %s where %s=%ld",
-                                      FULL_TABLE.ToStdString(),
-                                      DATABASE_TABLE.ToStdString(),
+                                      FULL_TABLE,
+                                      DATABASE_TABLE,
                                       KEY_ROWID,
                                       rowId);
 

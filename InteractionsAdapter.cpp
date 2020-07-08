@@ -29,14 +29,14 @@ InteractionsAdapter::InteractionsAdapter()
 bool InteractionsAdapter::openInteractionsCsvFile(wxString name)
 {
 #ifndef NDEBUG
-    //std::clog << __PRETTY_FUNCTION__ << " " << name.ToStdString() << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << " " << name << std::endl;
 #endif
      
     // ** A. Check first users documents folder
     wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
     wxString filePath( documentsDir + wxFILE_SEP_PATH + name + ".csv");
     if (wxFileName::Exists(filePath)) {
-        std::clog << "Drug interactions csv found in UserData dir: " << filePath.ToStdString() << std::endl;
+        std::clog << "Drug interactions csv found in UserData dir: " << filePath << std::endl;
 
         return readDrugInteractionMap(filePath);
     }
@@ -46,7 +46,7 @@ bool InteractionsAdapter::openInteractionsCsvFile(wxString name)
     // TODO:
     
 #ifndef NDEBUG
-    std::cerr << "Didn't find " << filePath.ToStdString() << std::endl;
+    std::cerr << "Didn't find " << filePath << std::endl;
 #endif
     
     return false;
@@ -70,7 +70,7 @@ int InteractionsAdapter::getNumInteractions()
 bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
 {
 #ifndef NDEBUG
-    //std::clog << __PRETTY_FUNCTION__ << " " << filePath.ToStdString() << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << " " << filePath << std::endl;
 #endif
 
 #if 0
@@ -99,12 +99,12 @@ bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
             if (tk.length() == 0)
                 continue;
 
-            //std::clog << "Token: " << tk.ToStdString() << std::endl;
+            //std::clog << "Token: " << tk << std::endl;
             a.Add(tk);
         }
 
         if (a.GetCount() < 3) {
-            std::clog << "Line " << line.ToStdString() << std::endl;
+            std::clog << "Line " << line << std::endl;
             std::clog << "a count: " << a.GetCount() << std::endl;
             continue;
         }
