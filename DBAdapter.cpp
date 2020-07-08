@@ -294,13 +294,8 @@ MEDICATION_RESULTS DBAdapter::searchRegnrsFromList(wxArrayString listOfRegnrs)
     }
 
     if (subQuery.size() > 4) {
-        
-#if 0 // TODO: @@@
         // Remove last 'or'
-        subQuery = [subQuery substringWithRange:NSMakeRange(0, [subQuery length]-4)];
-#else
         subQuery.RemoveLast(4);
-#endif
         wxString query = wxString::Format("select %s from %s where %s",
                                            FULL_TABLE,
                                            DATABASE_TABLE,

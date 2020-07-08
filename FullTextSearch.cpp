@@ -26,7 +26,7 @@ wxString FullTextSearch::tableWithArticles_andRegChaptersDict_andFilter(
     //std::clog << __FUNCTION__ << " listOfArticles size: " << listOfArticles.size() << std::endl;
 
     int rows = 0;
-    wxString htmlStr = "<ul>";
+    wxString htmlStr = wxT("<ul>");
 
     // Assign list and dictionaries only if != nil
     if (listOfArticles.size() > 0) {
@@ -115,7 +115,7 @@ wxString FullTextSearch::tableWithArticles_andRegChaptersDict_andFilter(
         }
     } // for list of articles
     
-    htmlStr += "</ul>";
+    htmlStr += wxT("</ul>");
 
     // 115
     wxArrayString listOfIds;// = [[NSMutableArray alloc] init];

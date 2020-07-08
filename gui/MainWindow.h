@@ -73,6 +73,7 @@ private:
     void updatePrescriptionHistory();
     void updateFullTextSearchView(wxString contentStr);
     void finishedDownloading();
+    void updateButtons();
     
     // not in amiko-osx
     int m_findCount;

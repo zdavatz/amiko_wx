@@ -359,7 +359,7 @@ void MainWindow::switchTabs(int item)
             break;
 
         case wxID_TB_FAVORITES:
-            //std::clog << "Favorites" << std::endl;
+            std::cerr << __FUNCTION__ << " line " << __LINE__ << " Favorites"<< std::endl;
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
@@ -974,7 +974,15 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             values.push_back(wxVariant(mListOfSectionTitles[i]));
             mySectionTitles->AppendItem(values);
         }
+        mySectionTitles->Refresh();
         //mySectionTitles->Fit(); // ng
+#ifdef DEBUG_FULL_TEXT_LIST
+        std::clog << __FUNCTION__ << " line " << __LINE__ << std::endl;
+        std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+        std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+        std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+        std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+#endif
     }
 }
 
@@ -1075,7 +1083,21 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 
     // 2631
     // reloadData
-    mySectionTitles->DeleteAllItems();
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before DeleteAllItems()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+    mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will be called
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after DeleteAllItems()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
     int n = mListOfSectionTitles.size();
     wxVector<wxVariant> values;
     for (int i=0; i<n; i++) {
@@ -1083,7 +1105,28 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
         values.push_back(wxVariant(mListOfSectionTitles[i]));
         mySectionTitles->AppendItem(values);
     }
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before Refresh()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+    mySectionTitles->Refresh();
     //mySectionTitles->Fit(); // ng
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after Refresh()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+}
+
+// 3047
+void MainWindow::updateButtons()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -1209,9 +1252,9 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     << " from ID: " << event.GetId() // wxID_FI_SEARCH_FIELD
     << " <" << find_text << ">"
     << " m_findCount " << m_findCount
-#if __APPLE__
+    #if __APPLE__
     << " (not supported yet on macos)"
-#endif
+    #endif
     << std::endl;
 #endif
 
@@ -1244,27 +1287,49 @@ void MainWindow::OnSearchPatient( wxCommandEvent& event )
 
 // 2917
 // tableViewSelectionDidChange
+// In amiko-osx this is a delegate function for 3 table views:
+//      myTableView, mySectionTitles, myPrescriptionsTableView
+// Here in amiko-wx
+//      'myTableView' is handled elsewhere, see OnHtmlCellClicked()
+//      'mySectionTitles' handled here
+//      'myPrescriptionsTableView' yet to be implemented
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
-//    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
-//    std::clog << "event " << event.GetEventObject() << std::endl;
-//    std::clog << "event Id " << event.GetId() << std::endl;
-//    std::clog << "Id "<< mySectionTitles->GetId() << std::endl;
-
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
-        std::clog << "Skip event Id " << event.GetId() << std::endl;
+        std::cerr << __FUNCTION__ << " line " << __LINE__ << " early return" << std::endl;
+        std::clog << "Skip event Id: " << event.GetId() << std::endl;
+        std::clog << "wxID_SECTION_TITLES: " << wxID_SECTION_TITLES << std::endl;
         event.Skip();
         return;
     }
 
     int row = mySectionTitles->GetSelectedRow(); // 0 based
+    
+#ifdef DEBUG_FULL_TEXT_LIST
+    std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl;
+    std::cerr << "event " << event.GetEventObject() << std::endl;
+    std::cerr << "event Id " << event.GetId() << std::endl;
+    std::cerr << "=== mySectionTitles Id :" << mySectionTitles->GetId() << std::endl;
+    std::cerr << "mySectionTitles sel row: " << row << std::endl;
+    std::cerr << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::cerr << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+#endif
+
+#if 1 //ndef NDEBUG
+    // Why do we get row -1 when selecting a result in myTableView in full-text mode ?
+    // If we just return here it seems to do the right thing
+    if (row == wxNOT_FOUND) {
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+                << " WARNING: no selection" << std::endl;
+        return;
+    }
+#endif
 
 #if 1 // TODO: tidy up this debug code
-    // FIXME: why do we get row -1 when clicking the full-text list ?
     if (row > mListOfSectionIds.size()) {
-        std::cerr << __FUNCTION__ << " WARNING: "
-                << " row: " << row
-                << " > mListOfSectionIds.size(): " << mListOfSectionIds.size()
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+                << "WARNING: row " << row
+                << " > mListOfSectionIds.size() " << mListOfSectionIds.size()
                 << std::endl;
         return;
     }
@@ -1275,8 +1340,10 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     // 2981
     if (mPrescriptionMode) {
         //NSLog(@"%s row:%ld, %s", __FUNCTION__, row, mListOfSectionIds[row]);
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO loadPrescription()\n";
         // TODO: loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
     }
+    // 2985
     else if (mCurrentSearchState != kss_FullText ||
              mCurrentWebView != kFullTextSearchView)
     {
@@ -1289,15 +1356,21 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
         //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
         myWebView->RunScript(javaScript); // stringByEvaluatingJavaScriptFromString
     }
+    // 2990
     else {
+        // We get here when we select an entry
+        // of the list on the right (mySectionTitle) in full-text mode.
         // Update webviewer's content without changing anything else
         wxString contentStr;
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#if 0 // TODO: @@@
-        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
-#endif
+        std::vector<Medication *> nullListOfArticles;
+        std::map<wxString, std::set<wxString>> nullDict;
+        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullListOfArticles, nullDict, mListOfSectionIds[row]);
+
         updateFullTextSearchView(contentStr);
     }
+    
+    // 3003
+    updateButtons();
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )
@@ -1425,12 +1498,14 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 
     int row = myTableView->GetSelection();
 
+    #ifndef NDEBUG
     std::clog
         << "Click over cell " << event.GetCell()
         << ", ID " << event.GetCell()->GetId().ToStdString()
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
         << ", sel " << row
         << std::endl;
+    #endif
 
     // 2936
     if ( mCurrentSearchState != kss_FullText) {
@@ -1468,6 +1543,9 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         mCurrentWebView = kFullTextSearchView;
         updateFullTextSearchView(mFullTextContentStr);
     }
+    
+    // 3003
+    updateButtons();
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!
     event.Skip();
