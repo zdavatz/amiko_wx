@@ -1,5 +1,7 @@
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
@@ -26,6 +28,7 @@
 #include "OperatorIDSheet.h"
 #include "FullTextSearch.hpp"
 #include "FullTextEntry.hpp"
+#include "DataStore.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -150,6 +153,10 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 321
     // TODO: Initialize favorites (articles + full text entries)
+    DataStore *favorites = new DataStore;
+    loadFavorites(favorites);
+    favoriteMedsSet = favorites->favMedsSet;
+    favoriteFTEntrySet = favorites->favFTEntrySet;
 
     // 327
     // Set default database
@@ -338,6 +345,39 @@ void MainWindow::resetDataInTableView()
     }
 }
 
+// 925
+void MainWindow::tappedOnStar(int row)
+{
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__
+    << " row: " << row
+    << ", favoriteKeyData size: " << favoriteKeyData.size()
+    << std::endl;
+#endif
+    std::set<wxString>::iterator it;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString medRegnrs = favoriteKeyData[row];
+        std::clog << __FUNCTION__ << " line " << __LINE__ << " add medRegnrs to fav: <" << medRegnrs << ">\n";
+        it = favoriteMedsSet.find(medRegnrs);
+        if (it != favoriteMedsSet.end())
+            favoriteMedsSet.erase(it);
+        else
+            favoriteMedsSet.insert(medRegnrs);
+    }
+    else {
+        wxString hashId = favoriteKeyData[row];
+        std::clog << __FUNCTION__ << " line " << __LINE__ << " add hashId to fav: <" << hashId << ">\n";
+        it = favoriteFTEntrySet.find(hashId);
+        if (it != favoriteFTEntrySet.end())
+            favoriteFTEntrySet.erase(it);
+        else
+            favoriteFTEntrySet.insert(hashId);
+    }
+    
+    saveFavorites();
+}
+
 // 1749
 void MainWindow::stopProgressIndicator()
 {
@@ -359,11 +399,15 @@ void MainWindow::switchTabs(int item)
             break;
 
         case wxID_TB_FAVORITES:
-            //std::clog << "Favorites" << std::endl;
+            std::cerr << __FUNCTION__ << " line " << __LINE__ << " Favorites"<< std::endl;
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO:
+            
+            // 1826
+            searchResults = retrieveAllFavorites();
+
             myTabView->ChangeSelection(0); // 1840
             break;
 
@@ -404,9 +448,90 @@ void MainWindow::switchTabs(int item)
 // 1897
 MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    MEDICATION_RESULTS temp;
-    return temp;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+
+    MEDICATION_RESULTS medList;
+
+    // 1905
+    if (mCurrentSearchState != kss_FullText) {
+        if (mDb) {
+            for (auto regnrs : favoriteMedsSet) {
+                auto med = mDb->searchRegNr(regnrs);
+                if (/*med!=nullptr &&*/ med.size()>0)
+                    medList.push_back(med[0]);
+            }
+        }
+    }
+#if 0 // TODO  @@@
+    else {
+        if (mFullTextDb) {
+            for (auto hashId : favoriteFTEntrySet) {
+                auto entry = mFullTextDb->searchHash(hashId);
+                if (entry != nullptr)
+                    medList.push_back(entry);
+            }
+        }
+    }
+#endif
+
+    return medList;
+}
+
+// In Amiko-osx it's "~/Library/Preferences/"
+#define FAVORITES_DIR       GetUserDataDir
+
+// In Amiko-osx it's "data" for both
+#define FAV_MED_FILE        "FavMed.txt"
+#define FAV_FT_ENTRY_FILE   "FavFTEntry.txt"
+
+// 1933
+void MainWindow::saveFavorites()
+{
+    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    std::clog << __FUNCTION__ << " to dir " << path << std::endl;
+    std::set<wxString>::iterator it;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        std::ofstream myfile(path1);
+        for (it = favoriteMedsSet.begin(); it != favoriteMedsSet.end(); ++it)
+            myfile << *it << "\n";
+
+        myfile.close();
+    }
+    else {
+        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        std::ofstream myfile(path2);
+        for (it = favoriteFTEntrySet.begin(); it != favoriteFTEntrySet.end(); ++it)
+            myfile << *it << "\n";
+
+        myfile.close();
+    }
+}
+
+// 1950
+void MainWindow::loadFavorites(DataStore *favorites)
+{
+    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    std::clog << __FUNCTION__ << " from dir " << path << std::endl;
+    std::string line;
+
+    if (mCurrentSearchState != kss_FullText) {
+        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        std::ifstream myfile(path1);
+        while ( getline (myfile, line) )
+            favorites->favMedsSet.insert(line);
+
+        myfile.close();
+    }
+    else {
+        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        std::ifstream myfile(path2);
+        while ( getline (myfile, line) )
+            favorites->favFTEntrySet.insert(line);
+
+        myfile.close();
+    }
 }
 
 // 1967
@@ -472,7 +597,7 @@ void MainWindow::setSearchState(int searchState)
 void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 {
 #ifndef NDEBUG
-    std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery.ToStdString() << ">"  << std::endl;
+    std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery << ">"  << std::endl;
 #endif
 
     if (mCurrentSearchState == kss_Title)
@@ -525,7 +650,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
         }
     }
     else
-        m->subTitle = (char *)"Not specified"; // TODO: localize
+        m->subTitle = _("Not specified");
 
     m->medId = medId;
     doArray.push_back(m); // to be obsolete
@@ -732,17 +857,16 @@ void MainWindow::updateTableView()
     if (myTableView->searchRes.size() > 0)
         myTableView->searchRes.clear();
 
-#if 0 // TODO:
-    if (favoriteKeyData != nil)
-        [favoriteKeyData removeAllObjects];
-#endif
+    // 2295
+    if (favoriteKeyData.size() > 0)
+        favoriteKeyData.Clear(); // removeAllObjects
 
     // 2298
     if (mCurrentSearchState == kss_Title) {
         if (mUsedDatabase == kdbt_Aips) {
             // 2300
             for (auto m : searchResults) {
-                // TODO: [favoriteKeyData addObject:m.regnrs];
+                favoriteKeyData.Add(m->regnrs);
                 if (mSearchInteractions == false)
                     addTitle_andPackInfo_andMedId(
                     		wxString::FromUTF8(m->title),
@@ -755,6 +879,17 @@ void MainWindow::updateTableView()
 							m->medId);
             }
         }
+        // 2310
+        else if (mUsedDatabase == kdbt_Favorites) {
+            for (auto m : searchResults) {
+                std::set<wxString>::iterator it;
+                it = favoriteMedsSet.find(m->regnrs);
+                if (it != favoriteMedsSet.end()) {
+                    favoriteKeyData.Add(m->regnrs);
+                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                }
+            }
+        }
     }
     // 2321
     else if (mCurrentSearchState == kss_Author) {
@@ -762,7 +897,7 @@ void MainWindow::updateTableView()
             // 2323
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andAuthor_andMedId(wxString::FromUTF8(m->title), m->auth, m->medId);
                 }
             }
@@ -778,7 +913,7 @@ void MainWindow::updateTableView()
             // 2340
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
                 }
             }
@@ -794,7 +929,7 @@ void MainWindow::updateTableView()
             // 2357
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andRegnrs_andAuthor_andMedId(
                             wxString::FromUTF8(m->title),
                             m->regnrs,
@@ -813,7 +948,7 @@ void MainWindow::updateTableView()
             // 2375
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
-                    // TODO: [favoriteKeyData addObject:m.regnrs];
+                    favoriteKeyData.Add(m->regnrs);
                     addTitle_andApplications_andMedId(m->title, m->application, m->medId);
                 }
             }
@@ -831,7 +966,7 @@ void MainWindow::updateTableView()
                 mUsedDatabase == kdbt_Favorites)
             {
                 if (!e->hash.IsEmpty()) {
-                    // TODO:: [favoriteKeyData addObject:e.hash];
+                    favoriteKeyData.Add(e->hash);
                     addKeyword_andNumHits_andHash(e->keyword, e->getNumHits(), e->hash);
                 }
             }
@@ -974,7 +1109,15 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             values.push_back(wxVariant(mListOfSectionTitles[i]));
             mySectionTitles->AppendItem(values);
         }
+        mySectionTitles->Refresh();
         //mySectionTitles->Fit(); // ng
+#ifdef DEBUG_FULL_TEXT_LIST
+        std::clog << __FUNCTION__ << " line " << __LINE__ << std::endl;
+        std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+        std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+        std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+        std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+#endif
     }
 }
 
@@ -1075,7 +1218,21 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 
     // 2631
     // reloadData
-    mySectionTitles->DeleteAllItems();
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before DeleteAllItems()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+    mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will be called
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after DeleteAllItems()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
     int n = mListOfSectionTitles.size();
     wxVector<wxVariant> values;
     for (int i=0; i<n; i++) {
@@ -1083,7 +1240,28 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
         values.push_back(wxVariant(mListOfSectionTitles[i]));
         mySectionTitles->AppendItem(values);
     }
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before Refresh()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+    mySectionTitles->Refresh();
     //mySectionTitles->Fit(); // ng
+    #ifdef DEBUG_FULL_TEXT_LIST
+    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after Refresh()\n";
+    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
+    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
+    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+    #endif
+}
+
+// 3047
+void MainWindow::updateButtons()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -1209,9 +1387,9 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     << " from ID: " << event.GetId() // wxID_FI_SEARCH_FIELD
     << " <" << find_text << ">"
     << " m_findCount " << m_findCount
-#if __APPLE__
+    #if __APPLE__
     << " (not supported yet on macos)"
-#endif
+    #endif
     << std::endl;
 #endif
 
@@ -1244,27 +1422,49 @@ void MainWindow::OnSearchPatient( wxCommandEvent& event )
 
 // 2917
 // tableViewSelectionDidChange
+// In amiko-osx this is a delegate function for 3 table views:
+//      myTableView, mySectionTitles, myPrescriptionsTableView
+// Here in amiko-wx
+//      'myTableView' is handled elsewhere, see OnHtmlCellClicked()
+//      'mySectionTitles' handled here
+//      'myPrescriptionsTableView' yet to be implemented
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
-//    std::clog << __PRETTY_FUNCTION__ << " " << event.GetId() << std::endl;
-//    std::clog << "event " << event.GetEventObject() << std::endl;
-//    std::clog << "event Id " << event.GetId() << std::endl;
-//    std::clog << "Id "<< mySectionTitles->GetId() << std::endl;
-
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
-        std::clog << "Skip event Id " << event.GetId() << std::endl;
+        std::cerr << __FUNCTION__ << " line " << __LINE__ << " early return" << std::endl;
+        std::clog << "Skip event Id: " << event.GetId() << std::endl;
+        std::clog << "wxID_SECTION_TITLES: " << wxID_SECTION_TITLES << std::endl;
         event.Skip();
         return;
     }
 
     int row = mySectionTitles->GetSelectedRow(); // 0 based
+    
+#ifdef DEBUG_FULL_TEXT_LIST
+    std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl;
+    std::cerr << "event " << event.GetEventObject() << std::endl;
+    std::cerr << "event Id " << event.GetId() << std::endl;
+    std::cerr << "=== mySectionTitles Id :" << mySectionTitles->GetId() << std::endl;
+    std::cerr << "mySectionTitles sel row: " << row << std::endl;
+    std::cerr << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
+    std::cerr << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
+#endif
+
+#if 1 //ndef NDEBUG
+    // Why do we get row -1 when selecting a result in myTableView in full-text mode ?
+    // If we just return here it seems to do the right thing
+    if (row == wxNOT_FOUND) {
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+                << " WARNING: no selection" << std::endl;
+        return;
+    }
+#endif
 
 #if 1 // TODO: tidy up this debug code
-    // FIXME: why do we get row -1 when clicking the full-text list ?
     if (row > mListOfSectionIds.size()) {
-        std::cerr << __FUNCTION__ << " WARNING: "
-                << " row: " << row
-                << " > mListOfSectionIds.size(): " << mListOfSectionIds.size()
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+                << "WARNING: row " << row
+                << " > mListOfSectionIds.size() " << mListOfSectionIds.size()
                 << std::endl;
         return;
     }
@@ -1275,8 +1475,10 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     // 2981
     if (mPrescriptionMode) {
         //NSLog(@"%s row:%ld, %s", __FUNCTION__, row, mListOfSectionIds[row]);
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO loadPrescription()\n";
         // TODO: loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
     }
+    // 2985
     else if (mCurrentSearchState != kss_FullText ||
              mCurrentWebView != kFullTextSearchView)
     {
@@ -1286,18 +1488,24 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 
         wxString javaScript = wxString::Format("var hashElement=document.getElementById('%s');if(hashElement) {hashElement.scrollIntoView();}", mListOfSectionIds[row]);
 
-        //std::clog << __FUNCTION__ << " javaScript: " << javaScript.ToStdString() << std::endl;
+        //std::clog << __FUNCTION__ << " javaScript: " << javaScript << std::endl;
         myWebView->RunScript(javaScript); // stringByEvaluatingJavaScriptFromString
     }
+    // 2990
     else {
+        // We get here when we select an entry
+        // of the list on the right (mySectionTitle) in full-text mode.
         // Update webviewer's content without changing anything else
         wxString contentStr;
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#if 0 // TODO: @@@
-        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullptr, nullptr, mListOfSectionIds[row]);
-#endif
+        std::vector<Medication *> nullListOfArticles;
+        std::map<wxString, std::set<wxString>> nullDict;
+        contentStr = mFullTextSearch->tableWithArticles_andRegChaptersDict_andFilter( nullListOfArticles, nullDict, mListOfSectionIds[row]);
+
         updateFullTextSearchView(contentStr);
     }
+    
+    // 3003
+    updateButtons();
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )
@@ -1316,7 +1524,7 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
-             wxGetOsDescription().ToStdString(), wxVERSION_STRING, SQLITE_VERSION),
+             wxGetOsDescription(), wxVERSION_STRING, SQLITE_VERSION),
     wxString(APP_NAME), wxOK | wxICON_INFORMATION);
 }
 
@@ -1425,12 +1633,20 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 
     int row = myTableView->GetSelection();
 
+    #ifndef NDEBUG
     std::clog
         << "Click over cell " << event.GetCell()
-        << ", ID " << event.GetCell()->GetId().ToStdString()
+        << ", ID " << event.GetCell()->GetId()
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
         << ", sel " << row
         << std::endl;
+    #endif
+    
+    if (event.GetPoint().x < 20 &&
+        event.GetPoint().y < 20)
+    {
+        tappedOnStar(row);
+    }
 
     // 2936
     if ( mCurrentSearchState != kss_FullText) {
@@ -1468,6 +1684,9 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         mCurrentWebView = kFullTextSearchView;
         updateFullTextSearchView(mFullTextContentStr);
     }
+    
+    // 3003
+    updateButtons();
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!
     event.Skip();
@@ -1478,7 +1697,7 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
-    << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId().ToStdString()
+    << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
     << ", package at index " << event.GetLinkInfo().GetHref()
     << std::endl;
 

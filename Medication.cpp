@@ -125,7 +125,7 @@ const wxString &Medication::shortTitle(wxString &longTitle)
 {
     wxString t = longTitle.Lower();
 
-    //std::clog << "longTitle: " << longTitle.ToStdString() << ", t: " << t.ToStdString() << std::endl;
+    //std::clog << "longTitle: " << longTitle << ", t: " << t << std::endl;
 
     const wxString * SectionTitle = SectionTitle_FR;
     int n = WXSIZEOF(SectionTitle_FR);
@@ -141,7 +141,7 @@ const wxString &Medication::shortTitle(wxString &longTitle)
 //        if (compareString.IsEmpty()) // WHy would it be empty ?
 //            continue;
 
-        //std::clog << "i: " << i << " compareString:" << compareString.ToStdString() << std::endl;
+        //std::clog << "i: " << i << " compareString:" << compareString << std::endl;
 
         if (t.Contains(compareString))
             return SectionTitle[i];

@@ -17,7 +17,7 @@ SQLiteDatabase::SQLiteDatabase()
 void SQLiteDatabase::initReadOnlyWithPath(wxString path)
 {
 #ifndef NDEBUG
-    //std::clog << __PRETTY_FUNCTION__ << " " << path.ToStdString() << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << " " << path << std::endl;
 #endif
     sqlite3 *dbConnection;
 
@@ -41,7 +41,7 @@ int SQLiteDatabase::numberRecordsForTable(wxString table)
     int numTableRecords = -1;
     sqlite3_stmt *sqlClause = NULL;
 
-    wxString sqlStatement = wxString::Format("SELECT COUNT(*) FROM %s", table.ToStdString());
+    wxString sqlStatement = wxString::Format("SELECT COUNT(*) FROM %s", table);
     const char *sql = sqlStatement.c_str();
     if (sqlite3_prepare_v2(database, sql, -1, &sqlClause, NULL) == SQLITE_OK) {
         while(sqlite3_step(sqlClause) == SQLITE_ROW) {
