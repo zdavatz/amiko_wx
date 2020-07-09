@@ -29,6 +29,7 @@
 #include "FullTextSearch.hpp"
 #include "FullTextEntry.hpp"
 #include "DataStore.hpp"
+#include "InteractionsHtmlView.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -128,7 +129,8 @@ MainWindow::MainWindow( wxWindow* parent )
     fadeInAndShow();
 
     // 292
-    // TODO: Initialize interactions cart
+    // Initialize interactions cart
+    mInteractionsView = new InteractionsHtmlView;
 
     // 295
     // TODO: Create bridge between JScript and ObjC
@@ -408,7 +410,6 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            // TODO:
             
             // 1783
             if (mCurrentSearchState != kss_FullText)
@@ -438,7 +439,6 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            // TODO:
             
             // 1826
             searchResults = retrieveAllFavorites();
@@ -448,7 +448,6 @@ void MainWindow::switchTabs(int item)
             updateTableView();
 
             // 1831
-            // TODO: myTableView->reloadData();
             myTableView->SetItemCount(searchResults.size()); // reloadData
             myTableView->Refresh();
             
@@ -473,7 +472,15 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = true;
             mPrescriptionMode = false;
-            // TODO:
+            
+            // 1850
+            stopProgressIndicator();
+            setSearchState(kss_Title);
+            pushToMedBasket(mMed);
+            updateInteractionsView();
+            
+            // 1854
+            // Switch tab view
             myTabView->ChangeSelection(0); // 1855
             break;
 
@@ -1059,7 +1066,7 @@ void MainWindow::updateTableView()
 // Add med in the buffer to the interaction basket
 void MainWindow::pushToMedBasket(Medication *med)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    mInteractionsView->pushToMedBasket(med);
 }
 
 // 2473
@@ -1204,6 +1211,32 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 void MainWindow::updateInteractionsView()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+
+    // Generate main interaction table
+    wxString htmlStr = mInteractionsView->fullInteractionsHtml(mInteractions);
+    
+    // With the following implementation, the images are not loaded
+    // NSURL *mainBundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+    // [[myWebView mainFrame] loadHTMLString:htmlStr baseURL:mainBundleURL];
+    
+#if 1
+    std::clog << __FUNCTION__ << " TODO" << std::endl;
+    myWebView->SetPage("TODO: Interactions", wxString());
+#else
+    [[myWebView mainFrame] loadHTMLString:htmlStr
+                                  baseURL:[[NSBundle mainBundle] resourceURL]];
+    
+    if (mPrescriptionMode == false) {
+        // Update section title anchors
+        if (![mInteractionsView.listofSectionIds isEqual:[NSNull null]])
+            mListOfSectionIds = mInteractionsView.listofSectionIds;
+        // Update section titles (here: identical to anchors)
+        if (![mInteractionsView.listofSectionTitles isEqual:[NSNull null]])
+            mListOfSectionTitles = mInteractionsView.listofSectionTitles;
+        
+        [mySectionTitles reloadData];
+    }
+#endif
 }
 
 // 2589
@@ -1738,7 +1771,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         // TODO: Hide textfinder
 
         // 2946
-        if (mSearchInteractions==false) {
+        if (!mSearchInteractions) {
             updateExpertInfoView(wxEmptyString);
         }
         else {

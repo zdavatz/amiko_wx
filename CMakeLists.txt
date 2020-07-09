@@ -74,15 +74,21 @@ set( SRCS_GUI
 set( SRCS_SQL
     DBAdapter.cpp DBAdapter.hpp
     SQLiteDatabase.cpp SQLiteDatabase.hpp
-    FullTextDBAdapter.cpp FullTextDBAdapter.hpp
-    InteractionsAdapter.cpp InteractionsAdapter.hpp )
+    FullTextDBAdapter.cpp FullTextDBAdapter.hpp )
 
 set( SRCS_SQLITE
     sqlite/sqlite3.c sqlite/sqlite3.h sqlite/sqlite3ext.h )
 
+set( SRCS_INTER
+    InteractionsHtmlView.cpp InteractionsHtmlView.hpp
+    InteractionsCart.cpp InteractionsCart.hpp
+    InteractionsAdapter.cpp InteractionsAdapter.hpp
+    )
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
+source_group(interactions FILES ${SRCS_INTER})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -97,7 +103,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
-    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_INTER}
     customURLConnection.cpp customURLConnection.hpp
     )
 
