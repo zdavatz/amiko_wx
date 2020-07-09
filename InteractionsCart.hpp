@@ -6,10 +6,16 @@
 
 #pragma once
 
+#include <vector>
+
 class InteractionsCart
 {
 public:
     InteractionsCart();
     virtual ~InteractionsCart() {}
     
+    int size();
+    
+    //NSMutableDictionary *
+    std::vector<char*> cart;
 };

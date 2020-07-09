@@ -10,3 +10,8 @@ InteractionsCart::InteractionsCart()
 {
     
 }
+
+int InteractionsCart::size()
+{
+    return cart.size();
+}

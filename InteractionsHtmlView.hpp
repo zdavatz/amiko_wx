@@ -18,6 +18,9 @@ public:
     
     void pushToMedBasket(Medication *med);
     wxString fullInteractionsHtml(InteractionsAdapter *interactions);
+    wxString medBasketHtml();
+    wxString interactionsHtml(InteractionsAdapter *interactions);
+    wxString footNoteHtml();
     
     InteractionsCart *medCart;
 };

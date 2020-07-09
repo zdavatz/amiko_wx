@@ -1219,13 +1219,11 @@ void MainWindow::updateInteractionsView()
     // NSURL *mainBundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
     // [[myWebView mainFrame] loadHTMLString:htmlStr baseURL:mainBundleURL];
     
+    myWebView->SetPage(htmlStr, wxString()); // loadHTMLString
+
 #if 1
-    std::clog << __FUNCTION__ << " TODO" << std::endl;
-    myWebView->SetPage("TODO: Interactions", wxString());
+    std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
 #else
-    [[myWebView mainFrame] loadHTMLString:htmlStr
-                                  baseURL:[[NSBundle mainBundle] resourceURL]];
-    
     if (mPrescriptionMode == false) {
         // Update section title anchors
         if (![mInteractionsView.listofSectionIds isEqual:[NSNull null]])
