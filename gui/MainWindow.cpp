@@ -409,6 +409,27 @@ void MainWindow::switchTabs(int item)
             mSearchInteractions = false;
             mPrescriptionMode = false;
             // TODO:
+            
+            // 1783
+            if (mCurrentSearchState != kss_FullText)
+            {
+                mCurrentSearchState = kss_Title;
+                mCurrentSearchKey = wxEmptyString;
+            }
+            
+            // 1787
+            searchAnyDatabasesWith(mCurrentSearchKey); // it updates searchResults and searchResultsFT
+            
+            // /1790
+            // Update tableview
+            updateTableView();
+            
+            // 1791
+            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->Refresh();
+
+            // Switch tab view
+            updateExpertInfoView(wxEmptyString);
             myTabView->ChangeSelection(0); // 1800
             break;
 
@@ -422,10 +443,14 @@ void MainWindow::switchTabs(int item)
             // 1826
             searchResults = retrieveAllFavorites();
             
+            // /1828
             // Update tableview
             updateTableView();
 
+            // 1831
             // TODO: myTableView->reloadData();
+            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->Refresh();
             
 #ifndef WITH_JS_BRIDGE
             {
@@ -444,6 +469,7 @@ void MainWindow::switchTabs(int item)
 
         case wxID_TB_INTERACTIONS:
             //std::clog << "Interactions" << std::endl;
+            // 1847
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = true;
             mPrescriptionMode = false;
@@ -552,7 +578,8 @@ void MainWindow::loadFavorites(DataStore *favorites)
         wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
         std::ifstream myfile(path1);
         while ( getline (myfile, line) )
-            favorites->favMedsSet.insert(line);
+            if (line.length() > 0)
+                favorites->favMedsSet.insert(line);
 
         myfile.close();
     }
@@ -561,7 +588,8 @@ void MainWindow::loadFavorites(DataStore *favorites)
         wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
         std::ifstream myfile(path2);
         while ( getline (myfile, line) )
-            favorites->favFTEntrySet.insert(line);
+            if (line.length() > 0)
+                favorites->favFTEntrySet.insert(line);
 
         myfile.close();
     }

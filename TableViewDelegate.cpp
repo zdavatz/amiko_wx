@@ -59,18 +59,30 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     {
         // MLMainWindowController.m:2801
         MainWindow * parent = wxDynamicCast(m_parent, MainWindow); // GetParent()
-        FAVORITES_SET::iterator it;
-        if (!searchStateFullText()) {
-            wxString regnrStr = parent->favoriteKeyData[n];
-            it = parent->favoriteMedsSet.find(regnrStr);
-            if (it != parent->favoriteMedsSet.end())
-                starColor = lightYellow;
+        int m = parent->favoriteKeyData.size();
+        // Compare index n with count m
+#if 0
+        wxASSERT_MSG( n < m, wxT("item index out of bounds") );
+#else
+        if (n >= m) {
+            std::cerr << "ERROR: === " << __FUNCTION__
+            << " n:" << n << " out of bounds: " << m << " === " << std::endl;
         }
-        else {
-            wxString hashId = parent->favoriteKeyData[n];
-            it = parent->favoriteFTEntrySet.find(hashId);
-            if (it != parent->favoriteFTEntrySet.end())
-                starColor = lightYellow;
+        else
+#endif
+        {
+            if (!searchStateFullText()) {
+                wxString regnrStr = parent->favoriteKeyData[n];
+                FAVORITES_SET::iterator it = parent->favoriteMedsSet.find(regnrStr);
+                if (it != parent->favoriteMedsSet.end())
+                    starColor = lightYellow;
+            }
+            else {
+                wxString hashId = parent->favoriteKeyData[n];
+                FAVORITES_SET::iterator it = parent->favoriteFTEntrySet.find(hashId);
+                if (it != parent->favoriteFTEntrySet.end())
+                    starColor = lightYellow;
+            }
         }
     }
     
