@@ -29,6 +29,7 @@
 #include "FullTextSearch.hpp"
 #include "FullTextEntry.hpp"
 #include "DataStore.hpp"
+#include "InteractionsHtmlView.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -98,7 +99,7 @@ MainWindow::MainWindow( wxWindow* parent )
     // TODO: Start timer to check if database needs to be updated (checks every hour)
 
     // 275
-    // Open AIPS database
+    // Open AIPS database (SQLite file)
     bool ok = openSQLiteDatabase();
 #ifndef NDEBUG
     if (ok)
@@ -106,7 +107,7 @@ MainWindow::MainWindow( wxWindow* parent )
         << mDb->getNumRecords() << std::endl;
 #endif
 
-    // Open full-text database
+    // Open full-text database (SQLite file)
     ok = openFullTextDatabase();
 #ifndef NDEBUG
     if (ok)
@@ -115,7 +116,7 @@ MainWindow::MainWindow( wxWindow* parent )
 #endif
 
     // 286
-    // Open drug interactions csv file
+    // Open drug interactions (CSV file)
     ok = openInteractionsCsvFile();
 #ifndef NDEBUG
     if (ok)
@@ -128,7 +129,8 @@ MainWindow::MainWindow( wxWindow* parent )
     fadeInAndShow();
 
     // 292
-    // TODO: Initialize interactions cart
+    // Initialize interactions cart
+    mInteractionsView = new InteractionsHtmlView;
 
     // 295
     // TODO: Create bridge between JScript and ObjC
@@ -157,6 +159,11 @@ MainWindow::MainWindow( wxWindow* parent )
     loadFavorites(favorites);
     favoriteMedsSet = favorites->favMedsSet;
     favoriteFTEntrySet = favorites->favFTEntrySet;
+#ifndef NDEBUG
+    std::cerr << "favoriteKeyData size: " << favoriteKeyData.size() << std::endl;
+    std::cerr << "favoriteMedsSet size: " << favoriteMedsSet.size() << std::endl;
+    std::cerr << "favoriteFTEntrySet size: " << favoriteFTEntrySet.size() << std::endl;
+#endif
 
     // 327
     // Set default database
@@ -169,6 +176,13 @@ MainWindow::MainWindow( wxWindow* parent )
     // 381
     // TODO:
     //healthCard = new HealthCard;
+}
+
+// Purpose: access the search state from TableViewDelegate
+// It doesn't need to be a class member because 'mCurrentSearchState'
+// is a global variable
+bool searchStateFullText() {
+    return (mCurrentSearchState == kss_FullText);
 }
 
 // 483
@@ -348,31 +362,33 @@ void MainWindow::resetDataInTableView()
 // 925
 void MainWindow::tappedOnStar(int row)
 {
-#ifndef NDEBUG
-    std::cerr << __FUNCTION__
-    << " row: " << row
-    << ", favoriteKeyData size: " << favoriteKeyData.size()
-    << std::endl;
-#endif
-    std::set<wxString>::iterator it;
+    FAVORITES_SET::iterator it;
 
     if (mCurrentSearchState != kss_FullText) {
         wxString medRegnrs = favoriteKeyData[row];
-        std::clog << __FUNCTION__ << " line " << __LINE__ << " add medRegnrs to fav: <" << medRegnrs << ">\n";
+
         it = favoriteMedsSet.find(medRegnrs);
-        if (it != favoriteMedsSet.end())
+        if (it != favoriteMedsSet.end()) {
             favoriteMedsSet.erase(it);
-        else
+            std::clog << "Row " << row << ", remove medRegnrs from fav: <" << medRegnrs << ">\n";
+        }
+        else {
             favoriteMedsSet.insert(medRegnrs);
+            std::clog << "Row " << row << ", add medRegnrs to fav: <" << medRegnrs << ">\n";
+        }
     }
     else {
         wxString hashId = favoriteKeyData[row];
-        std::clog << __FUNCTION__ << " line " << __LINE__ << " add hashId to fav: <" << hashId << ">\n";
+
         it = favoriteFTEntrySet.find(hashId);
-        if (it != favoriteFTEntrySet.end())
+        if (it != favoriteFTEntrySet.end()) {
             favoriteFTEntrySet.erase(it);
-        else
+            std::clog << "Row " << row << ", remove hashId from fav: <" << hashId << ">\n";
+        }
+        else {
             favoriteFTEntrySet.insert(hashId);
+            std::clog << "Row " << row << ", add hashId to fav: <" << hashId << ">\n";
+        }
     }
     
     saveFavorites();
@@ -394,7 +410,27 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            // TODO:
+            
+            // 1783
+            if (mCurrentSearchState != kss_FullText)
+            {
+                mCurrentSearchState = kss_Title;
+                mCurrentSearchKey = wxEmptyString;
+            }
+            
+            // 1787
+            searchAnyDatabasesWith(mCurrentSearchKey); // it updates searchResults and searchResultsFT
+            
+            // /1790
+            // Update tableview
+            updateTableView();
+            
+            // 1791
+            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->Refresh();
+
+            // Switch tab view
+            updateExpertInfoView(wxEmptyString);
             myTabView->ChangeSelection(0); // 1800
             break;
 
@@ -403,20 +439,48 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            // TODO:
             
             // 1826
             searchResults = retrieveAllFavorites();
+            
+            // /1828
+            // Update tableview
+            updateTableView();
 
+            // 1831
+            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->Refresh();
+            
+#ifndef WITH_JS_BRIDGE
+            {
+            // Workaround new to Amiko-wx (TBC)
+            // Purpose: define mMed and prevent crash in updateExpertInfoView()
+            // Code taken from createJSBridge()
+            wxString ean = wxEmptyString; // TODO: msg[2];
+            mMed = mDb->getMediWithRegnr(ean);
+            }
+#endif
+
+            // Switch tab view
+            updateExpertInfoView(wxEmptyString);
             myTabView->ChangeSelection(0); // 1840
             break;
 
         case wxID_TB_INTERACTIONS:
             //std::clog << "Interactions" << std::endl;
+            // 1847
             mUsedDatabase = kdbt_Aips;
             mSearchInteractions = true;
             mPrescriptionMode = false;
-            // TODO:
+            
+            // 1850
+            stopProgressIndicator();
+            setSearchState(kss_Title);
+            pushToMedBasket(mMed);
+            updateInteractionsView();
+            
+            // 1854
+            // Switch tab view
             myTabView->ChangeSelection(0); // 1855
             break;
 
@@ -448,8 +512,6 @@ void MainWindow::switchTabs(int item)
 // 1897
 MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-
     MEDICATION_RESULTS medList;
 
     // 1905
@@ -457,22 +519,24 @@ MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
         if (mDb) {
             for (auto regnrs : favoriteMedsSet) {
                 auto med = mDb->searchRegNr(regnrs);
-                if (/*med!=nullptr &&*/ med.size()>0)
+                if (/*med!=nullptr &&*/ med.size() > 0)
                     medList.push_back(med[0]);
             }
         }
     }
-#if 0 // TODO  @@@
     else {
         if (mFullTextDb) {
+#if 1 // TODO:
+            std::clog << __PRETTY_FUNCTION__ << " TODO: " << std::endl;
+#else
             for (auto hashId : favoriteFTEntrySet) {
                 auto entry = mFullTextDb->searchHash(hashId);
                 if (entry != nullptr)
                     medList.push_back(entry);
             }
+#endif
         }
     }
-#endif
 
     return medList;
 }
@@ -489,9 +553,9 @@ void MainWindow::saveFavorites()
 {
     wxString path = wxStandardPaths::Get().FAVORITES_DIR();
     std::clog << __FUNCTION__ << " to dir " << path << std::endl;
-    std::set<wxString>::iterator it;
+    FAVORITES_SET::iterator it;
 
-    if (mCurrentSearchState != kss_FullText) {
+    {
         wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
         std::ofstream myfile(path1);
         for (it = favoriteMedsSet.begin(); it != favoriteMedsSet.end(); ++it)
@@ -499,7 +563,8 @@ void MainWindow::saveFavorites()
 
         myfile.close();
     }
-    else {
+
+    {
         wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
         std::ofstream myfile(path2);
         for (it = favoriteFTEntrySet.begin(); it != favoriteFTEntrySet.end(); ++it)
@@ -516,19 +581,22 @@ void MainWindow::loadFavorites(DataStore *favorites)
     std::clog << __FUNCTION__ << " from dir " << path << std::endl;
     std::string line;
 
-    if (mCurrentSearchState != kss_FullText) {
+    {
         wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
         std::ifstream myfile(path1);
         while ( getline (myfile, line) )
-            favorites->favMedsSet.insert(line);
+            if (line.length() > 0)
+                favorites->favMedsSet.insert(line);
 
         myfile.close();
     }
-    else {
+
+    {
         wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
         std::ifstream myfile(path2);
         while ( getline (myfile, line) )
-            favorites->favFTEntrySet.insert(line);
+            if (line.length() > 0)
+                favorites->favFTEntrySet.insert(line);
 
         myfile.close();
     }
@@ -653,6 +721,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
         m->subTitle = _("Not specified");
 
     m->medId = medId;
+
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
@@ -674,6 +743,7 @@ void MainWindow::addTitle_andAuthor_andMedId(wxString title, wxString author, lo
         m->title = L"Not specified"; // "k.A."
     
     m->medId = medId;
+
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
@@ -743,6 +813,7 @@ void MainWindow::addTitle_andAtcCode_andAtcClass_andMedId(wxString title, wxStri
     }
 
     m->medId = medId;
+    
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
@@ -766,7 +837,7 @@ void MainWindow::addTitle_andRegnrs_andAuthor_andMedId(wxString title, wxString 
 
     m->subTitle = wxString::Format("%s - %s", m_regnrs, m_auth);
     m->medId = medId;
-    
+
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
@@ -797,11 +868,11 @@ void MainWindow::addTitle_andApplications_andMedId(wxString title, wxString appl
         m_swissmedic = _("Not specified");
 
     if (m_bag.IsEmpty())
-        m_bag  = _("Not specified"); // @"k.A.";
+        m_bag = _("Not specified"); // @"k.A.";
 
     m->subTitle = wxString::Format("%s\n%s", m_swissmedic, m_bag);
     m->medId = medId;
-    
+
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
@@ -818,12 +889,12 @@ void MainWindow::addKeyword_andNumHits_andHash(wxString keyword, unsigned long n
 
     m->subTitle = wxString::Format("%ld %s", numHits, _("Results"));  // Treffer
     m->hashId = hash;
-    
+
     doArray.push_back(m); // to be obsolete
     myTableView->searchRes.push_back(m);
 }
 
-// 2286
+// 2288
 void MainWindow::updateTableView()
 {
     //std::cerr << __PRETTY_FUNCTION__  << std::endl;
@@ -882,11 +953,11 @@ void MainWindow::updateTableView()
         // 2310
         else if (mUsedDatabase == kdbt_Favorites) {
             for (auto m : searchResults) {
-                std::set<wxString>::iterator it;
-                it = favoriteMedsSet.find(m->regnrs);
+                // 2313
+                FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
                 if (it != favoriteMedsSet.end()) {
                     favoriteKeyData.Add(m->regnrs);
-                    addTitle_andPackInfo_andMedId(m->title, m->packInfo, m->medId);
+                    addTitle_andPackInfo_andMedId(wxString::FromUTF8(m->title), m->packInfo, m->medId);
                 }
             }
         }
@@ -903,7 +974,13 @@ void MainWindow::updateTableView()
             }
             // 2328
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __FUNCTION__ << " TODO Author Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andAuthor_andMedId(wxString::FromUTF8(m->title), m->auth, m->medId);
+                    }
+                }
             }
         }
     }
@@ -989,13 +1066,16 @@ void MainWindow::updateTableView()
 // Add med in the buffer to the interaction basket
 void MainWindow::pushToMedBasket(Medication *med)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    mInteractionsView->pushToMedBasket(med);
 }
 
 // 2473
 void MainWindow::updateExpertInfoView(wxString anchor)
 {
-	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+	//std::cerr << __PRETTY_FUNCTION__ << std::endl;
+    
+    if (!mMed)
+        std::clog << __PRETTY_FUNCTION__ << " FIXME: mMed is NULL" << std::endl;
 
 	// 2476
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
@@ -1076,12 +1156,18 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     // 2529
     // TODO: Some tables have the color set in the HTML string (not set with CSS)
 
-    if (mCurrentSearchState == kss_FullText)
-    {
+    if (mCurrentSearchState == kss_FullText) {
         // 2534
-        // TODO: wxString keyword = mFullTextEntry->keyword;
+        wxString keyword = mFullTextEntry->keyword;
+        if (!keyword.IsEmpty()) {
+            // Instead of appending like in the Windows version,
+            // insert before "</body>"
+            wxString jsCode = wxString::Format("highlightText(document.body,'%s')", keyword);
+            wxString extraHtmlCode = wxString::Format("<script>%s</script>\n </body>", jsCode);
+            htmlStr.Replace("</body>", extraHtmlCode);
+        }
 
-        // TODO:
+        mAnchor = anchor;
     }
 
     // 2547
@@ -1125,6 +1211,30 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 void MainWindow::updateInteractionsView()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+
+    // Generate main interaction table
+    wxString htmlStr = mInteractionsView->fullInteractionsHtml(mInteractions);
+    
+    // With the following implementation, the images are not loaded
+    // NSURL *mainBundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+    // [[myWebView mainFrame] loadHTMLString:htmlStr baseURL:mainBundleURL];
+    
+    myWebView->SetPage(htmlStr, wxString()); // loadHTMLString
+
+#if 1
+    std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
+#else
+    if (mPrescriptionMode == false) {
+        // Update section title anchors
+        if (![mInteractionsView.listofSectionIds isEqual:[NSNull null]])
+            mListOfSectionIds = mInteractionsView.listofSectionIds;
+        // Update section titles (here: identical to anchors)
+        if (![mInteractionsView.listofSectionTitles isEqual:[NSNull null]])
+            mListOfSectionTitles = mInteractionsView.listofSectionTitles;
+        
+        [mySectionTitles reloadData];
+    }
+#endif
 }
 
 // 2589
@@ -1646,6 +1756,8 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         event.GetPoint().y < 20)
     {
         tappedOnStar(row);
+        myTableView->RefreshRow(row);
+        return;
     }
 
     // 2936
@@ -1657,7 +1769,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         // TODO: Hide textfinder
 
         // 2946
-        if (mSearchInteractions==false) {
+        if (!mSearchInteractions) {
             updateExpertInfoView(wxEmptyString);
         }
         else {
