@@ -91,6 +91,3 @@ int MyApp::OnExit()
 #endif
     return EXIT_SUCCESS;
 }
-
-
-

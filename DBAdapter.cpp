@@ -91,7 +91,7 @@ bool DBAdapter::openDatabase(wxString dbName)
         return true;
     }
 
-    // B. If no database is available, check if db is in app bundle
+    // B. If no database is available, check if DB is in app bundle
     documentsDir = wxStandardPaths::Get().GetResourcesDir();
     // TODO:
 
@@ -135,6 +135,15 @@ Medication * DBAdapter::getMediWithId(long rowId)
     ALL_SQL_RESULTS results = getFullRecord(rowId);
     ONE_SQL_RESULT firstObject = results[0];
     return cursorToFullMedInfo( firstObject );
+}
+
+// 154
+Medication * DBAdapter::getMediWithRegnr(wxString regnr)
+{
+    wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%'", FULL_TABLE, DATABASE_TABLE, KEY_REGNRS, regnr, KEY_REGNRS, regnr);
+    ONE_SQL_RESULT cursor = mySqliteDb->performQuery(query)[0];
+    
+    return cursorToFullMedInfo(cursor);
 }
 
 // 169

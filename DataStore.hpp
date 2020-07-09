@@ -9,12 +9,14 @@
 #include <set>
 #include <wx/wx.h>
 
+#define FAVORITES_SET         std::set<wxString>
+
 class DataStore
 {
 public:
     DataStore();
     virtual ~DataStore() {}
     
-    std::set<wxString> favMedsSet;
-    std::set<wxString> favFTEntrySet;
+    FAVORITES_SET favMedsSet;
+    FAVORITES_SET favFTEntrySet;
 };

@@ -10,8 +10,6 @@
 #include <map>
 #include <wx/wx.h>
 
-//#include "FullTextSearch.hpp"  // for NSDictionary
-
 class FullTextEntry
 {
 public:
@@ -33,6 +31,5 @@ private:
     
 public:
     // .m 29
-    //NSDictionary *regChaptersDict;
     std::map<wxString, std::set<wxString>> regChaptersDict;
 };

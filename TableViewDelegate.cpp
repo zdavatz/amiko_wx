@@ -6,6 +6,9 @@
 
 #include "TableViewDelegate.hpp"
 #include "DataObject.hpp"
+#include "MainWindow.h"
+
+extern bool searchStateFullText();
 
 wxIMPLEMENT_DYNAMIC_CLASS(TableViewDelegate, wxHtmlListBox);
 
@@ -34,7 +37,9 @@ void TableViewDelegate::OnDrawSeparator(wxDC& dc, wxRect& rect, size_t) const
     }
 }
 
-// see MLMainWindowController.m:2783 tableView:viewForTableColumn:row
+// See MLMainWindowController.m:2783 tableView:viewForTableColumn:row
+// In AmiKo-osx this is a handler for 3 table views
+//      myTableView, mySectionTitles, myPrescriptionsTableView
 wxString TableViewDelegate::OnGetItem(size_t n) const
 {
 	//std::cerr << "=== n:" << n << " === " << __PRETTY_FUNCTION__ << std::endl;
@@ -44,18 +49,30 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     const wxColour typicalRed(255,0,0);
     const wxColour lightYellow(255,255,0); // MLColors.m:32
 
-    DataObject *m = searchRes[n];
+    DataObject *dobj = searchRes[n];
 
-    // ItemCellView.m 120 tableView:viewForTableColumn:row
-    wxArrayString listOfPackages = wxSplit(wxString(m->subTitle), '\n');
+    // ItemCellView.m 123 tableView:viewForTableColumn:row
+    wxArrayString listOfPackages = wxSplit(wxString(dobj->subTitle), '\n');
 
-#ifndef NDEBUG
-    wxColour starColor = lightYellow;
-    if (n % 5)
-        starColor = typicalGray;
-#else
+    // favoritesCheckBox
     wxColour starColor = typicalGray;
-#endif
+    {
+        // MLMainWindowController.m:2801
+        MainWindow * parent = wxDynamicCast(m_parent, MainWindow); // GetParent()
+        FAVORITES_SET::iterator it;
+        if (!searchStateFullText()) {
+            wxString regnrStr = parent->favoriteKeyData[n];
+            it = parent->favoriteMedsSet.find(regnrStr);
+            if (it != parent->favoriteMedsSet.end())
+                starColor = lightYellow;
+        }
+        else {
+            wxString hashId = parent->favoriteKeyData[n];
+            it = parent->favoriteFTEntrySet.find(hashId);
+            if (it != parent->favoriteFTEntrySet.end())
+                starColor = lightYellow;
+        }
+    }
     
     wxString label;
     //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
@@ -64,7 +81,7 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     label += wxString::Format(L"<font color=%s size=+3>★</font>",
 								starColor.GetAsString(wxC2S_HTML_SYNTAX));
 
-    label += wxString::Format("<b><font size=+2> %s</font></b>", m->title);
+    label += wxString::Format("<b><font size=+2> %s</font></b>", dobj->title);
 
     for (int i=0; i<listOfPackages.size(); i++) {
         // Set colors: O original red, G Generika green, default gray
