@@ -137,10 +137,19 @@ private:
     float m_alpha;
     float m_delta;
     
+    void OnLboxSelect(wxCommandEvent& event) {
+        std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
+        //event.Skip();
+    }
+
+    void OnLboxDClick(wxCommandEvent& event) {
+        std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
+    }
+    
     // Delegate
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
-    //void OnHtmlCellHover(wxHtmlCellEvent &event);
-    virtual void OnHtmlCellClicked(wxHtmlCellEvent &event);
+    void OnHtmlCellHover(wxHtmlCellEvent &event);
+    void OnHtmlCellClicked(wxHtmlCellEvent &event);
 
 private:
     

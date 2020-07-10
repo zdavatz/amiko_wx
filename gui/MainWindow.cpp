@@ -56,7 +56,10 @@ static wxString mCurrentSearchKey;
 
 // Events not processed by MainWindow will, by default, be handled by MainWindowBase
 BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
+    EVT_LISTBOX(wxID_ANY, MainWindow::OnLboxSelect)
+    EVT_LISTBOX_DCLICK(wxID_ANY, MainWindow::OnLboxDClick)
     EVT_HTML_LINK_CLICKED(wxID_ANY, MainWindow::OnHtmlLinkClicked)
+    EVT_HTML_CELL_HOVER(wxID_ANY, MainWindow::OnHtmlCellHover)
     EVT_HTML_CELL_CLICKED(wxID_ANY, MainWindow::OnHtmlCellClicked)
 END_EVENT_TABLE()
 
@@ -639,8 +642,8 @@ void MainWindow::setSearchState(int searchState)
             break;
 
         case kss_WebView:
-            // Hide textfinder
             hideTextFinder();
+
             // NOTE: Commented out because we're using SHCWebView now (02.03.2015)
             /*
             mySearchField->SetValue(wxEmptyString);
@@ -1136,7 +1139,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     }
 
     // 2502
-    // Generate html string
+    // Generate HTML string
     wxString htmlStr = wxString::FromUTF8(mMed->contentStr);
     //std::cerr << "Line " << __LINE__  << " <" << htmlStr << ">" << std::endl;
 
@@ -1196,7 +1199,9 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             mySectionTitles->AppendItem(values);
         }
         mySectionTitles->Refresh();
-        //mySectionTitles->Fit(); // ng
+        //mySectionTitles->Fit();   // ng
+        //GetSizer()->Layout();     // ng
+
 #ifdef DEBUG_FULL_TEXT_LIST
         std::clog << __FUNCTION__ << " line " << __LINE__ << std::endl;
         std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
@@ -1730,6 +1735,17 @@ void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
     mOperatorIDSheet->ShowWindowModal();
 }
 
+void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
+{
+#ifndef NDEBUG
+    std::cerr << "Mouse over cell " << event.GetCell()
+    << ", cell ID " << event.GetCell()->GetId()
+    << ", cell link " << event.GetCell()->GetLink()
+    << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
+    << std::endl;
+#endif
+}
+
 // 2917
 // See tableViewSelectionDidChange
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
@@ -1743,17 +1759,23 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 
     int row = myTableView->GetSelection();
 
-    #ifndef NDEBUG
+    wxPoint absPosCell = event.GetCell()->GetAbsPos();
+    wxPoint eventPoint = event.GetPoint();
+    wxPoint calculatedPos = absPosCell + eventPoint;
+
+#if 0 //ndef NDEBUG
     std::clog
         << "Click over cell " << event.GetCell()
-        << ", ID " << event.GetCell()->GetId()
+        << ", cell ID " << event.GetCell()->GetId()
+        << ", cell pos " << absPosCell.x << ";" << absPosCell.y
         << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
+        << ", calc pos " << calculatedPos.x << ";" << calculatedPos.y
         << ", sel " << row
         << std::endl;
-    #endif
+#endif
     
-    if (event.GetPoint().x < 20 &&
-        event.GetPoint().y < 20)
+    if (calculatedPos.x < 20 &&
+        calculatedPos.y < 20)
     {
         tappedOnStar(row);
         myTableView->RefreshRow(row);
@@ -1766,15 +1788,16 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         long mId = doArray[row]->medId;
         // Get medi
         mMed = mDb->getMediWithId(mId);
-        // TODO: Hide textfinder
+
+        hideTextFinder();
 
         // 2946
         if (!mSearchInteractions) {
-            updateExpertInfoView(wxEmptyString);
+            updateExpertInfoView(wxEmptyString); // Fachinfo HTML
         }
         else {
             pushToMedBasket(mMed);
-            updateInteractionsView();
+            updateInteractionsView(); // Interactions HTML
         }
     }
     // 2953
@@ -1783,7 +1806,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         wxString hashId = doArray[row]->hashId;
         // Get entry
         mFullTextEntry = mFullTextDb->searchHash(hashId);
-        // Hide text finder
+
         hideTextFinder();
         
         wxArrayString listOfRegnrs = mFullTextEntry->getRegnrsAsArray();
@@ -1810,9 +1833,10 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     << ", event Id: " << event.GetId()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
-    << ", package at index " << event.GetLinkInfo().GetHref()
+    << ", package at index: <" << event.GetLinkInfo().GetHref() << ">"
     << std::endl;
 
-    //myTableView->RefreshRow(1);
+    // TODO: popup menu to add medicine to any of 3 prescription carts
+
     event.Skip();
 }

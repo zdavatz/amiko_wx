@@ -34,20 +34,8 @@ protected:
     // item
     bool m_change;
 
-    // flag which we toggle to update the first items text in OnGetItem()
-    //bool m_firstItemUpdated;
-
-public:
-
-    // flag which we toggle when the user clicks on the link in 2nd item
-    // to change 2nd item's text
-    bool m_linkClicked;
-    
+public:    
     std::vector<DataObject *> searchRes;
-
-#ifdef USE_HTML_FILE
-    wxTextFile m_file;
-#endif
 
     wxDECLARE_NO_COPY_CLASS(TableViewDelegate);
     wxDECLARE_DYNAMIC_CLASS(TableViewDelegate);
