@@ -84,11 +84,17 @@ set( SRCS_INTER
     InteractionsCart.cpp InteractionsCart.hpp
     InteractionsAdapter.cpp InteractionsAdapter.hpp
     )
+    
+set( SRCS_PRESCR
+    PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
+    PrescriptionItem.cpp PrescriptionItem.hpp
+    )
 
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
 source_group(interactions FILES ${SRCS_INTER})
+source_group(prescriptions FILES ${SRCS_PRESCR})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -99,11 +105,10 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     Medication.cpp Medication.hpp
     Patient.cpp Patient.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
-    PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
-    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_INTER}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_INTER} ${SRCS_PRESCR}
     customURLConnection.cpp customURLConnection.hpp
     )
 

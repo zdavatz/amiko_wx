@@ -137,6 +137,13 @@ Medication * DBAdapter::getMediWithId(long rowId)
     return cursorToFullMedInfo( firstObject );
 }
 
+Medication * DBAdapter::getShortMediWithId(long rowId)
+{
+    ALL_SQL_RESULTS results = getFullRecord(rowId);
+    ONE_SQL_RESULT firstObject = results[0];
+    return cursorToShortMedInfo(firstObject);
+}
+
 // 154
 Medication * DBAdapter::getMediWithRegnr(wxString regnr)
 {
