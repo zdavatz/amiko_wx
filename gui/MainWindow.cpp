@@ -1898,8 +1898,9 @@ void MainWindow::selectBasket(int cartNumber)
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
     
+#if 0
     // MLItemCellView.h:32
-    Medication *selectedMedi = nullptr;
+    Medication *selectedMedi = new Medication;
     
     // 192
     PrescriptionItem *item = new PrescriptionItem;
@@ -1912,4 +1913,5 @@ void MainWindow::selectBasket(int cartNumber)
     
     // TODO: (not in amiko-osx) deallocate objects
     delete item;
+#endif
 }
