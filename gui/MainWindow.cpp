@@ -1849,12 +1849,14 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 // MLItemCellView.m:148 tableViewSelectionDidChange
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
+    int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
+
 #ifndef NDEBUG
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
-    << ", package at index: <" << event.GetLinkInfo().GetHref() << ">"
+    << ", package at index: <" << packageIndex << ">"
     << std::endl;
 #endif
 
@@ -1870,15 +1872,15 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     // 156
     DataObject *dobj = myTableView->searchRes[row];
     wxArrayString listOfPackages = wxSplit(wxString(dobj->subTitle), '\n');
-    int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
-    wxString selectedPackage = listOfPackages[packageIndex];
-    
+
     // Validate index
     if (packageIndex >= listOfPackages.size()) {
         std::clog << __FUNCTION__ << " Select cell first" << std::endl;
         return;
     }
 
+    wxString selectedPackage = listOfPackages[packageIndex];
+    
     menu.Append(wxID_HIGHEST+0, wxString::Format("%s", selectedPackage));
     menu.Append(wxID_HIGHEST+1, _("Prescription"));
     // TODO: maybe add 2 more prescription carts
