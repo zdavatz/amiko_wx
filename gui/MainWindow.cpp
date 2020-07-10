@@ -30,6 +30,7 @@
 #include "FullTextEntry.hpp"
 #include "DataStore.hpp"
 #include "InteractionsHtmlView.hpp"
+#include "PrescriptionItem.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -360,6 +361,15 @@ void MainWindow::resetDataInTableView()
         myTableView->SetSelection(0); // scrollRectToVisible
         myTableView->Refresh();
     }
+}
+
+// 918
+Medication * MainWindow::getShortMediWithId(long mid)
+{
+    if (mDb)
+        return mDb->getShortMediWithId(mid);
+
+    return nullptr;
 }
 
 // 925
@@ -1746,6 +1756,15 @@ void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
 #endif
 }
 
+void MainWindow::OnLboxSelect(wxCommandEvent& event) {
+    std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
+    //event.Skip();
+}
+
+void MainWindow::OnLboxDClick(wxCommandEvent& event) {
+    std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
+}
+
 // 2917
 // See tableViewSelectionDidChange
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
@@ -1827,16 +1846,70 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     event.Skip();
 }
 
+// MLItemCellView.m:148 tableViewSelectionDidChange
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
+#ifndef NDEBUG
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
     << ", package at index: <" << event.GetLinkInfo().GetHref() << ">"
     << std::endl;
+#endif
 
-    // TODO: popup menu to add medicine to any of 3 prescription carts
+    // TODO: find the row number
+    int row = myTableView->GetSelection(); // TODO: this is not reliable
+
+    // Popup menu to add medicine to any of 3 prescription carts
+
+    // 155
+    wxMenu menu;
+    menu.SetTitle(_("Contextual Menu")); // it doesn't appear
+    
+    // 156
+    DataObject *dobj = myTableView->searchRes[row];
+    wxArrayString listOfPackages = wxSplit(wxString(dobj->subTitle), '\n');
+    int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
+    wxString selectedPackage = listOfPackages[packageIndex];
+    
+    // Validate index
+    if (packageIndex >= listOfPackages.size()) {
+        std::clog << __FUNCTION__ << " Select cell first" << std::endl;
+        return;
+    }
+
+    menu.Append(wxID_HIGHEST+0, wxString::Format("%s", selectedPackage));
+    menu.Append(wxID_HIGHEST+1, _("Prescription"));
+    // TODO: maybe add 2 more prescription carts
+
+    const int rc = GetPopupMenuSelectionFromUser(menu, wxDefaultPosition);
+    if ( rc != wxID_NONE )
+    {
+        std::clog << "You have selected \"%d\"" << rc - wxID_HIGHEST << std::endl;
+        selectBasket(1);
+    }
 
     event.Skip();
+}
+
+// MLItemCellView.m:179
+void MainWindow::selectBasket(int cartNumber)
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    
+    // MLItemCellView.h:32
+    Medication *selectedMedi = nullptr;
+    
+    // 192
+    PrescriptionItem *item = new PrescriptionItem;
+    
+    // 196
+    // Extract EAN/GTIN
+    Medication *m = getShortMediWithId(selectedMedi->medId);
+    
+    // TODO
+    
+    // TODO: (not in amiko-osx) deallocate objects
+    delete item;
 }

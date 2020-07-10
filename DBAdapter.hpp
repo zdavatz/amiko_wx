@@ -36,9 +36,9 @@ public:
     Medication * cursorToShortMedInfo(ONE_SQL_RESULT &cursor);
     Medication * cursorToFullMedInfo(ONE_SQL_RESULT &cursor);
     Medication * getMediWithId(long rowId);
+    Medication * getShortMediWithId(long rowId);
     Medication * getMediWithRegnr(wxString regnr);
 
-    
 private:
      
     SQLiteDatabase *mySqliteDb;

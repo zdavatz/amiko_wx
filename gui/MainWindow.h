@@ -82,6 +82,7 @@ private:
     void saveFavorites();
     void loadFavorites(DataStore *favorites);
     void tappedOnStar(int row);
+    Medication * getShortMediWithId(long mid);
     
     // not in amiko-osx
     int m_findCount;
@@ -137,19 +138,16 @@ private:
     float m_alpha;
     float m_delta;
     
-    void OnLboxSelect(wxCommandEvent& event) {
-        std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
-        //event.Skip();
-    }
-
-    void OnLboxDClick(wxCommandEvent& event) {
-        std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
-    }
+    void OnLboxSelect(wxCommandEvent& event);
+    void OnLboxDClick(wxCommandEvent& event);
     
     // Delegate
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
     void OnHtmlCellHover(wxHtmlCellEvent &event);
     void OnHtmlCellClicked(wxHtmlCellEvent &event);
+    
+    // MLItemCellView.m:179
+    void selectBasket(int cartNumber);
 
 private:
     
