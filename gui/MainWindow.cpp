@@ -62,6 +62,9 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_HTML_LINK_CLICKED(wxID_ANY, MainWindow::OnHtmlLinkClicked)
     EVT_HTML_CELL_HOVER(wxID_ANY, MainWindow::OnHtmlCellHover)
     EVT_HTML_CELL_CLICKED(wxID_ANY, MainWindow::OnHtmlCellClicked)
+    EVT_WEBVIEW_NAVIGATING(wxID_ANY, MainWindow::OnNavigationRequest)
+    EVT_WEBVIEW_TITLE_CHANGED(wxID_ANY, MainWindow::OnTitleChanged)
+    EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
 END_EVENT_TABLE()
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -154,7 +157,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 315
     // TODO: Initialize webview
-    myWebView->SetPage("<html><head></head><body></body></html>", wxString());
+    myWebView->SetPage("<html><head></head><body></body></html>", wxString()); // loadHTMLString
     //myWebView->Fit();
 
     // 321
@@ -405,6 +408,34 @@ void MainWindow::tappedOnStar(int row)
     }
     
     saveFavorites();
+}
+
+// 1558
+// Handler for EVT_WEBVIEW_NAVIGATING
+// see amiko-osx clickedTableView
+/** From wxWidgets sources webview.cpp:778
+  * Callback invoked when there is a request to load a new page (for instance when the user clicks a link)
+  */
+void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
+{
+#if 0 //ndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__
+    << " Navigation request to " << evt.GetURL() // https://__bridge_loaded__/
+    << ", (target=" << evt.GetTarget() << ")"   // <!--frame1-->
+    << std::endl;
+
+    std::clog << "source: " << myWebView->GetPageSource() << std::endl;
+    std::clog << "text: " << myWebView->GetPageText() << std::endl;
+
+    if (evt.GetNavigationAction() == wxWEBVIEW_NAV_ACTION_USER)
+        std::clog << " (user)" << std::endl;
+#endif
+
+#if 0
+    // If we don't want to handle navigation then veto the event and navigation
+    // will not take place.
+    evt.Veto();
+#endif
 }
 
 // 1749
@@ -1082,6 +1113,69 @@ void MainWindow::pushToMedBasket(Medication *med)
     mInteractionsView->pushToMedBasket(med);
 }
 
+// 2424
+// Handler for EVT_WEBVIEW_TITLE_CHANGED
+// In amiko-osx see createJSBridge
+void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
+{
+    wxString str = evt.GetString();
+    // str now contains the JSON string set in the JavaScript
+
+#if 0 //ndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__
+    << " Title changed: <" << str << ">\n"
+    << "myWebView title: <" << myWebView->GetCurrentTitle() << ">\n"
+#endif
+    
+    wxArrayString msg = wxSplit(str, ',');
+    if (msg.size() == 3) {
+        // interactions
+        // 2432
+        std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
+    }
+    else if (msg.size() == 4) {
+        // Full text search
+        // 2447
+        wxString ean = msg[2];
+        wxString anchor = msg[3];
+        if (ean.length() > 0) {
+            // 2452
+            mCurrentWebView = kExpertInfoView;
+            mMed = mDb->getMediWithRegnr(ean);
+            updateExpertInfoView(anchor);
+            
+            // TODO: moveToHighlight ?
+        }
+    }
+}
+
+// 2464
+// Handler for EVT_WEBVIEW_LOADED
+// Callback invoked when a page is finished loading
+// In amiko-osx see WebFrameLoadDelegate - webView:didFinishLoadForFrame:
+void MainWindow::OnDocumentLoaded(wxWebViewEvent& evt)
+{
+#if 0
+    std::clog << __PRETTY_FUNCTION__
+    << " Document loaded, evt.GetURL(): <" << evt.GetURL()
+    << ">, myWebView URL: <" << myWebView->GetCurrentURL() << ">"
+    << ">, mAnchor: <" << mAnchor << ">"
+    << std::endl;
+#endif
+
+#if 0
+    // Only notify if the document is the main frame, not a subframe
+    if (evt.GetURL() == m_browser->GetCurrentURL())
+#endif
+    {
+        // Inject JS into webview
+        if (mAnchor.length() > 0) {
+            wxString jsCallback = wxString::Format("moveToHighlight('%s')", mAnchor);
+            myWebView->RunScript(jsCallback); // stringByEvaluatingJavaScriptFromString
+        }
+    }
+}
+
 // 2473
 void MainWindow::updateExpertInfoView(wxString anchor)
 {
@@ -1184,7 +1278,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     }
 
     // 2547
-    myWebView->SetPage(htmlStr, wxString());
+    myWebView->SetPage(htmlStr, wxString()); // loadHTMLString
 
     // 2553
     if (!mPrescriptionMode) {
@@ -1331,7 +1425,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
     //std::clog << __FUNCTION__ << " line " << __LINE__ << " htmlStr: <" << htmlStr << ">" << std::endl;
 
     // 2622
-    myWebView->SetPage(htmlStr, wxString());
+    myWebView->SetPage(htmlStr, wxString()); // loadHTMLString
 
     // 2626
     // Update right pane (section titles)
@@ -1745,9 +1839,27 @@ void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
     mOperatorIDSheet->ShowWindowModal();
 }
 
-void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
+// Handler for EVT_LISTBOX
+void MainWindow::OnLboxSelect(wxCommandEvent& event)
 {
 #ifndef NDEBUG
+    std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
+    //event.Skip();
+#endif
+}
+
+// Handler for EVT_LISTBOX_DCLICK
+void MainWindow::OnLboxDClick(wxCommandEvent& event)
+{
+#ifndef NDEBUG
+    std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
+#endif
+}
+
+// Handler for EVT_HTML_CELL_HOVER
+void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
+{
+#if 0 //ndef NDEBUG
     std::cerr << "Mouse over cell " << event.GetCell()
     << ", cell ID " << event.GetCell()->GetId()
     << ", cell link " << event.GetCell()->GetLink()
@@ -1756,16 +1868,8 @@ void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
 #endif
 }
 
-void MainWindow::OnLboxSelect(wxCommandEvent& event) {
-    std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
-    //event.Skip();
-}
-
-void MainWindow::OnLboxDClick(wxCommandEvent& event) {
-    std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
-}
-
 // 2917
+// Handler for EVT_HTML_CELL_CLICKED
 // See tableViewSelectionDidChange
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
@@ -1917,3 +2021,5 @@ void MainWindow::selectBasket(int cartNumber)
     delete item;
 #endif
 }
+
+

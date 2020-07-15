@@ -145,7 +145,10 @@ private:
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
     void OnHtmlCellHover(wxHtmlCellEvent &event);
     void OnHtmlCellClicked(wxHtmlCellEvent &event);
-    
+    void OnNavigationRequest(wxWebViewEvent& evt);
+    void OnTitleChanged(wxWebViewEvent& evt);
+    void OnDocumentLoaded(wxWebViewEvent& evt);
+
     // MLItemCellView.m:179
     void selectBasket(int cartNumber);
 

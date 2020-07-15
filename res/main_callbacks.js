@@ -28,16 +28,8 @@ function displayFachinfo(ean, anchor) {
         if (anchor == 'undefined')
             anchor = '';
         var payload = ["main_cb", "display_fachinfo", ean, anchor];
-        setupWebViewJavascriptBridge(function(bridge) {
-                                     bridge.callHandler('JSToObjC_', payload, function responseCallback(responseData) {
-                                                        console.log("JS received response:", responseData);
-                                                        // moveToHighlight(responseData);
-                                                        })
-                                     bridge.registerHandler('ObjCToJS_', function(data, responseCallback) {
-                                                          //
-                                                        })
-                                     })
-        
+        // Change the title to something that allows you to pass information from JS to C++
+        document.title = payload;
     } catch (e) {
         alert(e);
     }
