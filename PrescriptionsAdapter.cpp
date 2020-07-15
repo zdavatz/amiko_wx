@@ -15,7 +15,7 @@ PrescriptionsAdapter::PrescriptionsAdapter()
 }
 
 // 39
-// Returns an array of filenames (NSString),
+// Returns an array of filenames (wxString),
 // just the basename with the extension ".amk" stripped off
 wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
 {
