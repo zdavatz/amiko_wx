@@ -277,8 +277,7 @@ void MainWindow::updatePrescriptionHistory()
         mListOfSectionTitles = listOfPrescriptions; // array of just the basenames
     }
 
-    // TODO:
-    //mySectionTitles->reloadData();
+     mySectionTitles_reloadData(); // reloadData
 }
 
 // 768
@@ -757,8 +756,26 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
         if (!mSearchInteractions)
             m->subTitle = packinfo;
         else {
+            // 2079
             // We pass 'atccode' instead, which needs to be unpacked
-            // TODO:
+            wxArrayString m_atc = wxSplit(packinfo, ';');
+            wxString m_atccode_str;
+            wxString m_atcclass_str;
+            if (m_atc.size() > 1) {
+                if (m_atc[0].length() > 0)
+                    m_atccode_str = m_atc[0];
+
+                if (m_atc[1].length() > 0)
+                    m_atcclass_str = m_atc[1];
+            }
+
+            if (m_atccode_str.length() == 0)
+                m_atccode_str = _("Not specified");
+
+            if (m_atcclass_str.length() == 0)
+                m_atcclass_str = _("Not specified");
+
+            m->subTitle = wxString::Format("%s - %s", m_atccode_str, m_atcclass_str);
         }
     }
     else
@@ -766,7 +783,7 @@ void MainWindow::addTitle_andPackInfo_andMedId(wxString title, wxString packinfo
 
     m->medId = medId;
 
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -788,7 +805,7 @@ void MainWindow::addTitle_andAuthor_andMedId(wxString title, wxString author, lo
     
     m->medId = medId;
 
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -858,7 +875,7 @@ void MainWindow::addTitle_andAtcCode_andAtcClass_andMedId(wxString title, wxStri
 
     m->medId = medId;
     
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -882,7 +899,7 @@ void MainWindow::addTitle_andRegnrs_andAuthor_andMedId(wxString title, wxString 
     m->subTitle = wxString::Format("%s - %s", m_regnrs, m_auth);
     m->medId = medId;
 
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -917,7 +934,7 @@ void MainWindow::addTitle_andApplications_andMedId(wxString title, wxString appl
     m->subTitle = wxString::Format("%s\n%s", m_swissmedic, m_bag);
     m->medId = medId;
 
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -934,7 +951,7 @@ void MainWindow::addKeyword_andNumHits_andHash(wxString keyword, unsigned long n
     m->subTitle = wxString::Format("%ld %s", numHits, _("Results"));  // Treffer
     m->hashId = hash;
 
-    doArray.push_back(m); // to be obsolete
+    doArray.push_back(m); // __deprecated
     myTableView->searchRes.push_back(m);
 }
 
@@ -967,7 +984,7 @@ void MainWindow::updateTableView()
 #endif
 
     if (doArray.size() > 0)
-        doArray.clear(); // to be obsolete
+        doArray.clear(); // __deprecated
 
     if (myTableView->searchRes.size() > 0)
         myTableView->searchRes.clear();
@@ -1121,17 +1138,28 @@ void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
     wxString str = evt.GetString();
     // str now contains the JSON string set in the JavaScript
 
-#if 0 //ndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__
+#ifndef NDEBUG
+    std::clog << __FUNCTION__
     << " Title changed: <" << str << ">\n"
-    << "myWebView title: <" << myWebView->GetCurrentTitle() << ">\n"
+    << "myWebView title: <" << myWebView->GetCurrentTitle() << ">\n";
 #endif
     
     wxArrayString msg = wxSplit(str, ',');
     if (msg.size() == 3) {
         // interactions
         // 2432
-        std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
+        if (msg[0] == "interactions_cb") {
+            if (msg[1] == "notify_interaction")
+                mInteractionsView->sendInteractionNotice();
+            else if (msg[1] == "delete_all")
+                mInteractionsView->clearMedBasket();
+            else if (msg[1] == "delete_row")
+                mInteractionsView->removeFromMedBasketForKey(msg[2]);
+            
+            // Update med basket
+            mCurrentWebView = kInteractionsCartView;
+            updateInteractionsView();
+        }
     }
     else if (msg.size() == 4) {
         // Full text search
@@ -1293,57 +1321,36 @@ void MainWindow::updateExpertInfoView(wxString anchor)
         //std::clog << "Line " << __LINE__  << " size " << mListOfSectionTitles.size() << std::endl; // 20
 
         // 2561
-        // reloadData
-        mySectionTitles->DeleteAllItems();
-        int n = mListOfSectionTitles.size();
-        wxVector<wxVariant> values;
-        for (int i=0; i<n; i++) {
-            values.clear();
-            values.push_back(wxVariant(mListOfSectionTitles[i]));
-            mySectionTitles->AppendItem(values);
-        }
-        mySectionTitles->Refresh();
-        //mySectionTitles->Fit();   // ng
-        //GetSizer()->Layout();     // ng
-
-#ifdef DEBUG_FULL_TEXT_LIST
-        std::clog << __FUNCTION__ << " line " << __LINE__ << std::endl;
-        std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
-        std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
-        std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-        std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-#endif
+        mySectionTitles_reloadData(); // reloadData
     }
 }
 
 // 2565
 void MainWindow::updateInteractionsView()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-
     // Generate main interaction table
     wxString htmlStr = mInteractionsView->fullInteractionsHtml(mInteractions);
     
     // With the following implementation, the images are not loaded
     // NSURL *mainBundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
     // [[myWebView mainFrame] loadHTMLString:htmlStr baseURL:mainBundleURL];
-    
+ 
+    //std::clog << __FUNCTION__ << " htmlStr:\n" << htmlStr << std::endl;
+
     myWebView->SetPage(htmlStr, wxString()); // loadHTMLString
 
-#if 1
-    std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
-#else
-    if (mPrescriptionMode == false) {
+    // 2577
+    if (!mPrescriptionMode) {
         // Update section title anchors
-        if (![mInteractionsView.listofSectionIds isEqual:[NSNull null]])
-            mListOfSectionIds = mInteractionsView.listofSectionIds;
+        if (mInteractionsView->listofSectionIds.size() > 0)
+            mListOfSectionIds = mInteractionsView->listofSectionIds;
+
         // Update section titles (here: identical to anchors)
-        if (![mInteractionsView.listofSectionTitles isEqual:[NSNull null]])
-            mListOfSectionTitles = mInteractionsView.listofSectionTitles;
+        if (mInteractionsView->listofSectionTitles.size() > 0)
+            mListOfSectionTitles = mInteractionsView->listofSectionTitles;
         
-        [mySectionTitles reloadData];
+        mySectionTitles_reloadData(); // reloadData
     }
-#endif
 }
 
 // 2589
@@ -1436,45 +1443,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
         mListOfSectionTitles = mFullTextSearch->listOfSectionTitles;
 
     // 2631
-    // reloadData
-    #ifdef DEBUG_FULL_TEXT_LIST
-    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before DeleteAllItems()\n";
-    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
-    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
-    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-    #endif
-    mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will be called
-    #ifdef DEBUG_FULL_TEXT_LIST
-    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after DeleteAllItems()\n";
-    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
-    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
-    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-    #endif
-    int n = mListOfSectionTitles.size();
-    wxVector<wxVariant> values;
-    for (int i=0; i<n; i++) {
-        values.clear();
-        values.push_back(wxVariant(mListOfSectionTitles[i]));
-        mySectionTitles->AppendItem(values);
-    }
-    #ifdef DEBUG_FULL_TEXT_LIST
-    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " before Refresh()\n";
-    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
-    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
-    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-    #endif
-    mySectionTitles->Refresh();
-    //mySectionTitles->Fit(); // ng
-    #ifdef DEBUG_FULL_TEXT_LIST
-    std::clog << "=== " << __FUNCTION__ << " line " << __LINE__ << " after Refresh()\n";
-    std::clog << "mySectionTitles Id: " << mySectionTitles->GetId() << std::endl;
-    std::clog << "mySectionTitles sel row: " << mySectionTitles->GetSelectedRow() << std::endl;
-    std::clog << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-    std::clog << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-    #endif
+    mySectionTitles_reloadData(); // reloadData
 }
 
 // 3047
@@ -1658,16 +1627,6 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     }
 
     int row = mySectionTitles->GetSelectedRow(); // 0 based
-    
-#ifdef DEBUG_FULL_TEXT_LIST
-    std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl;
-    std::cerr << "event " << event.GetEventObject() << std::endl;
-    std::cerr << "event Id " << event.GetId() << std::endl;
-    std::cerr << "=== mySectionTitles Id :" << mySectionTitles->GetId() << std::endl;
-    std::cerr << "mySectionTitles sel row: " << row << std::endl;
-    std::cerr << "mySectionTitles count: " << mySectionTitles->GetCount() << std::endl;
-    std::cerr << "mListOfSectionIds size: " << mListOfSectionIds.size() << std::endl;
-#endif
 
 #if 1 //ndef NDEBUG
     // Why do we get row -1 when selecting a result in myTableView in full-text mode ?
@@ -2022,4 +1981,19 @@ void MainWindow::selectBasket(int cartNumber)
 #endif
 }
 
+void MainWindow::mySectionTitles_reloadData()
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 
+    mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will probably be called
+    int n = mListOfSectionTitles.size();
+    wxVector<wxVariant> values;
+    for (int i=0; i<n; i++) {
+        values.clear();
+        values.push_back(wxVariant(mListOfSectionTitles[i]));
+        mySectionTitles->AppendItem(values);
+    }
+    mySectionTitles->Refresh();
+    //mySectionTitles->Fit();   // ng
+    //GetSizer()->Layout();     // ng
+}

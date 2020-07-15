@@ -20,7 +20,15 @@ public:
     wxString fullInteractionsHtml(InteractionsAdapter *interactions);
     wxString medBasketHtml();
     wxString interactionsHtml(InteractionsAdapter *interactions);
+    wxString topNoteHtml();
     wxString footNoteHtml();
+    void sendInteractionNotice();
+    void removeFromMedBasketForKey(wxString key);
+    void clearMedBasket();
     
     InteractionsCart *medCart;
+    
+    // 31
+    wxArrayString listofSectionIds;
+    wxArrayString listofSectionTitles;
 };

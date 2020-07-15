@@ -100,7 +100,7 @@ wxArrayString Medication::listOfSectionTitles()
 std::map<wxString, wxString>
 Medication::indexToTitlesDict()
 {
-    std::map<wxString, wxString> dict;// = [[NSMutableDictionary alloc] init];
+    std::map<wxString, wxString> dict;
     
     wxArrayString ids = listOfSectionIds();
     wxArrayString titles = listOfSectionTitles();

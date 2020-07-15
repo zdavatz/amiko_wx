@@ -87,6 +87,7 @@ private:
     // not in amiko-osx
     int m_findCount;
     wxColour fiSearchFieldBGColor;//GetBackgroundColour()
+    void mySectionTitles_reloadData(); // [mySectionTitles reloadData]
 
     // 105
     int mUsedDatabase;
@@ -112,7 +113,7 @@ private:
     PatientSheet *mPatientSheet;
     OperatorIDSheet *mOperatorIDSheet;
     PrescriptionsAdapter *mPrescriptionAdapter;
-    std::vector<DataObject *> doArray;
+    [[deprecated]] std::vector<DataObject *> doArray ; // __deprecated
 public:
     wxArrayString favoriteKeyData;
  
