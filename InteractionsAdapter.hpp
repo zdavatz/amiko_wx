@@ -18,9 +18,9 @@ public:
     bool openInteractionsCsvFile(wxString name);
     void closeInteractionsCsvFile();
     int getNumInteractions();
+    wxString getInteractionHtmlBetween_and(wxString atc1, wxString atc2);
     
 private:
     bool readDrugInteractionMap(wxString filePath);
-    //std::map<std::string, std::string> myDrugInteractionMap;
     std::map<wxString, wxString> myDrugInteractionMap;
 };

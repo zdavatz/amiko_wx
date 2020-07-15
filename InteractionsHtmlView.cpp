@@ -24,23 +24,38 @@ InteractionsHtmlView::InteractionsHtmlView()
 // 43
 void InteractionsHtmlView::pushToMedBasket(Medication *med)
 {
-    if (!med)
+    if (!med) {
+#ifndef NDEBUG
+        std::clog << __FUNCTION__ << " no med, early return\n";
+#endif
         return;
+    }
 
     wxString title = med->title;
-#if 1
-    std::clog << __FUNCTION__ << " TODO" << std::endl;
-#else
-    title = [title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    title.Trim(true);
+    title.Trim(false);
     if (title.length() > 30) {
-        title = [title substringToIndex:30];
+        title = title.Left(30);
         title += wxT("...");
     }
     
     // Add med to medication basket
-    [medCart.cart setObject:med forKey:title];
-#endif
+    medCart->cart[title] = med;
 }
+
+// 58
+void InteractionsHtmlView::removeFromMedBasketForKey(wxString key)
+{
+    medCart->cart.erase(key); //removeObjectForKey:key
+}
+
+// 63
+void InteractionsHtmlView::clearMedBasket()
+{
+    medCart->cart.clear(); //removeAllObjects
+}
+
 
 // 68
 // Create full interactions HTML
@@ -135,17 +150,21 @@ wxString InteractionsHtmlView::medBasketHtml()
     int medCnt = 0;
     wxString title = _("Medicines"); // "Medikamentenkorb" "Panier des Médicaments"
         
-    medBasketStr += wxString ::Format("<div id=\"Medikamentenkorb\"><fieldset><legend>%s</legend></fieldset></div><table id=\"InterTable\" width=\"100%25\">", title);
+    medBasketStr += wxString ::Format("<div id=\"Medikamentenkorb\"><fieldset><legend>%s</legend></fieldset></div><table id=\"InterTable\" width=\"100%%25\">", title);
     
     // Check if there are meds in the "Medikamentenkorb"
     if (medCart->size() > 0) {
-        // First sort them alphabetically
-        std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
-        wxArrayString sortedNames; // TODO = [[medCart.cart allKeys] sortedArrayUsingSelector: @selector(compare:)];
+        // 129
+        // TODO: First sort them alphabetically
+        // [[medCart.cart allKeys] sortedArrayUsingSelector: @selector(compare:)];
+        wxArrayString sortedNames;
+        std::map<wxString, Medication *>::iterator it;
+        for (it = medCart->cart.begin(); it != medCart->cart.end(); ++it)
+            sortedNames.Add( it->first );
+
         // Loop through all meds
-        for (wxString name : sortedNames) {
-            std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
-            Medication *med;// TODO = [medCart.cart valueForKey:name];
+        for (auto name : sortedNames) {
+            Medication *med = medCart->cart[name];
             wxArrayString m_code = wxSplit(med->atccode, ';');
             wxString atc_code = "k.A.";
             wxString active_ingredient = "k.A";
@@ -180,62 +199,77 @@ wxString InteractionsHtmlView::medBasketHtml()
     return medBasketStr;
 }
 
-
 // 170
-// Create html displaying interactions between drugs
+// Create HTML displaying interactions between drugs
 wxString InteractionsHtmlView::interactionsHtml(InteractionsAdapter *interactions)
 {
     wxString interactionStr;
-            
-#if 1
-    std::clog << __FUNCTION__ << " TODO" << std::endl;
-#else
-    NSMutableString *interactionStr = [[NSMutableString alloc] initWithString:@""];
-    NSMutableArray *sectionIds = [[NSMutableArray alloc] initWithObjects:@"Medikamentenkorb", nil];
-    NSMutableArray *sectionTitles = nil;
-    
-    if ([medCart size]>0) {
-        if ([MLUtilities isGermanApp])
-            sectionTitles = [[NSMutableArray alloc] initWithObjects:@"Medikamentenkorb", nil];
-        else if ([MLUtilities isFrenchApp])
-            sectionTitles = [[NSMutableArray alloc] initWithObjects:@"Panier des médicaments", nil];
-    }
+
+    wxArrayString sectionIds;
+    sectionIds.Add(_("Medicines"));  // "Medikamentenkorb" "Panier des Médicaments"
+
+    wxArrayString sectionTitles;
+    if (medCart->size() > 0)
+        sectionTitles.Add(_("Medicines"));  // "Medikamentenkorb" "Panier des Médicaments"
     
     // Check if there are meds in the "Medikamentenkorb"
-    NSString *html = [medCart interactionsAsHtmlForAdapter:interactions withTitles:sectionTitles andIds:sectionIds];
-    [interactionStr appendString:html];
+    wxString html = medCart->interactionsAsHtmlForAdapter_withTitles_andIds(interactions, sectionTitles, sectionIds);
+
+    interactionStr += html;
     
-    if ([medCart size]>1) {
-        if ([sectionTitles count]<2) {
-            [interactionStr appendString:[self topNoteHtml]];
-        } else if ([sectionTitles count]>2) {
-            [interactionStr appendString:@"<br>"];
+    // 187
+    if (medCart->size() > 1) {
+        if (sectionTitles.size() < 2) {
+            interactionStr += topNoteHtml();
+        } else if (sectionTitles.size() > 2) {
+            interactionStr += "<br>";
         }
     }
     
-    if ([medCart size]>0) {
-        [sectionIds addObject:@"Farblegende"];
-        if ([MLUtilities isGermanApp])
-            [sectionTitles addObject:@"Farblegende"];
-        else if ([MLUtilities isFrenchApp])
-            [sectionTitles addObject:@"Légende des couleurs"];
+    // 195
+    if (medCart->size() > 0) {
+        sectionIds.Add(_("Colour legend")); // "Farblegende" "Légende des couleurs"
+        sectionTitles.Add(_("Colour legend"));
     }
     
     // Update section title anchors
-    listofSectionIds = [NSArray arrayWithArray:sectionIds];
+    listofSectionIds = sectionIds;
     // Update section titles (here: identical to anchors)
-    listofSectionTitles = [NSArray arrayWithArray:sectionTitles];
-#endif
+    listofSectionTitles = sectionTitles;
     
     return interactionStr;
+}
+
+// 211
+wxString InteractionsHtmlView::topNoteHtml()
+{
+    
+    if (medCart->size() <= 1)
+        return wxEmptyString;
+
+    // Add note to indicate that there are no interactions
+
+    wxString knownInteractions = _("Known Interactions");
+    // "Bekannte Interaktionen"
+    // "Interactions Connues"
+
+    wxString note = _("There are currently no interactions between these drugs in the EPha.ch database. For more information, see the technical information.");
+    // "Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha.ch-Datenbank vorhanden. Weitere Informationen finden Sie in der Fachinformation."
+    // "Il n’y a aucune information dans la banque de données EPha.ch à propos d’une interaction entre les médicaments sélectionnés. Veuillez consulter les informations professionelles."
+    
+    wxString buttonLabel = _("Report interaction");
+    // "Interaktion melden"
+    // "Signaler une interaction"
+
+    wxString topNote = wxString::Format("<fieldset><legend>%s</legend></fieldset><p class=\"paragraph0\">%s</p><div id=\"Delete_all\"><input type=\"button\" value=\"%s\" onclick=\"deleteRow('Notify_interaction',this)\" /></div><br>", knownInteractions, note, buttonLabel);
+    
+    return topNote;
 }
 
 // 228
 // TODO: localize
 wxString InteractionsHtmlView::footNoteHtml()
 {
-    wxString legend;
-                
     /*
      Risikoklassen
      -------------
@@ -246,47 +280,67 @@ wxString InteractionsHtmlView::footNoteHtml()
      X: Kontraindiziert (hellrot)
      0: Keine Angaben (grau)
      */
-    if (medCart && medCart->size() > 0)
-    {
-        //if ([MLUtilities isGermanApp])
-        {
-            wxString legend = {
-                "<fieldset><legend>Fussnoten</legend></fieldset>"
-                "<p class=\"footnote\">1. Farblegende: </p>"
-                "<table id=\"Farblegende\" style=\"background-color:transparent;\" cellpadding=\"3px\" width=\"100%25\">"
-                "  <tr bgcolor=\"#caff70\"><td align=\"center\">A</td><td>Keine Massnahmen notwendig</td></tr>"
-                "  <tr bgcolor=\"#ffec8b\"><td align=\"center\">B</td><td>Vorsichtsmassnahmen empfohlen</td></tr>"
-                "  <tr bgcolor=\"#ffb90f\"><td align=\"center\">C</td><td>Regelmässige Überwachung</td></tr>"
-                "  <tr bgcolor=\"#ff82ab\"><td align=\"center\">D</td><td>Kombination vermeiden</td></tr>"
-                "  <tr bgcolor=\"#ff6a6a\"><td align=\"center\">X</td><td>Kontraindiziert</td></tr>"
+    if (medCart && medCart->size() <= 0)
+        return wxEmptyString;
+
+    wxString footNote = _("Footnotes");
+    // "Fussnoten"
+    // "Notes"
+
+    wxString note1 = _("Colour legend");
+    // "Farblegende"
+    // "Légende des couleurs"
+
+    wxString colorA = _("No measures necessary");
+    // "Keine Massnahmen notwendig"
+    // "Aucune mesure nécessaire"
+
+    wxString colorB = _("Precautionary measures recommended");
+    // "Vorsichtsmassnahmen empfohlen"
+    // "Mesures de précaution sont recommandées"
+
+    wxString colorC = _("Regular monitoring");
+    // "Regelmässige Überwachung"
+    // "Doit être régulièrement surveillée"
+
+    wxString colorD = _("Avoid combination");
+    // "Kombination vermeiden"
+    // "Eviter la combinaison"
+
+    wxString colorX = _("Contraindicated");
+    // "Kontraindiziert"
+    // "Contre-indiquée"
+
+    wxString note2 = _("Data source: Public domain data from EPha.ch.");
+    // "Datenquelle: Public Domain Daten von EPha.ch."
+    // "Source des données : données du domaine publique de EPha.ch."
+
+    wxString note3 = _("Supported by: IBSA Institut Biochimique SA.");
+    // "Unterstützt durch:  IBSA Institut Biochimique SA."
+    // "Soutenu par : IBSA Institut Biochimique SA."
+
+    wxString legend = wxString::Format(
+                "<fieldset><legend>%s</legend></fieldset>"
+                "<p class=\"footnote\">1. %s: </p>"
+                "<table id=\"Farblegende\" style=\"background-color:transparent;\" cellpadding=\"3px\" width=\"100%%25\">"
+                "  <tr bgcolor=\"#caff70\"><td align=\"center\">A</td><td>%s</td></tr>"
+                "  <tr bgcolor=\"#ffec8b\"><td align=\"center\">B</td><td>%s</td></tr>"
+                "  <tr bgcolor=\"#ffb90f\"><td align=\"center\">C</td><td>%s</td></tr>"
+                "  <tr bgcolor=\"#ff82ab\"><td align=\"center\">D</td><td>%s</td></tr>"
+                "  <tr bgcolor=\"#ff6a6a\"><td align=\"center\">X</td><td>%s</td></tr>"
                 "</table>"
-                "<p class=\"footnote\">2. Datenquelle: Public Domain Daten von EPha.ch.</p>"
-                "<p class=\"footnote\">3. Unterstützt durch:  IBSA Institut Biochimique SA.</p>"
-            };
-            return legend;
-        }
-        
-        /*
-        //if ([MLUtilities isFrenchApp])
-        {
-            wxString legend = {
-                "<fieldset><legend>Notes</legend></fieldset>"
-                "<p class=\"footnote\">1. Légende des couleurs: </p>"
-                "<table id=\"Farblegende\" style=\"background-color:transparent;\" cellpadding=\"3px\" width=\"100%25\">"
-                "  <tr bgcolor=\"#caff70\"><td align=\"center\">A</td><td>Aucune mesure nécessaire</td></tr>"
-                "  <tr bgcolor=\"#ffec8b\"><td align=\"center\">B</td><td>Mesures de précaution sont recommandées</td></tr>"
-                "  <tr bgcolor=\"#ffb90f\"><td align=\"center\">C</td><td>Doit être régulièrement surveillée</td></tr>"
-                "  <tr bgcolor=\"#ff82ab\"><td align=\"center\">D</td><td>Eviter la combinaison</td></tr>"
-                "  <tr bgcolor=\"#ff6a6a\"><td align=\"center\">X</td><td>Contre-indiquée</td></tr>"
-                "</table>"
-                "<p class=\"footnote\">2. Source des données : données du domaine publique de EPha.ch.</p>"
-                "<p class=\"footnote\">3. Soutenu par : IBSA Institut Biochimique SA.</p>"
-            };
-            return legend;
-        }
-         */
-    }
-    
-    return wxEmptyString;
+                "<p class=\"footnote\">2. %s</p>"
+                "<p class=\"footnote\">3. %s</p>",
+                                       footNote,
+                                       note1,
+                                       colorA, colorB, colorC, colorD, colorX,
+                                       note2,
+                                       note3);
+    return legend;
 }
 
+// 280
+void InteractionsHtmlView::sendInteractionNotice()
+{
+    std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << " TODO" << std::endl;
+}

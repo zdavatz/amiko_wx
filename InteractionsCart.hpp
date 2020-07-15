@@ -7,6 +7,12 @@
 #pragma once
 
 #include <vector>
+#include <map>
+
+#include <wx/wx.h>
+
+class Medication;
+class InteractionsAdapter;
 
 class InteractionsCart
 {
@@ -15,7 +21,7 @@ public:
     virtual ~InteractionsCart() {}
     
     int size();
+    wxString interactionsAsHtmlForAdapter_withTitles_andIds(InteractionsAdapter *adapter, wxArrayString titles, wxArrayString ids);
     
-    //NSMutableDictionary *
-    std::vector<char*> cart;
+    std::map<wxString, Medication *> cart;
 };

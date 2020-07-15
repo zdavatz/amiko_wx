@@ -28,19 +28,11 @@ function deleteRow(tableID,currentRow) {
     try {
         if (tableID=="Notify_interaction") {
             var payload = ["interactions_cb", "notify_interaction", ""];
-            setupWebViewJavascriptBridge(function(bridge) {
-                                         bridge.callHandler('JSToObjC_', payload, function responseCallback(responseData) {
-                                                            console.log("JS received response:", responseData);
-                                                            })
-                                         })
+            document.title = payload;
         } else if (tableID=="Delete_all") {
             // window.alert("delete all rows");
             var payload = ["interactions_cb", "delete_all", ""];
-            setupWebViewJavascriptBridge(function(bridge) {
-                                         bridge.callHandler('JSToObjC_', payload, function responseCallback(responseData) {
-                                                            console.log("JS received response:", responseData);
-                                                            })
-                                         })
+            document.title = payload;
 		} else {
             var table = document.getElementById(tableID);
 			var rowCount = table.rows.length;
@@ -50,11 +42,7 @@ function deleteRow(tableID,currentRow) {
 				if (row==currentRow.parentNode.parentNode) {
                     // window.alert("delete single row");
                     var payload = ["interactions_cb", "delete_row", row.cells[1].innerText];
-                    setupWebViewJavascriptBridge(function(bridge) {
-                                                 bridge.callHandler('JSToObjC_', payload, function responseCallback(responseData) {
-                                                                    console.log("JS received response:", responseData);
-                                                                    })
-                                                 })
+                    document.title = payload;
 					// Delete row
 					table.deleteRow(i);		
 					// Update counters

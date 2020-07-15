@@ -65,6 +65,17 @@ int InteractionsAdapter::getNumInteractions()
     return myDrugInteractionMap.size();
 }
 
+// 77
+wxString InteractionsAdapter::getInteractionHtmlBetween_and(wxString atc1, wxString atc2)
+{
+    if (myDrugInteractionMap.size() > 0) {
+        wxString key = wxString::Format("%s-%s", atc1, atc2);
+        return myDrugInteractionMap[key];
+    }
+
+    return wxEmptyString;
+}
+
 // 86
 // Read drug interactions csv line after line
 bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
