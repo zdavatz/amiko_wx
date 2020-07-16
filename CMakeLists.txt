@@ -88,6 +88,8 @@ set( SRCS_INTER
 set( SRCS_PRESCR
     PrescriptionsAdapter.cpp PrescriptionsAdapter.hpp
     PrescriptionItem.cpp PrescriptionItem.hpp
+    PrescriptionsCart.cpp PrescriptionsCart.hpp
+    ItemCellView.cpp ItemCellView.hpp
     )
 
 source_group(GUI FILES ${SRCS_GUI})

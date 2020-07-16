@@ -36,6 +36,10 @@ class MainWindow : public MainWindowBase
 		void OnSearchFiNow( wxCommandEvent& event );
 		void OnPerformFindAction( wxCommandEvent& event );
 		void OnSearchPatient( wxCommandEvent& event );
+		void OnNewPrescription( wxCommandEvent& event );
+		void OnCheckForInteractions( wxCommandEvent& event );
+		void OnSavePrescription( wxCommandEvent& event );
+		void OnSendPrescription( wxCommandEvent& event );
 		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
@@ -83,6 +87,8 @@ private:
     void loadFavorites(DataStore *favorites);
     void tappedOnStar(int row);
     Medication * getShortMediWithId(long mid);
+    void setOperatorID();
+    void savePrescription();
     
     // not in amiko-osx
     int m_findCount;
@@ -138,6 +144,8 @@ private:
     bool mSearchInProgress;
     float m_alpha;
     float m_delta;
+    bool possibleToOverwrite;
+    bool modifiedPrescription;  // if true, presenting save/overwrite option makes sense
     
     void OnLboxSelect(wxCommandEvent& event);
     void OnLboxDClick(wxCommandEvent& event);
