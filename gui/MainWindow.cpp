@@ -1057,7 +1057,13 @@ void MainWindow::updateTableView()
             }
             // 2345
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO AtcCode Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
+                    }
+                }
             }
         }
     }
@@ -1076,7 +1082,13 @@ void MainWindow::updateTableView()
             }
             // 2363
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO RegNr Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andRegnrs_andAuthor_andMedId(wxString::FromUTF8(m->title), m->regnrs, m->auth, m->medId);
+                    }
+                }
             }
         }
     }
@@ -1087,18 +1099,23 @@ void MainWindow::updateTableView()
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
                     favoriteKeyData.Add(m->regnrs);
-                    addTitle_andApplications_andMedId(m->title, m->application, m->medId);
+                    addTitle_andApplications_andMedId(wxString::FromUTF8(m->title), m->application, m->medId);
                 }
             }
             // 2381
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO Therapy Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andApplications_andMedId(wxString::FromUTF8(m->title), m->application, m->medId);
+                    }
+                }
             }
         }
     }
     // 2391
     else if (mCurrentSearchState == kss_FullText) {
-        std::clog << __PRETTY_FUNCTION__ << " FullText" << std::endl;
         for (auto e : searchResultsFT) {
             if (mUsedDatabase == kdbt_Aips ||
                 mUsedDatabase == kdbt_Favorites)
