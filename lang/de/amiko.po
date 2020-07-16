@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-15 09:11+0200\n"
-"PO-Revision-Date: 2020-06-15 11:40+0200\n"
+"POT-Creation-Date: 2020-07-16 10:57+0200\n"
+"PO-Revision-Date: 2020-07-16 12:08+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,30 +18,193 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de_CH\n"
 
-msgid "Active Substance / ATC Code"
+msgid "* Required fields"
 msgstr ""
+
+msgid "<"
+msgstr ""
+
+msgid ">"
+msgstr ""
+
+msgid "AIPS Database"
+msgstr ""
+
+msgid "ATC Code"
+msgstr ""
+
+msgid "Active Substance / ATC Code"
+msgstr "Wirkstoff / ATC Code"
 
 msgid "AmiKo Desitin"
 msgstr ""
 
+#. "Eviter la combinaison"
+msgid "Avoid combination"
+msgstr "Kombination vermeiden"
+
+msgid "Birthday*"
+msgstr "Geburtstag*"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Check interactions"
+msgstr ""
+
+msgid "City"
+msgstr "Wohnort"
+
+msgid "City*"
+msgstr "Wohnort*"
+
+msgid "Colour legend"
+msgstr "Farblegende"
+
 msgid "Compendium"
 msgstr ""
+
+msgid "Contacts"
+msgstr ""
+
+msgid "Contextual Menu"
+msgstr ""
+
+msgid "Contraindicated"
+msgstr "Kontraindiziert"
 
 #, c-format
 msgid "Couldn't find/load the 'amiko' catalog for locale '%s'."
 msgstr ""
 
+msgid "Country"
+msgstr "Land"
+
+msgid "Data source: Public domain data from EPha.ch."
+msgstr "Datenquelle: Public Domain Daten von EPha.ch."
+
+msgid "Doctor"
+msgstr ""
+
+msgid "Doctor signature"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Email"
+msgstr "Email"
+
 msgid "Favorites"
 msgstr ""
 
+msgid "Feedback"
+msgstr ""
+
+msgid "File"
+msgstr ""
+
+msgid "Find Next..."
+msgstr ""
+
+msgid "Find Previous..."
+msgstr ""
+
+msgid "Find..."
+msgstr ""
+
+msgid "Footnotes"
+msgstr "Fussnoten"
+
 msgid "Full Text"
+msgstr "Volltext"
+
+msgid "Height (cm)"
+msgstr "Grösse in cm"
+
+msgid "Help"
 msgstr ""
 
 msgid "Interactions"
 msgstr ""
 
+msgid "Known Interactions"
+msgstr "Bekannte Interaktionen"
+
+msgid "Label"
+msgstr ""
+
+msgid "Load Prescription..."
+msgstr ""
+
+msgid "Medicines"
+msgstr "Medikamentenkorb"
+
+msgid "Name"
+msgstr "Vorname"
+
+msgid "Name*"
+msgstr "Vorname*"
+
+msgid "New Prescription"
+msgstr ""
+
+msgid "No measures necessary"
+msgstr "Keine Massnahmen notwendig"
+
+msgid "Not specified"
+msgstr "k.A."
+
+msgid "Owner"
+msgstr "Inhaber"
+
+msgid "Patient Management"
+msgstr "Patientenverwaltung"
+
+msgid "Patient management..."
+msgstr ""
+
+msgid "Patient search"
+msgstr ""
+
+msgid "Phone"
+msgstr "Telefonnr."
+
+msgid "Place and Date"
+msgstr ""
+
+msgid "Precautionary measures recommended"
+msgstr "Vorsichtsmassnahmen empfohlen"
+
 msgid "Preparation"
 msgstr "Präparat"
+
+msgid "Prescription"
+msgstr "Rezept"
+
+msgid "Prescription Info"
+msgstr ""
+
+msgid "Print"
+msgstr ""
+
+msgid "Print prescription..."
+msgstr ""
+
+msgid "Print search result..."
+msgstr ""
+
+msgid "Print technical information..."
+msgstr ""
+
+msgid "Rate"
+msgstr ""
+
+msgid "Reg. No"
+msgstr "Reg. Nr."
 
 msgid "Registration Number"
 msgstr ""
@@ -49,11 +212,106 @@ msgstr ""
 msgid "Registration Owner"
 msgstr ""
 
-msgid "Therapy"
+msgid "Regular monitoring"
+msgstr "Regelmässige Überwachung"
+
+msgid "Remove all"
+msgstr "Korb leeren"
+
+msgid "Report"
 msgstr ""
+
+msgid "Report interaction"
+msgstr "Interaktion melden"
+
+msgid "Results"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save Prescription..."
+msgstr ""
+
+msgid "Search"
+msgstr "Suche"
+
+msgid "Send"
+msgstr ""
+
+msgid "Sex*"
+msgstr "Geschlecht*"
+
+msgid "Share"
+msgstr ""
+
+msgid "Signature from file"
+msgstr ""
+
+msgid "Street"
+msgstr "Adresse"
+
+msgid "Street*"
+msgstr "Adresse*"
+
+msgid "Supported by: IBSA Institut Biochimique SA."
+msgstr "Unterstützt durch:  IBSA Institut Biochimique SA."
+
+msgid "Surname"
+msgstr "Name"
+
+msgid "Surname*"
+msgstr "Name*"
+
+msgid "Therapy"
+msgstr "Therapie"
+
+msgid ""
+"There are currently no interactions between these drugs in the EPha.ch "
+"database. For more information, see the technical information."
+msgstr ""
+"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der "
+"EPha.ch-Datenbank vorhanden. Weitere Informationen finden Sie in der "
+"Fachinformation."
 
 msgid "This language is not supported by the system."
 msgstr ""
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Update from file"
+msgstr ""
+
+msgid "Update via Internet"
+msgstr ""
+
+msgid "Weight (kg)"
+msgstr "Gewicht in kg"
+
+msgid "Window"
+msgstr ""
+
+msgid "Word Analysis"
+msgstr ""
+
+msgid "Your medicine basket is empty"
+msgstr "Ihr Medikamentenkorb ist leer"
+
+msgid "ZIP*"
+msgstr "PLZ*"
+
+msgid "a page"
+msgstr ""
+
+msgid "count"
+msgstr ""
+
+msgid "female"
+msgstr "weiblich"
+
+msgid "male"
+msgstr "männlich"
 
 msgid "unknown"
 msgstr ""

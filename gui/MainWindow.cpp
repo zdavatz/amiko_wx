@@ -801,7 +801,7 @@ void MainWindow::addTitle_andAuthor_andMedId(wxString title, wxString author, lo
         m->subTitle = author;
     }
     else
-        m->title = L"Not specified"; // "k.A."
+        m->title = L"Not specified";
     
     m->medId = medId;
 
