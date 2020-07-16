@@ -31,6 +31,8 @@
 #include "DataStore.hpp"
 #include "InteractionsHtmlView.hpp"
 #include "PrescriptionItem.hpp"
+#include "PrescriptionsCart.hpp"
+#include "ItemCellView.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -54,6 +56,10 @@ enum {
 static int mCurrentSearchState = kss_Title;
 static int mCurrentWebView = kExpertInfoView;
 static wxString mCurrentSearchKey;
+
+// 212
+#define NUM_ACTIVE_PRESCRIPTIONS   3
+static PrescriptionsCart mPrescriptionsCart[NUM_ACTIVE_PRESCRIPTIONS];
 
 // Events not processed by MainWindow will, by default, be handled by MainWindowBase
 BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
@@ -84,6 +90,8 @@ MainWindow::MainWindow( wxWindow* parent )
 , mFullTextDb(nullptr)
 , mInteractions(nullptr)
 , m_findCount(wxNOT_FOUND)
+, possibleToOverwrite(false)
+, modifiedPrescription(false)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
     if (wxString(APP_NAME) == "CoMed") {
@@ -409,6 +417,32 @@ void MainWindow::tappedOnStar(int row)
     saveFavorites();
 }
 
+// 1249
+void MainWindow::setOperatorID()
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#else
+    if (!mOperatorIDSheet) {
+        mOperatorIDSheet = [[MLOperatorIDSheetController alloc] init];
+        //NSLog(@"%s %d, MLOperatorIDSheetController:%p", __FUNCTION__, __LINE__, mOperatorIDSheet);
+    }
+
+    NSString *operatorIDStr = [mOperatorIDSheet retrieveIDAsString];
+    NSString *operatorPlace = [mOperatorIDSheet retrieveCity];
+    myOperatorIDTextField.stringValue = operatorIDStr;
+    myPlaceDateField.stringValue = [NSString stringWithFormat:@"%@, %@", operatorPlace, [MLUtilities prettyTime]];
+    
+    NSString *documentsDirectory = [MLUtilities documentsDirectory];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:DOC_SIGNATURE_FILENAME];
+    if (filePath!=nil) {
+        NSImage *signatureImg = [[NSImage alloc] initWithContentsOfFile:filePath];
+        [mySignView setSignature:signatureImg];
+    }
+#endif
+}
+
+
 // 1558
 // Handler for EVT_WEBVIEW_NAVIGATING
 // see amiko-osx clickedTableView
@@ -435,6 +469,20 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
     // will not take place.
     evt.Veto();
 #endif
+}
+
+// 1627
+/*
+ Save button
+ A) not possible to overwrite: no alert panel, just save
+ 
+ B) possible to overwrite: 3 buttons [Cancel], [Save], [Overwrite]
+    1) Overwrite —> new hash
+    3) New file —> new hash
+ */
+void MainWindow::savePrescription()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
 // 1749
@@ -801,7 +849,7 @@ void MainWindow::addTitle_andAuthor_andMedId(wxString title, wxString author, lo
         m->subTitle = author;
     }
     else
-        m->title = L"Not specified"; // "k.A."
+        m->title = L"Not specified";
     
     m->medId = medId;
 
@@ -1057,7 +1105,13 @@ void MainWindow::updateTableView()
             }
             // 2345
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO AtcCode Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
+                    }
+                }
             }
         }
     }
@@ -1076,7 +1130,13 @@ void MainWindow::updateTableView()
             }
             // 2363
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO RegNr Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andRegnrs_andAuthor_andMedId(wxString::FromUTF8(m->title), m->regnrs, m->auth, m->medId);
+                    }
+                }
             }
         }
     }
@@ -1087,18 +1147,23 @@ void MainWindow::updateTableView()
             if (mUsedDatabase == kdbt_Aips) {
                 if (m->regnrs) {
                     favoriteKeyData.Add(m->regnrs);
-                    addTitle_andApplications_andMedId(m->title, m->application, m->medId);
+                    addTitle_andApplications_andMedId(wxString::FromUTF8(m->title), m->application, m->medId);
                 }
             }
             // 2381
             else if (mUsedDatabase == kdbt_Favorites) {
-                std::clog << __PRETTY_FUNCTION__ << " TODO Therapy Favorites" << std::endl;
+                if (m->regnrs) {
+                    FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
+                    if (it != favoriteMedsSet.end()) {
+                        favoriteKeyData.Add(m->regnrs);
+                        addTitle_andApplications_andMedId(wxString::FromUTF8(m->title), m->application, m->medId);
+                    }
+                }
             }
         }
     }
     // 2391
     else if (mCurrentSearchState == kss_FullText) {
-        std::clog << __PRETTY_FUNCTION__ << " FullText" << std::endl;
         for (auto e : searchResultsFT) {
             if (mUsedDatabase == kdbt_Aips ||
                 mUsedDatabase == kdbt_Favorites)
@@ -1135,7 +1200,7 @@ void MainWindow::pushToMedBasket(Medication *med)
 // In amiko-osx see createJSBridge
 void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
 {
-    wxString str = evt.GetString();
+    wxString str = wxString::FromUTF8(evt.GetString());
     // str now contains the JSON string set in the JavaScript
 
 #ifndef NDEBUG
@@ -1608,6 +1673,50 @@ void MainWindow::OnSearchPatient( wxCommandEvent& event )
     OnManagePatients(event);
 }
 
+// 1380
+void MainWindow::OnNewPrescription( wxCommandEvent& event )
+{
+    setOperatorID();
+    mPrescriptionsCart[0].clearCart();
+    myPrescriptionsTableView->Refresh(); // TODO: reloadData
+    possibleToOverwrite = false;
+    modifiedPrescription = false;
+    updateButtons();
+}
+
+// 1396
+void MainWindow::OnCheckForInteractions( wxCommandEvent& event )
+{
+    mInteractionsView->clearMedBasket();
+    // Array of PrescriptionItems
+    std::vector<PrescriptionItem *> prescriptionMeds = mPrescriptionsCart[0].cart;
+    for (auto item : prescriptionMeds) {
+        mInteractionsView->pushToMedBasket(item->med);
+    }
+
+    updateInteractionsView();
+
+    // 1407
+    // Switch tab view
+    mUsedDatabase = kdbt_Aips;
+    mSearchInteractions = true;
+    setSearchState(kss_Title);
+    // TODO: m_tbMain->   // myToolbar.setSelectedItemIdentifier("Interaktionen");
+    myTabView->ChangeSelection(0); // selectTabViewItemAtIndex
+}
+
+// 1439
+void MainWindow::OnSavePrescription( wxCommandEvent& event )
+{
+    savePrescription();
+}
+
+// 1444
+void MainWindow::OnSendPrescription( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+}
+
 // 2917
 // tableViewSelectionDidChange
 // In amiko-osx this is a delegate function for 3 table views:
@@ -1952,33 +2061,10 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     if ( rc != wxID_NONE )
     {
         std::clog << "You have selected \"%d\"" << rc - wxID_HIGHEST << std::endl;
-        selectBasket(1);
+        ItemCellView::Instance()->selectBasket(1);
     }
 
     event.Skip();
-}
-
-// MLItemCellView.m:179
-void MainWindow::selectBasket(int cartNumber)
-{
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    
-#if 0
-    // MLItemCellView.h:32
-    Medication *selectedMedi = new Medication;
-    
-    // 192
-    PrescriptionItem *item = new PrescriptionItem;
-    
-    // 196
-    // Extract EAN/GTIN
-    Medication *m = getShortMediWithId(selectedMedi->medId);
-    
-    // TODO
-    
-    // TODO: (not in amiko-osx) deallocate objects
-    delete item;
-#endif
 }
 
 void MainWindow::mySectionTitles_reloadData()

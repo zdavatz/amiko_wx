@@ -73,7 +73,6 @@ wxString InteractionsCart::interactionsAsHtmlForAdapter_withTitles_andIds(
                 // 74
                 for (auto atc_code2 : atc2) {
                     wxString html = adapter-> getInteractionHtmlBetween_and(atc_code1, atc_code2);
-
                     if (html.length() <= 0)
                         continue;
                     

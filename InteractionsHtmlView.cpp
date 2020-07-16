@@ -188,7 +188,7 @@ wxString InteractionsHtmlView::medBasketHtml()
 
         // 152
         // Add delete all button
-        wxString btnRemove = _("Remove all"); // "Korb leeren" "Tout supprimer"
+        wxString btnRemove = _("Remove all");
         medBasketStr += wxString::Format("</table><div id=\"Delete_all\"><input type=\"button\" value=\"%s\" onclick=\"deleteRow('Delete_all',this)\" /></div>", btnRemove);
     }
     else {
@@ -210,7 +210,7 @@ wxString InteractionsHtmlView::interactionsHtml(InteractionsAdapter *interaction
 
     wxArrayString sectionTitles;
     if (medCart->size() > 0)
-        sectionTitles.Add(_("Medicines"));  // "Medikamentenkorb" "Panier des Médicaments"
+        sectionTitles.Add(_("Medicines"));
     
     // Check if there are meds in the "Medikamentenkorb"
     wxString html = medCart->interactionsAsHtmlForAdapter_withTitles_andIds(interactions, sectionTitles, sectionIds);
@@ -229,7 +229,8 @@ wxString InteractionsHtmlView::interactionsHtml(InteractionsAdapter *interaction
     // 195
     if (medCart->size() > 0) {
         sectionIds.Add("Farblegende"); // Do not localize, because it's an HTML tag ID
-        sectionTitles.Add(_("Colour legend")); // "Farblegende" "Légende des couleurs"
+
+        sectionTitles.Add(_("Colour legend"));
     }
     
     // Update section title anchors
@@ -250,16 +251,10 @@ wxString InteractionsHtmlView::topNoteHtml()
     // Add note to indicate that there are no interactions
 
     wxString knownInteractions = _("Known Interactions");
-    // "Bekannte Interaktionen"
-    // "Interactions Connues"
 
     wxString note = _("There are currently no interactions between these drugs in the EPha.ch database. For more information, see the technical information.");
-    // "Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha.ch-Datenbank vorhanden. Weitere Informationen finden Sie in der Fachinformation."
-    // "Il n’y a aucune information dans la banque de données EPha.ch à propos d’une interaction entre les médicaments sélectionnés. Veuillez consulter les informations professionelles."
     
     wxString buttonLabel = _("Report interaction");
-    // "Interaktion melden"
-    // "Signaler une interaction"
 
     wxString topNote = wxString::Format("<fieldset><legend>%s</legend></fieldset><p class=\"paragraph0\">%s</p><div id=\"Delete_all\"><input type=\"button\" value=\"%s\" onclick=\"deleteRow('Notify_interaction',this)\" /></div><br>", knownInteractions, note, buttonLabel);
     
@@ -267,7 +262,6 @@ wxString InteractionsHtmlView::topNoteHtml()
 }
 
 // 228
-// TODO: localize
 wxString InteractionsHtmlView::footNoteHtml()
 {
     /*
@@ -283,41 +277,19 @@ wxString InteractionsHtmlView::footNoteHtml()
     if (medCart && medCart->size() <= 0)
         return wxEmptyString;
 
-    wxString footNote = _("Footnotes");
     // "Fussnoten"
     // "Notes"
+    wxString footNote = _("Footnotes");
 
     wxString note1 = _("Colour legend");
-    // "Farblegende"
-    // "Légende des couleurs"
 
     wxString colorA = _("No measures necessary");
-    // "Keine Massnahmen notwendig"
-    // "Aucune mesure nécessaire"
-
     wxString colorB = _("Precautionary measures recommended");
-    // "Vorsichtsmassnahmen empfohlen"
-    // "Mesures de précaution sont recommandées"
-
     wxString colorC = _("Regular monitoring");
-    // "Regelmässige Überwachung"
-    // "Doit être régulièrement surveillée"
-
     wxString colorD = _("Avoid combination");
-    // "Kombination vermeiden"
-    // "Eviter la combinaison"
-
     wxString colorX = _("Contraindicated");
-    // "Kontraindiziert"
-    // "Contre-indiquée"
-
     wxString note2 = _("Data source: Public domain data from EPha.ch.");
-    // "Datenquelle: Public Domain Daten von EPha.ch."
-    // "Source des données : données du domaine publique de EPha.ch."
-
     wxString note3 = _("Supported by: IBSA Institut Biochimique SA.");
-    // "Unterstützt durch:  IBSA Institut Biochimique SA."
-    // "Soutenu par : IBSA Institut Biochimique SA."
 
     wxString legend = wxString::Format(
                 "<fieldset><legend>%s</legend></fieldset>"

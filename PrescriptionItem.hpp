@@ -6,9 +6,22 @@
 
 #pragma once
 
+#include <wx/wx.h>
+
+class Medication;
+
 class PrescriptionItem
 {
 public:
     PrescriptionItem();
     virtual ~PrescriptionItem() {}
+    
+    // 30
+    long mid;
+
+    // 33
+    wxString fullPackageInfo;
+
+    // 38
+    Medication *med;
 };
