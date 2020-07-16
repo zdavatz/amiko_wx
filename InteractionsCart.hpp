@@ -21,7 +21,7 @@ public:
     virtual ~InteractionsCart() {}
     
     int size();
-    wxString interactionsAsHtmlForAdapter_withTitles_andIds(InteractionsAdapter *adapter, wxArrayString titles, wxArrayString ids);
+    wxString interactionsAsHtmlForAdapter_withTitles_andIds(InteractionsAdapter *adapter, wxArrayString &titles, wxArrayString &ids);
     
     std::map<wxString, Medication *> cart;
 };

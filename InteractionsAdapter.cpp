@@ -123,7 +123,7 @@ bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
         wxString key = a.Item(0) + "-" + a.Item(1);
 
         //myDrugInteractionMap[std::string(a.Item(2).c_str())] = std::string(key.c_str());
-        myDrugInteractionMap[a.Item(2)] = key;
+        myDrugInteractionMap[key] = a.Item(2);
     }
 #endif
     

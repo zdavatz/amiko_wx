@@ -20,7 +20,10 @@ int InteractionsCart::size()
 }
 
 // 43
-wxString InteractionsCart::interactionsAsHtmlForAdapter_withTitles_andIds(InteractionsAdapter *adapter, wxArrayString titles, wxArrayString ids)
+wxString InteractionsCart::interactionsAsHtmlForAdapter_withTitles_andIds(
+                            InteractionsAdapter *adapter,
+                            wxArrayString &titles,  // out
+                            wxArrayString &ids)     // out
 {
     // 47
     // Check if there are meds in the "Medikamentenkorb"
@@ -60,39 +63,52 @@ wxString InteractionsCart::interactionsAsHtmlForAdapter_withTitles_andIds(Intera
             
             wxString atc_code1;
             wxString atc_code2;
-            if (atc1.size() > 0)
-            {
-                for (auto atc_code1 : atc1) {
-                    if (atc2.size() <= 0)
+            if (atc1.size() <= 0)
+                continue;
+                
+            for (auto atc_code1 : atc1) {
+                if (atc2.size() <= 0)
+                    continue;
+
+                // 74
+                for (auto atc_code2 : atc2) {
+                    wxString html = adapter-> getInteractionHtmlBetween_and(atc_code1, atc_code2);
+
+                    if (html.length() <= 0)
                         continue;
+                    
+                    // 76
+                    // Replace all occurrences of ATC codes with med names
+                    // except for the first one because it's used as an HTML tag ID
+                    {
+                        int startPos, endPos;
+                        wxString leftString, rightString;
 
-                    // 74
-                    for (auto atc_code2 : atc2) {
-                        wxString html = adapter-> getInteractionHtmlBetween_and(atc_code1, atc_code2);
+                        startPos = html.Find(atc_code1);
+                        endPos = startPos + atc_code1.length();
+                        leftString = html.Left(endPos);
+                        rightString = html.Mid(endPos);
+                        rightString.Replace(atc_code1, name1, true);
+                        html = leftString + rightString;
 
-                        if (html.length() <= 0)
-                            continue;
+                        startPos = html.Find(atc_code2);
+                        endPos = startPos + atc_code2.length();
+                        leftString = html.Left(endPos);
+                        rightString = html.Mid(endPos);
+                        rightString.Replace(atc_code2, name2, true);
+                        html = leftString + rightString;
+                    }
 
-#if 0 // TODO: @@@
-                        // 76
-                        // Replace all occurrences of atc codes by med names apart from the FIRST one!
-                        NSRange range1 = [html rangeOfString:atc_code1 options:NSBackwardsSearch];
-                        html = [html stringByReplacingCharactersInRange:range1 withString:name1];
-                        NSRange range2 = [html rangeOfString:atc_code2 options:NSBackwardsSearch];
+                    // 81
+                    // Concatenate strings
+                    htmlStr += html;
 
-                        html = [html stringByReplacingCharactersInRange:range2 withString:name2];
-#endif
+                    // Add to title and anchor lists
+                    titles.Add( wxString::Format("%s \u2192 %s", name1, name2));
+                    ids.Add( wxString::Format("%s-%s", atc_code1, atc_code2));
+                } // for atc_code2
+            } // for atc_code 1
 
-                        // 81
-                        // Concatenate strings
-                        htmlStr += html;
-
-                        // Add to title and anchor lists
-                        titles.Add( wxString::Format("%s \u2192 %s", name1, name2));
-                        ids.Add( wxString::Format("%s-%s", atc_code1, atc_code2));
-                    } // for atc_code2
-                } // for atc_code 1
-            }
         } // for name 2
     } // for name 1
     

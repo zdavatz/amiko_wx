@@ -206,7 +206,7 @@ wxString InteractionsHtmlView::interactionsHtml(InteractionsAdapter *interaction
     wxString interactionStr;
 
     wxArrayString sectionIds;
-    sectionIds.Add(_("Medicines"));  // "Medikamentenkorb" "Panier des Médicaments"
+    sectionIds.Add("Medikamentenkorb");  // Do not localize, because it's an HTML tag ID
 
     wxArrayString sectionTitles;
     if (medCart->size() > 0)
@@ -228,8 +228,8 @@ wxString InteractionsHtmlView::interactionsHtml(InteractionsAdapter *interaction
     
     // 195
     if (medCart->size() > 0) {
-        sectionIds.Add(_("Colour legend")); // "Farblegende" "Légende des couleurs"
-        sectionTitles.Add(_("Colour legend"));
+        sectionIds.Add("Farblegende"); // Do not localize, because it's an HTML tag ID
+        sectionTitles.Add(_("Colour legend")); // "Farblegende" "Légende des couleurs"
     }
     
     // Update section title anchors
