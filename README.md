@@ -19,6 +19,11 @@ Prerequisites:
 
         $ git submodule init
         $ git submodule update
+then enable this in `steps.conf`
+```
+#STEP_CONFIGURE_JSON=y
+#STEP_BUILD_JSON=y
+```
 
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
