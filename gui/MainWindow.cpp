@@ -86,6 +86,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , m_alpha(0.0F)
 , m_delta(0.01F)
 , mFullTextSearch(nullptr)
+, mFullTextEntry(nullptr)
 , mDb(nullptr)
 , mFullTextDb(nullptr)
 , mInteractions(nullptr)
@@ -1358,13 +1359,15 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 
     if (mCurrentSearchState == kss_FullText) {
         // 2534
-        wxString keyword = mFullTextEntry->keyword;
-        if (!keyword.IsEmpty()) {
-            // Instead of appending like in the Windows version,
-            // insert before "</body>"
-            wxString jsCode = wxString::Format("highlightText(document.body,'%s')", keyword);
-            wxString extraHtmlCode = wxString::Format("<script>%s</script>\n </body>", jsCode);
-            htmlStr.Replace("</body>", extraHtmlCode);
+        if (mFullTextEntry) {
+            wxString keyword = mFullTextEntry->keyword;
+            if (!keyword.IsEmpty()) {
+                // Instead of appending like in the Windows version,
+                // insert before "</body>"
+                wxString jsCode = wxString::Format("highlightText(document.body,'%s')", keyword);
+                wxString extraHtmlCode = wxString::Format("<script>%s</script>\n </body>", jsCode);
+                htmlStr.Replace("</body>", extraHtmlCode);
+            }
         }
 
         mAnchor = anchor;
