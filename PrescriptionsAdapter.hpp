@@ -6,7 +6,11 @@
 
 #pragma once
 
+#include <string>
+
 class Patient;
+class PrescriptionItem;
+class Operator;
 
 class PrescriptionsAdapter
 {
@@ -16,7 +20,16 @@ public:
     
     wxArrayString listOfPrescriptionURLsForPatient(Patient *p);
     wxArrayString listOfPrescriptionsForPatient(Patient *p);
+    wxString loadPrescriptionFromFile(wxString filePath);
     
+    // 30
+    std::vector<PrescriptionItem *> cart;
+    Patient *patient;
+    Operator *doctor;
+
     // 33
-    wxString placeDate;
+    std::string placeDate;
+    
+    // .m 31
+    wxString currentFileName;
 };

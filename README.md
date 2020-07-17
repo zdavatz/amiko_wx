@@ -15,6 +15,8 @@ Prerequisites:
 
 - [SQlite](https://www.sqlite.org/) is built-in into the application, so there is no dependency on system libraries.
 
+- JSON [nlohmann](https://github.com/nlohmann/json)
+
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.

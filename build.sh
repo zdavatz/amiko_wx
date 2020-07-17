@@ -40,15 +40,18 @@ WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
 SQLITE=sqlite-amalgamation-$SQLITE_VERSION
 
 eval SRC=$CONFIG_SRC_DIR
+SRC_JSON=$(pwd)/json
 SRC_SQLITE=$SRC/$SQLITE
 SRC_WXWIDGETS=$SRC/$WXWIDGETS
 SRC_APP=$(pwd)
 
 eval BLD=$CONFIG_BLD_DIR/$APP
+BLD_JSON=$BLD/json
 BLD_WXWIDGETS=$BLD/$WXWIDGETS
 BLD_APP=$BLD/$APP-$IDE
 
 eval BIN=$CONFIG_BIN_DIR/$APP
+BIN_JSON=$BIN/json
 BIN_WXWIDGETS=$BIN/$WXWIDGETS
 BIN_APP=$BIN # each of the two targets will be in its own subdirectory
 
@@ -100,6 +103,21 @@ fi
     ln -s $SRC_SQLITE $SRC_APP/sqlite
 fi
 
+#------------------------------------------------------------------------------
+if [ $STEP_CONFIGURE_JSON ] ; then
+mkdir -p $BLD_JSON ; cd $BLD_JSON
+echo "=== Configure JSON, install to $BIN_JSON"
+cmake -G"$GENERATOR" \
+	-D JSON_BuildTests=OFF \
+	-D CMAKE_INSTALL_PREFIX=$BIN_JSON \
+	$SRC_JSON
+fi
+
+if [ $STEP_BUILD_JSON ] ; then
+	cd $BLD_JSON
+	make $MAKE_FLAGS
+  make install
+fi
 
 #-------------------------------------------------------------------------------
 if [ $STEP_DOWNLOAD_SOURCES_WXWIDGETS ] ; then
@@ -160,6 +178,7 @@ $CMAKE -G"$GENERATOR" \
     -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
     -D CMAKE_CXX_FLAGS="$COMPILER_FLAGS" \
     -D WX_ROOT=$BIN_WXWIDGETS \
+    -D JSON_DIR=$BIN_JSON \
     $SRC_APP
 fi
 

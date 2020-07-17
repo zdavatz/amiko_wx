@@ -45,6 +45,8 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_MENU( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
 	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
+	EVT_MENU( wxID_LOAD_PRESCRIPTION, MainWindowBase::_wxFB_OnLoadPrescription )
+	EVT_MENU( wxID_SAVE_PRESCRIPTION, MainWindowBase::_wxFB_OnSavePrescription )
 	EVT_MENU( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnManagePatients )
 	EVT_MENU( wxID_SET_OPERATOR_ID, MainWindowBase::_wxFB_OnSetOperatorIdentity )
 END_EVENT_TABLE()
@@ -307,11 +309,11 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menuPrescr = new wxMenu();
 	wxMenuItem* m_menuItem10;
-	m_menuItem10 = new wxMenuItem( m_menuPrescr, wxID_ANY, wxString( _("Load Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem10 = new wxMenuItem( m_menuPrescr, wxID_LOAD_PRESCRIPTION, wxString( _("Load Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuPrescr->Append( m_menuItem10 );
 
 	wxMenuItem* m_menuItem11;
-	m_menuItem11 = new wxMenuItem( m_menuPrescr, wxID_ANY, wxString( _("Save Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem11 = new wxMenuItem( m_menuPrescr, wxID_SAVE_PRESCRIPTION, wxString( _("Save Prescription...") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuPrescr->Append( m_menuItem11 );
 
 	m_menubar1->Append( m_menuPrescr, _("Prescription") );

@@ -67,7 +67,8 @@
 #define wxID_FI_FIND_SHOW 1023
 #define wxID_UPDATE_DB 1024
 #define wxID_LOAD_DB 1025
-#define wxID_SET_OPERATOR_ID 1026
+#define wxID_LOAD_PRESCRIPTION 1026
+#define wxID_SET_OPERATOR_ID 1027
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -93,6 +94,7 @@ class MainWindowBase : public wxFrame
 		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
 		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
+		void _wxFB_OnLoadPrescription( wxCommandEvent& event ){ OnLoadPrescription( event ); }
 		void _wxFB_OnManagePatients( wxCommandEvent& event ){ OnManagePatients( event ); }
 		void _wxFB_OnSetOperatorIdentity( wxCommandEvent& event ){ OnSetOperatorIdentity( event ); }
 
@@ -156,6 +158,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadAipsDatabase( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnLoadPrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnManagePatients( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSetOperatorIdentity( wxCommandEvent& event ) { event.Skip(); }
 

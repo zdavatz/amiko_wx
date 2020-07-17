@@ -10,3 +10,12 @@ PrescriptionItem::PrescriptionItem()
 {
     
 }
+
+// 37
+void PrescriptionItem::importFromDict(MED_DICT &dict)
+{
+    title           = dict[KEY_AMK_MED_PROD_NAME];
+    fullPackageInfo = dict[KEY_AMK_MED_PACKAGE];
+    eanCode         = dict[KEY_AMK_MED_EAN];
+    comment         = dict[KEY_AMK_MED_COMMENT];
+}

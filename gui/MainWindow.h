@@ -46,6 +46,7 @@ class MainWindow : public MainWindowBase
 		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
+        void OnLoadPrescription( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );
 		void OnSetOperatorIdentity( wxCommandEvent& event );
 	public:

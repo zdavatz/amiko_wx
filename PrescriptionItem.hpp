@@ -7,8 +7,9 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <string>
 
-class Medication;
+#include "Medication.hpp"
 
 class PrescriptionItem
 {
@@ -16,12 +17,19 @@ public:
     PrescriptionItem();
     virtual ~PrescriptionItem() {}
     
+    void importFromDict(MED_DICT &dict);
+    
     // 30
     long mid;
 
-    // 33
-    wxString fullPackageInfo;
+    // 31
+    std::string eanCode;
 
-    // 38
+    // 33
+    std::string fullPackageInfo;
+    std::string title;
+
+    // 37
+    std::string comment;
     Medication *med;
 };

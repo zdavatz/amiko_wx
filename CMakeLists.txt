@@ -20,6 +20,11 @@ endif (NOT APPLE)
 endif (UNIX)
 
 #=============================================================================
+message(STATUS "JSON_DIR: ${JSON_DIR}")
+set(CMAKE_PREFIX_PATH ${JSON_DIR} ${CMAKE_PREFIX_PATH})
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
+#=============================================================================
 
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
 
@@ -106,6 +111,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     Utilities.cpp Utilities.hpp
     Medication.cpp Medication.hpp
     Patient.cpp Patient.hpp
+    Operator.cpp Operator.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
@@ -121,7 +127,7 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS} )
   
-target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES})
+target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} nlohmann_json::nlohmann_json)
 
 if (UNIX)
 if (APPLE)
