@@ -366,14 +366,16 @@ Medication * DBAdapter::cursorToShortMedInfo(ONE_SQL_RESULT &cursor)
     medi->medId = cursor[kMedId].u.i;
     medi->title = cursor[kTitle].u.c;
     medi->auth = cursor[kAuth].u.c;
-    medi->atccode = cursor[kAtcCode].u.c;
-    medi->substances = cursor [kSubstances].u.c;
-    medi->regnrs = cursor [kRegnrs].u.c;
-    medi->atcClass = cursor [kAtcClass].u.c;
-    medi->therapy = cursor [kTherapy].u.c;
-    medi->application = cursor [kApplication].u.c;
-    medi->indications = cursor [kIndications].u.c;
-    //medi->customerId = cursor [kCustomerId].u.i;    // TBC do we need to convert c to i first ?;
+    if (cursor[kAtcCode].u.c)
+        medi->atccode = std::string( cursor[kAtcCode].u.c);
+
+    medi->substances = cursor[kSubstances].u.c;
+    medi->regnrs = cursor[kRegnrs].u.c;
+    medi->atcClass = cursor[kAtcClass].u.c;
+    medi->therapy = cursor[kTherapy].u.c;
+    medi->application = cursor[kApplication].u.c;
+    medi->indications = cursor[kIndications].u.c;
+    //medi->customerId = cursor[kCustomerId].u.i;    // TBC do we need to convert c to i first ?;
 
     // Note that sqlite3 returns type SQLITE_TEXT if the cell is empty
     if (cursor[kCustomerId].type == SQLITE_INTEGER)

@@ -1077,14 +1077,14 @@ void MainWindow::updateTableView()
         for (auto m : searchResults) {
             // 2323
             if (mUsedDatabase == kdbt_Aips) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     favoriteKeyData.Add(m->regnrs);
                     addTitle_andAuthor_andMedId(wxString::FromUTF8(m->title), m->auth, m->medId);
                 }
             }
             // 2328
             else if (mUsedDatabase == kdbt_Favorites) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
                     if (it != favoriteMedsSet.end()) {
                         favoriteKeyData.Add(m->regnrs);
@@ -1099,14 +1099,14 @@ void MainWindow::updateTableView()
         for (auto m : searchResults) {
             // 2340
             if (mUsedDatabase == kdbt_Aips) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     favoriteKeyData.Add(m->regnrs);
                     addTitle_andAtcCode_andAtcClass_andMedId(wxString::FromUTF8(m->title), m->atccode, m->atcClass, m->medId);
                 }
             }
             // 2345
             else if (mUsedDatabase == kdbt_Favorites) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
                     if (it != favoriteMedsSet.end()) {
                         favoriteKeyData.Add(m->regnrs);
@@ -1121,7 +1121,7 @@ void MainWindow::updateTableView()
         for (auto m : searchResults) {
             // 2357
             if (mUsedDatabase == kdbt_Aips) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     favoriteKeyData.Add(m->regnrs);
                     addTitle_andRegnrs_andAuthor_andMedId(
                             wxString::FromUTF8(m->title),
@@ -1131,7 +1131,7 @@ void MainWindow::updateTableView()
             }
             // 2363
             else if (mUsedDatabase == kdbt_Favorites) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
                     if (it != favoriteMedsSet.end()) {
                         favoriteKeyData.Add(m->regnrs);
@@ -1146,14 +1146,14 @@ void MainWindow::updateTableView()
         for (auto m : searchResults) {
             // 2375
             if (mUsedDatabase == kdbt_Aips) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     favoriteKeyData.Add(m->regnrs);
                     addTitle_andApplications_andMedId(wxString::FromUTF8(m->title), m->application, m->medId);
                 }
             }
             // 2381
             else if (mUsedDatabase == kdbt_Favorites) {
-                if (m->regnrs) {
+                if (m->regnrs.length() > 0) {
                     FAVORITES_SET::iterator it = favoriteMedsSet.find(m->regnrs);
                     if (it != favoriteMedsSet.end()) {
                         favoriteKeyData.Add(m->regnrs);
@@ -1889,6 +1889,38 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+}
+
+// 1415
+void MainWindow::OnLoadPrescription( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    
+    // Create a file open dialog class
+    wxFileDialog openDlgPanel(this,
+                              _("Select AMK file"),
+                              wxEmptyString,
+                              wxEmptyString,
+                              _("AMK files (*.amk)|*.AMK"),
+                              wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
+                              wxDefaultPosition);
+    
+    if (openDlgPanel.ShowModal() != wxID_OK)
+    {
+        //std::clog << __FUNCTION__ << __LINE__ << " Canceled" << std::endl;
+        return;
+    }
+
+#if 0
+    //openDlgPanel.GetFilenames(fileTypesArray);
+    wxArrayString fileTypesArray;
+    openDlgPanel.GetPaths(fileTypesArray); // full path, not just the filename
+#endif
+
+    wxString fileURL = openDlgPanel.GetPath();
+    mPrescriptionAdapter->loadPrescriptionFromFile(fileURL);
+    mPrescriptionsCart[0].cart = mPrescriptionAdapter->cart;
+    updatePrescriptionsView();
 }
 
 // 1229

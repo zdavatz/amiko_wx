@@ -54,7 +54,7 @@ wxString FullTextSearch::tableWithArticles_andRegChaptersDict_andFilter(
     for (Medication *m : LIST_OF_ARTICLES) {
         bool filtered = true;
         wxString contentStyle;
-        wxString firstLetter = wxString(m->title, wxConvUTF8).Left(1).Upper();
+        wxString firstLetter = wxString(m->title.c_str(), wxConvUTF8).Left(1).Upper();
         if (rows % 2 == 0)
             contentStyle = wxString::Format("<li style=\"background-color:var(--background-color-gray);\" id=\"%s\">", firstLetter);
         else

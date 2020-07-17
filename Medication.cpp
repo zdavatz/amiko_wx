@@ -57,11 +57,11 @@ static wxString SectionTitle_FR[] = {
 
 Medication::Medication()
 : medId(0)
-, title(nullptr)
-, auth(nullptr)
-, atccode(nullptr)
+//, title(nullptr)
+//, auth(nullptr)
+//, atccode(nullptr)
 , substances(nullptr)
-, regnrs(nullptr)
+//, regnrs(nullptr)
 , atcClass(nullptr)
 , therapy(nullptr)
 , application(nullptr)
@@ -148,4 +148,22 @@ const wxString &Medication::shortTitle(wxString &longTitle)
     }
 
     return longTitle;
+}
+
+// 120
+void Medication::importFromDict(std::map<std::string, std::string> &dict)
+{
+    title   = dict[KEY_AMK_MED_TITLE];
+    auth    = dict[KEY_AMK_MED_OWNER];
+    regnrs  = dict[KEY_AMK_MED_REG_N];
+    atccode = dict[KEY_AMK_MED_ATC];
+
+#if 0 //ndef NDEBUG
+    std::clog << __FUNCTION__
+    << ", title: " << title
+    << ", auth: " << auth
+    << ", reg: " << regnrs
+    << ", ATC: " << atccode
+    << std::endl;
+#endif
 }
