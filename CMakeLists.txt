@@ -50,7 +50,7 @@ endif (APPLE)
 if(UNIX)
 if(NOT APPLE)
 # Linux
-FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS core base net html webview)
+FIND_PACKAGE(wxWidgets REQUIRED COMPONENTS core base net html xml webview)
 ADD_DEFINITIONS("-D__WXGTK__")
 endif(NOT APPLE)
 endif(UNIX)
