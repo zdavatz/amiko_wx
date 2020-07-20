@@ -10,6 +10,7 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/tglbtn.h>
+#include <wx/xml/xml.h>
 
 #include <sqlite3.h>
 
@@ -37,6 +38,12 @@
 
 #include "../res/xpm/CoMed.xpm"
 
+#define CSV_SEPARATOR       wxT(";")
+
+// Alternatively implement its own tabview to show the results
+#define CSV_EXPORT_RESTORES_PREVIOUS_STATE
+
+/// 84
 // Database types
 enum {
     kdbt_Aips=0, kdbt_Hospital=1, kdbt_Favorites=2, kdbt_Interactions=4
@@ -45,7 +52,13 @@ enum {
 // Search states
 // [[deprecated]] use the button IDs directly
 enum {
-    kss_Title=0, kss_Author=1, kss_AtcCode=2, kss_RegNr=3, kss_Therapy=4, kss_WebView=5, kss_FullText=6
+    kss_Title=wxID_BTN_PREPARATION,
+    kss_Author=wxID_BTN_REGISTRATION_OWNER,
+    kss_AtcCode=wxID_BTN_ACTIVE_SUBSTANCE,
+    kss_RegNr=wxID_BTN_REGISTRATION_NUMBER,
+    kss_Therapy=wxID_BTN_THERAPY,
+//    kss_WebView=5,
+    kss_FullText=wxID_BTN_FULL_TEXT,
 };
 
 // Webview
@@ -95,6 +108,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , m_findCount(wxNOT_FOUND)
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
+, csvMedication(nullptr)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
     if (wxString(APP_NAME) == "CoMed") {
@@ -702,6 +716,11 @@ void MainWindow::setSearchState(int searchState, int btnId)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
 
+    // I don't know why setting the value of one button works,
+    // but it does unselect the other buttons !
+    // Also the cast is suspicious.
+    // Alternatively declare the buttons as wxToggleButton and manage them manually.
+    // Alternatively use radio buttons.
     wxToggleButton *btn = static_cast<wxToggleButton *>(FindWindowById(btnId));
     btn->SetValue(true);
 
@@ -737,6 +756,7 @@ void MainWindow::setSearchState(int searchState, int btnId)
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Therapy")));
             break;
 
+#if 0
         case kss_WebView:
             hideTextFinder();
 
@@ -747,6 +767,7 @@ void MainWindow::setSearchState(int searchState, int btnId)
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("in Fachinformation"))); // fr: @"Notice Infopro"
             */
             break;
+#endif
 
         case kss_FullText:
             mySearchField->SetValue(wxEmptyString);
@@ -1533,6 +1554,340 @@ void MainWindow::updateButtons()
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 }
 
+// 3101
+// Read the file containing the list of keywords
+wxArrayString MainWindow::csvGetInputListFromFile()
+{
+    std::clog << __FUNCTION__ << std::endl;
+    
+    // Create a file open dialog class
+    wxFileDialog openDlgPanel(this,
+                              _("Please select text file with one word or two words per line. The file can be created into a text editor. Encoding is UTF-8"),
+                              wxEmptyString,
+                              wxEmptyString,
+                              _("CSV files (*.csv)|*.CSV|") +
+                              _("TXT files (*.txt)|*.TXT"),
+                              wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
+                              wxDefaultPosition);
+
+    wxArrayString keywordList;
+
+    if (openDlgPanel.ShowModal() != wxID_OK)
+    {
+        //std::clog << __FUNCTION__ << __LINE__ << " Canceled" << std::endl;
+        return keywordList;
+    }
+
+    wxString filePath = openDlgPanel.GetPath();
+    //std::clog << "Path " << filePath << std::endl;
+    
+    wxFileInputStream input(filePath);
+    wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+    while(input.IsOk() && !input.Eof() )
+    {
+        wxString line = text.ReadLine();// + wxT("\n");
+        if (line.length() == 0)
+            continue;
+
+        //std::clog << "Line " << line << std::endl;
+        keywordList.Add(line);
+    }
+
+    return keywordList;
+}
+
+// 3124
+void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
+                                                           Medication *med,
+                                                           std::set<wxString> chSet,
+                                                           wxString rn)
+{
+    wxString html = med->contentStr;
+    wxString atc = med->atccode;
+
+#ifndef NDEBUG
+    //NSLog(@"%s %d, html %p lenght:%lu", __FUNCTION__, __LINE__, html, (unsigned long)[html length]);
+    //NSLog(@"%s %d, html %@", __FUNCTION__, __LINE__, html);
+    std::clog << __FUNCTION__ << __LINE__ << ", chapters size: " << chSet.size();
+#endif
+
+    // 3138
+    if (chSet.size() == 0) {
+        std::clog << "WARNING: Keyword <" << aKeyword << "> has no chapters";
+    }
+    else {
+        for (auto el : chSet) {
+            if (el.length() == 0) {
+                std::clog << "WARNING: keyword <" << aKeyword << "> has empty chapter set";
+            }
+        }
+    }
+    
+    // 3150
+    wxXmlDocument xmlDoc(html);
+
+    // 3170
+    auto rootElement = xmlDoc.GetRoot(); // rootElement
+    //NSLog(@"rootElement %@", rootElement);
+    //NSLog(@"Line %d HTML root children count %lu", __LINE__, (unsigned long)[rootElement childCount]);
+
+#if 0
+    NSArray *children = [rootElement children];
+    //NSLog(@"children %@", children);  // "head" and "body" (body trunctaed in the printout)
+    for (id child in children)
+        NSLog(@"child %@ %@", [child class], [child name]); // NSXMLFidelityElement "head" and "body"
+#endif
+    
+#if 0
+    NSXMLNode *nodeBody = children[1];
+    NSLog(@"Line %d, class:%@, name:%@, %lu children", __LINE__,
+          [nodeBody class],
+          [nodeBody name],
+          (unsigned long)[nodeBody childCount]);
+
+    NSXMLNode *nodeBodyDiv = [nodeBody childAtIndex:0];
+    NSLog(@"Line %d, class:%@, name:%@, %lu children", __LINE__,
+          [nodeBodyDiv class],
+          [nodeBodyDiv name],
+          (unsigned long)[nodeBodyDiv childCount]);
+#endif
+
+//    NSArray *shortTitles = [csvMedication listOfSectionTitles];  // they are hardcoded into the app
+    
+    wxArrayString atcArray = wxSplit(atc, ';');
+    wxString activeSubstance;
+    wxString atcCode;
+    if (atcArray.size() > 0) atcCode = atcArray[0];
+    if (atcArray.size() > 1) activeSubstance = atcArray[1];
+
+    wxString brandName;
+    auto pBodyElem = rootElement->GetAttribute("/html/body/div/div"); // nodesForXPath:@"/html/body/div/div" error:nil];
+    //NSLog(@"pBodyElem %lu elements", (unsigned long)[pBodyElem count]);
+    
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#else
+    for (auto el : pBodyElem) {
+        wxString divClass = el.GetAttribute("class");
+        wxString divId = el.GetAttribute("id");
+        if (divClass == "MonTitle") {
+            brandName = el.GetNodeContent();// stringValue];
+
+            // Sanitize:
+            brandName = [brandName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            continue;
+        }
+
+        if (divClass == "paragraph") {
+#ifndef NDEBUG
+            std::clog << "Line " << __LINE__
+            << " skip class:" << divClass << " id:" << divId << std::endl;  // [el name] is "div2
+#endif
+            continue;
+        }
+
+        // Extract section number and skip if not in NSSet
+        
+        NSScanner *scanner = [NSScanner scannerWithString:divId];
+        NSCharacterSet *numbers = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"];
+        
+        // Throw away characters before the first number.
+        [scanner scanUpToCharactersFromSet:numbers intoString:NULL];
+        
+        // Collect numbers.
+        NSString* numberString;
+        [scanner scanCharactersFromSet:numbers intoString:&numberString];
+        if (![chSet member:numberString])
+            continue;   // skip this section
+
+        wxString chapterName;
+#if 0
+        // It's not as simple as this:
+        NSInteger chNumber = numberString.integerValue;
+        chapterName = shortTitles[chNumber - 1];  // subtract 1 because chpater 1 has index 0
+#else
+        // See how it's done in file 'MLFullTextSeaerch.m' function 'tableWithArticles'
+
+        //NSLog(@"Line %d, kw:%@ index:%ld of %lu", __LINE__, aKeyword, (long)chNumber, (unsigned long)[shortTitles count]);
+        NSDictionary *indexToTitlesDict = [csvMedication indexToTitlesDict];
+        //NSLog(@"Line %d, indexToTitlesDict:%@", __LINE__, indexToTitlesDict);
+        chapterName = indexToTitlesDict[numberString];
+        //NSLog(@"Line %d, cStr:%@", __LINE__, chapterName);
+#endif
+
+        NSArray *paragraphs = [el children];
+#ifdef DEBUG
+        NSLog(@"Line %d, use section (%d) with %lu paragraphs", __LINE__,
+              numberString.intValue,
+              (unsigned long)[paragraphs count]);
+#endif
+        for (NSXMLElement *p in paragraphs) {
+            // [p name]          is "div"
+            // [p stringValue]   content of tag
+            //NSLog(@"Line %d, %lu children", __LINE__, (unsigned long)[p childCount]);
+            
+            if ([[p stringValue] containsString:aKeyword]) {
+                //NSLog(@"TODO: for %@ output this:\n\n%@\n", aKeyword, [p stringValue]);
+                NSString *link = [NSString stringWithFormat:@"https://amiko.oddb.org/de/fi?gtin=%@&highlight=%@&anchor=%@", rn, aKeyword, divId];
+                [csv appendFormat:@"\n%@%@%@%@\"%@\"%@\"%@\"%@%@%@\"%@\"%@%@",
+                 aKeyword, CSV_SEPARATOR,
+                 activeSubstance, CSV_SEPARATOR,
+                 brandName, CSV_SEPARATOR,
+                 atcCode, CSV_SEPARATOR,
+                 chapterName, CSV_SEPARATOR,
+                 [p stringValue], CSV_SEPARATOR,
+                 link];
+
+                //NSLog(@"Line %d, csv:%@", __LINE__, csv);
+            }
+        }
+    }
+    
+#if 0
+    NSXMLNode *pNode = [rootElement attributeForName:@"body:div"];
+    NSLog(@"pNode %@", [pNode name]);
+#endif
+#endif
+}
+
+// 3287
+// TODO: Run in a separate thread
+void MainWindow::csvOutputResult()
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#else
+    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy.MM.dd_HHmm"];
+    NSString * dateSuffix = [dateFormatter stringFromDate:[NSDate date]];
+    
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@.csv", NSLocalizedString(@"word_analysis", "CSV filename prefix"), dateSuffix];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+    
+        // Select the directory
+        NSOpenPanel* oPanel = [NSOpenPanel openPanel];
+        [oPanel setCanChooseFiles:NO];
+        [oPanel setCanChooseDirectories:YES];
+        [oPanel setMessage:NSLocalizedString(@"Please select a directory where to save the file", nil)];
+        NSURL *desktopURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDesktopDirectory
+                                                                      inDomains:NSUserDomainMask] lastObject];
+        [oPanel setDirectoryURL:desktopURL];
+        [oPanel setPrompt:NSLocalizedString(@"Choose directory and save file", nil)];
+        [oPanel setCanCreateDirectories:YES];
+
+        [oPanel beginWithCompletionHandler:^(NSInteger result) {
+            if (result != NSModalResponseOK) {
+                //NSLog(@"%s %d", __FUNCTION__, __LINE__);
+                return;
+            }
+
+            NSURL *dirUrl = [oPanel URL];
+            NSString *fullPathCSV = [[dirUrl path] stringByAppendingPathComponent:fileName];
+            //NSLog(@"%s %d fullPathCSV:<%@>", __FUNCTION__, __LINE__, fullPathCSV);
+
+            NSError *error;
+            BOOL res = [csv writeToFile:fullPathCSV atomically:YES encoding:NSUTF8StringEncoding error:&error];
+            
+            if (!res) {
+                NSLog(@"Error %@ while writing to file %@", [error localizedDescription], fileName );
+                return;
+            }
+
+            [[NSWorkspace sharedWorkspace] openFile:fullPathCSV];
+        }];
+    });
+#endif
+}
+
+// 3332
+// TODO: Run in a separate thread
+void MainWindow::csvProcessKeywords(wxArrayString keywords)
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    wxBusyInfo info(_("Looking up keywords. Please wait..."), this);
+    // TODO: progress bar
+
+#if 1
+//    __block Wait *wait;
+//
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        wait = [[Wait alloc] initWithString:NSLocalizedString(@"Looking up keywords. Please wait...", nil)];
+//        [wait setCancel:YES];
+//        [[wait progress] setMaxValue:[keywords count]];
+//        [wait setSponsorTitle:NSLocalizedString(@"This feature is provided by", nil)];
+//        [wait showWindow:self];
+//    });
+    
+    for (wxString kw : keywords) {
+        if (kw.length() < 3) // this also takes care of the empty line at the end of file
+            continue;
+        
+#if 0
+        // amiko_frequency_de.db
+        searchAnyDatabasesWith(kw);  // it updates searchResults and searchResultsFT
+#else
+        FULLTEXT_RESULTS resultDb1 = mFullTextDb->searchKeyword(kw);
+#endif
+        
+#ifndef NDEBUG
+        std::clog << "Line " << __LINE__
+        << " ========= search keyword: <" << kw
+        << "> in DB1 frequency table, " << resultDb1.size() << " hit(s)\n";
+        //NSLog(@"Line %d, resultDb1:%@", __LINE__, resultDb1);
+#endif
+        for (auto entry : resultDb1) {
+            if (entry->keyword != kw) {
+                // Make the search case sensitive. Easier to do it this way than through SQL
+#ifndef NDEBUG
+                std::clog << "Line " << __LINE__
+                << " --------- skip: " << entry->keyword << std::endl;
+#endif
+                continue;
+            }
+            
+#ifndef NDEBUG
+            std::clog << "Line " << __LINE__
+            << " --------- use: " << entry->keyword
+            << ", regnrs: " << entry->regnrs
+            << ", hash: " << entry->hash
+            << std::endl;
+#endif
+            //NSLog(@"%d getRegChaptersDict: %@", __LINE__, [entry getRegChaptersDict]);
+            // 3371
+            std::clog << "getRegnrs: " << entry->getRegnrs();  // as string
+            wxArrayString rnArray = entry->getRegnrsAsArray();
+            //NSLog(@"Line %d, getRegnrsAsArray: %@", __LINE__, rnArray);
+            for (wxString rn : rnArray) {
+                
+                //NSDictionary *dic2 = [entry getRegChaptersDict];    // One or more lines like:
+                //NSLog(@"Line %d, chapter dic: %@", __LINE__, dic2); // 65161 = "{(\n    14\n)}"
+                
+                // 3379
+                std::set<wxString> chapterSet = entry->getChaptersForKey(rn);
+#ifndef NDEBUG
+                std::clog << "Line " << __LINE__
+                << ", rn: " << rn
+                << " has chapter set: " << chapterSet.size() << std::endl;
+#endif
+                
+                csvMedication = mDb->getMediWithRegnr(rn);
+                searchKeyword_inMedication_chapters_regnr(kw ,csvMedication, chapterSet, rn);
+            }
+        }  // for
+
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [wait incrementBy: 1];
+//            [wait setSubtitle:kw];
+//        });
+    } // for keywords
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [wait close];
+//    });
+#endif
+}
+
 // /////////////////////////////////////////////////////////////////////////////
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
@@ -1545,8 +1900,10 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
 #endif
 
     wxString searchText = mySearchField->GetValue();
+#if 0
     if (mCurrentSearchState == kss_WebView)
         return;
+#endif
 
     while (mSearchInProgress) {
         //[NSThread sleepForTimeInterval:0.005];  // Wait for 5ms
@@ -1560,7 +1917,7 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
 
     if (searchText.length() > 0) { // TODO: > 2 ?
         //searchResults =
-        searchAnyDatabasesWith(searchText);// it updates searchResults and searchResultsFT
+        searchAnyDatabasesWith(searchText); // it updates searchResults and searchResultsFT
     }
     else {
          if (mUsedDatabase == kdbt_Favorites)
@@ -1886,7 +2243,7 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
     //std::clog << wxDialupManager::IsOnline() << std::endl;
 
     //wxBusyCursor wait;
-    wxBusyInfo info("Downloading latest DB files, please wait...", this);
+    wxBusyInfo info(_("Downloading latest DB files, please wait..."), this);
 
     const char * languageCode = UTI::appLanguage();
 
@@ -1905,10 +2262,56 @@ void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 }
 
-// 3400
+// 1871 and 3400
 void MainWindow::OnExportWordListSearchResults( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+    
+    mUsedDatabase = kdbt_Aips;
+    stopProgressIndicator();
+
+#ifdef CSV_EXPORT_RESTORES_PREVIOUS_STATE
+    int savedState = mCurrentSearchState;
+    int savedTabIndex = myTabView->GetSelection(); // indexOfTabViewItem:[ myTabView selectedTabViewItem]];
+#endif
+
+    setSearchState(kss_FullText, wxID_BTN_FULL_TEXT);
+
+    // 3400
+    //exportWordListSearchResults(item);
+    wxArrayString keywords = csvGetInputListFromFile();
+    if (keywords.size() == 0)
+        return;  // canceled
+    
+    // 3410
+    // CSV header
+    wxArrayString csvHeader;
+    csvHeader.Add( _("Search Term from Uploaded file"));
+    csvHeader.Add( _("Active Substance")),
+    csvHeader.Add( _("Brand-Name of the drug")),
+    csvHeader.Add( _("ATC-Code")),
+    csvHeader.Add( _("Chapter name")),
+    csvHeader.Add( _("Sentence that contains the word")),
+    csvHeader.Add( _("Link to the online reference"));
+    //csv = [[csvHeader componentsJoinedByString:CSV_SEPARATOR] mutableCopy];
+    csv.Empty();
+    for (auto s : csvHeader) {
+        csv.Append(s).Append(CSV_SEPARATOR);
+    }
+    
+    // TODO: strip off last CSV_SEPARATOR
+    
+    std::clog << "csv: " << csv << std::endl;
+
+    // TODO: Run in a separate thread
+    csvProcessKeywords(keywords);
+    csvOutputResult();
+
+    // 1884
+#ifdef CSV_EXPORT_RESTORES_PREVIOUS_STATE
+    setSearchState(savedState, savedState);
+    myTabView->ChangeSelection( savedTabIndex);
+#endif
 }
 
 // 1415

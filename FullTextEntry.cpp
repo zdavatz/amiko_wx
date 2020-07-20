@@ -28,6 +28,12 @@ wxString FullTextEntry::getRegnrs()
     return regStr;
 }
 
+// 67
+std::set<wxString> FullTextEntry::getChaptersForKey(wxString &regnr)
+{
+    return regChaptersDict[regnr];
+}
+
 // 72
 wxArrayString FullTextEntry::getRegnrsAsArray()
 {

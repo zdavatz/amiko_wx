@@ -91,6 +91,13 @@ private:
     Medication * getShortMediWithId(long mid);
     void setOperatorID();
     void savePrescription();
+    wxArrayString csvGetInputListFromFile();
+    void csvProcessKeywords(wxArrayString keywords);
+    void csvOutputResult();
+    void searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
+                                                   Medication *med,
+                                                   std::set<wxString> chSet,
+                                                   wxString rn);
     
     // not in amiko-osx
     int m_findCount;
@@ -107,6 +114,10 @@ private:
     // 153
     FullTextDBAdapter *mFullTextDb;
     FullTextEntry *mFullTextEntry;
+
+    // .m 138
+    wxString csv;
+    Medication *csvMedication;
 
     // .m 149
     Medication *mMed;
