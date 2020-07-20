@@ -46,6 +46,7 @@ class MainWindow : public MainWindowBase
 		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
+        void OnExportWordListSearchResults( wxCommandEvent& event );
         void OnLoadPrescription( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );
 		void OnSetOperatorIdentity( wxCommandEvent& event );
@@ -57,7 +58,7 @@ class MainWindow : public MainWindowBase
 private:
     void fadeInAndShow();
     void resetDataInTableView();
-    void setSearchState(int searchState);
+    void setSearchState(int searchState, int btnId);
     void hideTextFinder();
     void updateSearchResults();
     void updateTableView();

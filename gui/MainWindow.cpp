@@ -9,6 +9,7 @@
 
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
+#include <wx/tglbtn.h>
 
 #include <sqlite3.h>
 
@@ -42,6 +43,7 @@ enum {
 };
 
 // Search states
+// [[deprecated]] use the button IDs directly
 enum {
     kss_Title=0, kss_Author=1, kss_AtcCode=2, kss_RegNr=3, kss_Therapy=4, kss_WebView=5, kss_FullText=6
 };
@@ -187,7 +189,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 331
     // Set search state
-    setSearchState(kss_Title);
+    setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
     // TODO:
@@ -359,7 +361,7 @@ void MainWindow::resetDataInTableView()
 	std::cerr << __PRETTY_FUNCTION__ << std::endl;
 
 	// Reset search state
-    setSearchState(kss_Title);
+    setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     mCurrentSearchKey = wxEmptyString;
     //searchResults =
@@ -567,7 +569,7 @@ void MainWindow::switchTabs(int item)
             
             // 1850
             stopProgressIndicator();
-            setSearchState(kss_Title);
+            setSearchState(kss_Title, wxID_BTN_PREPARATION);
             pushToMedBasket(mMed);
             updateInteractionsView();
             
@@ -695,9 +697,14 @@ void MainWindow::loadFavorites(DataStore *favorites)
 }
 
 // 1967
-void MainWindow::setSearchState(int searchState)
+// TODO: deprecate first parameter
+void MainWindow::setSearchState(int searchState, int btnId)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
+
+    wxToggleButton *btn = static_cast<wxToggleButton *>(FindWindowById(btnId));
+    btn->SetValue(true);
+
     switch (searchState)
     {
         case kss_Title:
@@ -762,12 +769,16 @@ void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
 
     if (mCurrentSearchState == kss_Title)
         searchResults = mDb->searchTitle(searchQuery);  // array of Medication
+
     else if (mCurrentSearchState == kss_Author)
         searchResults = mDb->searchAuthor(searchQuery);
+
     else if (mCurrentSearchState == kss_AtcCode)
         searchResults = mDb->searchATCCode(searchQuery);
+
     else if (mCurrentSearchState == kss_RegNr)
         searchResults = mDb->searchRegNr(searchQuery);
+
     else if (mCurrentSearchState == kss_Therapy)
         searchResults = mDb->searchApplication(searchQuery);
 
@@ -1275,8 +1286,10 @@ void MainWindow::updateExpertInfoView(wxString anchor)
 {
 	//std::cerr << __PRETTY_FUNCTION__ << std::endl;
     
-    if (!mMed)
+    if (!mMed) {
         std::clog << __PRETTY_FUNCTION__ << " FIXME: mMed is NULL" << std::endl;
+        return;
+    }
 
 	// 2476
     wxString color_Style = wxString::Format("<style type=\"text/css\">%s</style>", UTI::getColorCss());
@@ -1577,32 +1590,33 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
 // 997
 void MainWindow::OnButtonPressed( wxCommandEvent& event )
 {
-	std::cerr << __PRETTY_FUNCTION__ << std::endl;
+    //std::cerr << __FUNCTION__  << " button: " << event.GetId() << std::endl;
+
     int prevState = mCurrentSearchState;
 
     switch (event.GetId()) {
         case wxID_BTN_PREPARATION:
-            setSearchState(kss_Title);
+            setSearchState(kss_Title, wxID_BTN_PREPARATION);
             break;
 
         case wxID_BTN_REGISTRATION_OWNER:
-            setSearchState(kss_Author);
+            setSearchState(kss_Author, wxID_BTN_REGISTRATION_OWNER);
             break;
 
         case wxID_BTN_ACTIVE_SUBSTANCE:
-            setSearchState(kss_AtcCode);
+            setSearchState(kss_AtcCode, wxID_BTN_ACTIVE_SUBSTANCE);
             break;
 
-        case wxID_BTN_REGISTATION_NUMBER:
-            setSearchState(kss_RegNr);
+        case wxID_BTN_REGISTRATION_NUMBER:
+            setSearchState(kss_RegNr, wxID_BTN_REGISTRATION_NUMBER);
             break;
 
         case wxID_BTN_THERAPY:
-            setSearchState(kss_Therapy);
+            setSearchState(kss_Therapy, wxID_BTN_THERAPY);
             break;
 
         case wxID_BTN_FULL_TEXT:
-            setSearchState(kss_FullText);
+            setSearchState(kss_FullText, wxID_BTN_FULL_TEXT);
             mCurrentWebView = kFullTextSearchView;
             break;
     }
@@ -1703,7 +1717,7 @@ void MainWindow::OnCheckForInteractions( wxCommandEvent& event )
     // Switch tab view
     mUsedDatabase = kdbt_Aips;
     mSearchInteractions = true;
-    setSearchState(kss_Title);
+    setSearchState(kss_Title, wxID_BTN_PREPARATION);
     // TODO: m_tbMain->   // myToolbar.setSelectedItemIdentifier("Interaktionen");
     myTabView->ChangeSelection(0); // selectTabViewItemAtIndex
 }
@@ -1887,6 +1901,12 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 
 // 1192
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+}
+
+// 3400
+void MainWindow::OnExportWordListSearchResults( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 }

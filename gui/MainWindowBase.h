@@ -45,7 +45,7 @@
 #define wxID_BTN_PREPARATION 1001
 #define wxID_BTN_REGISTRATION_OWNER 1002
 #define wxID_BTN_ACTIVE_SUBSTANCE 1003
-#define wxID_BTN_REGISTATION_NUMBER 1004
+#define wxID_BTN_REGISTRATION_NUMBER 1004
 #define wxID_BTN_THERAPY 1005
 #define wxID_BTN_FULL_TEXT 1006
 #define wxID_MY_TV 1007
@@ -64,11 +64,12 @@
 #define wxID_TB_FAVORITES 1020
 #define wxID_TB_INTERACTIONS 1021
 #define wxID_TB_PRESCRIPTION 1022
-#define wxID_FI_FIND_SHOW 1023
-#define wxID_UPDATE_DB 1024
-#define wxID_LOAD_DB 1025
-#define wxID_LOAD_PRESCRIPTION 1026
-#define wxID_SET_OPERATOR_ID 1027
+#define wxID_EXPORT_WORDLIST 1023
+#define wxID_FI_FIND_SHOW 1024
+#define wxID_UPDATE_DB 1025
+#define wxID_LOAD_DB 1026
+#define wxID_LOAD_PRESCRIPTION 1027
+#define wxID_SET_OPERATOR_ID 1028
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -90,6 +91,7 @@ class MainWindowBase : public wxFrame
 		void _wxFB_OnSendPrescription( wxCommandEvent& event ){ OnSendPrescription( event ); }
 		void _wxFB_OnSelectionDidChange( wxDataViewEvent& event ){ OnSelectionDidChange( event ); }
 		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
+		void _wxFB_OnExportWordListSearchResults( wxCommandEvent& event ){ OnExportWordListSearchResults( event ); }
 		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
 		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
 		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
@@ -132,6 +134,7 @@ class MainWindowBase : public wxFrame
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
 		wxToolBarToolBase* m_tool4;
+		wxToolBarToolBase* m_tool7;
 		wxToolBarToolBase* m_tool5;
 		wxMenuBar* m_menubar1;
 		wxMenu* m_menuFile;
@@ -154,6 +157,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnSendPrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectionDidChange( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnExportWordListSearchResults( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPrintDocument( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowAboutPanel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnUpdateAipsDatabase( wxCommandEvent& event ) { event.Skip(); }

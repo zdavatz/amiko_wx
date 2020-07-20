@@ -122,8 +122,8 @@
                         <property name="window_extra_style"></property>
                         <property name="window_name"></property>
                         <property name="window_style"></property>
-                        <object class="splitteritem" expanded="0">
-                            <object class="wxPanel" expanded="0">
+                        <object class="splitteritem" expanded="1">
+                            <object class="wxPanel" expanded="1">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -174,7 +174,7 @@
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style">wxTAB_TRAVERSAL</property>
-                                <object class="wxBoxSizer" expanded="0">
+                                <object class="wxBoxSizer" expanded="1">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizerLeft</property>
                                     <property name="orient">wxVERTICAL</property>
@@ -504,7 +504,7 @@
                                             <property name="font"></property>
                                             <property name="gripper">0</property>
                                             <property name="hidden">0</property>
-                                            <property name="id">wxID_BTN_REGISTATION_NUMBER</property>
+                                            <property name="id">wxID_BTN_REGISTRATION_NUMBER</property>
                                             <property name="label">Registration Number</property>
                                             <property name="margins"></property>
                                             <property name="markup">0</property>
@@ -754,8 +754,8 @@
                                 </object>
                             </object>
                         </object>
-                        <object class="splitteritem" expanded="1">
-                            <object class="wxPanel" expanded="1">
+                        <object class="splitteritem" expanded="0">
+                            <object class="wxPanel" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -806,16 +806,16 @@
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style">wxTAB_TRAVERSAL</property>
-                                <object class="wxBoxSizer" expanded="1">
+                                <object class="wxBoxSizer" expanded="0">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizer4</property>
                                     <property name="orient">wxHORIZONTAL</property>
                                     <property name="permission">none</property>
-                                    <object class="sizeritem" expanded="1">
+                                    <object class="sizeritem" expanded="0">
                                         <property name="border">0</property>
                                         <property name="flag">wxEXPAND | wxALL</property>
                                         <property name="proportion">1</property>
-                                        <object class="wxSimplebook" expanded="1">
+                                        <object class="wxSimplebook" expanded="0">
                                             <property name="BottomDockable">1</property>
                                             <property name="LeftDockable">1</property>
                                             <property name="RightDockable">1</property>
@@ -1464,10 +1464,10 @@
                                                     </object>
                                                 </object>
                                             </object>
-                                            <object class="simplebookpage" expanded="1">
+                                            <object class="simplebookpage" expanded="0">
                                                 <property name="label">rezept</property>
                                                 <property name="select">0</property>
-                                                <object class="wxPanel" expanded="1">
+                                                <object class="wxPanel" expanded="0">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
                                                     <property name="RightDockable">1</property>
@@ -1518,7 +1518,7 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style">wxTAB_TRAVERSAL</property>
-                                                    <object class="wxBoxSizer" expanded="1">
+                                                    <object class="wxBoxSizer" expanded="0">
                                                         <property name="minimum_size"></property>
                                                         <property name="name">bSizer7</property>
                                                         <property name="orient">wxVERTICAL</property>
@@ -1919,11 +1919,11 @@
                                                                 <property name="window_style"></property>
                                                             </object>
                                                         </object>
-                                                        <object class="sizeritem" expanded="1">
+                                                        <object class="sizeritem" expanded="0">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxEXPAND</property>
                                                             <property name="proportion">1</property>
-                                                            <object class="wxBoxSizer" expanded="1">
+                                                            <object class="wxBoxSizer" expanded="0">
                                                                 <property name="minimum_size"></property>
                                                                 <property name="name">bSizer13</property>
                                                                 <property name="orient">wxHORIZONTAL</property>
@@ -2275,7 +2275,7 @@
                     </object>
                 </object>
             </object>
-            <object class="wxToolBar" expanded="0">
+            <object class="wxToolBar" expanded="1">
                 <property name="BottomDockable">1</property>
                 <property name="LeftDockable">1</property>
                 <property name="RightDockable">1</property>
@@ -2335,7 +2335,7 @@
                     <property name="bitmap">Load From File; ../../res/xpm/compendium.xpm</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_TB_COMPENDIUM</property>
-                    <property name="kind">wxITEM_NORMAL</property>
+                    <property name="kind">wxITEM_RADIO</property>
                     <property name="label">Compendium</property>
                     <property name="name">m_tool1</property>
                     <property name="permission">protected</property>
@@ -2347,7 +2347,7 @@
                     <property name="bitmap">Load From File; ../../res/xpm/favorites.xpm</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_TB_FAVORITES</property>
-                    <property name="kind">wxITEM_NORMAL</property>
+                    <property name="kind">wxITEM_RADIO</property>
                     <property name="label">Favorites</property>
                     <property name="name">m_tool2</property>
                     <property name="permission">protected</property>
@@ -2359,7 +2359,7 @@
                     <property name="bitmap">Load From File; ../../res/xpm/interactions.xpm</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_TB_INTERACTIONS</property>
-                    <property name="kind">wxITEM_NORMAL</property>
+                    <property name="kind">wxITEM_RADIO</property>
                     <property name="label">Interactions</property>
                     <property name="name">m_tool3</property>
                     <property name="permission">protected</property>
@@ -2371,7 +2371,7 @@
                     <property name="bitmap">Load From File; ../../res/xpm/prescription.xpm</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_TB_PRESCRIPTION</property>
-                    <property name="kind">wxITEM_NORMAL</property>
+                    <property name="kind">wxITEM_RADIO</property>
                     <property name="label">Prescription</property>
                     <property name="name">m_tool4</property>
                     <property name="permission">protected</property>
@@ -2381,6 +2381,18 @@
                 </object>
                 <object class="toolSeparator" expanded="0">
                     <property name="permission">protected</property>
+                </object>
+                <object class="tool" expanded="1">
+                    <property name="bitmap">Load From File; ../../res/xpm/export.xpm</property>
+                    <property name="context_menu">0</property>
+                    <property name="id">wxID_EXPORT_WORDLIST</property>
+                    <property name="kind">wxITEM_NORMAL</property>
+                    <property name="label">Export</property>
+                    <property name="name">m_tool7</property>
+                    <property name="permission">protected</property>
+                    <property name="statusbar"></property>
+                    <property name="tooltip"></property>
+                    <event name="OnToolClicked">OnExportWordListSearchResults</event>
                 </object>
                 <object class="tool" expanded="0">
                     <property name="bitmap">Load From File; ../../res/xpm/print.xpm</property>
@@ -2429,7 +2441,7 @@
                 <property name="window_extra_style"></property>
                 <property name="window_name"></property>
                 <property name="window_style"></property>
-                <object class="wxMenu" expanded="0">
+                <object class="wxMenu" expanded="1">
                     <property name="label">File</property>
                     <property name="name">m_menuFile</property>
                     <property name="permission">protected</property>
@@ -2565,13 +2577,14 @@
                         <property name="checked">0</property>
                         <property name="enabled">1</property>
                         <property name="help"></property>
-                        <property name="id">wxID_ANY</property>
+                        <property name="id">wxID_EXPORT_WORDLIST</property>
                         <property name="kind">wxITEM_NORMAL</property>
                         <property name="label">Word Analysis</property>
                         <property name="name">m_menuItem9</property>
                         <property name="permission">none</property>
                         <property name="shortcut"></property>
                         <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnExportWordListSearchResults</event>
                     </object>
                 </object>
                 <object class="wxMenu" expanded="0">
