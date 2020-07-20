@@ -19,6 +19,7 @@ public:
     unsigned long getNumHits();
     wxString getRegnrs();
     wxArrayString getRegnrsAsArray();
+    std::set<wxString> getChaptersForKey(wxString &regnr);
     
     // 28
     wxString hash;

@@ -9,6 +9,7 @@
 
 #include "../res/xpm/AmiKo.xpm"
 #include "../res/xpm/compendium.xpm"
+#include "../res/xpm/export.xpm"
 #include "../res/xpm/favorites.xpm"
 #include "../res/xpm/interactions.xpm"
 #include "../res/xpm/prescription.xpm"
@@ -21,7 +22,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_BTN_PREPARATION, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_REGISTRATION_OWNER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_ACTIVE_SUBSTANCE, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_REGISTATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
+	EVT_BUTTON( wxID_BTN_REGISTRATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_TEXT( wxID_FI_SEARCH_FIELD, MainWindowBase::_wxFB_OnSearchFiNow )
@@ -38,6 +39,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_TOOL( wxID_TB_FAVORITES, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_TB_INTERACTIONS, MainWindowBase::_wxFB_OnToolbarAction )
 	EVT_TOOL( wxID_TB_PRESCRIPTION, MainWindowBase::_wxFB_OnToolbarAction )
+	EVT_TOOL( wxID_EXPORT_WORDLIST, MainWindowBase::_wxFB_OnExportWordListSearchResults )
 	EVT_TOOL( wxID_PRINT, MainWindowBase::_wxFB_OnPrintDocument )
 	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_OnShowAboutPanel )
 	EVT_MENU( wxID_FI_FIND_SHOW, MainWindowBase::_wxFB_OnPerformFindAction )
@@ -45,6 +47,7 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_MENU( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
 	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
+	EVT_MENU( wxID_EXPORT_WORDLIST, MainWindowBase::_wxFB_OnExportWordListSearchResults )
 	EVT_MENU( wxID_LOAD_PRESCRIPTION, MainWindowBase::_wxFB_OnLoadPrescription )
 	EVT_MENU( wxID_SAVE_PRESCRIPTION, MainWindowBase::_wxFB_OnSavePrescription )
 	EVT_MENU( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnManagePatients )
@@ -80,7 +83,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button3 = new wxButton( m_panelLeft, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
 
-	m_button4 = new wxButton( m_panelLeft, wxID_BTN_REGISTATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button4 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerLeft->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
 
 	m_button5 = new wxButton( m_panelLeft, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -237,15 +240,17 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	this->SetSizer( bSizer1 );
 	this->Layout();
 	m_tbMain = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
-	m_tool1 = m_tbMain->AddTool( wxID_TB_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_NORMAL, _("AIPS Database"), wxEmptyString, NULL );
+	m_tool1 = m_tbMain->AddTool( wxID_TB_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_RADIO, _("AIPS Database"), wxEmptyString, NULL );
 
-	m_tool2 = m_tbMain->AddTool( wxID_TB_FAVORITES, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool2 = m_tbMain->AddTool( wxID_TB_FAVORITES, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	m_tool3 = m_tbMain->AddTool( wxID_TB_INTERACTIONS, _("Interactions"), wxBitmap( interactions_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool3 = m_tbMain->AddTool( wxID_TB_INTERACTIONS, _("Interactions"), wxBitmap( interactions_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	m_tool4 = m_tbMain->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
+	m_tool4 = m_tbMain->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
 	m_tbMain->AddSeparator();
+
+	m_tool7 = m_tbMain->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
 	m_tool5 = m_tbMain->AddTool( wxID_PRINT, _("Print"), wxBitmap( print_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
@@ -299,7 +304,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_menuItem9;
-	m_menuItem9 = new wxMenuItem( m_menuFile, wxID_ANY, wxString( _("Word Analysis") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem9 = new wxMenuItem( m_menuFile, wxID_EXPORT_WORDLIST, wxString( _("Word Analysis") ) , wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_menuItem9 );
 
 	m_menubar1->Append( m_menuFile, _("File") );
