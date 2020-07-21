@@ -363,9 +363,9 @@ void MainWindow::updateSearchResults()
         //searchResults =
         searchAnyDatabasesWith(mCurrentSearchKey); // it updates searchResults and searchResultsFT
     }
-    else if (mUsedDatabase == kdbt_Favorites){
-        searchResults = // TODO:
-        retrieveAllFavorites();
+    else if (mUsedDatabase == kdbt_Favorites) {
+        searchResults = retrieveAllFavorites();
+        searchResultsFT = retrieveAllFTFavorites();
     }
 }
 
@@ -550,6 +550,7 @@ void MainWindow::switchTabs(int item)
             
             // 1826
             searchResults = retrieveAllFavorites();
+            searchResultsFT = retrieveAllFTFavorites();
             
             // /1828
             // Update tableview
@@ -627,26 +628,31 @@ MEDICATION_RESULTS MainWindow::retrieveAllFavorites()
         if (mDb) {
             for (auto regnrs : favoriteMedsSet) {
                 auto med = mDb->searchRegNr(regnrs);
-                if (/*med!=nullptr &&*/ med.size() > 0)
-                    medList.push_back(med[0]);
+                if (med.size() > 0)
+                    medList.push_back(med[0]); // Use only the first one
             }
-        }
-    }
-    else {
-        if (mFullTextDb) {
-#if 1 // TODO:
-            std::clog << __PRETTY_FUNCTION__ << " TODO: " << std::endl;
-#else
-            for (auto hashId : favoriteFTEntrySet) {
-                auto entry = mFullTextDb->searchHash(hashId);
-                if (entry != nullptr)
-                    medList.push_back(entry);
-            }
-#endif
         }
     }
 
     return medList;
+}
+
+FULLTEXT_RESULTS MainWindow::retrieveAllFTFavorites()
+{
+    FULLTEXT_RESULTS ftList;
+
+    // 1915
+    if (mCurrentSearchState == kss_FullText) {
+        if (mFullTextDb) {
+            for (auto hashId : favoriteFTEntrySet) {
+                auto entry = mFullTextDb->searchHash(hashId);
+                if (entry)
+                    ftList.push_back(entry);
+            }
+        }
+    }
+
+    return ftList;
 }
 
 // In Amiko-osx it's "~/Library/Preferences/"
@@ -1608,7 +1614,7 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
 #ifndef NDEBUG
     //NSLog(@"%s %d, html %p lenght:%lu", __FUNCTION__, __LINE__, html, (unsigned long)[html length]);
     //NSLog(@"%s %d, html %@", __FUNCTION__, __LINE__, html);
-    std::clog << __FUNCTION__ << __LINE__ << ", chapters size: " << chSet.size();
+    std::clog << __FUNCTION__ << __LINE__ << ", chapters size: " << chSet.size() << std::endl;
 #endif
 
     // 3138
@@ -1624,32 +1630,75 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
     }
     
     // 3150
-    wxXmlDocument xmlDoc(html);
+    wxStringInputStream in(html);
+    wxXmlDocument xmlDoc(in);
+    std::clog << "xmlDoc ver: " << xmlDoc.GetVersion()
+    << ", ok: " << xmlDoc.IsOk()
+    << ", root: " << xmlDoc.GetRoot()
+    << ", docNode " << xmlDoc.GetDocumentNode()
+    << std::endl;
+    
+    if (!xmlDoc.IsOk())
+        return;
 
     // 3170
-    auto rootElement = xmlDoc.GetRoot(); // rootElement
-    //NSLog(@"rootElement %@", rootElement);
+    wxXmlNode *rootElement = xmlDoc.GetRoot(); // rootElement
+    std::clog << "rootElement content:<" << rootElement->GetContent() << ">"
+    << ", node content:<" << rootElement->GetNodeContent() << ">"
+    << ", name:<" << rootElement->GetName() << ">" // ok "html"
+    << ", line No: " << rootElement->GetLineNumber()
+    << std::endl;
     //NSLog(@"Line %d HTML root children count %lu", __LINE__, (unsigned long)[rootElement childCount]);
+    wxASSERT(rootElement);
 
 #if 0
-    NSArray *children = [rootElement children];
-    //NSLog(@"children %@", children);  // "head" and "body" (body trunctaed in the printout)
-    for (id child in children)
-        NSLog(@"child %@ %@", [child class], [child name]); // NSXMLFidelityElement "head" and "body"
+    wxXmlNode *child = rootElement->GetChildren();
+    while (child) {
+        std::clog << "child type: " << child->GetType()
+        << ", name:<" << child->GetName() << ">" // "head" and "body" (body truncated in the printout)
+        << ", node content:<" << child->GetNodeContent() << ">"
+        << ", line No: " << child->GetLineNumber()
+        << ", type: " << child->GetType() // wxXML_ELEMENT_NODE
+        << std::endl; // NSXMLFidelityElement "head" and "body"
+        
+        wxXmlAttribute *attr = child->GetAttributes();
+        while (attr) {
+            std::clog << "attr  name: " << attr->GetName() << std::endl;
+            attr = attr->GetNext();
+        }
+
+        child = child->GetNext();
+    }
 #endif
     
 #if 0
-    NSXMLNode *nodeBody = children[1];
-    NSLog(@"Line %d, class:%@, name:%@, %lu children", __LINE__,
-          [nodeBody class],
-          [nodeBody name],
-          (unsigned long)[nodeBody childCount]);
+    wxXmlNode *nodeBody = rootElement->GetChildren(); //children[1];
+    nodeBody = nodeBody->GetNext();
+//    std::clog << "Line " << __LINE__ << ", class:%@, name:%@, %lu children", ,
+//          [nodeBody class],
+//          [nodeBody name],
+//          (unsigned long)[nodeBody childCount]);
 
-    NSXMLNode *nodeBodyDiv = [nodeBody childAtIndex:0];
-    NSLog(@"Line %d, class:%@, name:%@, %lu children", __LINE__,
-          [nodeBodyDiv class],
-          [nodeBodyDiv name],
-          (unsigned long)[nodeBodyDiv childCount]);
+    wxXmlNode *nodeBodyDiv = nodeBody->GetChildren(); //[nodeBody childAtIndex:0];
+    while (nodeBodyDiv) {
+        std::clog << "Line " << __LINE__
+        << ", name:<" << nodeBodyDiv->GetName() << ">"  // div
+        << ", node content:<" << nodeBodyDiv->GetNodeContent() << ">"
+        << ", line No: " << nodeBodyDiv->GetLineNumber()
+        << ", type: " << nodeBodyDiv->GetType() // wxXML_ELEMENT_NODE
+        << std::endl;
+        
+        wxXmlAttribute *attr = nodeBodyDiv->GetAttributes();
+        while (attr) {
+            std::clog
+            << "attr name:<" << attr->GetName() << ">"
+            << ", value:<" << attr->GetValue() << ">"
+            << std::endl;
+            attr = attr->GetNext();
+        }
+
+        nodeBodyDiv = nodeBodyDiv->GetNext();
+    }
 #endif
 
 //    NSArray *shortTitles = [csvMedication listOfSectionTitles];  // they are hardcoded into the app
@@ -1660,9 +1709,73 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
     if (atcArray.size() > 0) atcCode = atcArray[0];
     if (atcArray.size() > 1) activeSubstance = atcArray[1];
 
+    // 3203
     wxString brandName;
-    auto pBodyElem = rootElement->GetAttribute("/html/body/div/div"); // nodesForXPath:@"/html/body/div/div" error:nil];
-    //NSLog(@"pBodyElem %lu elements", (unsigned long)[pBodyElem count]);
+    // nodesForXPath:@"/html/body/div/div" error:nil];
+    wxXmlNode *pBodyElem = rootElement->GetChildren();  // html/head
+    pBodyElem = pBodyElem->GetNext();                   // html/body
+    pBodyElem = pBodyElem->GetChildren();               // html/body/div
+    pBodyElem = pBodyElem->GetChildren();               // html/body/div/div
+    while (pBodyElem) {
+
+        // 3207
+        wxString divClass = pBodyElem->GetAttribute("class");
+        wxString divId = pBodyElem->GetAttribute("id");
+
+#ifndef NDEBUG
+        std::clog << "Line " << __LINE__
+        << ", name:<" << pBodyElem->GetName() << ">"  // div
+        << ", node content:<" << pBodyElem->GetNodeContent() << ">" // Ponstan
+        << ", XML line No: " << pBodyElem->GetLineNumber()
+        << ", type: " << pBodyElem->GetType() // wxXML_ELEMENT_NODE: 1
+        << ", attr class:<" << divClass << ">"
+        << ", attr id:<" << divId << ">"
+        << std::endl;
+#endif
+        
+        // 3209
+        if (divClass == "MonTitle")
+        {
+            brandName = pBodyElem->GetNodeContent();
+        }
+        else if (divClass == "paragraph")
+        {
+            // 3223
+            // Extract section number from id and skip if not in NSSet
+            
+            // 3228
+            // Throw away characters before the first number.
+            
+            // 3252
+            wxXmlNode *paragraphs = pBodyElem->GetChildren();
+        }
+#ifndef NDEBUG
+        else {
+            // 3218
+            // <div class="ownerCompany">
+            // <p class="footer">
+            std::clog << "Line " << __LINE__
+            << " skip name:<" << pBodyElem->GetName() << ">" // p or div
+            << ", class:<" << divClass  << ">"              // ownerCompany or footer
+            << ", id:<" << divId  << ">"                    // missing
+            << std::endl;
+        }
+#endif
+
+#if 0 //ndef NDEBUG
+        wxXmlAttribute *attr = pBodyElem->GetAttributes();
+        while (attr) {
+            std::clog << "Line " << __LINE__
+            << "attr name:<" << attr->GetName() << ">" // class, id
+            << ", value:<" << attr->GetValue() << ">"  // MonTitle, section1
+            << std::endl;
+
+            attr = attr->GetNext();
+        }
+#endif
+
+        pBodyElem = pBodyElem->GetNext();
+    }
     
 #if 1
     std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
@@ -1670,6 +1783,7 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
     for (auto el : pBodyElem) {
         wxString divClass = el.GetAttribute("class");
         wxString divId = el.GetAttribute("id");
+        // 3209
         if (divClass == "MonTitle") {
             brandName = el.GetNodeContent();// stringValue];
 
@@ -1920,9 +2034,10 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
         searchAnyDatabasesWith(searchText); // it updates searchResults and searchResultsFT
     }
     else {
-         if (mUsedDatabase == kdbt_Favorites)
-             searchResults = // TODO:
-             retrieveAllFavorites();
+        if (mUsedDatabase == kdbt_Favorites) {
+            searchResults = retrieveAllFavorites();
+            searchResultsFT = retrieveAllFTFavorites();
+        }        
     }
 
     // 977
@@ -2185,7 +2300,9 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
     wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
-             wxGetOsDescription(), wxVERSION_STRING, SQLITE_VERSION),
+                              wxGetOsDescription(),
+                              wxVERSION_STRING,
+                              SQLITE_VERSION),
     wxString(APP_NAME), wxOK | wxICON_INFORMATION);
 }
 

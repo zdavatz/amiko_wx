@@ -77,6 +77,7 @@ private:
     bool openInteractionsCsvFile();
     void searchAnyDatabasesWith(wxString searchQuery);
     std::vector<Medication *> retrieveAllFavorites();
+    std::vector<FullTextEntry *> retrieveAllFTFavorites();
     void updateExpertInfoView(wxString anchor);
     void pushToMedBasket(Medication *med);
     void updateInteractionsView();
