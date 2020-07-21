@@ -4,6 +4,8 @@
 //  Created by Alex Bettarini on 16 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+#include <wx/filename.h>
+
 #include <string.h> // for strdup()
 #include "SQLiteDatabase.hpp"
 
@@ -33,6 +35,77 @@ void SQLiteDatabase::initReadOnlyWithPath(wxString path)
     rc = sqlite3_exec(database, "PRAGMA temp_store=1", nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK)
         std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ", rc " << rc << std::endl;
+}
+
+// 97
+// for patient DB
+void SQLiteDatabase::initReadWriteWithPath(wxString path)
+{
+    std::cerr << __PRETTY_FUNCTION__ << " " << path << std::endl;
+
+    // 100
+    // Setup database object
+    sqlite3 *dbConnection;
+    
+    // 110
+    // Let's open it in read write mode
+    int rc = sqlite3_open(path.c_str(), &dbConnection);
+    if (rc != SQLITE_OK) {
+        std::cerr << __PRETTY_FUNCTION__ << " Unable to open R/W database!\n";
+        return;
+    }
+
+    // 115
+    database = dbConnection;
+
+    // Force using disk for temp storage to reduce memory footprint
+    rc = sqlite3_exec(database, "PRAGMA temp_store=1", nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK)
+        std::cerr << __PRETTY_FUNCTION__ << ":" << __LINE__ << ", rc " << rc << std::endl;
+}
+
+// 122
+// for patient DB
+bool SQLiteDatabase::createWithPath_andTable_andColumns(wxString path, wxString table, wxString columns)
+{
+    if (wxFileName::Exists(path)) {
+#ifndef NDEBUG
+        std::cerr << __FUNCTION__ << " file " << path << " exists already" << std::endl;
+#endif
+        return true;
+    }
+
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << " create " << path << std::endl;
+#endif
+
+    // 129
+    // Setup database object
+    sqlite3 *dbConnection;
+    // 131
+    // Database does not exist yet. Let's open and create an empty table
+    int rc = sqlite3_open(path.c_str(), &dbConnection);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to create database with path " << path << std::endl;
+        return false;
+    }
+
+    // 133
+    wxString queryStr = wxString::Format("CREATE TABLE IF NOT EXISTS %s %s", table, columns);
+    rc = sqlite3_exec(dbConnection, queryStr, nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        // 139
+        std::cerr << "Failed to create table " << table << " for database with path %@" << path << std::endl;
+        return false;
+    }
+        
+    // 135
+#ifndef NDEBUG
+    std::clog << table << " table created successfully...\n";
+#endif
+    database = dbConnection;
+
+    return true;
 }
 
 // 151

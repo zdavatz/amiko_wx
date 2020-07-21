@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 
+#include <wx/wx.h>
+
 #define KEY_AMK_PAT_ID          "patient_id"
 #define KEY_AMK_PAT_NAME        "given_name"
 #define KEY_AMK_PAT_SURNAME     "family_name"
@@ -32,4 +34,20 @@ public:
     virtual ~Patient() {}
     
     void importFromDict(PAT_DICT &dict);
+    
+    // 46
+    long rowId;
+    wxString uniqueId;
+    wxString familyName;
+    wxString givenName;
+    wxString birthDate;
+    wxString gender;
+    int weightKg;
+    int heightCm;
+    wxString zipCode;
+    wxString city;
+    wxString country;
+    wxString postalAddress;
+    wxString phoneNumber;
+    wxString emailAddress;
 };

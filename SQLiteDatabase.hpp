@@ -33,6 +33,8 @@ public:
     virtual ~SQLiteDatabase() {}
     
     void initReadOnlyWithPath(wxString path);
+    void initReadWriteWithPath(wxString path);
+    bool createWithPath_andTable_andColumns(wxString path, wxString table, wxString columns);
     ALL_SQL_RESULTS performQuery(wxString query);
     int numberRecordsForTable(wxString table);
     void close();

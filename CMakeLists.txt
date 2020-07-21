@@ -73,7 +73,6 @@ endif(APPLE)
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
     gui/MainWindow.cpp gui/MainWindow.h
-    gui/PatientSheet.cpp gui/PatientSheet.h
     gui/OperatorIDSheet.cpp gui/OperatorIDSheet.h )
     
 set( SRCS_SQL
@@ -97,11 +96,18 @@ set( SRCS_PRESCR
     ItemCellView.cpp ItemCellView.hpp
     )
 
+set( SRCS_PATIENT
+    gui/PatientSheet.cpp gui/PatientSheet.h
+    Patient.cpp Patient.hpp
+    PatientDBAdapter.cpp PatientDBAdapter.hpp
+    )
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
 source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
+source_group(patient FILES ${SRCS_PATIENT})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -110,13 +116,13 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
     Utilities.cpp Utilities.hpp
     Medication.cpp Medication.hpp
-    Patient.cpp Patient.hpp
     Operator.cpp Operator.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
-    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_INTER} ${SRCS_PRESCR}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
+    ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
     customURLConnection.cpp customURLConnection.hpp
     )
 

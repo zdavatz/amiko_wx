@@ -57,6 +57,7 @@ static wxString FULL_TABLE;
 DBAdapter::DBAdapter()
 : mySqliteDb(nullptr)
 {
+    // 67
     if (SHORT_TABLE.size() == 0) {
         SHORT_TABLE = wxString::Format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
                        KEY_ROWID, KEY_TITLE, KEY_AUTH, KEY_ATCCODE, KEY_SUBSTANCES, KEY_REGNRS, KEY_ATCCLASS, KEY_THERAPY, KEY_APPLICATION, KEY_INDICATIONS, KEY_CUSTOMER_ID, KEY_PACK_INFO, KEY_PACKAGES);
@@ -74,9 +75,6 @@ DBAdapter::DBAdapter()
 // 85
 bool DBAdapter::openDatabase(wxString dbName)
 {
-#ifndef NDEBUG
-    //std::cerr << __PRETTY_FUNCTION__ << " " << dbName << std::endl;
-#endif
     if (!mySqliteDb)
         mySqliteDb = new SQLiteDatabase();
 
