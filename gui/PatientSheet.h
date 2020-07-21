@@ -20,6 +20,7 @@ class PatientSheet : public PatientSheetBase
 {
 	protected:
 		// Handlers for PatientSheetBase events.
+		void OnSelectSex( wxCommandEvent& event );
 		void OnSavePatient( wxCommandEvent& event );
 	public:
 		/** Constructor */
@@ -29,6 +30,9 @@ class PatientSheet : public PatientSheetBase
     Patient *retrievePatient();
     Patient * getAllFields();
     bool validateFields(Patient *patient);
+    void updateAmiKoAddressBookTableView();
+    void friendlyNote();
+    void resetFieldsColors();
     
     // 30
     PatientDBAdapter *mPatientDb;

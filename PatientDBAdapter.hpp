@@ -7,6 +7,7 @@
 #pragma once
 
 class SQLiteDatabase;
+class Patient;
 
 class PatientDBAdapter
 {
@@ -16,6 +17,9 @@ public:
     
     long getLargestRowId();
     bool openDatabase(wxString dbName);
+    Patient * getPatientWithUniqueID(wxString uniqueID);
+    wxString addEntry(Patient *patient);
+    wxString insertEntry(Patient *patient);
     
 private:
     // private constructor so that it can not be called

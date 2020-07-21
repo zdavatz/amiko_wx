@@ -70,7 +70,8 @@
 #define wxID_LOAD_DB 1026
 #define wxID_LOAD_PRESCRIPTION 1027
 #define wxID_SET_OPERATOR_ID 1028
-#define wxID_SAVE_PATIENT 1029
+#define wxID_RB_SEX 1029
+#define wxID_SAVE_PATIENT 1030
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -200,6 +201,7 @@ class PatientSheetBase : public wxDialog
 	private:
 
 		// Private event handlers
+		void _wxFB_OnSelectSex( wxCommandEvent& event ){ OnSelectSex( event ); }
 		void _wxFB_OnSavePatient( wxCommandEvent& event ){ OnSavePatient( event ); }
 
 
@@ -209,29 +211,18 @@ class PatientSheetBase : public wxDialog
 		wxStaticText* m_staticText2;
 		wxStaticText* m_staticText3;
 		wxStaticText* m_staticText4;
-		wxTextCtrl* m_textCtrl3;
 		wxStaticText* m_staticText5;
-		wxTextCtrl* m_textCtrl4;
 		wxStaticText* m_staticText6;
-		wxTextCtrl* m_textCtrl5;
 		wxStaticText* m_staticText9;
-		wxTextCtrl* m_textCtrl8;
 		wxStaticText* m_staticText10;
-		wxTextCtrl* m_textCtrl9;
 		wxStaticText* m_staticText11;
-		wxTextCtrl* m_textCtrl10;
 		wxStaticText* m_staticText12;
-		wxTextCtrl* m_textCtrl11;
 		wxStaticText* m_staticText23;
-		wxRadioBox* m_radioBox1;
+		wxRadioBox* mSex;
 		wxStaticText* m_staticText24;
-		wxTextCtrl* m_textCtrl20;
 		wxStaticText* m_staticText25;
-		wxTextCtrl* m_textCtrl21;
 		wxStaticText* m_staticText26;
-		wxTextCtrl* m_textCtrl22;
 		wxStaticText* m_staticText27;
-		wxTextCtrl* m_textCtrl23;
 		wxButton* m_button14;
 		wxButton* m_button15;
 		wxPanel* m_panel7Right;
@@ -242,10 +233,23 @@ class PatientSheetBase : public wxDialog
 		wxBitmapButton* m_bpButton2;
 
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
+		wxTextCtrl* mFamilyName;
+		wxTextCtrl* mGivenName;
+		wxTextCtrl* mPostalAddress;
+		wxTextCtrl* mCity;
+		wxTextCtrl* mZipCode;
+		wxTextCtrl* mCountry;
+		wxTextCtrl* mBirthDate;
+		wxTextCtrl* mWeight_kg;
+		wxTextCtrl* mHeight_cm;
+		wxTextCtrl* mPhone;
+		wxTextCtrl* mEmail;
+		wxStaticText* mNotificaltion;
 
 		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Patient Management"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 700,511 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~PatientSheetBase();

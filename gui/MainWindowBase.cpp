@@ -369,6 +369,7 @@ MainWindowBase::~MainWindowBase()
 }
 
 BEGIN_EVENT_TABLE( PatientSheetBase, wxDialog )
+	EVT_RADIOBOX( wxID_RB_SEX, PatientSheetBase::_wxFB_OnSelectSex )
 	EVT_BUTTON( wxID_SAVE_PATIENT, PatientSheetBase::_wxFB_OnSavePatient )
 END_EVENT_TABLE()
 
@@ -412,22 +413,22 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_staticText4->Wrap( -1 );
 	fgSizer1->Add( m_staticText4, 0, wxALL, 5 );
 
-	m_textCtrl3 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl3, 0, wxALL|wxEXPAND, 5 );
+	mFamilyName = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mFamilyName, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText5 = new wxStaticText( m_panel6Left, wxID_ANY, _("Name*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText5->Wrap( -1 );
 	fgSizer1->Add( m_staticText5, 0, wxALL, 5 );
 
-	m_textCtrl4 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl4, 0, wxALL|wxEXPAND, 5 );
+	mGivenName = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mGivenName, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText6 = new wxStaticText( m_panel6Left, wxID_ANY, _("Street*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText6->Wrap( -1 );
 	fgSizer1->Add( m_staticText6, 0, wxALL, 5 );
 
-	m_textCtrl5 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl5, 0, wxALL|wxEXPAND, 5 );
+	mPostalAddress = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mPostalAddress, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText9 = new wxStaticText( m_panel6Left, wxID_ANY, _("City*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText9->Wrap( -1 );
@@ -436,15 +437,15 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	wxBoxSizer* bSizer16;
 	bSizer16 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_textCtrl8 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer16->Add( m_textCtrl8, 0, wxALL, 5 );
+	mCity = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( mCity, 0, wxALL, 5 );
 
 	m_staticText10 = new wxStaticText( m_panel6Left, wxID_ANY, _("ZIP*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText10->Wrap( -1 );
 	bSizer16->Add( m_staticText10, 0, wxALL, 5 );
 
-	m_textCtrl9 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer16->Add( m_textCtrl9, 0, wxALL, 5 );
+	mZipCode = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( mZipCode, 0, wxALL, 5 );
 
 
 	fgSizer1->Add( bSizer16, 1, wxEXPAND, 5 );
@@ -453,56 +454,60 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_staticText11->Wrap( -1 );
 	fgSizer1->Add( m_staticText11, 0, wxALL, 5 );
 
-	m_textCtrl10 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl10, 0, wxALL, 5 );
+	mCountry = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mCountry, 0, wxALL, 5 );
 
 	m_staticText12 = new wxStaticText( m_panel6Left, wxID_ANY, _("Birthday*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText12->Wrap( -1 );
 	fgSizer1->Add( m_staticText12, 0, wxALL, 5 );
 
-	m_textCtrl11 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl11, 0, wxALL, 5 );
+	mBirthDate = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mBirthDate, 0, wxALL, 5 );
 
 	m_staticText23 = new wxStaticText( m_panel6Left, wxID_ANY, _("Sex*"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText23->Wrap( -1 );
 	fgSizer1->Add( m_staticText23, 0, wxALL, 5 );
 
-	wxString m_radioBox1Choices[] = { _("female"), _("male") };
-	int m_radioBox1NChoices = sizeof( m_radioBox1Choices ) / sizeof( wxString );
-	m_radioBox1 = new wxRadioBox( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_radioBox1NChoices, m_radioBox1Choices, 1, wxRA_SPECIFY_ROWS );
-	m_radioBox1->SetSelection( 0 );
-	fgSizer1->Add( m_radioBox1, 0, wxALL, 5 );
+	wxString mSexChoices[] = { _("female"), _("male") };
+	int mSexNChoices = sizeof( mSexChoices ) / sizeof( wxString );
+	mSex = new wxRadioBox( m_panel6Left, wxID_RB_SEX, wxEmptyString, wxDefaultPosition, wxDefaultSize, mSexNChoices, mSexChoices, 1, wxRA_SPECIFY_ROWS );
+	mSex->SetSelection( 0 );
+	fgSizer1->Add( mSex, 0, wxALL, 5 );
 
 	m_staticText24 = new wxStaticText( m_panel6Left, wxID_ANY, _("Weight (kg)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText24->Wrap( -1 );
 	fgSizer1->Add( m_staticText24, 0, wxALL, 5 );
 
-	m_textCtrl20 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl20, 0, wxALL, 5 );
+	mWeight_kg = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mWeight_kg, 0, wxALL, 5 );
 
 	m_staticText25 = new wxStaticText( m_panel6Left, wxID_ANY, _("Height (cm)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText25->Wrap( -1 );
 	fgSizer1->Add( m_staticText25, 0, wxALL, 5 );
 
-	m_textCtrl21 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl21, 0, wxALL, 5 );
+	mHeight_cm = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mHeight_cm, 0, wxALL, 5 );
 
 	m_staticText26 = new wxStaticText( m_panel6Left, wxID_ANY, _("Phone"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText26->Wrap( -1 );
 	fgSizer1->Add( m_staticText26, 0, wxALL, 5 );
 
-	m_textCtrl22 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl22, 0, wxALL, 5 );
+	mPhone = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mPhone, 0, wxALL, 5 );
 
 	m_staticText27 = new wxStaticText( m_panel6Left, wxID_ANY, _("Email"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText27->Wrap( -1 );
 	fgSizer1->Add( m_staticText27, 0, wxALL, 5 );
 
-	m_textCtrl23 = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer1->Add( m_textCtrl23, 0, wxALL, 5 );
+	mEmail = new wxTextCtrl( m_panel6Left, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer1->Add( mEmail, 0, wxALL|wxEXPAND, 5 );
 
 
 	bSizer12->Add( fgSizer1, 1, wxEXPAND, 5 );
+
+	mNotificaltion = new wxStaticText( m_panel6Left, wxID_ANY, _("Save..."), wxDefaultPosition, wxDefaultSize, 0 );
+	mNotificaltion->Wrap( -1 );
+	bSizer12->Add( mNotificaltion, 0, wxALL, 5 );
 
 	wxBoxSizer* bSizer18;
 	bSizer18 = new wxBoxSizer( wxHORIZONTAL );

@@ -10,6 +10,7 @@
 
 #include "PatientDBAdapter.hpp"
 #include "SQLiteDatabase.hpp"
+#include "Patient.hpp"
 
 // 30
 static const char * KEY_ROWID = "_id";
@@ -45,7 +46,8 @@ PatientDBAdapter* PatientDBAdapter::sharedInstance()
     if (!sharedObject) {
         sharedObject = new PatientDBAdapter;
         
-        if (!sharedObject->openDatabase("patient")) {
+        // Strange name "patient_db.db" in amiko-osx
+        if (!sharedObject->openDatabase("patient.db")) {
             std::cerr << "Could not open patient DB!";
             sharedObject = nullptr;
         }
@@ -83,7 +85,7 @@ bool PatientDBAdapter::openDatabase(wxString dbName)
     // 101
     // Get documents directory
     wxString documentsDir = wxStandardPaths::Get().GetDocumentsDir();
-    wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName + ".db");
+    wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName);
 
     // 104
     // Check if database exists
@@ -107,6 +109,49 @@ bool PatientDBAdapter::openDatabase(wxString dbName)
     return false;
 }
 
+// 130
+wxString PatientDBAdapter::addEntry(Patient *patient)
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#else
+    if (myPatientDb) {
+        // Patient entry does not exist (yet)
+        NSString *uuidStr = [patient generateUniqueID];    // e.g. 3466684318797166812
+        NSString *timeStr = [MLUtilities currentTime];
+        NSString *columnStr = [NSString stringWithFormat:@"(%@)", ALL_COLUMNS];
+        NSString *valueStr = [NSString stringWithFormat:@"(%ld, \"%@\", \"%@\", \"%@\", \"%@\", \"%@\", \"%@\", %d, %d, \"%@\", \"%@\", \"%@\", \"%@\", \"%@\", \"%@\")", patient.rowId, timeStr, uuidStr, patient.familyName, patient.givenName, patient.birthDate, patient.gender, patient.weightKg, patient.heightCm, patient.zipCode, patient.city, patient.country, patient.postalAddress, patient.phoneNumber, patient.emailAddress];
+        // Insert new entry into DB
+        [myPatientDb insertRowIntoTable:@"patients" forColumns:columnStr andValues:valueStr];
+        return uuidStr;
+    }
+#endif
+
+    return wxEmptyString;
+}
+
+// 145
+wxString PatientDBAdapter::insertEntry(Patient *patient)
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#else
+    if (myPatientDb) {
+        // If UUID exist re-use it!
+        if (patient.uniqueId!=nil && [patient.uniqueId length]>0) {
+            NSString *expressions = [NSString stringWithFormat:@"%@=%d, %@=%d, %@=\"%@\", %@=\"%@\", %@=\"%@\", %@=\"%@\", %@=\"%@\", %@=\"%@\", %@=\"%@\"", KEY_WEIGHT_KG, patient.weightKg, KEY_HEIGHT_CM, patient.heightCm, KEY_ZIPCODE, patient.zipCode, KEY_CITY, patient.city, KEY_COUNTRY, patient.country, KEY_ADDRESS, patient.postalAddress, KEY_PHONE, patient.phoneNumber, KEY_EMAIL, patient.emailAddress, KEY_GENDER, patient.gender];
+            NSString *conditions = [NSString stringWithFormat:@"%@=\"%@\"", KEY_UID, patient.uniqueId];
+            // Update existing entry
+            [myPatientDb updateRowIntoTable:@"patients" forExpressions:expressions andConditions:conditions];
+            return patient.uniqueId;
+        } else {
+            return [self addEntry:patient];
+        }
+    }
+#endif
+    return wxEmptyString;
+}
+
 // 186
 long PatientDBAdapter::getLargestRowId()
 {
@@ -128,3 +173,21 @@ long PatientDBAdapter::getLargestRowId()
     return 0;
 }
 
+// 248
+Patient * PatientDBAdapter::getPatientWithUniqueID(wxString uniqueID)
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#else
+    if (uniqueID!=nil) {
+        NSString *query = [NSString stringWithFormat:@"select %@ from %@ where %@ like '%@'", ALL_COLUMNS, DATABASE_TABLE, KEY_UID, uniqueID];
+        NSArray *results = [myPatientDb performQuery:query];
+        if ([results count]>0) {
+            for (NSArray *cursor in results) {
+                return [self cursorToPatient:cursor];
+            }
+        }
+    }
+#endif
+    return nullptr;
+}
