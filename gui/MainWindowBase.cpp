@@ -368,6 +368,10 @@ MainWindowBase::~MainWindowBase()
 {
 }
 
+BEGIN_EVENT_TABLE( PatientSheetBase, wxDialog )
+	EVT_BUTTON( wxID_SAVE_PATIENT, PatientSheetBase::_wxFB_OnSavePatient )
+END_EVENT_TABLE()
+
 PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -509,7 +513,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	bSizer18->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_button15 = new wxButton( m_panel6Left, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button15 = new wxButton( m_panel6Left, wxID_SAVE_PATIENT, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer18->Add( m_button15, 0, wxALL, 5 );
 
 

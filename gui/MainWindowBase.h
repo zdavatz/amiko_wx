@@ -70,6 +70,7 @@
 #define wxID_LOAD_DB 1026
 #define wxID_LOAD_PRESCRIPTION 1027
 #define wxID_SET_OPERATOR_ID 1028
+#define wxID_SAVE_PATIENT 1029
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -195,7 +196,12 @@ class MainWindowBase : public wxFrame
 ///////////////////////////////////////////////////////////////////////////////
 class PatientSheetBase : public wxDialog
 {
+	DECLARE_EVENT_TABLE()
 	private:
+
+		// Private event handlers
+		void _wxFB_OnSavePatient( wxCommandEvent& event ){ OnSavePatient( event ); }
+
 
 	protected:
 		wxSplitterWindow* m_splitter2;
@@ -234,6 +240,10 @@ class PatientSheetBase : public wxDialog
 		wxSpinButton* m_spinBtn1;
 		wxStaticText* m_staticText13;
 		wxBitmapButton* m_bpButton2;
+
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
+
 
 	public:
 
