@@ -72,6 +72,9 @@
 #define wxID_SET_OPERATOR_ID 1028
 #define wxID_RB_SEX 1029
 #define wxID_SAVE_PATIENT 1030
+#define wxID_CLEAR_SIGNATURE 1031
+#define wxID_LOAD_SIGNATURE 1032
+#define wxID_SAVE_OPERATOR 1033
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -267,30 +270,45 @@ class PatientSheetBase : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 class OperatorIDSheetBase : public wxDialog
 {
+	DECLARE_EVENT_TABLE()
 	private:
+
+		// Private event handlers
+		void _wxFB_OnClearSignature( wxCommandEvent& event ){ OnClearSignature( event ); }
+		void _wxFB_OnLoadSignature( wxCommandEvent& event ){ OnLoadSignature( event ); }
+		void _wxFB_OnSaveOperator( wxCommandEvent& event ){ OnSaveOperator( event ); }
+
 
 	protected:
 		wxStaticText* m_staticText14;
 		wxStaticText* m_staticText15;
-		wxTextCtrl* m_textCtrl12;
 		wxStaticText* m_staticText16;
-		wxTextCtrl* m_textCtrl13;
 		wxStaticText* m_staticText17;
-		wxTextCtrl* m_textCtrl14;
 		wxStaticText* m_staticText22;
-		wxTextCtrl* m_textCtrl16;
 		wxStaticText* m_staticText18;
-		wxTextCtrl* m_textCtrl17;
+		wxStaticText* m_staticText27;
 		wxStaticText* m_staticText19;
-		wxTextCtrl* m_textCtrl18;
 		wxStaticText* m_staticText20;
-		wxTextCtrl* m_textCtrl19;
-		wxStaticBitmap* m_bitmap1;
-		wxButton* m_button16;
+		wxButton* m_button20;
 		wxButton* m_button18;
 		wxButton* m_button17;
 
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnClearSignature( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnLoadSignature( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSaveOperator( wxCommandEvent& event ) { event.Skip(); }
+
+
 	public:
+		wxTextCtrl* mTitle;
+		wxTextCtrl* mFamilyName;
+		wxTextCtrl* mGivenName;
+		wxTextCtrl* mPostalAddress;
+		wxTextCtrl* mCity;
+		wxTextCtrl* mZipCode;
+		wxTextCtrl* mPhoneNumber;
+		wxTextCtrl* mEmailAddress;
+		wxStaticBitmap* mSignView;
 
 		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 451,512 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~OperatorIDSheetBase();

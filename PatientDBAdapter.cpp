@@ -100,7 +100,7 @@ bool PatientDBAdapter::openDatabase(wxString dbName)
         return true;
     }
 
-    std::clog <<"Patient DB file NOT found: " << filePath << std::endl;
+    std::clog << "Patient DB file NOT found: " << filePath << std::endl;
     if (myPatientDb->createWithPath_andTable_andColumns(filePath, DATABASE_TABLE, DATABASE_COLUMNS)) {
         myPatientDb->initReadWriteWithPath(filePath);
         return true;

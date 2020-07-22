@@ -543,7 +543,7 @@ void MainWindow::switchTabs(int item)
             break;
 
         case wxID_TB_FAVORITES:
-            std::cerr << __FUNCTION__ << " line " << __LINE__ << " Favorites"<< std::endl;
+            std::cerr << __FUNCTION__ << " line " << __LINE__ << " Favorites" << std::endl;
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
@@ -1477,8 +1477,7 @@ void MainWindow::updatePrescriptionsView()
 
     mPrescriptionMode = true;
 
-    // TODO:
-    //myToolbar->setSelectedItemIdentifier("Rezept");
+    // TODO: m_tbMain-> //myToolbar->setSelectedItemIdentifier("Rezept");
 }
 
 // 2603
@@ -2457,6 +2456,7 @@ void MainWindow::OnLoadPrescription( wxCommandEvent& event )
     openDlgPanel.GetPaths(fileTypesArray); // full path, not just the filename
 #endif
 
+    // 1431
     wxString fileURL = openDlgPanel.GetPath();
     mPrescriptionAdapter->loadPrescriptionFromFile(fileURL);
     mPrescriptionsCart[0].cart = mPrescriptionAdapter->cart;

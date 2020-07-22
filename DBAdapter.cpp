@@ -146,8 +146,15 @@ Medication * DBAdapter::getShortMediWithId(long rowId)
 Medication * DBAdapter::getMediWithRegnr(wxString regnr)
 {
     wxString query = wxString::Format("select %s from %s where %s like '%%, %s%%' or %s like '%s%%'", FULL_TABLE, DATABASE_TABLE, KEY_REGNRS, regnr, KEY_REGNRS, regnr);
-    ONE_SQL_RESULT cursor = mySqliteDb->performQuery(query)[0];
-    
+    ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+    if (results.size() == 0) {
+        std::cerr << __FUNCTION__
+        << " query:<" << query << ">\n"
+        << "\t results size:" << results.size() << std::endl;
+        return nullptr;
+    }
+
+    ONE_SQL_RESULT cursor = results[0];
     return cursorToFullMedInfo(cursor);
 }
 

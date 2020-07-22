@@ -248,7 +248,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = m_tbMain->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	m_tbMain->AddSeparator();
+	//m_tbMain->AddSeparator();
+    m_tbMain->AddStretchableSpace();
 
 	m_tool7 = m_tbMain->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
@@ -582,6 +583,12 @@ PatientSheetBase::~PatientSheetBase()
 {
 }
 
+BEGIN_EVENT_TABLE( OperatorIDSheetBase, wxDialog )
+	EVT_BUTTON( wxID_CLEAR_SIGNATURE, OperatorIDSheetBase::_wxFB_OnClearSignature )
+	EVT_BUTTON( wxID_LOAD_SIGNATURE, OperatorIDSheetBase::_wxFB_OnLoadSignature )
+	EVT_BUTTON( wxID_SAVE_OPERATOR, OperatorIDSheetBase::_wxFB_OnSaveOperator )
+END_EVENT_TABLE()
+
 OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -602,63 +609,80 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	m_staticText15->Wrap( -1 );
 	fgSizer2->Add( m_staticText15, 0, wxALL, 5 );
 
-	m_textCtrl12 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl12, 0, wxALL, 5 );
+	mTitle = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mTitle, 0, wxALL, 5 );
 
 	m_staticText16 = new wxStaticText( this, wxID_ANY, _("Surname"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText16->Wrap( -1 );
 	fgSizer2->Add( m_staticText16, 0, wxALL, 5 );
 
-	m_textCtrl13 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl13, 0, wxALL|wxEXPAND, 5 );
+	mFamilyName = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mFamilyName, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText17 = new wxStaticText( this, wxID_ANY, _("Name"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText17->Wrap( -1 );
 	fgSizer2->Add( m_staticText17, 0, wxALL, 5 );
 
-	m_textCtrl14 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl14, 0, wxALL, 5 );
+	mGivenName = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mGivenName, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText22 = new wxStaticText( this, wxID_ANY, _("Street"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText22->Wrap( -1 );
 	fgSizer2->Add( m_staticText22, 0, wxALL, 5 );
 
-	m_textCtrl16 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl16, 0, wxALL, 5 );
+	mPostalAddress = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mPostalAddress, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText18 = new wxStaticText( this, wxID_ANY, _("City"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText18->Wrap( -1 );
 	fgSizer2->Add( m_staticText18, 0, wxALL, 5 );
 
-	m_textCtrl17 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl17, 0, wxALL, 5 );
+	wxBoxSizer* bSizer21;
+	bSizer21 = new wxBoxSizer( wxHORIZONTAL );
+
+	mCity = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( mCity, 0, wxALL, 5 );
+
+	m_staticText27 = new wxStaticText( this, wxID_ANY, _("ZIP"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27->Wrap( -1 );
+	bSizer21->Add( m_staticText27, 0, wxALL, 5 );
+
+	mZipCode = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer21->Add( mZipCode, 0, wxALL, 5 );
+
+
+	fgSizer2->Add( bSizer21, 1, wxEXPAND, 5 );
 
 	m_staticText19 = new wxStaticText( this, wxID_ANY, _("Phone"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText19->Wrap( -1 );
 	fgSizer2->Add( m_staticText19, 0, wxALL, 5 );
 
-	m_textCtrl18 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl18, 0, wxALL, 5 );
+	mPhoneNumber = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mPhoneNumber, 0, wxALL|wxEXPAND, 5 );
 
 	m_staticText20 = new wxStaticText( this, wxID_ANY, _("Email"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText20->Wrap( -1 );
 	fgSizer2->Add( m_staticText20, 0, wxALL, 5 );
 
-	m_textCtrl19 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer2->Add( m_textCtrl19, 0, wxALL|wxEXPAND, 5 );
+	mEmailAddress = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer2->Add( mEmailAddress, 0, wxALL|wxEXPAND, 5 );
 
 
 	bSizer19->Add( fgSizer2, 1, wxEXPAND, 5 );
 
-	m_bitmap1 = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 383,134 ), 0 );
-	m_bitmap1->SetBackgroundColour( wxColour( 254, 254, 254 ) );
+	m_button20 = new wxButton( this, wxID_CLEAR_SIGNATURE, _("x"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer19->Add( m_button20, 0, wxALIGN_RIGHT|wxALL, 5 );
 
-	bSizer19->Add( m_bitmap1, 1, wxALL|wxEXPAND, 5 );
+	mSignView = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 383,134 ), 0 );
+	mSignView->SetBackgroundColour( wxColour( 254, 254, 254 ) );
+
+	bSizer19->Add( mSignView, 1, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer20;
 	bSizer20 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_button16 = new wxButton( this, wxID_ANY, _("Signature from file"), wxDefaultPosition, wxDefaultSize, 0 );
+	wxButton* m_button16;
+	m_button16 = new wxButton( this, wxID_LOAD_SIGNATURE, _("Signature from file"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer20->Add( m_button16, 0, wxALL, 5 );
 
 
@@ -667,7 +691,7 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	m_button18 = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer20->Add( m_button18, 0, wxALL, 5 );
 
-	m_button17 = new wxButton( this, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button17 = new wxButton( this, wxID_SAVE_OPERATOR, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer20->Add( m_button17, 0, wxALL, 5 );
 
 
