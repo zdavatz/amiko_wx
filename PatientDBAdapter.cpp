@@ -90,7 +90,7 @@ bool PatientDBAdapter::openDatabase(wxString dbName)
     // 104
     // Check if database exists
     if (filePath.length() <= 0)
-        return;
+        return false;
 
     // 106
     // Load database if it exists already
