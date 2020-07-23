@@ -27,11 +27,17 @@ function deleteRow(tableID,currentRow) {
     // var myfunc = window.RemoveMeds;
     try {
         if (tableID=="Notify_interaction") {
-            var payload = ["interactions_cb", "notify_interaction", ""];
+            var payload = [];
+            payload.push("[\"" + "interactions_cb" + "\"");
+            payload.push("\"" + "notify_interaction" + "\"");
+            payload.push("\"\"]");
             document.title = payload;
         } else if (tableID=="Delete_all") {
             // window.alert("delete all rows");
-            var payload = ["interactions_cb", "delete_all", ""];
+            var payload = [];
+            payload.push("[\"" + "interactions_cb" + "\"");
+            payload.push("\"" + "delete_all" + "\"");
+            payload.push("\"\"]");
             document.title = payload;
 		} else {
             var table = document.getElementById(tableID);
@@ -41,7 +47,10 @@ function deleteRow(tableID,currentRow) {
 				var row = table.rows[i];
 				if (row==currentRow.parentNode.parentNode) {
                     // window.alert("delete single row");
-                    var payload = ["interactions_cb", "delete_row", row.cells[1].innerText];
+                    var payload = [];
+                    payload.push("[\"" + "interactions_cb" + "\"");
+                    payload.push("\"" + "delete_row" + "\"");
+                    payload.push("\"" + row.cells[1].innerText + "\"]");
                     document.title = payload;
 					// Delete row
 					table.deleteRow(i);		

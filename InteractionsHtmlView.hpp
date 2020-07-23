@@ -23,7 +23,7 @@ public:
     wxString topNoteHtml();
     wxString footNoteHtml();
     void sendInteractionNotice();
-    void removeFromMedBasketForKey(wxString key);
+    void removeFromMedBasketForKey(std::string key);
     void clearMedBasket();
     
     InteractionsCart *medCart;

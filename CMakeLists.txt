@@ -108,6 +108,11 @@ set( SRCS_DOCTOR
 		SignatureView.cpp SignatureView.hpp
 		)
 
+set( SRCS_JS
+    res/interactions_callbacks.js
+    res/main_callbacks.js
+	)
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
@@ -115,6 +120,7 @@ source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
 source_group(doctor FILES ${SRCS_DOCTOR})
+source_group(javascript FILES ${SRCS_JS})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -129,7 +135,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     DataStore.cpp DataStore.hpp
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
-		${SRCS_DOCTOR}
+		${SRCS_DOCTOR} ${SRCS_JS}
     customURLConnection.cpp customURLConnection.hpp
     )
 
@@ -172,11 +178,11 @@ install(DIRECTORY lang
 
 install(FILES
     "${CMAKE_SOURCE_DIR}/res/amiko_stylesheet.css"
-	"${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
+    "${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
     "${CMAKE_SOURCE_DIR}/res/color-scheme-dark.css"
     "${CMAKE_SOURCE_DIR}/res/fulltext_style.css"
-    "${CMAKE_SOURCE_DIR}/res/interactions_callbacks.js"
     "${CMAKE_SOURCE_DIR}/res/interactions.css"
+    "${CMAKE_SOURCE_DIR}/res/interactions_callbacks.js"
     "${CMAKE_SOURCE_DIR}/res/main_callbacks.js"
 	DESTINATION ${APP_NAME})
 endforeach()

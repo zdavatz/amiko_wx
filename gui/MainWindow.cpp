@@ -14,6 +14,8 @@
 
 #include <sqlite3.h>
 
+#include <nlohmann/json.hpp>
+
 #include "MainWindow.h"
 #include "PatientSheet.h"
 
@@ -1242,15 +1244,9 @@ void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
     wxString str = wxString::FromUTF8(evt.GetString());
     // str now contains the JSON string set in the JavaScript
 
-#ifndef NDEBUG
-    std::clog << __FUNCTION__
-    << " Title changed: <" << str << ">\n"
-    << "myWebView title: <" << myWebView->GetCurrentTitle() << ">\n";
-#endif
+    auto msg = nlohmann::json::parse((const char *)str.c_str());
     
-    wxArrayString msg = wxSplit(str, ',');
-    if (msg.size() == 3) {
-        // interactions
+    if (msg.size() == 3) {              // Interactions
         // 2432
         if (msg[0] == "interactions_cb") {
             if (msg[1] == "notify_interaction")
@@ -1265,11 +1261,12 @@ void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
             updateInteractionsView();
         }
     }
-    else if (msg.size() == 4) {
-        // Full text search
+    else if (msg.size() == 4) {         // Full text search
         // 2447
-        wxString ean = msg[2];
-        wxString anchor = msg[3];
+        // msg[0] is "main_cb"
+        // msg[1] is "display_fachinfo"
+        std::string ean = msg[2];
+        std::string anchor = msg[3];
         if (ean.length() > 0) {
             // 2452
             mCurrentWebView = kExpertInfoView;

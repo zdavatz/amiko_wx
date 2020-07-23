@@ -71,7 +71,8 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     // 300
     currentFileName = filePath;
     
-    nlohmann::json tree;
+    //nlohmann::json tree;
+
     auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
 //    for (auto & element : jsonDict) {
 //        std::clog << "element "  << element << std::endl;
