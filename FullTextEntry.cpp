@@ -22,7 +22,7 @@ wxString FullTextEntry::getRegnrs()
         for (auto s : value)
             regStr += wxString::Format("%s,", s);
 
-        // TODO: std::cout << "key=" << it->first <<" value=" << value;
+        // TODO: std::cout << "key=" << it->first << " value=" << value;
     }
 
     return regStr;

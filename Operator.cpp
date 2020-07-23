@@ -16,17 +16,13 @@ Operator::Operator()
 // 63
 void Operator::importFromDict(OPER_DICT &dict)
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
     title =         dict[KEY_AMK_DOC_TITLE];
     familyName =    dict[KEY_AMK_DOC_SURNAME];
     givenName =     dict[KEY_AMK_DOC_NAME];
     postalAddress = dict[KEY_AMK_DOC_ADDRESS];
     zipCode =       dict[KEY_AMK_DOC_ZIP];
     city =          dict[KEY_AMK_DOC_CITY];
-    country = "";
+    //country = "";
     phoneNumber =   dict[KEY_AMK_DOC_PHONE];
     emailAddress =  dict[KEY_AMK_DOC_EMAIL];
-#endif
 }

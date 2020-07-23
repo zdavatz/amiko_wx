@@ -32,6 +32,7 @@ void InteractionsHtmlView::pushToMedBasket(Medication *med)
     }
 
     wxString title = med->title;
+    std::clog << "Line " << __LINE__ << " title:<" << title << ">" << std::endl;
 
     title.Trim(true);
     title.Trim(false);
@@ -39,13 +40,13 @@ void InteractionsHtmlView::pushToMedBasket(Medication *med)
         title = title.Left(30);
         title += wxT("...");
     }
-    
+
     // Add med to medication basket
     medCart->cart[title] = med;
 }
 
 // 58
-void InteractionsHtmlView::removeFromMedBasketForKey(wxString key)
+void InteractionsHtmlView::removeFromMedBasketForKey(std::string key)
 {
     medCart->cart.erase(key); //removeObjectForKey:key
 }

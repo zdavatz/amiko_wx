@@ -27,7 +27,13 @@ function displayFachinfo(ean, anchor) {
     try {
         if (anchor == 'undefined')
             anchor = '';
-        var payload = ["main_cb", "display_fachinfo", ean, anchor];
+
+        var payload = [];
+        payload.push("[\"" + "main_cb" + "\"");
+        payload.push("\"" + "display_fachinfo" + "\"");
+        payload.push("\"" + ean + "\"");
+        payload.push("\"" + anchor + "\"]");
+
         // Change the title to something that allows you to pass information from JS to C++
         document.title = payload;
     } catch (e) {
