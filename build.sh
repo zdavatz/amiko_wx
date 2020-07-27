@@ -16,7 +16,7 @@ done
 source steps.conf
 source seed.conf
 
-WXWIDGETS_VERSION=3.1.3
+WXWIDGETS_VERSION=3.1.4
 SQLITE_VERSION=3320300
 
 if [ $CONFIG_GENERATOR_XC ] ; then
