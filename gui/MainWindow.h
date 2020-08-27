@@ -38,7 +38,7 @@ class MainWindow : public MainWindowBase
 		void OnSearchPatient( wxCommandEvent& event );
 		void OnTreeBeginLabelEdit( wxTreeEvent& event );
 		void OnTreeEndLabelEdit( wxTreeEvent& event );
-		void OnTreeSelChanged( wxTreeEvent& event );
+		void OnTreeItemMenu( wxTreeEvent& event );
 		void OnNewPrescription( wxCommandEvent& event );
 		void OnCheckForInteractions( wxCommandEvent& event );
 		void OnSavePrescription( wxCommandEvent& event );

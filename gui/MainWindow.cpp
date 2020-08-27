@@ -213,16 +213,17 @@ MainWindow::MainWindow( wxWindow* parent )
 
 #ifndef NDEBUG
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
-    for (int i=1; i <= 8; i++) {
+    for (int i=1; i <= 12; i++) {
         wxTreeItemId med =
         myPrescriptionsTableView->AppendItem(root, wxString::Format("Medicine %d", i));
         myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
 
         myPrescriptionsTableView->AppendItem(med, wxString::Format("GTIN %d", i));
-        myPrescriptionsTableView->AppendItem(med, wxString::Format("Comment %d", i));
+        //myPrescriptionsTableView->AppendItem(med, wxString::Format("Comment %d", i));
     }
 
     myPrescriptionsTableView->ExpandAll();
+    myPrescriptionsTableView->SetIndent(5); // default 15
 #endif
 }
 
@@ -2201,13 +2202,25 @@ void MainWindow::OnTreeEndLabelEdit( wxTreeEvent& event )
         // Wrong table
         return;
     }
-    
+
     std::cerr << __FUNCTION__
     << " TODO: save new comment <" << event.GetLabel() << ">"
     << std::endl;
+
+#if 0 // FIXME: unless we have a breakpoint in the debugger it crashes
+    // If new text is empty remove comment
+    if (event.GetLabel().IsEmpty()) {
+        myPrescriptionsTableView->Delete(event.GetItem());
+        //myPrescriptionsTableView->Refresh();
+        event.Skip();
+        return;
+    }
+#endif
+
 }
 
-void MainWindow::OnTreeSelChanged( wxTreeEvent& event )
+// Context menu for the selected item
+void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
 {
     if (event.GetId() != myPrescriptionsTableView->GetId()) { // wxID_MEDICINE_LIST
         return;
@@ -2216,16 +2229,66 @@ void MainWindow::OnTreeSelChanged( wxTreeEvent& event )
     std::cerr << __FUNCTION__
     << " item " << myPrescriptionsTableView->GetSelection().GetID()
     << std::endl;
-
+    
     wxTreeItemId item = event.GetItem();
-    if (myPrescriptionsTableView->GetItemParent(item) !=
+    wxTreeItemId medItem;
+
+    if (myPrescriptionsTableView->GetItemParent(item) ==
         myPrescriptionsTableView->GetRootItem())
     {
-        // Only pop up the menu if clicked on medicine name
+        medItem = item;
+    }
+    else
+    {
+        medItem = myPrescriptionsTableView->GetItemParent(item);
+    }
+
+    // Context menu
+    wxMenu menu;
+    menu.SetTitle(_("Contextual Menu")); // it doesn't appear
+    menu.Append(wxID_HIGHEST+0, _("Print Label"));
+    menu.Append(wxID_HIGHEST+1, _("Edit Comment"));
+    menu.Append(wxID_HIGHEST+2, _("Delete Package and Comment"));
+//    menu.AppendSeparator();
+//    menu.Append(wxID_CANCEL, _("Cancel"));
+    const int rc = GetPopupMenuSelectionFromUser(menu, wxDefaultPosition);
+    if (rc == wxID_NONE ||
+        rc == wxID_CANCEL)
+    {
         return;
     }
 
-    std::cerr << __FUNCTION__ << " TODO: context menu " << std::endl;
+    //std::clog << "You have selected " << rc - wxID_HIGHEST << std::endl;
+
+    switch (rc - wxID_HIGHEST) {
+        case 0:
+            std::clog << "TODO: Print label\n";
+            break;
+            
+        case 1: // Edit comment
+        {
+            // If the comment is not there, add it
+            int childrenCount = myPrescriptionsTableView->GetChildrenCount(medItem);
+            std::clog << "med has " << childrenCount << " children" << std::endl;
+            if (childrenCount == 1) // only GTIN so far
+                myPrescriptionsTableView->AppendItem(medItem, wxEmptyString);
+
+            wxTreeItemIdValue cookie; // For GetNextChild()
+            wxTreeItemId gtinItem = myPrescriptionsTableView->GetFirstChild(medItem, cookie);
+            wxTreeItemId commentItem = myPrescriptionsTableView->GetNextChild(medItem, cookie);
+            (void)myPrescriptionsTableView->EditLabel(commentItem);
+        }
+            break;
+            
+        case 2: // Delete
+            if (medItem.IsOk())
+                myPrescriptionsTableView->Delete(medItem);
+
+            break;
+            
+        default:
+            break;
+    }
 }
 
 // 1380
@@ -2279,7 +2342,7 @@ void MainWindow::OnSendPrescription( wxCommandEvent& event )
 // Here in amiko-wx
 //      'myTableView' is handled elsewhere, see OnHtmlCellClicked()
 //      'mySectionTitles' handled here
-//      'myPrescriptionsTableView' handled in OnTreeSelChanged()
+//      'myPrescriptionsTableView' handled in OnTreeItemMenu()
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES

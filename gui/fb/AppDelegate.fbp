@@ -1941,7 +1941,7 @@
                                                                 <property name="resize">Resizable</property>
                                                                 <property name="show">1</property>
                                                                 <property name="size">-1,340</property>
-                                                                <property name="style">wxTR_EDIT_LABELS|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_NO_LINES|wxTR_SINGLE</property>
+                                                                <property name="style">wxTR_EDIT_LABELS|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_SINGLE</property>
                                                                 <property name="subclass">; ; forward_declare</property>
                                                                 <property name="toolbar_pane">0</property>
                                                                 <property name="tooltip"></property>
@@ -1950,7 +1950,7 @@
                                                                 <property name="window_style"></property>
                                                                 <event name="OnTreeBeginLabelEdit">OnTreeBeginLabelEdit</event>
                                                                 <event name="OnTreeEndLabelEdit">OnTreeEndLabelEdit</event>
-                                                                <event name="OnTreeSelChanged">OnTreeSelChanged</event>
+                                                                <event name="OnTreeItemMenu">OnTreeItemMenu</event>
                                                             </object>
                                                         </object>
                                                         <object class="sizeritem" expanded="0">
