@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Jun  5 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Aug 24 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -30,6 +30,9 @@ BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
 	EVT_BUTTON( wxID_FI_FIND_NEXT, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_BUTTON( wxID_FI_FIND_DONE, MainWindowBase::_wxFB_OnPerformFindAction )
 	EVT_BUTTON( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnSearchPatient )
+	EVT_TREE_BEGIN_LABEL_EDIT( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeBeginLabelEdit )
+	EVT_TREE_END_LABEL_EDIT( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeEndLabelEdit )
+	EVT_TREE_SEL_CHANGED( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeSelChanged )
 	EVT_BUTTON( wxID_NEW_PRESCRIPTION, MainWindowBase::_wxFB_OnNewPrescription )
 	EVT_BUTTON( wxID_CHECK_INTERACTIONS, MainWindowBase::_wxFB_OnCheckForInteractions )
 	EVT_BUTTON( wxID_SAVE_PRESCRIPTION, MainWindowBase::_wxFB_OnSavePrescription )
@@ -194,7 +197,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer7->Add( bSizer10, 1, wxEXPAND, 5 );
 
-	myPrescriptionsTableView = new wxDataViewCtrl( panel_rezept, wxID_ANY, wxDefaultPosition, wxSize( -1,340 ), 0 );
+	myPrescriptionsTableView = new wxTreeCtrl( panel_rezept, wxID_MEDICINE_LIST, wxDefaultPosition, wxSize( -1,340 ), wxTR_EDIT_LABELS|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT|wxTR_NO_LINES|wxTR_SINGLE );
 	bSizer7->Add( myPrescriptionsTableView, 0, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer13;
