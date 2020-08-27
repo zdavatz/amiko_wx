@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Jun  5 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Aug 24 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -27,8 +27,9 @@
 #include <wx/webview.h>
 #include <wx/textctrl.h>
 #include <wx/bmpbuttn.h>
-#include <wx/dataview.h>
+#include <wx/treectrl.h>
 #include <wx/simplebook.h>
+#include <wx/dataview.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
@@ -55,26 +56,27 @@
 #define wxID_FI_FIND_DONE 1011
 #define wxID_FI_WEBVIEW 1012
 #define wxID_PATIENT_SEARCH 1013
-#define wxID_NEW_PRESCRIPTION 1014
-#define wxID_CHECK_INTERACTIONS 1015
-#define wxID_SAVE_PRESCRIPTION 1016
-#define wxID_SEND_PRESCRIPTION 1017
-#define wxID_SECTION_TITLES 1018
-#define wxID_TB_COMPENDIUM 1019
-#define wxID_TB_FAVORITES 1020
-#define wxID_TB_INTERACTIONS 1021
-#define wxID_TB_PRESCRIPTION 1022
-#define wxID_EXPORT_WORDLIST 1023
-#define wxID_FI_FIND_SHOW 1024
-#define wxID_UPDATE_DB 1025
-#define wxID_LOAD_DB 1026
-#define wxID_LOAD_PRESCRIPTION 1027
-#define wxID_SET_OPERATOR_ID 1028
-#define wxID_RB_SEX 1029
-#define wxID_SAVE_PATIENT 1030
-#define wxID_CLEAR_SIGNATURE 1031
-#define wxID_LOAD_SIGNATURE 1032
-#define wxID_SAVE_OPERATOR 1033
+#define wxID_MEDICINE_LIST 1014
+#define wxID_NEW_PRESCRIPTION 1015
+#define wxID_CHECK_INTERACTIONS 1016
+#define wxID_SAVE_PRESCRIPTION 1017
+#define wxID_SEND_PRESCRIPTION 1018
+#define wxID_SECTION_TITLES 1019
+#define wxID_TB_COMPENDIUM 1020
+#define wxID_TB_FAVORITES 1021
+#define wxID_TB_INTERACTIONS 1022
+#define wxID_TB_PRESCRIPTION 1023
+#define wxID_EXPORT_WORDLIST 1024
+#define wxID_FI_FIND_SHOW 1025
+#define wxID_UPDATE_DB 1026
+#define wxID_LOAD_DB 1027
+#define wxID_LOAD_PRESCRIPTION 1028
+#define wxID_SET_OPERATOR_ID 1029
+#define wxID_RB_SEX 1030
+#define wxID_SAVE_PATIENT 1031
+#define wxID_CLEAR_SIGNATURE 1032
+#define wxID_LOAD_SIGNATURE 1033
+#define wxID_SAVE_OPERATOR 1034
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -90,6 +92,9 @@ class MainWindowBase : public wxFrame
 		void _wxFB_OnSearchFiNow( wxCommandEvent& event ){ OnSearchFiNow( event ); }
 		void _wxFB_OnPerformFindAction( wxCommandEvent& event ){ OnPerformFindAction( event ); }
 		void _wxFB_OnSearchPatient( wxCommandEvent& event ){ OnSearchPatient( event ); }
+		void _wxFB_OnTreeBeginLabelEdit( wxTreeEvent& event ){ OnTreeBeginLabelEdit( event ); }
+		void _wxFB_OnTreeEndLabelEdit( wxTreeEvent& event ){ OnTreeEndLabelEdit( event ); }
+		void _wxFB_OnTreeSelChanged( wxTreeEvent& event ){ OnTreeSelChanged( event ); }
 		void _wxFB_OnNewPrescription( wxCommandEvent& event ){ OnNewPrescription( event ); }
 		void _wxFB_OnCheckForInteractions( wxCommandEvent& event ){ OnCheckForInteractions( event ); }
 		void _wxFB_OnSavePrescription( wxCommandEvent& event ){ OnSavePrescription( event ); }
@@ -131,6 +136,7 @@ class MainWindowBase : public wxFrame
 		wxTextCtrl* m_textCtrl1;
 		wxTextCtrl* m_textCtrl2;
 		wxBitmapButton* m_bpButton1;
+		wxTreeCtrl* myPrescriptionsTableView;
 		wxButton* btnNewPrescription;
 		wxButton* btnCheckInter;
 		wxButton* btnSave;
@@ -156,6 +162,9 @@ class MainWindowBase : public wxFrame
 		virtual void OnSearchFiNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPerformFindAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSearchPatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeBeginLabelEdit( wxTreeEvent& event ) { event.Skip(); }
+		virtual void OnTreeEndLabelEdit( wxTreeEvent& event ) { event.Skip(); }
+		virtual void OnTreeSelChanged( wxTreeEvent& event ) { event.Skip(); }
 		virtual void OnNewPrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckForInteractions( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePrescription( wxCommandEvent& event ) { event.Skip(); }
@@ -178,7 +187,6 @@ class MainWindowBase : public wxFrame
 		wxPanel* myTextFinder;
 		wxStaticText* fiSearchCount;
 		wxStaticText* myPlaceDateField;
-		wxDataViewCtrl* myPrescriptionsTableView;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;

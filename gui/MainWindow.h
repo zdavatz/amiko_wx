@@ -36,18 +36,21 @@ class MainWindow : public MainWindowBase
 		void OnSearchFiNow( wxCommandEvent& event );
 		void OnPerformFindAction( wxCommandEvent& event );
 		void OnSearchPatient( wxCommandEvent& event );
+		void OnTreeBeginLabelEdit( wxTreeEvent& event );
+		void OnTreeEndLabelEdit( wxTreeEvent& event );
+		void OnTreeSelChanged( wxTreeEvent& event );
 		void OnNewPrescription( wxCommandEvent& event );
 		void OnCheckForInteractions( wxCommandEvent& event );
 		void OnSavePrescription( wxCommandEvent& event );
 		void OnSendPrescription( wxCommandEvent& event );
 		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
+		void OnExportWordListSearchResults( wxCommandEvent& event );
 		void OnPrintDocument( wxCommandEvent& event );
 		void OnShowAboutPanel( wxCommandEvent& event );
 		void OnUpdateAipsDatabase( wxCommandEvent& event );
 		void OnLoadAipsDatabase( wxCommandEvent& event );
-        void OnExportWordListSearchResults( wxCommandEvent& event );
-        void OnLoadPrescription( wxCommandEvent& event );
+		void OnLoadPrescription( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );
 		void OnSetOperatorIdentity( wxCommandEvent& event );
 	public:

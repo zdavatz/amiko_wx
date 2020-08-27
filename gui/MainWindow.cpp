@@ -210,6 +210,20 @@ MainWindow::MainWindow( wxWindow* parent )
     // 381
     // TODO:
     //healthCard = new HealthCard;
+
+#ifndef NDEBUG
+    wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
+    for (int i=1; i <= 8; i++) {
+        wxTreeItemId med =
+        myPrescriptionsTableView->AppendItem(root, wxString::Format("Medicine %d", i));
+        myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
+
+        myPrescriptionsTableView->AppendItem(med, wxString::Format("GTIN %d", i));
+        myPrescriptionsTableView->AppendItem(med, wxString::Format("Comment %d", i));
+    }
+
+    myPrescriptionsTableView->ExpandAll();
+#endif
 }
 
 // Purpose: access the search state from TableViewDelegate
@@ -587,7 +601,7 @@ void MainWindow::switchTabs(int item)
             // 1850
             stopProgressIndicator();
             setSearchState(kss_Title, wxID_BTN_PREPARATION);
-            pushToMedBasket(mMed);
+            pushToMedBasket(mMed);  // TODO : check amiko-osx issue #85
             updateInteractionsView();
             
             // 1854
@@ -1468,10 +1482,7 @@ void MainWindow::updatePrescriptionsView()
     if (!placeDate.IsEmpty())
         myPlaceDateField->SetLabel(placeDate);
 
-#if 0    // TODO:
-    myPrescriptionsTableView->reloadData();
-#endif
-
+    myPrescriptionsTableView->Refresh(); // TODO: reloadData
     mPrescriptionMode = true;
 
     // TODO: m_tbMain-> //myToolbar->setSelectedItemIdentifier("Rezept");
@@ -2113,6 +2124,8 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 // Called when the text changes in the search control
 void MainWindow::OnSearchFiNow( wxCommandEvent& event )
 {
+    // TODO: make sure the Prescription view is not the current one
+
     wxString find_text = fiSearchField->GetValue();
     
     if (find_text.IsEmpty())
@@ -2156,6 +2169,63 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
 void MainWindow::OnSearchPatient( wxCommandEvent& event )
 {
     OnManagePatients(event);
+}
+
+void MainWindow::OnTreeBeginLabelEdit( wxTreeEvent& event )
+{
+    if (event.GetId() != myPrescriptionsTableView->GetId()) { // wxID_MEDICINE_LIST
+        // Wrong tree
+        return;
+    }
+    
+    wxTreeItemId item = event.GetItem();
+    wxTreeItemId parent = myPrescriptionsTableView->GetItemParent(item);
+    if (parent == myPrescriptionsTableView->GetRootItem()) {
+        // Don't allow editing medicine name
+        event.Veto();
+        return;
+    }
+
+    wxTreeItemIdValue cookie; // For GetNextChild()
+    wxTreeItemId firstChild = myPrescriptionsTableView->GetFirstChild(parent, cookie);
+    if (item == firstChild) {
+        // Don't allow editing GTIN (first child)
+        event.Veto();
+        return;
+    }
+}
+
+void MainWindow::OnTreeEndLabelEdit( wxTreeEvent& event )
+{
+    if (event.GetId() != myPrescriptionsTableView->GetId()) { // wxID_MEDICINE_LIST
+        // Wrong table
+        return;
+    }
+    
+    std::cerr << __FUNCTION__
+    << " TODO: save new comment <" << event.GetLabel() << ">"
+    << std::endl;
+}
+
+void MainWindow::OnTreeSelChanged( wxTreeEvent& event )
+{
+    if (event.GetId() != myPrescriptionsTableView->GetId()) { // wxID_MEDICINE_LIST
+        return;
+    }
+
+    std::cerr << __FUNCTION__
+    << " item " << myPrescriptionsTableView->GetSelection().GetID()
+    << std::endl;
+
+    wxTreeItemId item = event.GetItem();
+    if (myPrescriptionsTableView->GetItemParent(item) !=
+        myPrescriptionsTableView->GetRootItem())
+    {
+        // Only pop up the menu if clicked on medicine name
+        return;
+    }
+
+    std::cerr << __FUNCTION__ << " TODO: context menu " << std::endl;
 }
 
 // 1380
@@ -2209,7 +2279,7 @@ void MainWindow::OnSendPrescription( wxCommandEvent& event )
 // Here in amiko-wx
 //      'myTableView' is handled elsewhere, see OnHtmlCellClicked()
 //      'mySectionTitles' handled here
-//      'myPrescriptionsTableView' yet to be implemented
+//      'myPrescriptionsTableView' handled in OnTreeSelChanged()
 void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
 {
     if (event.GetId() != mySectionTitles->GetId()) { // wxID_SECTION_TITLES
