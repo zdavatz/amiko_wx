@@ -9,6 +9,7 @@
 #include <wx/wx.h>
 
 class Medication;
+class DataObject;
 
 class ItemCellView
 {
@@ -17,17 +18,27 @@ public:
     virtual ~ItemCellView() {}
     
     void selectBasket(int cartNumber);
-    void tableViewSelectionDidChange();
+    void tableViewSelectionDidChange(int row, int packageIndex, DataObject *dobj);
     
     // 32
-    Medication *selectedMedi;
+    DataObject *selectedMedi;
+    wxString packagesStr;
     
+    // 35
+    bool showContextualMenu;
+    
+    // .m 36
+    wxArrayString listOfPackages;
+
     // .m 38
     wxString selectedPackage;
     
 private:
     // private constructor so that it can not be called
-    ItemCellView() : selectedMedi(nullptr) {}
+    ItemCellView()
+    : selectedMedi(nullptr)
+    , showContextualMenu(true)
+    {}
     
     static ItemCellView* m_pInstance;
 };

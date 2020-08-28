@@ -6,8 +6,13 @@
 
 #include <iostream>
 
+#include <wx/wx.h>
+#include <wx/window.h>
+
 #include "ItemCellView.hpp"
 #include "PrescriptionItem.hpp"
+#include "DataObject.hpp"
+#include "MainWindow.h"
 
 ItemCellView* ItemCellView::m_pInstance;
 
@@ -22,103 +27,121 @@ ItemCellView* ItemCellView::Instance()
 }
 
 // 148
-void ItemCellView::tableViewSelectionDidChange() // NSNotification *)notification
+void ItemCellView::tableViewSelectionDidChange(int row, int packageIndex, DataObject *dobj) // NSNotification *notification
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::clog << __FUNCTION__
+    << " row:" << row
+    << " packageIndex:" << packageIndex
+    << std::endl;
     
-#if 0
-    // TODO: if ([notification object] == self.packagesView)
-    {
-        if (showContextualMenu) {
-            NSInteger row = [[notification object] selectedRow];
-            if (row < [listOfPackages count]) {
-                // Generates contextual menu
-                NSMenu *ctxtMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
-                selectedPackage = listOfPackages[row];
-                [ctxtMenu insertItemWithTitle:selectedPackage action:nil keyEquivalent:@"" atIndex:0];
+//    if ([notification object] != self.packagesView)
+//        return;
 
-                // Populate all menu items
-                NSMenuItem *menuItem = [ctxtMenu insertItemWithTitle: NSLocalizedString(@"Prescription", nil)
-                                                              action: @selector(selectBasket:)
-                                                       keyEquivalent: @""
-                                                             atIndex: 1];
-                [menuItem setRepresentedObject:[NSNumber numberWithInt:0]];
-                /*
-                 menuItem = [ctxtMenu insertItemWithTitle:@"Rezept 2" action:@selector(selectBasket:) keyEquivalent:@"" atIndex:2];
-                 [menuItem setRepresentedObject:[NSNumber numberWithInt:1]];
-                 menuItem = [ctxtMenu insertItemWithTitle:@"Rezept 3" action:@selector(selectBasket:) keyEquivalent:@"" atIndex:3];
-                 [menuItem setRepresentedObject:[NSNumber numberWithInt:2]];
-                 */
-                // Place menu on the screen
-                [ctxtMenu popUpMenuPositioningItem:nil atLocation:[NSEvent mouseLocation] inView:nil];
-            }
-        }
-        [self.packagesView reloadData];
+    if (!showContextualMenu)
+        return;
+
+    // 156
+    listOfPackages = wxSplit(wxString(dobj->subTitle), '\n');
+
+    // Validate index
+    if (packageIndex >= listOfPackages.size()) {
+        std::clog << __FUNCTION__ << " Select cell first" << std::endl;
+        return;
     }
-#endif
+
+    // 154
+    // Generates contextual menu
+    wxMenu menu;
+    menu.SetTitle(_("Contextual Menu")); // Not visible
+
+    selectedPackage = listOfPackages[packageIndex];
+
+    // 159
+    // Populate all menu items
+    menu.Append(wxID_HIGHEST+0, wxString::Format("%s", selectedPackage));
+    menu.Append(wxID_HIGHEST+1, _("Prescription"));
+    // TODO: maybe add 2 more prescription carts
+
+    // 171
+    // Place menu on the screen
+    wxWindow* win = wxTheApp->GetTopWindow();
+    const int rc = win->GetPopupMenuSelectionFromUser(menu, wxDefaultPosition);
+    if ( rc != wxID_NONE )
+    {
+        std::clog << "You have selected \"%d\"" << rc - wxID_HIGHEST << std::endl;
+        ItemCellView::Instance()->selectBasket(1);
+    }
+
+    // TODO: [self.packagesView reloadData];
 }
 
 // 179
 void ItemCellView::selectBasket(int cartNumber)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 
-#if 0
     if (selectedPackage.length() > 0 && selectedMedi)
     {
-        NSNumber *selectedBasket = (NSNumber *)[sender representedObject];
-        int n = [selectedBasket intValue];
-        
-        // Note: could be replaced by a target-action design pattern (less clear, IMHO)
-        NSResponder* r = [self nextResponder];
-        while (![r isKindOfClass: [MLMainWindowController class]])
-            r = [r nextResponder];
+        // 183
+        int n = 0; // TODO: confirm always 0 ? See line 164
 
-        MainWindowController* vc = (MLMainWindowController*)r;
-        
+        // 190
+        MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+
         // 192
         PrescriptionItem *item = new PrescriptionItem;
         item->fullPackageInfo = selectedPackage;
-        item->mid = selectedMedi.medId;
+        item->mid = selectedMedi->medId;
 
         // 196
         // Extract EAN/GTIN
-        Medication *m = getShortMediWithId(selectedMedi->medId); //[vc getShortMediWithId:[selectedMedi medId]];
+        Medication *m = vc->getShortMediWithId(selectedMedi->medId);
         if (m) {
-            NSArray *listOfPackInfos = [[m packInfo] componentsSeparatedByString:@"\n"];
-            NSArray *listOfPacks = [[m packages] componentsSeparatedByString:@"\n"];
+            // 199
+            wxArrayString listOfPackInfos = wxSplit(wxString(m->packInfo), '\n'); // componentsSeparatedByString
+            wxArrayString listOfPacks = wxSplit(wxString(m->packages), '\n');
+
             wxString eanCode;
-            NSInteger row = 0;
+            int row = 0;
             for (wxString s : listOfPackInfos) {
-                if ([s containsString:selectedPackage]) {
-                    wxString package = [listOfPacks objectAtIndex:row];
-                    NSArray *p = [package componentsSeparatedByString:@"|"];
-                    eanCode = [p objectAtIndex:9];
+                if (s.Contains(selectedPackage)) {
+                    wxString package = listOfPacks[row];
+
+                    wxArrayString p = wxSplit(package, '|');
+
+                    //NSArray *p = [package componentsSeparatedByString:@"|"];
+                    eanCode = p[9];
                     break;
                 }
                 row++;
             }
-            item.eanCode = eanCode;
+            item->eanCode = eanCode;
         }
-        
-        NSArray *titleComponents = [selectedPackage componentsSeparatedByString:@"["];
-        titleComponents = [titleComponents[0] componentsSeparatedByString:@","];
-        if ([titleComponents count]>0) {
-            item.title = titleComponents[0];
-            if ([titleComponents count]>2) {
-                item.price = [NSString stringWithFormat:@"%@ CHF", titleComponents[2]];
-                item.price = [item.price stringByReplacingOccurrencesOfString:@"ev.nn.i.H. " withString:@""];
-                item.price = [item.price stringByReplacingOccurrencesOfString:@"PP " withString:@""];
-            } else {
-                item.price = @"";
+
+        // 215
+        wxArrayString titleComponents = wxSplit(selectedPackage, '[');
+        titleComponents = wxSplit(titleComponents[0], ',');
+
+        //titleComponents = [titleComponents[0] componentsSeparatedByString:@","];
+        if (titleComponents.size() > 0) {
+            item->title = titleComponents[0];
+            if (titleComponents.size() > 2) {
+                wxString price = wxString::Format("%s CHF", titleComponents[2]);
+                price.Replace("ev.nn.i.H. ", ""); // stringByReplacingOccurrencesOfString
+                price.Replace("PP ", "");
+                item->price = price;
             }
-            [vc addItem:item toPrescriptionCartWithId:n];
+            else {
+                item->price.clear();
+            }
+
+            // 226
+            vc->addItem_toPrescriptionCartWithId(item, n);
         }
-    }
-#endif
-    
+
 #if 0
-    // TODO: (not in amiko-osx) deallocate objects
-    delete item;
+        // TODO: (not in amiko-osx) deallocate objects
+        delete item;
 #endif
+    }
 }

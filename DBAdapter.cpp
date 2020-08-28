@@ -387,7 +387,7 @@ Medication * DBAdapter::cursorToShortMedInfo(ONE_SQL_RESULT &cursor)
         medi->customerId = cursor[kCustomerId].u.i;
 
     medi->packInfo = cursor[kPackInfo].u.c;
-//    [medi setPackages:(NSString *)[cursor objectAtIndex:kPackages]];
+    medi->packages = cursor[kPackages].u.c;
 
     return medi;
 }

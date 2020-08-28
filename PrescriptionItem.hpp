@@ -30,6 +30,7 @@ public:
     std::string title;
 
     // 37
+    std::string price;
     std::string comment;
     Medication *med;
 };
