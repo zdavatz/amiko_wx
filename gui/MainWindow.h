@@ -21,6 +21,7 @@ class Medication;
 class FullTextEntry;
 class TableViewDelegate;
 class PrescriptionsAdapter;
+class PrescriptionItem;
 class PatientSheet;
 class OperatorIDSheet;
 class FullTextSearch;
@@ -92,7 +93,11 @@ private:
     void saveFavorites();
     void loadFavorites(DataStore *favorites);
     void tappedOnStar(int row);
+public:
     Medication * getShortMediWithId(long mid);
+    void storeAllPrescriptionComments();
+    void addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n);
+private:
     void setOperatorID();
     void savePrescription();
     wxArrayString csvGetInputListFromFile();

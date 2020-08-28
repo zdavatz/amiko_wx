@@ -8,6 +8,7 @@
 
 #include "PrescriptionsCart.hpp"
 #include "InteractionsCart.hpp"
+#include "PrescriptionItem.hpp"
 
 PrescriptionsCart::PrescriptionsCart()
 {
@@ -23,6 +24,22 @@ void PrescriptionsCart::makeNewUniqueHash()
 #else
     uniqueHash = [[NSUUID UUID] UUIDString];
 #endif
+}
+
+// 66
+void PrescriptionsCart::addItemToCart(PrescriptionItem *item)
+{
+    //if (cart)
+    {
+        cart.push_back(item);
+
+#if 0 // TODO: define interactionsCart->cart as a std::map ?
+        // Add item to interactions cart
+        interactionsCart->cart.setObject_forKey(item->med, item->title);
+#endif
+
+        std::clog << "Num med in basket: " << cartId << " -> " << cart.size() << std::endl;
+    }
 }
 
 // 82

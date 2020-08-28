@@ -7,6 +7,7 @@
 #include "TableViewDelegate.hpp"
 #include "DataObject.hpp"
 #include "MainWindow.h"
+#include "ItemCellView.hpp"
 
 extern bool searchStateFullText();
 

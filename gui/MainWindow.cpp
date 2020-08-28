@@ -211,8 +211,9 @@ MainWindow::MainWindow( wxWindow* parent )
     // TODO:
     //healthCard = new HealthCard;
 
-#ifndef NDEBUG
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
+
+#if 0 //ndef NDEBUG
     for (int i=1; i <= 12; i++) {
         wxTreeItemId med =
         myPrescriptionsTableView->AppendItem(root, wxString::Format("Medicine %d", i));
@@ -221,10 +222,10 @@ MainWindow::MainWindow( wxWindow* parent )
         myPrescriptionsTableView->AppendItem(med, wxString::Format("GTIN %d", i));
         //myPrescriptionsTableView->AppendItem(med, wxString::Format("Comment %d", i));
     }
+#endif
 
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
-#endif
 }
 
 // Purpose: access the search state from TableViewDelegate
@@ -1562,6 +1563,92 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
     mySectionTitles_reloadData(); // reloadData
 }
 
+// 2635
+// Also, possibly set the flag for a modified prescription
+void MainWindow::storeAllPrescriptionComments()
+{
+    // Get all comments
+    wxArrayString comments;
+    
+    wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
+    if (!rootItem.IsOk())
+        return;
+
+    int numRows = myPrescriptionsTableView->GetChildrenCount(rootItem, false);
+
+    // 2640
+    wxTreeItemIdValue cookie;
+    for (wxTreeItemId medItem = myPrescriptionsTableView->GetFirstChild(rootItem, cookie);
+         medItem.IsOk();
+         medItem = myPrescriptionsTableView->GetNextChild(rootItem, cookie))
+    {
+        int childrenCount = myPrescriptionsTableView->GetChildrenCount( medItem, false);
+        if (childrenCount == 2) {
+            wxTreeItemIdValue subCookie;
+            wxTreeItemId gtinItem = myPrescriptionsTableView->GetFirstChild(medItem, subCookie);
+            wxTreeItemId commentItem = myPrescriptionsTableView->GetNextChild(medItem, subCookie);
+            
+            // 2643
+            comments.Add(myPrescriptionsTableView->GetItemText(commentItem));
+        }
+        else
+            comments.Add(wxEmptyString);
+    }
+
+    // 2646
+    int row = 0;
+    for (PrescriptionItem *item : mPrescriptionsCart[0].cart) {
+        if (row < numRows) {
+            std::cerr << __LINE__
+            << " <" << item->comment
+            << "> <" << comments[row] << ">"
+            << std::endl;
+
+            if (item->comment != comments[row]) {
+                item->comment = comments[row];
+                modifiedPrescription = true;
+            }
+        }
+
+        row++;
+    }
+}
+
+// 2660
+void MainWindow::addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n)
+{
+    if (n < NUM_ACTIVE_PRESCRIPTIONS)
+    {
+        //if (!mPrescriptionsCart[n].cart)
+        {
+            //mPrescriptionsCart[n].cart = [[NSMutableArray alloc] init];
+            mPrescriptionsCart[n].cartId = n;
+        }
+
+        // Get all prescription comments from table
+        storeAllPrescriptionComments();
+
+        // Get medi
+        item->med = mDb->getShortMediWithId(item->mid);
+        mPrescriptionsCart[n].addItemToCart(item);
+
+#if 1 // not in amiko-osx
+        wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
+        wxTreeItemId med =
+        myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
+        myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
+
+        myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
+        myPrescriptionsTableView->ExpandAll();
+#else
+        myPrescriptionsTableView->Refresh(); //reloadData();
+#endif
+
+        modifiedPrescription = true;
+        updateButtons();
+    }
+}
+
 // 3047
 void MainWindow::updateButtons()
 {
@@ -2263,6 +2350,7 @@ void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
     switch (rc - wxID_HIGHEST) {
         case 0:
             std::clog << "TODO: Print label\n";
+            // amiko-osx printMedicineLabel
             break;
             
         case 1: // Edit comment
@@ -2281,6 +2369,7 @@ void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
             break;
             
         case 2: // Delete
+            // amiko-osx removeItemFromPrescription
             if (medItem.IsOk())
                 myPrescriptionsTableView->Delete(medItem);
 
@@ -2643,7 +2732,8 @@ void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
 
 // 2917
 // Handler for EVT_HTML_CELL_CLICKED
-// See tableViewSelectionDidChange
+// See MLMainWindowController.m:2783 tableView:viewForTableColumn:row:
+// See MLMainWindowController.m:2917 tableViewSelectionDidChange
 // FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 {
@@ -2654,6 +2744,21 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     }
 
     int row = myTableView->GetSelection();
+    
+    {
+        // 2789
+        ItemCellView* cellView = ItemCellView::Instance();
+        
+        // 2792
+        cellView->selectedMedi = doArray[row];
+        cellView->packagesStr = doArray[row]->subTitle;
+        if (mCurrentSearchState == kss_Title)
+            cellView->showContextualMenu = true;
+        else
+            cellView->showContextualMenu = false;
+        
+        // TODO: cellView->packagesView.Refresh()
+    }
 
     wxPoint absPosCell = event.GetCell()->GetAbsPos();
     wxPoint eventPoint = event.GetPoint();
@@ -2723,7 +2828,8 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     event.Skip();
 }
 
-// MLItemCellView.m:148 tableViewSelectionDidChange
+// amiko-osx MLItemCellView.m:148 tableViewSelectionDidChange
+// amiko-ios MLViewController.m:3146 myLongPressMethod
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
     int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
@@ -2737,37 +2843,10 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     << std::endl;
 #endif
 
-    // TODO: find the row number
+    // Find the row number
     int row = myTableView->GetSelection(); // TODO: this is not reliable
-
-    // Popup menu to add medicine to any of 3 prescription carts
-
-    // 155
-    wxMenu menu;
-    menu.SetTitle(_("Contextual Menu")); // it doesn't appear
-    
-    // 156
     DataObject *dobj = myTableView->searchRes[row];
-    wxArrayString listOfPackages = wxSplit(wxString(dobj->subTitle), '\n');
-
-    // Validate index
-    if (packageIndex >= listOfPackages.size()) {
-        std::clog << __FUNCTION__ << " Select cell first" << std::endl;
-        return;
-    }
-
-    wxString selectedPackage = listOfPackages[packageIndex];
-    
-    menu.Append(wxID_HIGHEST+0, wxString::Format("%s", selectedPackage));
-    menu.Append(wxID_HIGHEST+1, _("Prescription"));
-    // TODO: maybe add 2 more prescription carts
-
-    const int rc = GetPopupMenuSelectionFromUser(menu, wxDefaultPosition);
-    if ( rc != wxID_NONE )
-    {
-        std::clog << "You have selected \"%d\"" << rc - wxID_HIGHEST << std::endl;
-        ItemCellView::Instance()->selectBasket(1);
-    }
+    ItemCellView::Instance()->tableViewSelectionDidChange(row, packageIndex, dobj);
 
     event.Skip();
 }

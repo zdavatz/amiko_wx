@@ -23,8 +23,10 @@ public:
     
     void clearCart();
     void makeNewUniqueHash();
+    void addItemToCart(PrescriptionItem *item);
     
     // 31
+    int cartId;
     std::vector<PrescriptionItem *> cart;
     wxString uniqueHash;
     
