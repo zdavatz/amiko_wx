@@ -94,7 +94,7 @@ class MainWindowBase : public wxFrame
 		void _wxFB_OnSearchPatient( wxCommandEvent& event ){ OnSearchPatient( event ); }
 		void _wxFB_OnTreeBeginLabelEdit( wxTreeEvent& event ){ OnTreeBeginLabelEdit( event ); }
 		void _wxFB_OnTreeEndLabelEdit( wxTreeEvent& event ){ OnTreeEndLabelEdit( event ); }
-		void _wxFB_OnTreeSelChanged( wxTreeEvent& event ){ OnTreeSelChanged( event ); }
+		void _wxFB_OnTreeItemMenu( wxTreeEvent& event ){ OnTreeItemMenu( event ); }
 		void _wxFB_OnNewPrescription( wxCommandEvent& event ){ OnNewPrescription( event ); }
 		void _wxFB_OnCheckForInteractions( wxCommandEvent& event ){ OnCheckForInteractions( event ); }
 		void _wxFB_OnSavePrescription( wxCommandEvent& event ){ OnSavePrescription( event ); }
@@ -164,7 +164,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnSearchPatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeBeginLabelEdit( wxTreeEvent& event ) { event.Skip(); }
 		virtual void OnTreeEndLabelEdit( wxTreeEvent& event ) { event.Skip(); }
-		virtual void OnTreeSelChanged( wxTreeEvent& event ) { event.Skip(); }
+		virtual void OnTreeItemMenu( wxTreeEvent& event ) { event.Skip(); }
 		virtual void OnNewPrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckForInteractions( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePrescription( wxCommandEvent& event ) { event.Skip(); }
