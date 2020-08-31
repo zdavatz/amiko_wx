@@ -32,6 +32,7 @@ class MainWindow : public MainWindowBase
 {
 	protected:
 		// Handlers for MainWindowBase events.
+		void OnUpdateUI( wxUpdateUIEvent& event );
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
 		void OnSearchFiNow( wxCommandEvent& event );
@@ -89,7 +90,7 @@ private:
     void updatePrescriptionHistory();
     void updateFullTextSearchView(wxString contentStr);
     void finishedDownloading();
-    void updateButtons();
+    //void updateButtons(); // __deprecated The framework will call OnUpdateUI() instead
     void saveFavorites();
     void loadFavorites(DataStore *favorites);
     void tappedOnStar(int row);

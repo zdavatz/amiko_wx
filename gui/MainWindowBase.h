@@ -87,6 +87,7 @@ class MainWindowBase : public wxFrame
 	private:
 
 		// Private event handlers
+		void _wxFB_OnUpdateUI( wxUpdateUIEvent& event ){ OnUpdateUI( event ); }
 		void _wxFB_OnSearchNow( wxCommandEvent& event ){ OnSearchNow( event ); }
 		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
 		void _wxFB_OnSearchFiNow( wxCommandEvent& event ){ OnSearchFiNow( event ); }
@@ -133,14 +134,10 @@ class MainWindowBase : public wxFrame
 		wxPanel* panel_inter;
 		wxPanel* panel_rezept;
 		wxButton* m_button7;
-		wxTextCtrl* m_textCtrl1;
-		wxTextCtrl* m_textCtrl2;
 		wxBitmapButton* m_bpButton1;
 		wxTreeCtrl* myPrescriptionsTableView;
 		wxButton* btnNewPrescription;
 		wxButton* btnCheckInter;
-		wxButton* btnSave;
-		wxButton* btnSend;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
@@ -157,6 +154,7 @@ class MainWindowBase : public wxFrame
 		wxMenu* m_menuHelp;
 
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSearchFiNow( wxCommandEvent& event ) { event.Skip(); }
@@ -186,7 +184,11 @@ class MainWindowBase : public wxFrame
 		wxBoxSizer* fiSizer;
 		wxPanel* myTextFinder;
 		wxStaticText* fiSearchCount;
+		wxTextCtrl* myPatientAddressTextField;
 		wxStaticText* myPlaceDateField;
+		wxTextCtrl* myOperatorIDTextField;
+		wxButton* saveButton;
+		wxButton* sendButton;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;

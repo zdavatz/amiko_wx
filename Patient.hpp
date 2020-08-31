@@ -27,6 +27,11 @@
 
 #define PAT_DICT            std::map<std::string, std::string>
 
+enum database_t {
+    eLocal=0,
+    eAddressBook=1
+};
+
 class Patient
 {
 public:
@@ -34,6 +39,7 @@ public:
     virtual ~Patient() {}
     
     void importFromDict(PAT_DICT &dict);
+    wxString generateUniqueID();
     
     // 46
     long rowId;
@@ -50,4 +56,5 @@ public:
     wxString postalAddress;
     wxString phoneNumber;
     wxString emailAddress;
+    enum database_t databaseType;
 };

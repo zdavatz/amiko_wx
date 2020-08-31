@@ -204,6 +204,36 @@ ALL_SQL_RESULTS SQLiteDatabase::performQuery(wxString query)
     return result;
 }
 
+// 220
+bool SQLiteDatabase::insertRowIntoTable_forColumns_andValues(wxString table, wxString columns, wxString values)
+{
+    char *errMsg;
+    wxString query = wxString::Format("insert into %s %s values %s", table, columns, values);
+    int rc = sqlite3_exec(database, query, nullptr, nullptr, &errMsg);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to insert record into table " << table
+        << " with query " << query << ": " << errMsg;
+        return false;
+    }
+
+    return true;
+}
+
+// 231
+bool SQLiteDatabase::updateRowIntoTable_forExpressions_andConditions(wxString table, wxString expressions, wxString conditions)
+{
+    char *errMsg;
+    wxString query = wxString::Format("update %s set %s where %s", table, expressions, conditions);
+    int rc = sqlite3_exec(database, query, nullptr, nullptr, &errMsg);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to replace record into table " << table
+        << " with query " << query << ": " <<errMsg;
+        return false;
+    }
+
+    return true;
+}
+
 void SQLiteDatabase::close()
 {
     sqlite3_close(database);
