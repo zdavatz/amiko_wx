@@ -111,6 +111,7 @@ set( SRCS_PRESCR
 set( SRCS_PATIENT
     gui/PatientSheet.cpp gui/PatientSheet.h
     Patient.cpp Patient.hpp
+    Contacts.cpp Contacts.hpp
     PatientDBAdapter.cpp PatientDBAdapter.hpp
     )
 

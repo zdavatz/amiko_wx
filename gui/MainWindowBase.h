@@ -36,7 +36,6 @@
 #include <wx/frame.h>
 #include <wx/radiobox.h>
 #include <wx/listctrl.h>
-#include <wx/spinbutt.h>
 #include <wx/dialog.h>
 #include <wx/statbmp.h>
 
@@ -74,9 +73,11 @@
 #define wxID_SET_OPERATOR_ID 1029
 #define wxID_RB_SEX 1030
 #define wxID_SAVE_PATIENT 1031
-#define wxID_CLEAR_SIGNATURE 1032
-#define wxID_LOAD_SIGNATURE 1033
-#define wxID_SAVE_OPERATOR 1034
+#define wxID_ADD_PATIENT 1032
+#define wxID_DELETE_PATIENT 1033
+#define wxID_CLEAR_SIGNATURE 1034
+#define wxID_LOAD_SIGNATURE 1035
+#define wxID_SAVE_OPERATOR 1036
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -215,7 +216,11 @@ class PatientSheetBase : public wxDialog
 
 		// Private event handlers
 		void _wxFB_OnSelectSex( wxCommandEvent& event ){ OnSelectSex( event ); }
+		void _wxFB_OnCancel( wxCommandEvent& event ){ OnCancel( event ); }
 		void _wxFB_OnSavePatient( wxCommandEvent& event ){ OnSavePatient( event ); }
+		void _wxFB_OnNewPatient( wxCommandEvent& event ){ OnNewPatient( event ); }
+		void _wxFB_OnDeletePatient( wxCommandEvent& event ){ OnDeletePatient( event ); }
+		void _wxFB_OnShowContacts( wxCommandEvent& event ){ OnShowContacts( event ); }
 
 
 	protected:
@@ -231,7 +236,6 @@ class PatientSheetBase : public wxDialog
 		wxStaticText* m_staticText11;
 		wxStaticText* m_staticText12;
 		wxStaticText* m_staticText23;
-		wxRadioBox* mSex;
 		wxStaticText* m_staticText24;
 		wxStaticText* m_staticText25;
 		wxStaticText* m_staticText26;
@@ -239,15 +243,17 @@ class PatientSheetBase : public wxDialog
 		wxButton* m_button14;
 		wxButton* m_button15;
 		wxPanel* m_panel7Right;
-		wxSearchCtrl* m_searchCtrl2;
-		wxListCtrl* m_listCtrl1;
-		wxSpinButton* m_spinBtn1;
-		wxStaticText* m_staticText13;
-		wxBitmapButton* m_bpButton2;
+		wxButton* m_button22;
+		wxButton* m_button23;
+		wxButton* m_button21;
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnNewPatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDeletePatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnShowContacts( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -258,11 +264,15 @@ class PatientSheetBase : public wxDialog
 		wxTextCtrl* mZipCode;
 		wxTextCtrl* mCountry;
 		wxTextCtrl* mBirthDate;
+		wxRadioBox* mSex;
 		wxTextCtrl* mWeight_kg;
 		wxTextCtrl* mHeight_cm;
 		wxTextCtrl* mPhone;
 		wxTextCtrl* mEmail;
-		wxStaticText* mNotificaltion;
+		wxStaticText* mNotification;
+		wxSearchCtrl* mSearchKey;
+		wxListCtrl* mTableView;
+		wxStaticText* mNumPatients;
 
 		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Patient Management"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 700,511 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~PatientSheetBase();

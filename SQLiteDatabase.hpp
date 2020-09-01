@@ -39,6 +39,7 @@ public:
     int numberRecordsForTable(wxString table);
     bool insertRowIntoTable_forColumns_andValues(wxString table, wxString columns, wxString values);
     bool updateRowIntoTable_forExpressions_andConditions(wxString table, wxString expressions, wxString conditions);
+    bool deleteRowFromTable_withUId(wxString table, wxString uId);
     void close();
     
 private:

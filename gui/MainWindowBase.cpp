@@ -256,7 +256,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = m_tbMain->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	m_tbMain->AddSeparator();
+    //m_tbMain->AddSeparator();
+    m_tbMain->AddStretchableSpace();
 
 	m_tool7 = m_tbMain->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
@@ -378,7 +379,11 @@ MainWindowBase::~MainWindowBase()
 
 BEGIN_EVENT_TABLE( PatientSheetBase, wxDialog )
 	EVT_RADIOBOX( wxID_RB_SEX, PatientSheetBase::_wxFB_OnSelectSex )
+	EVT_BUTTON( wxID_CANCEL, PatientSheetBase::_wxFB_OnCancel )
 	EVT_BUTTON( wxID_SAVE_PATIENT, PatientSheetBase::_wxFB_OnSavePatient )
+	EVT_BUTTON( wxID_ADD_PATIENT, PatientSheetBase::_wxFB_OnNewPatient )
+	EVT_BUTTON( wxID_DELETE_PATIENT, PatientSheetBase::_wxFB_OnDeletePatient )
+	EVT_BUTTON( wxID_ANY, PatientSheetBase::_wxFB_OnShowContacts )
 END_EVENT_TABLE()
 
 PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -513,9 +518,9 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	bSizer12->Add( fgSizer1, 1, wxEXPAND, 5 );
 
-	mNotificaltion = new wxStaticText( m_panel6Left, wxID_ANY, _("Save..."), wxDefaultPosition, wxDefaultSize, 0 );
-	mNotificaltion->Wrap( -1 );
-	bSizer12->Add( mNotificaltion, 0, wxALL, 5 );
+	mNotification = new wxStaticText( m_panel6Left, wxID_ANY, _("Save..."), wxDefaultPosition, wxDefaultSize, 0 );
+	mNotification->Wrap( -1 );
+	bSizer12->Add( mNotification, 0, wxALL, 5 );
 
 	wxBoxSizer* bSizer18;
 	bSizer18 = new wxBoxSizer( wxHORIZONTAL );
@@ -540,37 +545,39 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxVERTICAL );
 
-	m_searchCtrl2 = new wxSearchCtrl( m_panel7Right, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	mSearchKey = new wxSearchCtrl( m_panel7Right, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	#ifndef __WXMAC__
-	m_searchCtrl2->ShowSearchButton( true );
+	mSearchKey->ShowSearchButton( true );
 	#endif
-	m_searchCtrl2->ShowCancelButton( false );
-	bSizer13->Add( m_searchCtrl2, 0, wxALL|wxEXPAND, 5 );
+	mSearchKey->ShowCancelButton( false );
+	bSizer13->Add( mSearchKey, 0, wxALL|wxEXPAND, 5 );
 
-	m_listCtrl1 = new wxListCtrl( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_ICON );
-	bSizer13->Add( m_listCtrl1, 1, wxALL|wxEXPAND, 5 );
+	mTableView = new wxListCtrl( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_ICON|wxLC_SINGLE_SEL );
+	bSizer13->Add( mTableView, 1, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer17;
 	bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_spinBtn1 = new wxSpinButton( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_HORIZONTAL );
-	bSizer17->Add( m_spinBtn1, 0, wxALL, 5 );
+	m_button22 = new wxButton( m_panel7Right, wxID_ADD_PATIENT, _("+"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer17->Add( m_button22, 0, wxALL, 5 );
+
+	m_button23 = new wxButton( m_panel7Right, wxID_DELETE_PATIENT, _("-"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	bSizer17->Add( m_button23, 0, wxALL, 5 );
+
+	mNumPatients = new wxStaticText( m_panel7Right, wxID_ANY, _("Label"), wxDefaultPosition, wxDefaultSize, 0 );
+	mNumPatients->Wrap( -1 );
+	bSizer17->Add( mNumPatients, 0, wxALL, 5 );
 
 
 	bSizer17->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_staticText13 = new wxStaticText( m_panel7Right, wxID_ANY, _("Label"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText13->Wrap( -1 );
-	bSizer17->Add( m_staticText13, 0, wxALL, 5 );
+	m_button21 = new wxButton( m_panel7Right, wxID_ANY, _("👥"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	m_button21->SetToolTip( _("Toggle between patient DB and system address book") );
+
+	bSizer17->Add( m_button21, 0, wxALL, 5 );
 
 
-	bSizer17->Add( 0, 0, 1, wxEXPAND, 5 );
-
-	m_bpButton2 = new wxBitmapButton( m_panel7Right, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 24,24 ), wxBU_AUTODRAW|0 );
-	bSizer17->Add( m_bpButton2, 0, wxALL, 5 );
-
-
-	bSizer13->Add( bSizer17, 1, wxEXPAND, 5 );
+	bSizer13->Add( bSizer17, 0, wxEXPAND, 5 );
 
 
 	m_panel7Right->SetSizer( bSizer13 );

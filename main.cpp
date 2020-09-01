@@ -87,7 +87,7 @@ bool MyApp::OnInit()
 int MyApp::OnExit()
 {
 #if 0
-    delete wxConfig::Set(NULL);
+    delete wxConfig::Set(nullptr);
 #endif
     return EXIT_SUCCESS;
 }

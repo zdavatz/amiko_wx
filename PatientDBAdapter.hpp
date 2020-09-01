@@ -22,7 +22,9 @@ public:
     Patient * getPatientWithUniqueID(wxString uniqueID);
     wxString addEntry(Patient *patient);
     wxString insertEntry(Patient *patient);
+    bool deleteEntry(Patient *patient);
     Patient * cursorToPatient(ONE_SQL_RESULT &cursor);
+    std::vector<Patient *> getAllPatients();
     
 private:
     // private constructor so that it can not be called

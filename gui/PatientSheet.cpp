@@ -3,6 +3,7 @@
 #include "PatientSheet.h"
 #include "Patient.hpp"
 #include "PatientDBAdapter.hpp"
+#include "Contacts.hpp"
 
 // 46
 PatientSheet::PatientSheet( wxWindow* parent )
@@ -39,6 +40,32 @@ void PatientSheet::resetFieldsColors()
     mZipCode->SetBackgroundColour(normalColor);
 }
 
+// 151
+void PatientSheet::resetAllFields()
+{
+    resetFieldsColors();
+    
+    mFamilyName->SetValue(wxEmptyString);
+    mGivenName->SetValue(wxEmptyString);
+    mBirthDate->SetValue(wxEmptyString);
+    mCity->SetValue(wxEmptyString);
+    mZipCode->SetValue(wxEmptyString);
+    mWeight_kg->SetValue(wxEmptyString);
+    mHeight_cm->SetValue(wxEmptyString);
+    mPostalAddress->SetValue(wxEmptyString);
+    mZipCode->SetValue(wxEmptyString);
+    mCity->SetValue(wxEmptyString);
+    mCountry->SetValue(wxEmptyString);
+    mPhone->SetValue(wxEmptyString);
+    mEmail->SetValue(wxEmptyString);
+
+    mSex->SetSelection(0);
+
+    mPatientUUID = wxEmptyString;
+    
+    mNotification->SetLabel(wxEmptyString);
+}
+
 // 219
 Patient * PatientSheet::getAllFields()
 {
@@ -66,11 +93,7 @@ Patient * PatientSheet::getAllFields()
 // 241
 void PatientSheet::friendlyNote()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#else
-    [mNotification setStringValue:[NSString stringWithFormat:NSLocalizedString(@"The contact was saved in the %@ address book", nil), [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]]];
-#endif
+    mNotification->SetLabel(wxString::Format(_("The contact was saved in the %s address book"), wxString(APP_NAME)));
 }
 
 // 261
@@ -128,19 +151,119 @@ bool PatientSheet::validateFields(Patient *patient)
 // 331
 void PatientSheet::updateAmiKoAddressBookTableView()
 {
+    mArrayOfPatients = mPatientDb->getAllPatients();
+    mABContactsVisible = false;
+    reloadData(); // mTableView
+    setNumPatients(mArrayOfPatients.size());
+}
+
+// 484
+void PatientSheet::deletePatientFolder_withBackup(Patient *patient, bool backup)
+{
 #if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
 #else
-    mArrayOfPatients = [mPatientDb getAllPatients];
-    mABContactsVisible=NO;
-    [mTableView reloadData];
-    [self setNumPatients:[mArrayOfPatients count]];
+    NSString *documentsDir = [MLUtilities documentsDirectory];
+    NSString *patientDir = [documentsDir stringByAppendingString:[NSString stringWithFormat:@"/%@", patient.uniqueId]];
+    
+    if (backup) {
+        NSString *backupDir = [documentsDir stringByAppendingString:[NSString stringWithFormat:@"/.%@", patient.uniqueId]];
+        [[NSFileManager defaultManager] moveItemAtPath:patientDir toPath:backupDir error:nil];
+    }
+    else {
+        [[NSFileManager defaultManager] removeItemAtPath:patientDir error:nil];
+    }
 #endif
 }
+
+// 537
+void PatientSheet::setNumPatients(int numPatients)
+{
+    wxString label;
+    if (mABContactsVisible) {
+        label = wxString::Format(_("Address Book Mac (%d)"), numPatients);
+    }
+    else {
+        label = wxString::Format(_("Address Book %s (%d)"),
+                                 wxString(APP_NAME),
+                                 numPatients);
+    }
+                               
+    mNumPatients->SetLabel(label);
+    // TODO: center
+}
+
+Patient * PatientSheet::getContactAtRow(int row)
+{
+    if (mSearchFiltered)
+        return mFilteredArrayOfPatients[row];
+
+    if (mArrayOfPatients.size() > 0)
+        return mArrayOfPatients[row];
+
+    return nullptr;
+}
+
+// 562
+int PatientSheet::numberOfRowsInTableView() // (NSTableView *)tableView
+{
+    if (mSearchFiltered)
+        return mFilteredArrayOfPatients.size();
+
+    if (mArrayOfPatients.size() > 0)
+        return mArrayOfPatients.size();
+
+    return 0;
+}
+
+// In amiko-osx the framework calls
+//  numberOfRowsInTableView
+//  tableView:viewForTableColumn:row:
+void PatientSheet::reloadData()
+{
+    // TODO: clear all data
+    mTableView->ClearAll();
+
+    int n = numberOfRowsInTableView();
+    for (int i=0; i<n; i++) {
+        // 580
+        Patient *p = getContactAtRow(i);
+        
+        if (p) {
+            wxString cellStr = wxString::Format("%s %s", p->familyName, p->givenName);
+#if 1
+            mTableView->InsertItem(i, cellStr);
+#else
+            wxListItem item;
+            item.m_itemId = i;
+            item.SetText(cellStr);
+            if (p->databaseType == eAddressBook) {
+                item.SetTextColour(*wxLIGHT_GREY); // [NSColor grayColor]
+            }
+            #if 0
+            else {
+                item.SetTextColour(*wxGREEN); // [NSColor textColor]
+            }
+            #endif
+            mTableView->SetItem(item);
+#endif
+        }
+    }
+    
+    mTableView->wxWindow::Refresh();
+}
+
+// /////////////////////////////////////////////////////////////////////////////
 
 void PatientSheet::OnSelectSex( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+}
+
+// 404
+void PatientSheet::OnCancel( wxCommandEvent& event )
+{
+    EndModal(wxID_OK);
 }
 
 // 409
@@ -155,11 +278,9 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
         return;
     }
 
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-
-    if (/*mPatientUUID &&*/ mPatientUUID.length() > 0) {
+    // 420
+    if (mPatientUUID.length() > 0)
         patient->uniqueId = mPatientUUID;
-    }
 
     if (mPatientDb->getPatientWithUniqueID(mPatientUUID) == nullptr) {
         mPatientUUID = mPatientDb->addEntry(patient);
@@ -169,12 +290,85 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
     }
 
     mSearchFiltered = false;
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-    mSearchKey.setStringValue("");
-#endif
+    mSearchKey->SetValue(wxEmptyString);
+
     // 433
     updateAmiKoAddressBookTableView();
     friendlyNote();
+}
+
+// 437
+void PatientSheet::OnNewPatient( wxCommandEvent& event )
+{
+    resetAllFields();
+    updateAmiKoAddressBookTableView();
+}
+
+// 443
+void PatientSheet::OnDeletePatient( wxCommandEvent& event )
+{
+    if (mTableView->GetSelectedItemCount() == 0) // not in amiko-osx
+        return;
+    
+    // 446
+    if (mABContactsVisible)
+        return;
+
+    int row = mTableView->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    Patient *p;
+
+    if (mSearchFiltered)
+        p = mFilteredArrayOfPatients[row];
+    else
+        p = mArrayOfPatients[row];
+
+    wxMessageDialog alert(this,
+                          _("Delete contact?"),
+                          _("Are you sure you want to delete this contact from the %s Address Book?"),
+                          wxNO_DEFAULT | wxYES | wxCANCEL | wxICON_INFORMATION);
+    switch( alert.ShowModal() )
+    {
+        case wxID_YES:
+            // 472
+            if (mPatientDb->deleteEntry(p)) {
+                deletePatientFolder_withBackup(p, true);
+                resetAllFields();
+                updateAmiKoAddressBookTableView();
+                mNotification->SetLabel(wxString::Format(_("The contact has been removed from the %s Address Book"), wxString(APP_NAME)));
+#if 1
+                std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO: postNotification" << std::endl;
+#else
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientDeleted" object:self];
+#endif
+            }
+            break;
+
+        default:
+        case wxID_CANCEL:
+            break;
+    }
+}
+
+// 496
+// Toggle button on bottom-right corner
+void PatientSheet::OnShowContacts( wxCommandEvent& event )
+{
+    resetAllFields();
+    mSearchFiltered = false;
+    mSearchKey->SetValue(wxEmptyString);
+
+    if (!mABContactsVisible) {
+        Contacts *contacts = new Contacts;
+        
+        // 505
+        // Retrieves contacts from address book
+        mArrayOfPatients = contacts->getAllContacts();
+        reloadData(); // mTableView
+        mABContactsVisible = true;
+        setNumPatients(mArrayOfPatients.size());
+    }
+    else {
+        // Retrieves contacts from local patient database
+        updateAmiKoAddressBookTableView();
+    }
 }
