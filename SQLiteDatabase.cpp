@@ -112,11 +112,11 @@ bool SQLiteDatabase::createWithPath_andTable_andColumns(wxString path, wxString 
 int SQLiteDatabase::numberRecordsForTable(wxString table)
 {
     int numTableRecords = -1;
-    sqlite3_stmt *sqlClause = NULL;
+    sqlite3_stmt *sqlClause = nullptr;
 
     wxString sqlStatement = wxString::Format("SELECT COUNT(*) FROM %s", table);
     const char *sql = sqlStatement.c_str();
-    if (sqlite3_prepare_v2(database, sql, -1, &sqlClause, NULL) == SQLITE_OK) {
+    if (sqlite3_prepare_v2(database, sql, -1, &sqlClause, nullptr) == SQLITE_OK) {
         while(sqlite3_step(sqlClause) == SQLITE_ROW) {
             numTableRecords = sqlite3_column_int(sqlClause, 0);
         }
@@ -140,17 +140,17 @@ ALL_SQL_RESULTS SQLiteDatabase::performQuery(wxString query)
     }
 
 #ifndef NDEBUG
-    //std::cerr << __FUNCTION__ << " query:\n" << query << std::endl;
+    std::cerr << __FUNCTION__ << " query:\n" << query << std::endl;
 #endif
 
-    sqlite3_stmt *compiledStatement = NULL;
+    sqlite3_stmt *compiledStatement = nullptr;
     // Convert wxString to a C String
     const char *sql = query.c_str();
 
     int error_code = SQLITE_OK;
     // Open database from users filesystem
 
-    error_code = sqlite3_prepare_v2(database, sql, -1, &compiledStatement, NULL);
+    error_code = sqlite3_prepare_v2(database, sql, -1, &compiledStatement, nullptr);
     if ( error_code != SQLITE_OK) {
         std::cerr << __FUNCTION__ << " Error with code " << error_code << " when preparing query!\n";
     }
@@ -227,7 +227,21 @@ bool SQLiteDatabase::updateRowIntoTable_forExpressions_andConditions(wxString ta
     int rc = sqlite3_exec(database, query, nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK) {
         std::cerr << "Failed to replace record into table " << table
-        << " with query " << query << ": " <<errMsg;
+        << " with query " << query << ": " << errMsg;
+        return false;
+    }
+
+    return true;
+}
+
+// 253
+bool SQLiteDatabase::deleteRowFromTable_withUId(wxString table, wxString uId)
+{
+    char *errMsg;
+    wxString query = wxString::Format("delete from %s where uid='%s'", table, uId);
+    int rc = sqlite3_exec(database, query, nullptr, nullptr, &errMsg);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to delete record from db: " << errMsg;
         return false;
     }
 

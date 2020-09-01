@@ -21,7 +21,11 @@ class PatientSheet : public PatientSheetBase
 	protected:
 		// Handlers for PatientSheetBase events.
 		void OnSelectSex( wxCommandEvent& event );
+		void OnCancel( wxCommandEvent& event );
 		void OnSavePatient( wxCommandEvent& event );
+		void OnNewPatient( wxCommandEvent& event );
+		void OnDeletePatient( wxCommandEvent& event );
+		void OnShowContacts( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		PatientSheet( wxWindow* parent );
@@ -38,6 +42,13 @@ class PatientSheet : public PatientSheetBase
     PatientDBAdapter *mPatientDb;
 
 private:
+    void setNumPatients(int numPatients);
+    Patient * getContactAtRow(int row);
+    void resetAllFields();
+    void deletePatientFolder_withBackup(Patient *patient, bool backup);
+    int numberOfRowsInTableView();
+    void reloadData();
+
     // .m 35
     Patient *mSelectedPatient;
     // .m 37

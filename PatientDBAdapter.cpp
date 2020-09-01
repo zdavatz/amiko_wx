@@ -121,7 +121,7 @@ wxString PatientDBAdapter::addEntry(Patient *patient)
         wxString valueStr = wxString::Format("(%ld, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")", patient->rowId, timeStr, uuidStr, patient->familyName, patient->givenName, patient->birthDate, patient->gender, patient->weightKg, patient->heightCm, patient->zipCode, patient->city, patient->country, patient->postalAddress, patient->phoneNumber, patient->emailAddress);
 
         // Insert new entry into DB
-        myPatientDb->insertRowIntoTable_forColumns_andValues("patients", columnStr, valueStr);
+        myPatientDb->insertRowIntoTable_forColumns_andValues(DATABASE_TABLE, columnStr, valueStr);
         return uuidStr;
     }
 
@@ -131,24 +131,41 @@ wxString PatientDBAdapter::addEntry(Patient *patient)
 // 145
 wxString PatientDBAdapter::insertEntry(Patient *patient)
 {
-    if (myPatientDb) {
-        // If UUID exist re-use it!
-        if (patient->uniqueId.length() > 0)
-        {
-            wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"", KEY_WEIGHT_KG, patient->weightKg, KEY_HEIGHT_CM, patient->heightCm, KEY_ZIPCODE, patient->zipCode, KEY_CITY, patient->city, KEY_COUNTRY, patient->country, KEY_ADDRESS, patient->postalAddress, KEY_PHONE, patient->phoneNumber, KEY_EMAIL, patient->emailAddress, KEY_GENDER, patient->gender);
-            wxString conditions = wxString::Format("%s=\"%s\"", KEY_UID, patient->uniqueId);
+    if (!myPatientDb)
+        return wxEmptyString;
 
-            // Update existing entry
-            myPatientDb->updateRowIntoTable_forExpressions_andConditions("patients", expressions, conditions);
-            return patient->uniqueId;
-        }
-        else
-        {
-            return addEntry(patient);
-        }
+    // If UUID exist re-use it!
+    if (patient->uniqueId.length() > 0)
+    {
+        wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"",
+                                                KEY_WEIGHT_KG, patient->weightKg,
+                                                KEY_HEIGHT_CM, patient->heightCm,
+                                                KEY_ZIPCODE, patient->zipCode,
+                                                KEY_CITY, patient->city,
+                                                KEY_COUNTRY, patient->country,
+                                                KEY_ADDRESS, patient->postalAddress,
+                                                KEY_PHONE, patient->phoneNumber,
+                                                KEY_EMAIL, patient->emailAddress,
+                                                KEY_GENDER, patient->gender);
+        wxString conditions = wxString::Format("%s=\"%s\"", KEY_UID, patient->uniqueId);
+
+        // Update existing entry
+        myPatientDb->updateRowIntoTable_forExpressions_andConditions(DATABASE_TABLE, expressions, conditions);
+        return patient->uniqueId;
     }
 
-    return wxEmptyString;
+    return addEntry(patient);
+}
+
+// 170
+bool PatientDBAdapter::deleteEntry(Patient *patient)
+{
+    if (myPatientDb) {
+        myPatientDb->deleteRowFromTable_withUId(DATABASE_TABLE, patient->uniqueId);
+        return true;
+    }
+
+    return false;
 }
 
 // 186
@@ -157,25 +174,48 @@ long PatientDBAdapter::getLargestRowId()
     wxString query = wxString::Format("select max(%s) from %s", KEY_ROWID, DATABASE_TABLE);
 
     ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+    if (results.size() > 0)
+    {
+        ONE_SQL_RESULT cursor = results[0];
+        if (cursor.size() > 0)
+        {
+//            wxString r = cursor[0].u.c;
+//            if (r.length() > 0)
+//                return wxAtol(r);
+            return cursor[0].u.i;
+        }
+    }
+
+    return 0L;
+}
+    
+// 200
+std::vector<Patient *> PatientDBAdapter::getAllPatients()
+{
+    std::vector<Patient *> listOfPatients;
+
+    wxString query = wxString::Format("select %s from %s", ALL_COLUMNS, DATABASE_TABLE);
+    ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
     if (results.size() > 0) {
+        for (auto cursor : results)
+            listOfPatients.push_back(cursorToPatient(cursor));
+
 #if 1
         std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
 #else
-        if (results[0]!=nil) {
-            NSString *r = (NSString *)[results[0] [0];
-            if (![r isEqual:[NSNull null]])
-                return [r longLongValue];
-        }
+        // 210
+        // Sort alphabetically
+        NSSortDescriptor *nameSort = [NSSortDescriptor sortDescriptorWithKey:@"familyName" ascending:YES];
+        [listOfPatients sortUsingDescriptors:[NSArray arrayWithObject:nameSort]];
 #endif
     }
 
-    return 0;
+    return listOfPatients;
 }
 
 // 248
 Patient * PatientDBAdapter::getPatientWithUniqueID(wxString uniqueID)
 {
-    std::clog << __FUNCTION__ << std::endl;
     if (uniqueID.length() > 0)
     {
         wxString query = wxString::Format("select %s from %s where %s like '%s'", ALL_COLUMNS, DATABASE_TABLE, KEY_UID, uniqueID);
@@ -193,8 +233,8 @@ Patient * PatientDBAdapter::cursorToPatient(ONE_SQL_RESULT &cursor)
 {
     Patient *patient = new Patient;
     
-    patient->rowId = wxAtol(cursor[0].u.c);
-                                       patient->uniqueId = cursor [2].u.c;
+    patient->rowId = cursor[0].u.i;
+    patient->uniqueId = cursor [2].u.c;
     patient->familyName = cursor[3].u.c;
     patient->givenName = cursor[4].u.c;
     patient->birthDate = cursor[5].u.c;

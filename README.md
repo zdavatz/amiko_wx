@@ -25,6 +25,12 @@ then enable this in `steps.conf`
 #STEP_BUILD_JSON=y
 ```
 
+then enable this in `steps.conf`
+```
+STEP_CONFIGURE_JSON=y
+STEP_BUILD_JSON=y
+```
+
 - OpenSSL development libraries, required for the calculation of the patient UUID (SHA256)
 
         $ sudo apt install libssl-dev

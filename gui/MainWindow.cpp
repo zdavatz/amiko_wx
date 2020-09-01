@@ -1907,7 +1907,7 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
         NSCharacterSet *numbers = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"];
         
         // Throw away characters before the first number.
-        [scanner scanUpToCharactersFromSet:numbers intoString:NULL];
+        [scanner scanUpToCharactersFromSet:numbers intoString:nullptr];
         
         // Collect numbers.
         NSString* numberString;

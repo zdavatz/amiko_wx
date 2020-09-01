@@ -15,6 +15,7 @@
 #include <wx/stdpaths.h>
 #include <wx/settings.h>
 #include <wx/filename.h>
+#include <wx/datetime.h>
 
 #include <openssl/sha.h>
 
@@ -35,15 +36,9 @@ const char * appLanguage()
 // 158
 wxString currentTime()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    return "yyyy-MM-dd'T'HH:mm.ss";
-#else
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm.ss";
-    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
-    return [dateFormatter stringFromDate:[NSDate date]];
-#endif
+    wxDateTime now = wxDateTime::Now();
+    wxString s = now.Format("%Y-%m-%d'T'%H:%M.%S"); // strftime() syntax
+    return s;
 }
 
 // 186
