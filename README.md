@@ -20,6 +20,10 @@ Prerequisites:
 		$ git submodule init
 		$ git submodule update
 
+- OpenSSL development libraries, required for the calculation of the patient UUID (SHA256)
+
+        $ sudo apt install libssl-dev
+
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.
