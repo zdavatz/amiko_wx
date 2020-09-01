@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Patient.hpp"
+#include "Utilities.hpp"
 
 Patient::Patient()
 {
@@ -16,30 +17,37 @@ Patient::Patient()
 // 44
 void Patient::importFromDict(PAT_DICT &dict)
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-    uniqueId =      [dict objectForKey: KEY_AMK_PAT_ID];
-    familyName =    [dict objectForKey: KEY_AMK_PAT_SURNAME];
-    givenName =     [dict objectForKey: KEY_AMK_PAT_NAME];
-    birthDate =     [dict objectForKey: KEY_AMK_PAT_BIRTHDATE];
-    weightKg =      [[dict objectForKey:KEY_AMK_PAT_WEIGHT] intValue];
-    heightCm =      [[dict objectForKey:KEY_AMK_PAT_HEIGHT] intValue];
-    gender =        [dict objectForKey: KEY_AMK_PAT_GENDER];
-    postalAddress = [dict objectForKey: KEY_AMK_PAT_ADDRESS];
-    zipCode =       [dict objectForKey: KEY_AMK_PAT_ZIP];
-    city =          [dict objectForKey: KEY_AMK_PAT_CITY];
-    country =       [dict objectForKey: KEY_AMK_PAT_COUNTRY];
-    phoneNumber =   [dict objectForKey: KEY_AMK_PAT_PHONE];
-    emailAddress =  [dict objectForKey: KEY_AMK_PAT_EMAIL];
+    uniqueId   = dict[ KEY_AMK_PAT_ID];
+    familyName = dict[ KEY_AMK_PAT_SURNAME];
+    givenName  = dict[ KEY_AMK_PAT_NAME];
+    birthDate  = dict[ KEY_AMK_PAT_BIRTHDATE];
+
+    weightKg   = wxAtoi(dict[KEY_AMK_PAT_WEIGHT]);
+    heightCm   = wxAtoi(dict[KEY_AMK_PAT_HEIGHT]);
+
+    gender       = dict [ KEY_AMK_PAT_GENDER];
+    postalAddress = dict [ KEY_AMK_PAT_ADDRESS];
+    zipCode      = dict [ KEY_AMK_PAT_ZIP];
+    city         = dict [ KEY_AMK_PAT_CITY];
+    country      = dict [ KEY_AMK_PAT_COUNTRY];
+    phoneNumber  = dict [ KEY_AMK_PAT_PHONE];
+    emailAddress =  dict [ KEY_AMK_PAT_EMAIL];
     
-    NSString *newUniqueID = [self generateUniqueID];
+    wxString newUniqueID = generateUniqueID();
     
-    if (!uniqueId.length) { // The ID was not defined from the dictionary
+    if (uniqueId.length() == 0) { // The ID was not defined from the dictionary
         uniqueId = newUniqueID; // assign it here
     }
-    else if (![uniqueId isEqualToString:newUniqueID]) {
-        NSLog(@"WARNING: imported ID:%@, expected ID %@", uniqueId, newUniqueID);
+    else if (uniqueId != newUniqueID) {
+        std::clog << "WARNING: imported ID:" << uniqueId << ", expected ID " << newUniqueID;
     }
-#endif
 }
+
+// The UUID should be unique and should be based on family name, given name, and birthday
+wxString Patient::generateUniqueID()
+{
+    wxString uniqueHashString = wxString::Format("%s.%s.%s", familyName , givenName, birthDate);
+    uniqueHashString.LowerCase();
+    return UTI::sha256(uniqueHashString);
+}
+

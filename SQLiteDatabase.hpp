@@ -37,6 +37,8 @@ public:
     bool createWithPath_andTable_andColumns(wxString path, wxString table, wxString columns);
     ALL_SQL_RESULTS performQuery(wxString query);
     int numberRecordsForTable(wxString table);
+    bool insertRowIntoTable_forColumns_andValues(wxString table, wxString columns, wxString values);
+    bool updateRowIntoTable_forExpressions_andConditions(wxString table, wxString expressions, wxString conditions);
     void close();
     
 private:

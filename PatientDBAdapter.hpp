@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "SQLiteDatabase.hpp"
+
 class SQLiteDatabase;
 class Patient;
 
@@ -20,6 +22,7 @@ public:
     Patient * getPatientWithUniqueID(wxString uniqueID);
     wxString addEntry(Patient *patient);
     wxString insertEntry(Patient *patient);
+    Patient * cursorToPatient(ONE_SQL_RESULT &cursor);
     
 private:
     // private constructor so that it can not be called

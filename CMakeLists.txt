@@ -25,6 +25,18 @@ set(CMAKE_PREFIX_PATH ${JSON_DIR} ${CMAKE_PREFIX_PATH})
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 #=============================================================================
+if (UNIX)
+if (NOT APPLE)
+# Linux
+pkg_check_modules(OPENSSL REQUIRED openssl)
+MESSAGE(STATUS "OPENSSL_Found: ${OPENSSL_FOUND}")
+else (NOT APPLE)
+set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
+find_package(OpenSSL REQUIRED)
+endif (NOT APPLE)
+endif (UNIX)
+
+#=============================================================================
 
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
 
@@ -144,9 +156,13 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/gui
     ${CMAKE_SOURCE_DIR}/sqlite
-    ${wxWidgets_INCLUDE_DIRS} )
+    ${wxWidgets_INCLUDE_DIRS}
+		${OPENSSL_INCLUDE_DIR} )
   
-target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARIES} nlohmann_json::nlohmann_json)
+target_link_libraries( ${APP_NAME}
+		${wxWidgets_LIBRARIES}
+		${OPENSSL_LIBRARIES}
+		nlohmann_json::nlohmann_json)
 
 if (UNIX)
 if (APPLE)

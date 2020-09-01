@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
+	EVT_UPDATE_UI( wxID_ANY, MainWindowBase::_wxFB_OnUpdateUI )
 	EVT_TEXT( wxID_MY_SEARCH_FIELD, MainWindowBase::_wxFB_OnSearchNow )
 	EVT_BUTTON( wxID_BTN_PREPARATION, MainWindowBase::_wxFB_OnButtonPressed )
 	EVT_BUTTON( wxID_BTN_REGISTRATION_OWNER, MainWindowBase::_wxFB_OnButtonPressed )
@@ -172,8 +173,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button7 = new wxButton( panel_rezept, wxID_PATIENT_SEARCH, _("Patient search"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer11_patient->Add( m_button7, 0, wxALL, 5 );
 
-	m_textCtrl1 = new wxTextCtrl( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,102 ), wxTE_MULTILINE|wxTE_NO_VSCROLL );
-	bSizer11_patient->Add( m_textCtrl1, 0, wxALL|wxEXPAND, 5 );
+	myPatientAddressTextField = new wxTextCtrl( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,102 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
+	bSizer11_patient->Add( myPatientAddressTextField, 0, wxALL|wxEXPAND, 5 );
 
 	myPlaceDateField = new wxStaticText( panel_rezept, wxID_ANY, _("Place and Date"), wxDefaultPosition, wxDefaultSize, 0 );
 	myPlaceDateField->Wrap( -1 );
@@ -185,8 +186,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer12_doctor;
 	bSizer12_doctor = new wxBoxSizer( wxVERTICAL );
 
-	m_textCtrl2 = new wxTextCtrl( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE|wxTE_NO_VSCROLL );
-	bSizer12_doctor->Add( m_textCtrl2, 0, wxALL|wxEXPAND, 5 );
+	myOperatorIDTextField = new wxTextCtrl( panel_rezept, wxID_ANY, _("Enter the doctor's address"), wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
+	bSizer12_doctor->Add( myOperatorIDTextField, 0, wxALL|wxEXPAND, 5 );
 
 	m_bpButton1 = new wxBitmapButton( panel_rezept, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 150,57 ), wxBU_AUTODRAW|0 );
 	bSizer12_doctor->Add( m_bpButton1, 0, wxALL, 5 );
@@ -212,11 +213,15 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer13->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	btnSave = new wxButton( panel_rezept, wxID_SAVE_PRESCRIPTION, _("Save"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
-	bSizer13->Add( btnSave, 0, wxALL, 5 );
+	saveButton = new wxButton( panel_rezept, wxID_SAVE_PRESCRIPTION, _("Save"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	saveButton->Enable( false );
 
-	btnSend = new wxButton( panel_rezept, wxID_SEND_PRESCRIPTION, _("Send"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
-	bSizer13->Add( btnSend, 0, wxALL, 5 );
+	bSizer13->Add( saveButton, 0, wxALL, 5 );
+
+	sendButton = new wxButton( panel_rezept, wxID_SEND_PRESCRIPTION, _("Send"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+	sendButton->Enable( false );
+
+	bSizer13->Add( sendButton, 0, wxALL, 5 );
 
 
 	bSizer7->Add( bSizer13, 1, wxEXPAND, 5 );
@@ -251,8 +256,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = m_tbMain->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	//m_tbMain->AddSeparator();
-    m_tbMain->AddStretchableSpace();
+	m_tbMain->AddSeparator();
 
 	m_tool7 = m_tbMain->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 

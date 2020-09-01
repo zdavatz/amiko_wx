@@ -1632,28 +1632,34 @@ void MainWindow::addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n)
         item->med = mDb->getShortMediWithId(item->mid);
         mPrescriptionsCart[n].addItemToCart(item);
 
-#if 1 // not in amiko-osx
-        wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
-        wxTreeItemId med =
-        myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
-        myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
+#if 1
+        {
+            // This code is not in amiko-osx
+            // Here we are not using any "model" for myPrescriptionsTableView,
+            // so we need to add the data directly. Also, no need to reload.
+            wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
+            wxTreeItemId med =
+            myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
+            myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
 
-        myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
-        myPrescriptionsTableView->ExpandAll();
+            myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
+            myPrescriptionsTableView->ExpandAll();
+        }
 #else
         myPrescriptionsTableView->Refresh(); //reloadData();
 #endif
 
         modifiedPrescription = true;
-        updateButtons();
+        //updateButtons(); // __deprecated
     }
 }
 
 // 3047
-void MainWindow::updateButtons()
-{
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-}
+// __deprecated The framework will call OnUpdateUI() instead
+//void MainWindow::updateButtons()
+//{
+//    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+//}
 
 // 3101
 // Read the file containing the list of keywords
@@ -2098,6 +2104,34 @@ void MainWindow::csvProcessKeywords(wxArrayString keywords)
 }
 
 // /////////////////////////////////////////////////////////////////////////////
+
+// 3047
+// amiko-osx updateButtons
+void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
+{
+    // 3050
+    bool doctorDefined =
+    myOperatorIDTextField->GetValue().length() > 0 &&
+    myOperatorIDTextField->GetValue() != _("Enter the doctor's address");
+    bool patientDefined = myPatientAddressTextField->GetValue().length() > 0;
+    
+    // 3058
+    if (doctorDefined &&
+        patientDefined &&
+        mPrescriptionsCart[0].cart.size() > 0)
+    {
+        if (modifiedPrescription)
+            saveButton->Enable(true);
+        
+        sendButton->Enable(true);
+    }
+    else
+    {
+        saveButton->Enable(false);
+        sendButton->Enable(false);
+    }
+}
+
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
@@ -2370,8 +2404,11 @@ void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
             
         case 2: // Delete
             // amiko-osx removeItemFromPrescription
-            if (medItem.IsOk())
+            if (medItem.IsOk()) {
                 myPrescriptionsTableView->Delete(medItem);
+                
+                // TODO: also remove it from mPrescriptionsCart[0]
+            }
 
             break;
             
@@ -2388,7 +2425,7 @@ void MainWindow::OnNewPrescription( wxCommandEvent& event )
     myPrescriptionsTableView->Refresh(); // TODO: reloadData
     possibleToOverwrite = false;
     modifiedPrescription = false;
-    updateButtons();
+    //updateButtons(); // __deprecated
 }
 
 // 1396
@@ -2499,7 +2536,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     }
     
     // 3003
-    updateButtons();
+    //updateButtons(); // __deprecated
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )
@@ -2822,7 +2859,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     }
     
     // 3003
-    updateButtons();
+    //updateButtons(); // __deprecated
 
     // if we don't skip the event, OnHtmlLinkClicked won't be called!
     event.Skip();

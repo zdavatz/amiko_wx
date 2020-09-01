@@ -12,6 +12,8 @@ namespace UTI
 {
 
 const char * appLanguage();
+wxString currentTime();
 wxString getColorCss();
+wxString sha256(const wxString str);
 
 }

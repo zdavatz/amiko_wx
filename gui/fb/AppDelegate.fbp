@@ -56,6 +56,7 @@
             <property name="window_name"></property>
             <property name="window_style">wxTAB_TRAVERSAL</property>
             <property name="xrc_skip_sizer">1</property>
+            <event name="OnUpdateUI">OnUpdateUI</event>
             <object class="wxBoxSizer" expanded="1">
                 <property name="minimum_size"></property>
                 <property name="name">bSizer1</property>
@@ -1532,11 +1533,11 @@
                                                                 <property name="name">bSizer10</property>
                                                                 <property name="orient">wxHORIZONTAL</property>
                                                                 <property name="permission">none</property>
-                                                                <object class="sizeritem" expanded="0">
+                                                                <object class="sizeritem" expanded="1">
                                                                     <property name="border">5</property>
                                                                     <property name="flag">wxEXPAND</property>
                                                                     <property name="proportion">1</property>
-                                                                    <object class="wxBoxSizer" expanded="0">
+                                                                    <object class="wxBoxSizer" expanded="1">
                                                                         <property name="minimum_size"></property>
                                                                         <property name="name">bSizer11_patient</property>
                                                                         <property name="orient">wxVERTICAL</property>
@@ -1655,17 +1656,17 @@
                                                                                 <property name="minimize_button">0</property>
                                                                                 <property name="minimum_size"></property>
                                                                                 <property name="moveable">1</property>
-                                                                                <property name="name">m_textCtrl1</property>
+                                                                                <property name="name">myPatientAddressTextField</property>
                                                                                 <property name="pane_border">1</property>
                                                                                 <property name="pane_position"></property>
                                                                                 <property name="pane_size"></property>
-                                                                                <property name="permission">protected</property>
+                                                                                <property name="permission">public</property>
                                                                                 <property name="pin_button">1</property>
                                                                                 <property name="pos"></property>
                                                                                 <property name="resize">Resizable</property>
                                                                                 <property name="show">1</property>
                                                                                 <property name="size">-1,102</property>
-                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL</property>
+                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY</property>
                                                                                 <property name="subclass">; ; forward_declare</property>
                                                                                 <property name="toolbar_pane">0</property>
                                                                                 <property name="tooltip"></property>
@@ -1742,11 +1743,11 @@
                                                                         </object>
                                                                     </object>
                                                                 </object>
-                                                                <object class="sizeritem" expanded="0">
+                                                                <object class="sizeritem" expanded="1">
                                                                     <property name="border">5</property>
                                                                     <property name="flag">wxEXPAND</property>
                                                                     <property name="proportion">1</property>
-                                                                    <object class="wxBoxSizer" expanded="0">
+                                                                    <object class="wxBoxSizer" expanded="1">
                                                                         <property name="minimum_size"></property>
                                                                         <property name="name">bSizer12_doctor</property>
                                                                         <property name="orient">wxVERTICAL</property>
@@ -1791,17 +1792,17 @@
                                                                                 <property name="minimize_button">0</property>
                                                                                 <property name="minimum_size"></property>
                                                                                 <property name="moveable">1</property>
-                                                                                <property name="name">m_textCtrl2</property>
+                                                                                <property name="name">myOperatorIDTextField</property>
                                                                                 <property name="pane_border">1</property>
                                                                                 <property name="pane_position"></property>
                                                                                 <property name="pane_size"></property>
-                                                                                <property name="permission">protected</property>
+                                                                                <property name="permission">public</property>
                                                                                 <property name="pin_button">1</property>
                                                                                 <property name="pos"></property>
                                                                                 <property name="resize">Resizable</property>
                                                                                 <property name="show">1</property>
                                                                                 <property name="size">-1,91</property>
-                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL</property>
+                                                                                <property name="style">wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY</property>
                                                                                 <property name="subclass">; ; forward_declare</property>
                                                                                 <property name="toolbar_pane">0</property>
                                                                                 <property name="tooltip"></property>
@@ -1809,7 +1810,7 @@
                                                                                 <property name="validator_style">wxFILTER_NONE</property>
                                                                                 <property name="validator_type">wxDefaultValidator</property>
                                                                                 <property name="validator_variable"></property>
-                                                                                <property name="value"></property>
+                                                                                <property name="value">Enter the doctor&apos;s address</property>
                                                                                 <property name="window_extra_style"></property>
                                                                                 <property name="window_name"></property>
                                                                                 <property name="window_style"></property>
@@ -1953,11 +1954,11 @@
                                                                 <event name="OnTreeItemMenu">OnTreeItemMenu</event>
                                                             </object>
                                                         </object>
-                                                        <object class="sizeritem" expanded="0">
+                                                        <object class="sizeritem" expanded="1">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxEXPAND</property>
                                                             <property name="proportion">1</property>
-                                                            <object class="wxBoxSizer" expanded="0">
+                                                            <object class="wxBoxSizer" expanded="1">
                                                                 <property name="minimum_size"></property>
                                                                 <property name="name">bSizer13</property>
                                                                 <property name="orient">wxHORIZONTAL</property>
@@ -2150,7 +2151,7 @@
                                                                         <property name="dock">Dock</property>
                                                                         <property name="dock_fixed">0</property>
                                                                         <property name="docking">Left</property>
-                                                                        <property name="enabled">1</property>
+                                                                        <property name="enabled">0</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
                                                                         <property name="focus"></property>
@@ -2168,11 +2169,11 @@
                                                                         <property name="minimize_button">0</property>
                                                                         <property name="minimum_size"></property>
                                                                         <property name="moveable">1</property>
-                                                                        <property name="name">btnSave</property>
+                                                                        <property name="name">saveButton</property>
                                                                         <property name="pane_border">1</property>
                                                                         <property name="pane_position"></property>
                                                                         <property name="pane_size"></property>
-                                                                        <property name="permission">protected</property>
+                                                                        <property name="permission">public</property>
                                                                         <property name="pin_button">1</property>
                                                                         <property name="pos"></property>
                                                                         <property name="position"></property>
@@ -2224,7 +2225,7 @@
                                                                         <property name="dock">Dock</property>
                                                                         <property name="dock_fixed">0</property>
                                                                         <property name="docking">Left</property>
-                                                                        <property name="enabled">1</property>
+                                                                        <property name="enabled">0</property>
                                                                         <property name="fg"></property>
                                                                         <property name="floatable">1</property>
                                                                         <property name="focus"></property>
@@ -2242,11 +2243,11 @@
                                                                         <property name="minimize_button">0</property>
                                                                         <property name="minimum_size"></property>
                                                                         <property name="moveable">1</property>
-                                                                        <property name="name">btnSend</property>
+                                                                        <property name="name">sendButton</property>
                                                                         <property name="pane_border">1</property>
                                                                         <property name="pane_position"></property>
                                                                         <property name="pane_size"></property>
-                                                                        <property name="permission">protected</property>
+                                                                        <property name="permission">public</property>
                                                                         <property name="pin_button">1</property>
                                                                         <property name="pos"></property>
                                                                         <property name="position"></property>
