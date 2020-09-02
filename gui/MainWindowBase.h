@@ -274,7 +274,7 @@ class PatientSheetBase : public wxDialog
 		wxListCtrl* mTableView;
 		wxStaticText* mNumPatients;
 
-		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Patient Management"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 700,511 ), long style = wxDEFAULT_DIALOG_STYLE );
+		PatientSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Patient Management"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 700,594 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~PatientSheetBase();
 
 		void m_splitter2OnIdle( wxIdleEvent& )
