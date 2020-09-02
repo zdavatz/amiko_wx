@@ -2778,7 +2778,7 @@
             <property name="minimum_size"></property>
             <property name="name">PatientSheetBase</property>
             <property name="pos"></property>
-            <property name="size">700,511</property>
+            <property name="size">700,594</property>
             <property name="style">wxDEFAULT_DIALOG_STYLE</property>
             <property name="subclass">; ; forward_declare</property>
             <property name="title">Patient Management</property>
