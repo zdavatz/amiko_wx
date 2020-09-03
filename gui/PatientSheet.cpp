@@ -297,6 +297,11 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
     friendlyNote();
 }
 
+void PatientSheet::OnSelectPatient( wxMouseEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+}
+
 // 437
 void PatientSheet::OnNewPatient( wxCommandEvent& event )
 {

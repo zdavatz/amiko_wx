@@ -201,7 +201,7 @@ std::vector<Patient *> PatientDBAdapter::getAllPatients()
             listOfPatients.push_back(cursorToPatient(cursor));
 
 #if 1
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+        std::clog << __FUNCTION__ << " Line " << __LINE__ << ", TODO: sort list of patients" << std::endl;
 #else
         // 210
         // Sort alphabetically

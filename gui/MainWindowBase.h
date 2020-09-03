@@ -73,45 +73,19 @@
 #define wxID_SET_OPERATOR_ID 1029
 #define wxID_RB_SEX 1030
 #define wxID_SAVE_PATIENT 1031
-#define wxID_ADD_PATIENT 1032
-#define wxID_DELETE_PATIENT 1033
-#define wxID_CLEAR_SIGNATURE 1034
-#define wxID_LOAD_SIGNATURE 1035
-#define wxID_SAVE_OPERATOR 1036
+#define wxID_PATIENT_LIST 1032
+#define wxID_ADD_PATIENT 1033
+#define wxID_DELETE_PATIENT 1034
+#define wxID_CLEAR_SIGNATURE 1035
+#define wxID_LOAD_SIGNATURE 1036
+#define wxID_SAVE_OPERATOR 1037
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
 ///////////////////////////////////////////////////////////////////////////////
 class MainWindowBase : public wxFrame
 {
-	DECLARE_EVENT_TABLE()
 	private:
-
-		// Private event handlers
-		void _wxFB_OnUpdateUI( wxUpdateUIEvent& event ){ OnUpdateUI( event ); }
-		void _wxFB_OnSearchNow( wxCommandEvent& event ){ OnSearchNow( event ); }
-		void _wxFB_OnButtonPressed( wxCommandEvent& event ){ OnButtonPressed( event ); }
-		void _wxFB_OnSearchFiNow( wxCommandEvent& event ){ OnSearchFiNow( event ); }
-		void _wxFB_OnPerformFindAction( wxCommandEvent& event ){ OnPerformFindAction( event ); }
-		void _wxFB_OnSearchPatient( wxCommandEvent& event ){ OnSearchPatient( event ); }
-		void _wxFB_OnTreeBeginLabelEdit( wxTreeEvent& event ){ OnTreeBeginLabelEdit( event ); }
-		void _wxFB_OnTreeEndLabelEdit( wxTreeEvent& event ){ OnTreeEndLabelEdit( event ); }
-		void _wxFB_OnTreeItemMenu( wxTreeEvent& event ){ OnTreeItemMenu( event ); }
-		void _wxFB_OnNewPrescription( wxCommandEvent& event ){ OnNewPrescription( event ); }
-		void _wxFB_OnCheckForInteractions( wxCommandEvent& event ){ OnCheckForInteractions( event ); }
-		void _wxFB_OnSavePrescription( wxCommandEvent& event ){ OnSavePrescription( event ); }
-		void _wxFB_OnSendPrescription( wxCommandEvent& event ){ OnSendPrescription( event ); }
-		void _wxFB_OnSelectionDidChange( wxDataViewEvent& event ){ OnSelectionDidChange( event ); }
-		void _wxFB_OnToolbarAction( wxCommandEvent& event ){ OnToolbarAction( event ); }
-		void _wxFB_OnExportWordListSearchResults( wxCommandEvent& event ){ OnExportWordListSearchResults( event ); }
-		void _wxFB_OnPrintDocument( wxCommandEvent& event ){ OnPrintDocument( event ); }
-		void _wxFB_OnShowAboutPanel( wxCommandEvent& event ){ OnShowAboutPanel( event ); }
-		void _wxFB_OnUpdateAipsDatabase( wxCommandEvent& event ){ OnUpdateAipsDatabase( event ); }
-		void _wxFB_OnLoadAipsDatabase( wxCommandEvent& event ){ OnLoadAipsDatabase( event ); }
-		void _wxFB_OnLoadPrescription( wxCommandEvent& event ){ OnLoadPrescription( event ); }
-		void _wxFB_OnManagePatients( wxCommandEvent& event ){ OnManagePatients( event ); }
-		void _wxFB_OnSetOperatorIdentity( wxCommandEvent& event ){ OnSetOperatorIdentity( event ); }
-
 
 	protected:
 		wxSplitterWindow* m_splitter1;
@@ -211,17 +185,7 @@ class MainWindowBase : public wxFrame
 ///////////////////////////////////////////////////////////////////////////////
 class PatientSheetBase : public wxDialog
 {
-	DECLARE_EVENT_TABLE()
 	private:
-
-		// Private event handlers
-		void _wxFB_OnSelectSex( wxCommandEvent& event ){ OnSelectSex( event ); }
-		void _wxFB_OnCancel( wxCommandEvent& event ){ OnCancel( event ); }
-		void _wxFB_OnSavePatient( wxCommandEvent& event ){ OnSavePatient( event ); }
-		void _wxFB_OnNewPatient( wxCommandEvent& event ){ OnNewPatient( event ); }
-		void _wxFB_OnDeletePatient( wxCommandEvent& event ){ OnDeletePatient( event ); }
-		void _wxFB_OnShowContacts( wxCommandEvent& event ){ OnShowContacts( event ); }
-
 
 	protected:
 		wxSplitterWindow* m_splitter2;
@@ -251,6 +215,7 @@ class PatientSheetBase : public wxDialog
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSelectPatient( wxMouseEvent& event ) { event.Skip(); }
 		virtual void OnNewPatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDeletePatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowContacts( wxCommandEvent& event ) { event.Skip(); }
@@ -290,14 +255,7 @@ class PatientSheetBase : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 class OperatorIDSheetBase : public wxDialog
 {
-	DECLARE_EVENT_TABLE()
 	private:
-
-		// Private event handlers
-		void _wxFB_OnClearSignature( wxCommandEvent& event ){ OnClearSignature( event ); }
-		void _wxFB_OnLoadSignature( wxCommandEvent& event ){ OnLoadSignature( event ); }
-		void _wxFB_OnSaveOperator( wxCommandEvent& event ){ OnSaveOperator( event ); }
-
 
 	protected:
 		wxStaticText* m_staticText14;
@@ -310,6 +268,7 @@ class OperatorIDSheetBase : public wxDialog
 		wxStaticText* m_staticText19;
 		wxStaticText* m_staticText20;
 		wxButton* m_button20;
+		wxButton* m_button16;
 		wxButton* m_button18;
 		wxButton* m_button17;
 
