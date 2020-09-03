@@ -4,6 +4,7 @@
 #include "Patient.hpp"
 #include "PatientDBAdapter.hpp"
 #include "Contacts.hpp"
+#include "MainWindow.h"
 
 // 46
 PatientSheet::PatientSheet( wxWindow* parent )
@@ -109,6 +110,15 @@ Patient * PatientSheet::retrievePatient()
 #else
     return nullptr;
 #endif
+}
+
+// 277
+wxString PatientSheet::retrievePatientAsString()
+{
+    if (mSelectedPatient)
+        return mSelectedPatient->asString();
+
+    return wxEmptyString;
 }
 
 // 297
@@ -297,9 +307,35 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
     friendlyNote();
 }
 
+// 517
+// Double clicked a patient in the table view
 void PatientSheet::OnSelectPatient( wxMouseEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    int row = mTableView->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+    std::clog << __FUNCTION__ << " row " << row << std::endl;
+
+    mSelectedPatient = nullptr;
+    if (mSearchFiltered) {
+        mSelectedPatient = mFilteredArrayOfPatients[row];
+    }
+    else {
+        mSelectedPatient = mArrayOfPatients[row];
+    }
+
+#if 0 // TODO: notification
+    if (mSelectedPatient) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientChanged" object:self];
+    }
+
+    EndModal(wxID_OK); // remove
+#else
+    EndModal(wxID_OK); // remove
+
+    // call the notification target directly
+    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+    vc->prescriptionPatientChanged();
+#endif
+
 }
 
 // 437

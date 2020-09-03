@@ -40,6 +40,7 @@ public:
     
     void importFromDict(PAT_DICT &dict);
     wxString generateUniqueID();
+    wxString asString();
     
     // 46
     long rowId;

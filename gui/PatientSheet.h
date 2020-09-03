@@ -38,6 +38,7 @@ class PatientSheet : public PatientSheetBase
     void updateAmiKoAddressBookTableView();
     void friendlyNote();
     void resetFieldsColors();
+    wxString retrievePatientAsString();
     
     // 30
     PatientDBAdapter *mPatientDb;
