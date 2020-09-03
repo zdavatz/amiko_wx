@@ -43,11 +43,18 @@ void Patient::importFromDict(PAT_DICT &dict)
     }
 }
 
+// 70
 // The UUID should be unique and should be based on family name, given name, and birthday
 wxString Patient::generateUniqueID()
 {
     wxString uniqueHashString = wxString::Format("%s.%s.%s", familyName , givenName, birthDate);
     uniqueHashString.LowerCase();
     return UTI::sha256(uniqueHashString);
+}
+
+// 77
+wxString Patient::asString()
+{
+    return wxString::Format("%s %s\n%s\nCH-%s %s\n%s\n%s", givenName, familyName, postalAddress, zipCode, city, phoneNumber, emailAddress);
 }
 

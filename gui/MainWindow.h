@@ -98,6 +98,7 @@ public:
     Medication * getShortMediWithId(long mid);
     void storeAllPrescriptionComments();
     void addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n);
+    void prescriptionPatientChanged();
 private:
     void setOperatorID();
     void savePrescription();

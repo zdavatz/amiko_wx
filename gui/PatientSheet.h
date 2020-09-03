@@ -23,6 +23,7 @@ class PatientSheet : public PatientSheetBase
 		void OnSelectSex( wxCommandEvent& event );
 		void OnCancel( wxCommandEvent& event );
 		void OnSavePatient( wxCommandEvent& event );
+		void OnSelectPatient( wxMouseEvent& event );
 		void OnNewPatient( wxCommandEvent& event );
 		void OnDeletePatient( wxCommandEvent& event );
 		void OnShowContacts( wxCommandEvent& event );
@@ -37,6 +38,7 @@ class PatientSheet : public PatientSheetBase
     void updateAmiKoAddressBookTableView();
     void friendlyNote();
     void resetFieldsColors();
+    wxString retrievePatientAsString();
     
     // 30
     PatientDBAdapter *mPatientDb;

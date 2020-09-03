@@ -292,6 +292,35 @@ bool MainWindow::openFullTextDatabase()
     return mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
 }
 
+// 696
+void MainWindow::prescriptionPatientChanged() // (NSNotification *)notification
+{
+    //if ([[notification name] isEqualToString:@"MLPrescriptionPatientChanged"])
+    {
+        if (!mPatientSheet)
+            mPatientSheet = new PatientSheet(this);
+
+        myPatientAddressTextField->SetValue( mPatientSheet->retrievePatientAsString());
+        
+        // 703
+        // If prescription cart is not empty, generate new hash
+        if (mPrescriptionsCart[0].cart.size() > 0)
+            mPrescriptionsCart[0].makeNewUniqueHash();
+        
+        modifiedPrescription = true;
+        //updateButtons(); __deprecated
+    }
+
+    mPrescriptionMode = true;
+
+    // Update prescription history in right-most pane
+    updatePrescriptionHistory();
+
+    // Switch tab view
+    myTabView->ChangeSelection(2); // selectTabViewItemAtIndex:2];
+    // TODO: m_tbMain->  //myToolbar->setSelectedItemIdentifier("Rezept");
+}
+
 // 741
 void MainWindow::updatePrescriptionHistory()
 {
@@ -2445,7 +2474,7 @@ void MainWindow::OnCheckForInteractions( wxCommandEvent& event )
     mUsedDatabase = kdbt_Aips;
     mSearchInteractions = true;
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
-    // TODO: m_tbMain->   // myToolbar.setSelectedItemIdentifier("Interaktionen");
+    // TODO: m_tbMain->  //myToolbar.setSelectedItemIdentifier("Interaktionen");
     myTabView->ChangeSelection(0); // selectTabViewItemAtIndex
 }
 

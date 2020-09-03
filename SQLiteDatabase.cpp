@@ -140,7 +140,7 @@ ALL_SQL_RESULTS SQLiteDatabase::performQuery(wxString query)
     }
 
 #ifndef NDEBUG
-    std::cerr << __FUNCTION__ << " query:\n" << query << std::endl;
+    //std::cerr << __FUNCTION__ << " query:\n" << query << std::endl;
 #endif
 
     sqlite3_stmt *compiledStatement = nullptr;

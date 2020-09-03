@@ -17,47 +17,6 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE( MainWindowBase, wxFrame )
-	EVT_UPDATE_UI( wxID_ANY, MainWindowBase::_wxFB_OnUpdateUI )
-	EVT_TEXT( wxID_MY_SEARCH_FIELD, MainWindowBase::_wxFB_OnSearchNow )
-	EVT_BUTTON( wxID_BTN_PREPARATION, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_REGISTRATION_OWNER, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_ACTIVE_SUBSTANCE, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_REGISTRATION_NUMBER, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_THERAPY, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_BUTTON( wxID_BTN_FULL_TEXT, MainWindowBase::_wxFB_OnButtonPressed )
-	EVT_TEXT( wxID_FI_SEARCH_FIELD, MainWindowBase::_wxFB_OnSearchFiNow )
-	EVT_BUTTON( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_BUTTON( wxID_FI_FIND_NEXT, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_BUTTON( wxID_FI_FIND_DONE, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_BUTTON( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnSearchPatient )
-	EVT_TREE_BEGIN_LABEL_EDIT( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeBeginLabelEdit )
-	EVT_TREE_END_LABEL_EDIT( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeEndLabelEdit )
-	EVT_TREE_ITEM_MENU( wxID_MEDICINE_LIST, MainWindowBase::_wxFB_OnTreeItemMenu )
-	EVT_BUTTON( wxID_NEW_PRESCRIPTION, MainWindowBase::_wxFB_OnNewPrescription )
-	EVT_BUTTON( wxID_CHECK_INTERACTIONS, MainWindowBase::_wxFB_OnCheckForInteractions )
-	EVT_BUTTON( wxID_SAVE_PRESCRIPTION, MainWindowBase::_wxFB_OnSavePrescription )
-	EVT_BUTTON( wxID_SEND_PRESCRIPTION, MainWindowBase::_wxFB_OnSendPrescription )
-	EVT_DATAVIEW_SELECTION_CHANGED( wxID_SECTION_TITLES, MainWindowBase::_wxFB_OnSelectionDidChange )
-	EVT_TOOL( wxID_TB_COMPENDIUM, MainWindowBase::_wxFB_OnToolbarAction )
-	EVT_TOOL( wxID_TB_FAVORITES, MainWindowBase::_wxFB_OnToolbarAction )
-	EVT_TOOL( wxID_TB_INTERACTIONS, MainWindowBase::_wxFB_OnToolbarAction )
-	EVT_TOOL( wxID_TB_PRESCRIPTION, MainWindowBase::_wxFB_OnToolbarAction )
-	EVT_TOOL( wxID_EXPORT_WORDLIST, MainWindowBase::_wxFB_OnExportWordListSearchResults )
-	EVT_TOOL( wxID_PRINT, MainWindowBase::_wxFB_OnPrintDocument )
-	EVT_TOOL( wxID_ABOUT, MainWindowBase::_wxFB_OnShowAboutPanel )
-	EVT_MENU( wxID_FI_FIND_SHOW, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_MENU( wxID_FI_FIND_NEXT, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_MENU( wxID_FI_FIND_PREVIOUS, MainWindowBase::_wxFB_OnPerformFindAction )
-	EVT_MENU( wxID_UPDATE_DB, MainWindowBase::_wxFB_OnUpdateAipsDatabase )
-	EVT_MENU( wxID_LOAD_DB, MainWindowBase::_wxFB_OnLoadAipsDatabase )
-	EVT_MENU( wxID_EXPORT_WORDLIST, MainWindowBase::_wxFB_OnExportWordListSearchResults )
-	EVT_MENU( wxID_LOAD_PRESCRIPTION, MainWindowBase::_wxFB_OnLoadPrescription )
-	EVT_MENU( wxID_SAVE_PRESCRIPTION, MainWindowBase::_wxFB_OnSavePrescription )
-	EVT_MENU( wxID_PATIENT_SEARCH, MainWindowBase::_wxFB_OnManagePatients )
-	EVT_MENU( wxID_SET_OPERATOR_ID, MainWindowBase::_wxFB_OnSetOperatorIdentity )
-END_EVENT_TABLE()
-
 MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -371,20 +330,81 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 
 	this->Centre( wxBOTH );
+
+	// Connect Events
+	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
+	mySearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
+	m_button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button3->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button6->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	fiSearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );
+	m_button20->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button21->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button22->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button7->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSearchPatient ), NULL, this );
+	myPrescriptionsTableView->Connect( wxEVT_COMMAND_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler( MainWindowBase::OnTreeBeginLabelEdit ), NULL, this );
+	myPrescriptionsTableView->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( MainWindowBase::OnTreeEndLabelEdit ), NULL, this );
+	myPrescriptionsTableView->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( MainWindowBase::OnTreeItemMenu ), NULL, this );
+	btnNewPrescription->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnNewPrescription ), NULL, this );
+	btnCheckInter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
+	saveButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
+	sendButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	mySectionTitles->Connect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
+	this->Connect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Connect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Connect( m_tool3->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Connect( m_tool4->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Connect( m_tool7->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnExportWordListSearchResults ) );
+	this->Connect( m_tool5->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnPrintDocument ) );
+	this->Connect( m_toolAbout->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnShowAboutPanel ) );
+	m_menu11->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), this, m_menuItem1->GetId());
+	m_menu11->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), this, m_menuItem2->GetId());
+	m_menu11->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), this, m_menuItem3->GetId());
+	m_menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnUpdateAipsDatabase ), this, m_miUpdateDB->GetId());
+	m_menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnLoadAipsDatabase ), this, m_miLoadDB->GetId());
+	m_menuFile->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnExportWordListSearchResults ), this, m_menuItem9->GetId());
+	m_menuPrescr->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnLoadPrescription ), this, m_menuItem10->GetId());
+	m_menuPrescr->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), this, m_menuItem11->GetId());
+	m_menuContacts->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnManagePatients ), this, m_menuItem12->GetId());
+	m_menuContacts->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnSetOperatorIdentity ), this, m_menuItem13->GetId());
 }
 
 MainWindowBase::~MainWindowBase()
 {
-}
+	// Disconnect Events
+	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
+	mySearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
+	m_button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button3->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_button6->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	fiSearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );
+	m_button20->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button21->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button22->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
+	m_button7->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSearchPatient ), NULL, this );
+	myPrescriptionsTableView->Disconnect( wxEVT_COMMAND_TREE_BEGIN_LABEL_EDIT, wxTreeEventHandler( MainWindowBase::OnTreeBeginLabelEdit ), NULL, this );
+	myPrescriptionsTableView->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( MainWindowBase::OnTreeEndLabelEdit ), NULL, this );
+	myPrescriptionsTableView->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( MainWindowBase::OnTreeItemMenu ), NULL, this );
+	btnNewPrescription->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnNewPrescription ), NULL, this );
+	btnCheckInter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
+	saveButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
+	sendButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	mySectionTitles->Disconnect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
+	this->Disconnect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Disconnect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Disconnect( m_tool3->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Disconnect( m_tool4->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
+	this->Disconnect( m_tool7->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnExportWordListSearchResults ) );
+	this->Disconnect( m_tool5->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnPrintDocument ) );
+	this->Disconnect( m_toolAbout->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnShowAboutPanel ) );
 
-BEGIN_EVENT_TABLE( PatientSheetBase, wxDialog )
-	EVT_RADIOBOX( wxID_RB_SEX, PatientSheetBase::_wxFB_OnSelectSex )
-	EVT_BUTTON( wxID_CANCEL, PatientSheetBase::_wxFB_OnCancel )
-	EVT_BUTTON( wxID_SAVE_PATIENT, PatientSheetBase::_wxFB_OnSavePatient )
-	EVT_BUTTON( wxID_ADD_PATIENT, PatientSheetBase::_wxFB_OnNewPatient )
-	EVT_BUTTON( wxID_DELETE_PATIENT, PatientSheetBase::_wxFB_OnDeletePatient )
-	EVT_BUTTON( wxID_ANY, PatientSheetBase::_wxFB_OnShowContacts )
-END_EVENT_TABLE()
+}
 
 PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
@@ -552,7 +572,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	mSearchKey->ShowCancelButton( false );
 	bSizer13->Add( mSearchKey, 0, wxALL|wxEXPAND, 5 );
 
-	mTableView = new wxListCtrl( m_panel7Right, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_ICON|wxLC_SINGLE_SEL );
+	mTableView = new wxListCtrl( m_panel7Right, wxID_PATIENT_LIST, wxDefaultPosition, wxDefaultSize, wxLC_ICON|wxLC_SINGLE_SEL );
 	bSizer13->Add( mTableView, 1, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer17;
@@ -591,17 +611,29 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	this->Layout();
 
 	this->Centre( wxBOTH );
+
+	// Connect Events
+	mSex->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
+	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
+	m_button15->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
+	mTableView->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
+	m_button22->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );
+	m_button23->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnDeletePatient ), NULL, this );
+	m_button21->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnShowContacts ), NULL, this );
 }
 
 PatientSheetBase::~PatientSheetBase()
 {
-}
+	// Disconnect Events
+	mSex->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
+	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
+	m_button15->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
+	mTableView->Disconnect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
+	m_button22->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );
+	m_button23->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnDeletePatient ), NULL, this );
+	m_button21->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnShowContacts ), NULL, this );
 
-BEGIN_EVENT_TABLE( OperatorIDSheetBase, wxDialog )
-	EVT_BUTTON( wxID_CLEAR_SIGNATURE, OperatorIDSheetBase::_wxFB_OnClearSignature )
-	EVT_BUTTON( wxID_LOAD_SIGNATURE, OperatorIDSheetBase::_wxFB_OnLoadSignature )
-	EVT_BUTTON( wxID_SAVE_OPERATOR, OperatorIDSheetBase::_wxFB_OnSaveOperator )
-END_EVENT_TABLE()
+}
 
 OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
@@ -695,7 +727,6 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer20;
 	bSizer20 = new wxBoxSizer( wxHORIZONTAL );
 
-	wxButton* m_button16;
 	m_button16 = new wxButton( this, wxID_LOAD_SIGNATURE, _("Signature from file"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer20->Add( m_button16, 0, wxALL, 5 );
 
@@ -716,8 +747,18 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	this->Layout();
 
 	this->Centre( wxBOTH );
+
+	// Connect Events
+	m_button20->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnClearSignature ), NULL, this );
+	m_button16->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnLoadSignature ), NULL, this );
+	m_button17->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnSaveOperator ), NULL, this );
 }
 
 OperatorIDSheetBase::~OperatorIDSheetBase()
 {
+	// Disconnect Events
+	m_button20->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnClearSignature ), NULL, this );
+	m_button16->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnLoadSignature ), NULL, this );
+	m_button17->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnSaveOperator ), NULL, this );
+
 }
