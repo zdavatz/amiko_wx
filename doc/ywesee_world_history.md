@@ -19,12 +19,6 @@
 
 - **epha**
 	- Separate company who used to release ATC-code based drug-drug *interactions* in the public domain, but they no longer do that, they are not making any updates at the moment
-- **swisspeddose** is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
-	- child dosage
-	- made by an independent foundation
-
-- **sapp**  is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
-	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **Galenica: Documed, e-mediat -> HCI-Solutions**
 	- Galenica AG, headquartered in Bern, is an internationally active Swiss pharmaceutical and logistics company group. Galenica was split into two companies in 2014: Vifor Pharma and Galenica Santé. Also see: https://de.wikipedia.org/wiki/Galenica
@@ -42,11 +36,17 @@
 	- A lot of the approvals that are done in Switzerland are also automatically approved for other countries in Africa that do not have such a thorough approval process.
 	- they do not deal with prices
 
-- **swisspeddose**
+- **swisspeddose** 
+	- swisspeddose.ch is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
+	- child dosage
+	- made by an independent foundation
+
+- **sappinfo**  
+	- sappinfo.ch is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
+	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **ywesee**
 	- competitor of HCI-Solutions
-	- from <https://www.maria-online.us/travel/article.php?lg=en&q=Galenica>
 
 ## Galenica vs ywesee
 - **Wikipedia**
