@@ -98,7 +98,7 @@ These files are downloaded in a step of the master build.sh file
 		2. 9 entries  are a single long line, starting with `<div id="Monographie"><div class="Title">`
 		3. 4070 entries are a single long line, starting with `<?xml version="1.0" encoding="utf-8"?>`
 
-- bag <http://bag.e-mediat.net>
+- bag <http://www.xn--spezialittenliste-yqb.ch/File.axd?file=XMLPublications.zip>
 	- **bag_preparations.xml**
 
 - Erweiterte_Arzneimittelliste HAM.xlsx
@@ -107,7 +107,7 @@ These files are downloaded in a step of the master build.sh file
 	- no longer used. It was used to get ATC codes from RN
 	- **epha\_products\_de\_json.json**
 
-- peddose <https://db.swisspeddose.ch>
+- swisspeddose <https://db.swisspeddose.ch>
 	- **swisspeddosepublication-2019-02-21.xml**
 	- section number and name
 	- multiple ATC for one fachinfo
