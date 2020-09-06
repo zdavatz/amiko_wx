@@ -2,8 +2,7 @@
 ### Introduction to the ywesee world: political and technical background
 
 - Source of information: Zeno Davatz
-- Edited by Alex Bettarini, Zeno Davatz
-- 6.9.2020, 11.08
+- Edited by Alex Bettarini, Zeno Davatz, see git log.
 
 
 ---
