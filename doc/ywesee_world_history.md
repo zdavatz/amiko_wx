@@ -55,12 +55,12 @@
 	- ywesee is no longer using that spider agent because after the second court case (BVGER 2011) Swissmedic had to do a public invitation to tender according to WTO rules (every government contract that exceeds CHF 275'000 has to be published in the official Schweizerisches Handelsamtsblatt SHAB) ywesee competed for the contract of AIPS, but ywesee was much more epensive than HCI-Solutions. HCI-Solutions offered to do the work for CHF 475,000 over 5 years, they have a hotline, support four languages; basically you can't do it for that amount of money, so the contract was subsidised by Galenica. That is how HCI-Solutoin won the public tender contract.<br>
 		How does HCI-Solutions get their data?<br>
 		Swissmedic, according with swiss law (AMZV) sends a out letters to the pharmaceutical companies which have Word files being uploaded into AIPS in each language, resulting in garbled XML data. They upload Word files into AIPS. AIPS has a web interface were you can publish information.
-		- 2004 ywesee won the **first** case against Documed, but in Switzerland you have to go through three courts. Documed also lost the second instance. Then the CEO of Documed said "We've made a mistake, we should never have sued Zeno" but then Galenica came and bought Documed and continued suing Mr Davatz because they wanted to preserve their monopoly and they knew they would lose the monopoly if they don't do it. They could have worked together with Zeno, but instead they wanted it all to themselves. In the end they also lost at the highest court
-		- 2008 first court case is closed
-		- WEKO fines Documed with CHF 50'000
+		- 2004 ywesee won the **first** case against Documed, but in Switzerland you have to go through three courts. Documed also lost the second instance. Then the CEO of Documed said "We've made a mistake, we should never have sued Zeno" but then Galenica came and bought Documed and continued suing ywesee because they wanted to preserve their monopoly and they knew they would lose the monopoly if they didn't do it.
+		- 2008 BGE case is closed
+		- 2008 WEKO fines Documed with CHF 50'000
 		- 2009 **second** case at the Bundesverwaltungsgericht (BVGER). The BVGER based their case on the BVG and WEKO case of 2008.
 		- 2011 BVGER decision taken. Birth of the AIPS
-		- WEKO II, the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
+		- 2017 WEKO II, the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
 
 		- Swissmedic always said:
 		<blockquote>Fachinformationen (medical information leaflet) or Patienten-Information (leaflet in the package, for the consumer) have to be published in a complete database where all the information is in.</blockquote>
