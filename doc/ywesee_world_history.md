@@ -24,6 +24,12 @@
 	- Galenica AG, headquartered in Bern, is an internationally active Swiss pharmaceutical and logistics company group. Galenica was split into two companies in 2014: Vifor Pharma and Galenica Santé. Also see: https://de.wikipedia.org/wiki/Galenica
 	- e-mediat (now HCI-Solutions) copied the concept of the PZN (Pharmazentralnummer) and introduced the Pharmacode in Switzerland. The pharmacode is proprietary code and less exact then the Public Domain GTIN code that has the same function.
 	- Documed and e-mediat where merged into HCI-Solutions. ywesee initiated two WEKO inquiries against Documed (2008) and HCI-Solutions (2014). Documed got fined CHF 50'000, HCI-Solutions/Galenica got fined 4.5 million CHF by WEKO. The second case is still being debated at the Bundesverwaltungsgericht (BVGER) of Switzerland because Galenica is not accepting the fine. Both WEKO inquiries have been big, they sent out questionnaires to all big pharmaceutical companies and stakeholders.
+	- HCI-Solutions 
+	makes these websites:
+			- *Compendium* (proprietary, since 2000)
+			- *AIPS* (government)
+			- pharmavista.ch
+			- SAI for refdata.ch (since 2020)
 
 - **Refdata**
 	- Refdata is a non-profit foundation, not a company. All the major stakeholders are members of that foundation
@@ -72,12 +78,6 @@
 	- The pharmaceutical companies don't care if they have to pay that amount or more per year. They just want their product to be sold at the highest price they can get, in the highly-priced country of Switzerland, so they would do anything to keep up that high price. Of course if they can save that CHF 1 million they will try to save it. Some people are afraid faster. They will do anything if they are told to do so. For example if a pharmacy in the Zurich hospital says: 
 		<blockquote>we want to work with the data at HCI-Solutions...</blockquote>
 so they started paying again to HCI-Solutions
-- **Links**
-		- **HCI-Solutions** now makes these websites:
-			- *Compendium* (proprietary, since 2000)
-			- *AIPS* (government)
-			- pharmavista.ch
-			- SAI (since 2020)
 
 ## Compare three online databases
 
