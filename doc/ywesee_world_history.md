@@ -48,7 +48,6 @@
 	- competitor of HCI-Solutions
 	- from <https://www.maria-online.us/travel/article.php?lg=en&q=Galenica>
 
-
 ## Galenica vs ywesee
 	- See: https://de.wikipedia.org/wiki/Galenica
 	- Galenica bought Documend in 2004. Documed was founded in 1976. Documed has been publishing, since 1978, the drug compendium of Switzerland. Historically Swissmedic contracted Documed to publish their drug information, committing Documed to a monopoly that they defend with dubious means (according to the "Tages-Anzeiger" a daily newspaper published in Zurich). Documed filed their lawsuit against ywesee three days before christmas in 2003. After the BGE decision in 2008 Swissmedic had to "approve" the site of the open-source software company Ywesee. The Federal Administrative Court (Switzerland) then decided in June 2011 that Swissmedic's practice was neither appropriate nor necessary. As a result, Swissmedic was obliged to provide the drug information free of charge on an Internet platform called AIPS. The tender for the construction and operation of the platform was won by an offer from Documed, which according to the "Tages-Anzeiger" was noticeably below that of the competitors.
