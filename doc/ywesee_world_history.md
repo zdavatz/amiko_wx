@@ -1,5 +1,5 @@
-# Medicine Information in Switzerland
-### Introduction to the ywesee world
+# Public Domain Pharmaceutical Information in Switzerland
+### Introduction to the ywesee world: political and technical background
 
 - Source of information: Zeno Davatz
 - Edited by Alex Bettarini, Zeno Davatz
