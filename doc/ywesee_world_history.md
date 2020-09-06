@@ -80,9 +80,10 @@
 
 ## Compare three online databases
 
-- AmiKo/ODDB <https://amiko.oddb.org/de/fi?gtin=7680517040107&type=atc&key=V10AX04>
-- Swissmedic <http://www.swissmedicinfo.ch/ShowText.aspx?textType=FI&lang=de&authNr=51704> 
-- Compendium <https://compendium.ch/mpro/mnr/25057/html/de?Platform=Desktop> is the Fachinfo website made by Documed.
+- [AmiKo Online](https://amiko.oddb.org/de/fi?gtin=7680517040107&type=atc&key=V10AX04)
+- [ODDB.org/Generika.cc](https://oddb.org)
+- [Swissmedic AIPS](http://www.swissmedicinfo.ch/ShowText.aspx?textType=FI&lang=de&authNr=51704)
+- [Compendium](https://compendium.ch/mpro/mnr/25057/html/de?Platform=Desktop) is the Fachinfo website made by Documed.
 
 ## Files in `downloads/`
 
