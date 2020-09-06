@@ -67,7 +67,7 @@
 	- [2008 BGE case is closed](https://www.ywesee.com/uploads/Main/ywesee_GmbH_Bundesgerichtsurteil.pdf)
 	- [2008 WEKO fines Documed with CHF 50'000](https://www.ywesee.com/uploads/Main/Eroeffnung_Verfuegung_WEKO_16.7.2008_web.pdf)
 	- 2009 **second** case at the Bundesverwaltungsgericht (BVGER). The BVGER based their case on the BVG and WEKO case of 2008.
-	- [2011 BVGER decision taken.](https://www.ywesee.com/uploads/Main/17.6.2011_BVGER_Swissmedic_Laboratoire_Reboh.pdf) Birth of the AIPS
+	- [2011 BVGER decision taken.](https://www.ywesee.com/uploads/Main/17.6.2011_BVGER_Swissmedic_Laboratoire_Reboh.pdf) Birth of the [AIPS](https://www.ywesee.com/Swissmedic/AIPS)
 	- [2017 WEKO II](https://www.ywesee.com/uploads/Main/Verfgung_WEKO_vom_19._Dezember_2016.pdf), the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
 ## Swissmedic
 - **Historic developments that led to AIPS**
