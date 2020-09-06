@@ -64,22 +64,23 @@
 		- 2009 **second** case at the Bundesverwaltungsgericht (BVGER). The BVGER based their case on the BVG and WEKO case of 2008.
 		- 2011 BVGER decision taken. Birth of the AIPS
 		- 2017 WEKO II, the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
-
+- **Quotes**
 		- Swissmedic always said:
 		<blockquote>Fachinformationen (medical information leaflet) or Patienten-Information (leaflet in the package, for the consumer) have to be published in a complete database where all the information is in.</blockquote>
 		Because ywesee had all this info, Swissmedic allowed ywesee and the pharmaceutical companies to publish the consumer leaflet only online. At this stage the pharmaceutical companies were allowed to publish the consumer leaflet either on ODDB.org generika.cc. The Fachinfo still had to be published in paper form in a book, a very heavy book (dismissed on 1 Jan 2014). Then pharmaceutical companies from the French part of Switzerland said we won't publish on ODDB.org or with HCI-Solutions, we will only publish our consumer leaflet on our website. Then Swissmedic said:
 		<blockquote>that's not okay</blockquote>
 		and they had a legal fight that went in front of the Bundesverwaltungsgericht (which takes care of all problem concerning the government). Then they decided that Swissmedic has to publish all the information on their website, in their own complete database with doctor and patient information in all languages. So Swissmedic said it's okay to publish the consumer leaflet at ywesee as well, because they are complete. Ywesee was much cheaper than Documed.
+
+		- A lot of companies refused to publish their data on Compendium.ch website because it cost too much, e.g., a big pharma company paid CHF 1 million per year to publish their Fachinfo in the Compendium. The manager of Galenica was afraid that if Zeno wins the contract for AIPS everybody will publish there, and they lose control of the market. They won the contract by doing price dropping. The WEKO II case about them using their monopolistic power is still open. It is proven that they blackmailed companies: Documed through "HCI-Solutions" said <blockquote>if you don't pay for your price listing, GTIN, package size, galenic form, dosage, in our database we are going to drop your informtion, then if somebody wants to buy your product in the pharmacy, they won't find it</blockquote> They blackmailed the pharmaceutical companies.
+		- The pharmaceutical companies don't care if they have to pay that amount or more per year. They just want their product to be sold at the highest price they can get, in the highly-priced country of Switzerland, so they would do anything to keep up that high price. Of course if they can save that CHF 1 million they will try to save it. Some people are afraid faster. They will do anything if they are told to do so. For example if a pharmacy in the Zurich hospital says: 
+		<blockquote>we want to work with the data at HCI-Solutions...</blockquote>
+		so they started paying again to HCI-Solutions
+- **Links**
 		- **HCI-Solutions** now makes these websites:
 			- *Compendium* (proprietary, since 2000)
 			- *AIPS* (government)
 			- pharmavista.ch
 			- SAI (since 2020)
-
-		A lot of companies refused to publish their data on Compendium.ch website because it cost too much, e.g., a big pharma company paid CHF 1 million per year to publish their Fachinfo in the Compendium. The manager of Galenica was afraid that if Zeno wins the contract for AIPS everybody will publish there, and they lose control of the market. They won the contract by doing price dropping. The WEKO II case about them using their monopolistic power is still open. It is proven that they blackmailed companies: Documed through "HCI-Solutions" said <blockquote>if you don't pay for your price listing, GTIN, package size, galenic form, dosage, in our database we are going to drop your informtion, then if somebody wants to buy your product in the pharmacy, they won't find it</blockquote> They blackmailed the pharmaceutical companies.
-		- The pharmaceutical companies don't care if they have to pay that amount or more per year. They just want their product to be sold at the highest price they can get, in the highly-priced country of Switzerland, so they would do anything to keep up that high price. Of course if they can save that CHF 1 million they will try to save it. Some people are afraid faster. They will do anything if they are told to do so. For example if a pharmacy in the Zurich hospital says: 
-		<blockquote>we want to work with the data at HCI-Solutions...</blockquote>
-		so they started paying again to HCI-Solutions
 
 ## Compare three online databases
 
