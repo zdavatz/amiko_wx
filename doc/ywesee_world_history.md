@@ -32,7 +32,7 @@
 			- SAI for refdata.ch (since 2020)
 
 - **Refdata**
-	- Refdata is a non-profit foundation, not a company. All the major stakeholders are members of that foundation
+	- [Refdata](https://refdata.ch) is a non-profit foundation, not a company. All the major stakeholders are members of that foundation
 	- it's like a combination, it has all the medicines, and non-medical device which are being paid by the medical insurance
 	- Refata gave the contract of building the SAI to HCI-Solutions (2020). The price of the SAI contract is not pubic.
 	- The technical support of Refdata is done by HCI-Solutions
@@ -43,12 +43,12 @@
 	- they do not deal with prices
 
 - **swisspeddose** 
-	- swisspeddose.ch is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
+	- [swisspeddose.ch](https://swisspeddose.ch) is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
 	- child dosage
 	- made by an independent foundation
 
 - **sappinfo**  
-	- sappinfo.ch is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
+	- [sappinfo.ch](https://sapinfo.ch) is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
 	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **ywesee**
