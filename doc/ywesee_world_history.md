@@ -48,7 +48,7 @@
 	- made by an independent foundation
 
 - **sappinfo**  
-	- [sappinfo.ch](https://sapinfo.ch) is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
+	- [sappinfo.ch](https://sappinfo.ch) is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
 	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **ywesee**
