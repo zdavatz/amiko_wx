@@ -1,7 +1,7 @@
 # Public Domain Pharmaceutical Information in Switzerland
 ### Introduction to the ywesee world: political and technical background
 
-- Source of information: Zeno Davatz
+- Source of information: Legal court documents, Zeno Davatz, Wikipedia
 - Edited by Alex Bettarini, Zeno Davatz, see git log.
 
 
