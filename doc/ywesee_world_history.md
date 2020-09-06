@@ -25,10 +25,10 @@
 	- e-mediat (now HCI-Solutions) copied the concept of the PZN (Pharmazentralnummer) and introduced the Pharmacode in Switzerland. The pharmacode is proprietary code and less exact then the Public Domain GTIN code that has the same function.
 	- Documed and e-mediat where merged into HCI-Solutions. ywesee initiated two WEKO inquiries against Documed (2008) and HCI-Solutions (2014). Documed got fined CHF 50'000, HCI-Solutions/Galenica got fined 4.5 million CHF by WEKO. The second case is still being debated at the Bundesverwaltungsgericht (BVGER) of Switzerland because Galenica is not accepting the fine. Both WEKO inquiries have been big, they sent out questionnaires to all big pharmaceutical companies and stakeholders.
 	- HCI-Solutions 
-	makes these websites:
-			- *Compendium* (proprietary, since 2000)
-			- *AIPS* (government)
-			- pharmavista.ch
+	makes these websites:\
+			- *Compendium* (proprietary, since 2000)\
+			- *AIPS* (government)\
+			- pharmavista.ch\
 			- SAI for refdata.ch (since 2020)
 
 - **Refdata**
