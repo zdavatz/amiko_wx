@@ -555,6 +555,41 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
 void MainWindow::savePrescription()
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    if (!mPatientSheet)
+        mPatientSheet = new PatientSheet(this);
+    
+    mPrescriptionAdapter->cart = mPrescriptionsCart[0].cart;
+    
+    // 1634
+    storeAllPrescriptionComments();
+    Patient *patient = mPatientSheet->retrievePatient();
+    
+    if (mPrescriptionsCart[0].cart.size() < 1) {
+        // TODO: maybe the save button should be disabled to prevent coming here
+#ifdef DEBUG
+        std::cerr << __FUNCTION__ << " cart is empty" << std::endl;
+#endif
+        return;
+    }
+
+    if (!possibleToOverwrite) {
+        mPrescriptionAdapter->savePrescriptionForPatient_withUniqueHash_andOverwrite(patient
+                                          , mPrescriptionsCart[0].uniqueHash
+                                            , false);
+        possibleToOverwrite = true;
+        modifiedPrescription = false;
+        //updateButtons(); __deprecated
+        updatePrescriptionHistory();
+
+#if 1 //def DYNAMIC_AMK_SELECTION
+        // 1655
+        // Select the topmost entry
+        mySectionTitles->SelectRow(0);
+#endif
+
+        return;
+    }
+        
 }
 
 // 1749

@@ -39,8 +39,6 @@ void OperatorIDSheet::saveSettings()
 
     // All other settings are saved using NSUserDefaults
     DefaultsController* defaults = DefaultsController::Instance();
-    std::clog << " Defaults path: <" << defaults->GetPath() << ">" << std::endl;
-    //std::clog << " Defaults path: <" << defaults->GetLocalFile() << ">" << std::endl;
 
     defaults->setString(mTitle->GetValue(), DEFAULTS_DOC_TITLE);
     defaults->setString(mFamilyName->GetValue(), DEFAULTS_DOC_SURNAME);
