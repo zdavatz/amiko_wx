@@ -30,6 +30,7 @@
 #include "PrescriptionsAdapter.hpp"
 #include "PatientSheet.h"
 #include "OperatorIDSheet.h"
+#include "Operator.hpp"
 #include "FullTextSearch.hpp"
 #include "FullTextEntry.hpp"
 #include "DataStore.hpp"
@@ -292,6 +293,12 @@ bool MainWindow::openFullTextDatabase()
     return mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
 }
 
+// 690
+void MainWindow::prescriptionDoctorChanged() // (NSNotification *)notification
+{
+    setOperatorID();
+}
+
 // 696
 void MainWindow::prescriptionPatientChanged() // (NSNotification *)notification
 {
@@ -484,24 +491,22 @@ void MainWindow::tappedOnStar(int row)
 // 1249
 void MainWindow::setOperatorID()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-    if (!mOperatorIDSheet) {
-        mOperatorIDSheet = [[MLOperatorIDSheetController alloc] init];
-        //NSLog(@"%s %d, MLOperatorIDSheetController:%p", __FUNCTION__, __LINE__, mOperatorIDSheet);
-    }
+    if (!mOperatorIDSheet)
+        mOperatorIDSheet = new OperatorIDSheet(this);
 
-    NSString *operatorIDStr = [mOperatorIDSheet retrieveIDAsString];
-    NSString *operatorPlace = [mOperatorIDSheet retrieveCity];
-    myOperatorIDTextField.stringValue = operatorIDStr;
-    myPlaceDateField.stringValue = [NSString stringWithFormat:@"%@, %@", operatorPlace, [MLUtilities prettyTime]];
+    wxString operatorIDStr = mOperatorIDSheet->retrieveIDAsString();
+    wxString operatorPlace = mOperatorIDSheet->retrieveCity();
+    myOperatorIDTextField->SetValue( operatorIDStr);
+    myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
     
-    NSString *documentsDirectory = [MLUtilities documentsDirectory];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:DOC_SIGNATURE_FILENAME];
+    wxString documentsDirectory = UTI::documentsDirectory();
+    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO: setSignature" << std::endl;
+#else
     if (filePath!=nil) {
         NSImage *signatureImg = [[NSImage alloc] initWithContentsOfFile:filePath];
-        [mySignView setSignature:signatureImg];
+        mySignView->setSignature(signatureImg);
     }
 #endif
 }
@@ -586,7 +591,8 @@ void MainWindow::switchTabs(int item)
 
             // Switch tab view
             updateExpertInfoView(wxEmptyString);
-            myTabView->ChangeSelection(0); // 1800
+            // 1800
+            myTabView->ChangeSelection(0);
             break;
 
         case wxID_TB_FAVORITES:
@@ -619,7 +625,8 @@ void MainWindow::switchTabs(int item)
 
             // Switch tab view
             updateExpertInfoView(wxEmptyString);
-            myTabView->ChangeSelection(0); // 1840
+            // 1840
+            myTabView->ChangeSelection(0);
             break;
 
         case wxID_TB_INTERACTIONS:
@@ -637,7 +644,7 @@ void MainWindow::switchTabs(int item)
             
             // 1854
             // Switch tab view
-            myTabView->ChangeSelection(0); // 1855
+            myTabView->ChangeSelection(0);
             break;
 
         case wxID_TB_PRESCRIPTION:
@@ -650,7 +657,18 @@ void MainWindow::switchTabs(int item)
             updatePrescriptionsView();
             updatePrescriptionHistory();
 
-            myTabView->ChangeSelection(2); // 1868
+            // 1868
+            // FIXME: calling SetSelection() instead of ChangeSelection()
+            // is supposed to generate page changing events
+#if 1
+            myTabView->ChangeSelection(2);
+            setOperatorID();
+            myPrescriptionsTableView->Refresh(); // TODO: reloadData
+            // TODO: myPrescriptionsPrintTV->reloadData();
+            //updateButtons(); __deprecated
+#else
+            myTabView->SetSelection(2);
+#endif
             break;
 
 #if 0 // TODO
@@ -2159,6 +2177,8 @@ void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
         saveButton->Enable(false);
         sendButton->Enable(false);
     }
+    
+    // See also validateMenuItem()
 }
 
 // 949
@@ -2268,6 +2288,21 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
     }
 
     myTableView->Refresh();
+}
+
+// 2702
+// TODO: tabView:didSelectTabViewItem:
+void MainWindow::OnSimplebookPageChanged( wxBookCtrlEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO " << event.GetSelection() << std::endl;
+    
+    // It doesn't seem to be called, but see switchTabs()
+    // and myTabView->SetSelection(2)
+}
+
+void MainWindow::OnSimplebookPageChanging( wxBookCtrlEvent& event )
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO " << event.GetSelection() << std::endl;
 }
 
 // There is no corresponding code in amiko-osx, because there it's implemented

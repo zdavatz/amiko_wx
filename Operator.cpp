@@ -13,6 +13,34 @@ Operator::Operator()
     
 }
 
+// 38
+wxString Operator::retrieveOperatorAsString()
+{
+#if 0
+    if (title.length() == 0)
+        title = wxEmptyString;
+    if (postalAddress.length() == 0)
+        postalAddress = wxEmptyString;
+    if (zipCode.length() == 0)
+        zipCode = wxEmptyString;
+    if (city.length() == 0)
+        city = wxEmptyString;
+    if (phoneNumber.length() == 0)
+        phoneNumber = wxEmptyString;
+    if (emailAddress.length() == 0)
+        emailAddress = wxEmptyString;
+    if (givenName.length() == 0)
+        givenName = wxEmptyString;
+#endif
+    
+    if (familyName.length() > 0) {
+        return wxString::Format("%s %s %s\n%s\n%s %s\n%s\n%s",
+                title, givenName, familyName, postalAddress, zipCode, city, phoneNumber, emailAddress);
+    }
+
+    return "...";
+}
+
 // 63
 void Operator::importFromDict(OPER_DICT &dict)
 {

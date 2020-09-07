@@ -34,6 +34,7 @@ public:
     virtual ~Operator() {}
     
     void importFromDict(OPER_DICT &dict);
+    wxString retrieveOperatorAsString();
     
     // 50
     wxString title;

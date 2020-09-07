@@ -25,6 +25,8 @@ class OperatorIDSheet : public OperatorIDSheetBase
 
     void saveSettings();
     void remove();
+    wxString retrieveIDAsString();
+    wxString retrieveCity();
 };
 
 #endif // __OperatorIDSheet__

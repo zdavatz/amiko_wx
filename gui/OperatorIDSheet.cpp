@@ -1,4 +1,6 @@
 #include "OperatorIDSheet.h"
+#include "Operator.hpp"
+#include "MainWindow.h"
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
@@ -28,7 +30,7 @@ void OperatorIDSheet::saveSettings()
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 #else
     // Signature is saved as a PNG to Documents Directory within the app
-    NSString *documentsDirectory = [MLUtilities documentsDirectory];
+    wxString documentsDirectory = UTI::documentsDirectory();
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:DOC_SIGNATURE_FILENAME];
     NSData *png = [mSignView getSignaturePNG];
     [png writeToFile:filePath atomically:YES];
@@ -71,12 +73,65 @@ void OperatorIDSheet::OnLoadSignature( wxCommandEvent& event )
 // 53
 void OperatorIDSheet::OnSaveOperator( wxCommandEvent& event )
 {
+    saveSettings();
+    EndModal(wxID_OK); // remove()
+
+#if 0
+    std::clog << __FUNCTION__ << " TODO" << std::endl;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionDoctorChanged" object:nil];
+#else
+    // Call the notification target directly
+    // call the notification target directly
+    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+    vc->prescriptionDoctorChanged();
+#endif
+}
+
+// 180
+Operator * loadOperator()
+{
+    // Load from user defaults
+    Operator *oper = new Operator;
+    
 #if 1
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 #else
-    saveSettings();
-    remove();
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    oper->title = [defaults stringForKey:DEFAULTS_DOC_TITLE];
+    oper->familyName = [defaults stringForKey:DEFAULTS_DOC_SURNAME];
+    oper->givenName = [defaults stringForKey:DEFAULTS_DOC_NAME];
+    oper->postalAddress = [defaults stringForKey:DEFAULTS_DOC_ADDRESS];
+    oper->zipCode = [defaults stringForKey:DEFAULTS_DOC_ZIP];
+    oper->city = [defaults stringForKey:DEFAULTS_DOC_CITY];
+    oper->country = [defaults stringForKey:DEFAULTS_DOC_COUNTRY];
+    oper->phoneNumber = [defaults stringForKey:DEFAULTS_DOC_PHONE];
+    oper->emailAddress = [defaults stringForKey:DEFAULTS_DOC_EMAIL];
+#endif
+    
+    return oper;
+}
 
-    // TODO: [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionDoctorChanged" object:nil];
+// 238
+wxString OperatorIDSheet::retrieveIDAsString()
+{
+    Operator *oper = loadOperator(); // 'operator' is a C++ reserved word
+    
+    if (oper->familyName.size() > 0 &&
+        oper->givenName.size() > 0)
+        return oper->retrieveOperatorAsString();
+
+    return _("Enter the doctor's address");
+}
+
+// 248
+wxString OperatorIDSheet::retrieveCity()
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    return wxEmptyString;
+#else
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults stringForKey:@"city"];
 #endif
 }
+

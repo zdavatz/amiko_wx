@@ -35,6 +35,8 @@ class MainWindow : public MainWindowBase
 		void OnUpdateUI( wxUpdateUIEvent& event );
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
+		void OnSimplebookPageChanged( wxBookCtrlEvent& event );
+		void OnSimplebookPageChanging( wxBookCtrlEvent& event );
 		void OnSearchFiNow( wxCommandEvent& event );
 		void OnPerformFindAction( wxCommandEvent& event );
 		void OnSearchPatient( wxCommandEvent& event );
@@ -98,6 +100,7 @@ public:
     Medication * getShortMediWithId(long mid);
     void storeAllPrescriptionComments();
     void addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n);
+    void prescriptionDoctorChanged();
     void prescriptionPatientChanged();
 private:
     void setOperatorID();

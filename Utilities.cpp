@@ -33,11 +33,25 @@ const char * appLanguage()
     return "de";
 }
 
+// 104
+wxString documentsDirectory()
+{    
+    return wxStandardPaths::Get().GetUserDataDir();
+}
+
 // 158
 wxString currentTime()
 {
     wxDateTime now = wxDateTime::Now();
     wxString s = now.Format("%Y-%m-%d'T'%H:%M.%S"); // strftime() syntax
+    return s;
+}
+
+// 166
+wxString prettyTime()
+{
+    wxDateTime now = wxDateTime::Now();
+    wxString s = now.Format("%d.%m.%Y (%H:%M:%S)"); // strftime() syntax
     return s;
 }
 

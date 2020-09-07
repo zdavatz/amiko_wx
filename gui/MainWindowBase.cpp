@@ -66,7 +66,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
-	myTabView = new wxSimplebook( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	myTabView = new wxSimplebook( m_panelRight, wxID_TABVIEW, wxDefaultPosition, wxDefaultSize, 0 );
 	panel_komp = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	fiSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -293,7 +293,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menuContacts = new wxMenu();
 	wxMenuItem* m_menuItem12;
-	m_menuItem12 = new wxMenuItem( m_menuContacts, wxID_PATIENT_SEARCH, wxString( _("Patient management...") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuItem12 = new wxMenuItem( m_menuContacts, wxID_PATIENT_SEARCH, wxString( _("Patient management...") ) + wxT('\t') + wxT("ALT+CTRL+P"), wxEmptyString, wxITEM_NORMAL );
 	m_menuContacts->Append( m_menuItem12 );
 
 	wxMenuItem* m_menuItem13;
@@ -340,6 +340,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	m_button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	m_button6->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	myTabView->Connect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGED, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanged ), NULL, this );
+	myTabView->Connect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGING, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanging ), NULL, this );
 	fiSearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );
 	m_button20->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
 	m_button21->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
@@ -383,6 +385,8 @@ MainWindowBase::~MainWindowBase()
 	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	m_button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	m_button6->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	myTabView->Disconnect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGED, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanged ), NULL, this );
+	myTabView->Disconnect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGING, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanging ), NULL, this );
 	fiSearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );
 	m_button20->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
 	m_button21->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnPerformFindAction ), NULL, this );
