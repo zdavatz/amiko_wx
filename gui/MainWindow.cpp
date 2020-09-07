@@ -38,6 +38,7 @@
 #include "PrescriptionItem.hpp"
 #include "PrescriptionsCart.hpp"
 #include "ItemCellView.hpp"
+#include "config.h"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -113,7 +114,9 @@ MainWindow::MainWindow( wxWindow* parent )
 , modifiedPrescription(false)
 , csvMedication(nullptr)
 {
-	std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
+#ifndef NDEBUG
+    std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
+#endif
     if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
         m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));

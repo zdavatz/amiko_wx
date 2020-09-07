@@ -1,6 +1,7 @@
 #include "OperatorIDSheet.h"
 #include "Operator.hpp"
 #include "MainWindow.h"
+#include "DefaultsController.hpp"
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
@@ -26,29 +27,35 @@ void OperatorIDSheet::remove()
 // 157
 void OperatorIDSheet::saveSettings()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
     // Signature is saved as a PNG to Documents Directory within the app
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO: png" << std::endl;
+#else
     wxString documentsDirectory = UTI::documentsDirectory();
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:DOC_SIGNATURE_FILENAME];
     NSData *png = [mSignView getSignaturePNG];
     [png writeToFile:filePath atomically:YES];
-    
-    // All other settings are saved using NSUserDefaults
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[mTitle stringValue]        forKey:DEFAULTS_DOC_TITLE];
-    [defaults setObject:[mFamilyName stringValue]   forKey:DEFAULTS_DOC_SURNAME];
-    [defaults setObject:[mGivenName stringValue]    forKey:DEFAULTS_DOC_NAME];
-    [defaults setObject:[mPostalAddress stringValue] forKey:DEFAULTS_DOC_ADDRESS];
-    [defaults setObject:[mZipCode stringValue]      forKey:DEFAULTS_DOC_ZIP];
-    [defaults setObject:[mCity stringValue]         forKey:DEFAULTS_DOC_CITY];
-    [defaults setObject:[mCountry stringValue]      forKey:DEFAULTS_DOC_COUNTRY];
-    [defaults setObject:[mPhoneNumber stringValue]  forKey:DEFAULTS_DOC_PHONE];
-    [defaults setObject:[mEmailAddress stringValue] forKey:DEFAULTS_DOC_EMAIL];
-    // Writes mods to persistent storage
-    [defaults synchronize];
 #endif
+
+    // All other settings are saved using NSUserDefaults
+    DefaultsController* defaults = DefaultsController::Instance();
+    std::clog << " Defaults path: <" << defaults->GetPath() << ">" << std::endl;
+    //std::clog << " Defaults path: <" << defaults->GetLocalFile() << ">" << std::endl;
+
+    defaults->setString(mTitle->GetValue(), DEFAULTS_DOC_TITLE);
+    defaults->setString(mFamilyName->GetValue(), DEFAULTS_DOC_SURNAME);
+    defaults->setString(mGivenName->GetValue(), DEFAULTS_DOC_NAME);
+    defaults->setString(mPostalAddress->GetValue(), DEFAULTS_DOC_ADDRESS);
+    defaults->setString(mZipCode->GetValue(), DEFAULTS_DOC_ZIP);
+    defaults->setString(mCity->GetValue(), DEFAULTS_DOC_CITY);
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO: mCountry" << std::endl;
+#else
+    defaults->setString(mCountry->GetValue(), DEFAULTS_DOC_COUNTRY);
+#endif
+    defaults->setString(mPhoneNumber->GetValue(), DEFAULTS_DOC_PHONE);
+    defaults->setString(mEmailAddress->GetValue(), DEFAULTS_DOC_EMAIL);
+    defaults->Flush();
 }
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -88,25 +95,22 @@ void OperatorIDSheet::OnSaveOperator( wxCommandEvent& event )
 }
 
 // 180
-Operator * loadOperator()
+Operator * OperatorIDSheet::loadOperator()
 {
     // Load from user defaults
     Operator *oper = new Operator;
-    
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    oper->title = [defaults stringForKey:DEFAULTS_DOC_TITLE];
-    oper->familyName = [defaults stringForKey:DEFAULTS_DOC_SURNAME];
-    oper->givenName = [defaults stringForKey:DEFAULTS_DOC_NAME];
-    oper->postalAddress = [defaults stringForKey:DEFAULTS_DOC_ADDRESS];
-    oper->zipCode = [defaults stringForKey:DEFAULTS_DOC_ZIP];
-    oper->city = [defaults stringForKey:DEFAULTS_DOC_CITY];
-    oper->country = [defaults stringForKey:DEFAULTS_DOC_COUNTRY];
-    oper->phoneNumber = [defaults stringForKey:DEFAULTS_DOC_PHONE];
-    oper->emailAddress = [defaults stringForKey:DEFAULTS_DOC_EMAIL];
-#endif
+
+    DefaultsController* defaults = DefaultsController::Instance();
+
+    oper->title = defaults->getString(DEFAULTS_DOC_TITLE, "");
+    oper->familyName = defaults->getString(DEFAULTS_DOC_SURNAME, "");
+    oper->givenName = defaults->getString(DEFAULTS_DOC_NAME, "");
+    oper->postalAddress = defaults->getString(DEFAULTS_DOC_ADDRESS, "");
+    oper->zipCode = defaults->getString(DEFAULTS_DOC_ZIP, "");
+    oper->city = defaults->getString(DEFAULTS_DOC_CITY, "");
+    oper->country = defaults->getString(DEFAULTS_DOC_COUNTRY, "");
+    oper->phoneNumber = defaults->getString(DEFAULTS_DOC_PHONE, "");
+    oper->emailAddress = defaults->getString(DEFAULTS_DOC_EMAIL, "");
     
     return oper;
 }
@@ -126,12 +130,7 @@ wxString OperatorIDSheet::retrieveIDAsString()
 // 248
 wxString OperatorIDSheet::retrieveCity()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    return wxEmptyString;
-#else
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults stringForKey:@"city"];
-#endif
+    DefaultsController* defaults = DefaultsController::Instance();
+    return defaults->getString(DEFAULTS_DOC_CITY, "");
 }
 
