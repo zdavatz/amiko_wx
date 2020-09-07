@@ -9,7 +9,8 @@
 #include <wx/wx.h>
 #include <wx/arrstr.h>
 #include <wx/wfstream.h>
-#include "wx/base64.h"
+#include <wx/base64.h>
+#include <wx/url.h>
 
 #include <nlohmann/json.hpp>
 
@@ -20,6 +21,8 @@
 #include "Patient.hpp"
 //#include "Contacts.h"
 #include "Operator.hpp"
+#include "Utilities.hpp"
+#include "DefaultsController.hpp"
 
 PrescriptionsAdapter::PrescriptionsAdapter()
 : patient(nullptr)
@@ -46,6 +49,173 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
 
     wxArrayString a;
     return a;
+}
+
+// 160
+// It will in any case create a new file
+// if the overwrite flag is set, delete the original file
+wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwrite(Patient *p, wxString hash, bool overwrite)
+{
+    wxURL url;
+
+    if (!p) {
+        std::cerr << __FUNCTION__ << " " << __LINE__ << ", patient not defined\n";
+        return url;
+    }
+
+    if (overwrite && !currentFileName) {
+        std::cerr << __FUNCTION__ << " " << __LINE__ << ", cannot overwrite an empty filename\n";
+        return url;
+    }
+
+    if (cart.size() < 1) {
+        std::cerr << __FUNCTION__ << " " << __LINE__ << ", cart is empty\n";
+        return url;
+    }
+
+    // 181
+    // Assign patient
+    patient = p;
+    
+    wxString documentsDir = UTI::documentsDirectory();
+
+    // Check if patient has already a directory, if not create one
+    wxString patientDir = documentsDir + wxFILE_SEP_PATH + patient->uniqueId;
+    
+    if (overwrite) {
+        // Delete old file
+        if (!wxRemoveFile(currentFileName)) {
+            std::cerr << "Error deleting: " << currentFileName << std::endl;
+        }
+    }
+    
+    // 199
+    // Define a new filename
+    wxString currentTime = UTI::currentTime();
+    currentTime.Replace(":", "");
+    currentTime.Replace(".", "");
+    wxString fileName = wxString::Format("RZ_%s.amk", currentTime);
+    
+    wxMkdir(patientDir);
+    wxString path = patientDir + wxFILE_SEP_PATH + fileName;
+
+    currentFileName = path;  // full path
+    std::clog << __FUNCTION__ << " new currentFileName:" << currentFileName << std::endl;
+
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    // TODO: instead of using nested dictionaries work in JSON directly
+#else
+    // 210
+    NSMutableDictionary *prescriptionDict = [[NSMutableDictionary alloc] init];
+#endif
+    
+    std::map<wxString, wxString> patientDict;
+    patientDict[KEY_AMK_PAT_ID] = patient->uniqueId;
+    patientDict[KEY_AMK_PAT_SURNAME] = patient->familyName;
+    patientDict[KEY_AMK_PAT_NAME] = patient->givenName;
+    patientDict[KEY_AMK_PAT_BIRTHDATE] = patient->birthDate;
+    patientDict[KEY_AMK_PAT_GENDER] = patient->gender;
+    patientDict[KEY_AMK_PAT_WEIGHT] = wxString::Format("%d", patient->weightKg);
+    patientDict[KEY_AMK_PAT_HEIGHT] = wxString::Format("%d", patient->heightCm);
+    patientDict[KEY_AMK_PAT_ADDRESS] = patient->postalAddress;
+    patientDict[KEY_AMK_PAT_ZIP] = patient->zipCode;
+    patientDict[KEY_AMK_PAT_CITY] = patient->city;
+    patientDict[KEY_AMK_PAT_COUNTRY] = patient->country;
+    patientDict[KEY_AMK_PAT_PHONE] = patient->phoneNumber;
+    patientDict[KEY_AMK_PAT_EMAIL] = patient->emailAddress;
+    
+    std::map<wxString, wxString> operatorDict;
+    DefaultsController* defaults = DefaultsController::Instance();
+    
+    operatorDict[KEY_AMK_DOC_TITLE] = defaults->getString(DEFAULTS_DOC_TITLE, "");
+    operatorDict[KEY_AMK_DOC_SURNAME] = defaults->getString(DEFAULTS_DOC_SURNAME, "");
+    operatorDict[KEY_AMK_DOC_NAME] = defaults->getString(DEFAULTS_DOC_NAME, "");
+    operatorDict[KEY_AMK_DOC_ADDRESS] = defaults->getString(DEFAULTS_DOC_ADDRESS, "");
+    operatorDict[KEY_AMK_DOC_ZIP] = defaults->getString(DEFAULTS_DOC_ZIP, "");
+    operatorDict[KEY_AMK_DOC_CITY] = defaults->getString(DEFAULTS_DOC_CITY, "");
+    operatorDict[KEY_AMK_DOC_PHONE] = defaults->getString(DEFAULTS_DOC_PHONE, "");
+    operatorDict[KEY_AMK_DOC_EMAIL] = defaults->getString(DEFAULTS_DOC_EMAIL, "");
+    
+    placeDate = wxString::Format("%s, %s",
+                 defaults->getString(DEFAULTS_DOC_CITY, ""),
+                 UTI::prettyTime());
+    
+    wxString encodedImgStr;
+    wxString filePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+    if (filePath.length() > 0) {
+#if 1
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#else
+        // 245
+        NSImage *img = [[NSImage alloc] initWithContentsOfFile:filePath];
+        NSData *imgData = [img TIFFRepresentation];
+        NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imgData];
+        NSData *data = [imageRep representationUsingType:NSPNGFileType properties:@{}];
+        encodedImgStr = [data base64Encoding];
+#endif
+    }
+    operatorDict[KEY_AMK_DOC_SIGNATURE] = encodedImgStr;
+    
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#else
+    // 253
+    NSMutableArray *prescription = [[NSMutableArray alloc] init];
+#endif
+
+    for (PrescriptionItem *item : cart) {
+        std::map<wxString, wxString> dict;
+
+        dict["product_name"] = item->title;
+        dict["package"] = item->fullPackageInfo;
+        if (item->eanCode.length() > 0)
+            dict["eancode"] = item->eanCode;
+
+        dict["comment"] = item->comment;
+        dict["title"] = item->med->title;
+        dict["owner"] = item->med->auth;
+        dict["regnrs"] = item->med->regnrs;
+        dict["atccode"] = item->med->atccode;
+#if 1
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+#else
+        [prescription addObject:dict];
+#endif
+    }
+        
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    //prescriptionDict[prescription_hash] = hash;
+#else
+    [prescriptionDict setObject:hash forKey:@"prescription_hash"];
+    [prescriptionDict setObject:placeDate forKey:@"place_date"];
+    [prescriptionDict setObject:patientDict forKey:@"patient"];
+    [prescriptionDict setObject:operatorDict forKey:@"operator"];
+    [prescriptionDict setObject:prescription forKey:@"medications"];
+#endif
+    
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    return wxURL(path);
+#else
+    // Map cart array to json
+    NSError *error = nil;
+    NSData *jsonObject = [NSJSONSerialization dataWithJSONObject:prescriptionDict
+                                                         options:NSJSONWritingPrettyPrinted
+                                                           error:&error];
+    // BOOL success = [jsonObject writeToFile:path options:NSUTF8StringEncoding error:&error];
+    
+    NSString *jsonStr = [[NSString alloc] initWithData:jsonObject encoding:NSUTF8StringEncoding];
+    NSString *base64Str = [MLUtilities encodeStringToBase64:jsonStr];
+    
+    BOOL success = [base64Str writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if (!success) {
+        NSLog(@"Error: %@", [error userInfo]);
+    }
+
+    return [[NSURL alloc] initWithString:path];
+#endif
 }
 
 // 292

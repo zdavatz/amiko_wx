@@ -12,7 +12,9 @@ namespace UTI
 {
 
 const char * appLanguage();
+wxString documentsDirectory();
 wxString currentTime();
+wxString prettyTime();
 wxString getColorCss();
 wxString sha256(const wxString str);
 

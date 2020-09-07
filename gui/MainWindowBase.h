@@ -49,36 +49,37 @@
 #define wxID_BTN_THERAPY 1005
 #define wxID_BTN_FULL_TEXT 1006
 #define wxID_MY_TV 1007
-#define wxID_FI_SEARCH_FIELD 1008
-#define wxID_FI_FIND_PREVIOUS 1009
-#define wxID_FI_FIND_NEXT 1010
-#define wxID_FI_FIND_DONE 1011
-#define wxID_FI_WEBVIEW 1012
-#define wxID_PATIENT_SEARCH 1013
-#define wxID_MEDICINE_LIST 1014
-#define wxID_NEW_PRESCRIPTION 1015
-#define wxID_CHECK_INTERACTIONS 1016
-#define wxID_SAVE_PRESCRIPTION 1017
-#define wxID_SEND_PRESCRIPTION 1018
-#define wxID_SECTION_TITLES 1019
-#define wxID_TB_COMPENDIUM 1020
-#define wxID_TB_FAVORITES 1021
-#define wxID_TB_INTERACTIONS 1022
-#define wxID_TB_PRESCRIPTION 1023
-#define wxID_EXPORT_WORDLIST 1024
-#define wxID_FI_FIND_SHOW 1025
-#define wxID_UPDATE_DB 1026
-#define wxID_LOAD_DB 1027
-#define wxID_LOAD_PRESCRIPTION 1028
-#define wxID_SET_OPERATOR_ID 1029
-#define wxID_RB_SEX 1030
-#define wxID_SAVE_PATIENT 1031
-#define wxID_PATIENT_LIST 1032
-#define wxID_ADD_PATIENT 1033
-#define wxID_DELETE_PATIENT 1034
-#define wxID_CLEAR_SIGNATURE 1035
-#define wxID_LOAD_SIGNATURE 1036
-#define wxID_SAVE_OPERATOR 1037
+#define wxID_TABVIEW 1008
+#define wxID_FI_SEARCH_FIELD 1009
+#define wxID_FI_FIND_PREVIOUS 1010
+#define wxID_FI_FIND_NEXT 1011
+#define wxID_FI_FIND_DONE 1012
+#define wxID_FI_WEBVIEW 1013
+#define wxID_PATIENT_SEARCH 1014
+#define wxID_MEDICINE_LIST 1015
+#define wxID_NEW_PRESCRIPTION 1016
+#define wxID_CHECK_INTERACTIONS 1017
+#define wxID_SAVE_PRESCRIPTION 1018
+#define wxID_SEND_PRESCRIPTION 1019
+#define wxID_SECTION_TITLES 1020
+#define wxID_TB_COMPENDIUM 1021
+#define wxID_TB_FAVORITES 1022
+#define wxID_TB_INTERACTIONS 1023
+#define wxID_TB_PRESCRIPTION 1024
+#define wxID_EXPORT_WORDLIST 1025
+#define wxID_FI_FIND_SHOW 1026
+#define wxID_UPDATE_DB 1027
+#define wxID_LOAD_DB 1028
+#define wxID_LOAD_PRESCRIPTION 1029
+#define wxID_SET_OPERATOR_ID 1030
+#define wxID_RB_SEX 1031
+#define wxID_SAVE_PATIENT 1032
+#define wxID_PATIENT_LIST 1033
+#define wxID_ADD_PATIENT 1034
+#define wxID_DELETE_PATIENT 1035
+#define wxID_CLEAR_SIGNATURE 1036
+#define wxID_LOAD_SIGNATURE 1037
+#define wxID_SAVE_OPERATOR 1038
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -132,6 +133,8 @@ class MainWindowBase : public wxFrame
 		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSimplebookPageChanged( wxBookCtrlEvent& event ) { event.Skip(); }
+		virtual void OnSimplebookPageChanging( wxBookCtrlEvent& event ) { event.Skip(); }
 		virtual void OnSearchFiNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPerformFindAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSearchPatient( wxCommandEvent& event ) { event.Skip(); }

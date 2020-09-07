@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <wx/url.h>
+
 class Patient;
 class PrescriptionItem;
 class Operator;
@@ -21,6 +23,7 @@ public:
     wxArrayString listOfPrescriptionURLsForPatient(Patient *p);
     wxArrayString listOfPrescriptionsForPatient(Patient *p);
     wxString loadPrescriptionFromFile(wxString filePath);
+    wxURL savePrescriptionForPatient_withUniqueHash_andOverwrite(Patient *p, wxString hash, bool overwrite);
     
     // 30
     std::vector<PrescriptionItem *> cart;

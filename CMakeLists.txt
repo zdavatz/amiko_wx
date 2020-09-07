@@ -5,6 +5,11 @@ project (AmiKo-wx
 
 SET(CMAKE_CXX_STANDARD 17)
 
+configure_file(
+    "${CMAKE_SOURCE_DIR}/config.h.in"
+    "${CMAKE_BINARY_DIR}/config.h")
+include_directories(${CMAKE_BINARY_DIR})
+
 #=============================================================================
 
 if (UNIX)
@@ -141,6 +146,7 @@ MESSAGE(STATUS "Configure target: ${APP_NAME}")
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
     Utilities.cpp Utilities.hpp
+    DefaultsController.cpp DefaultsController.hpp
     Medication.cpp Medication.hpp
     TableViewDelegate.cpp TableViewDelegate.hpp
     FullTextSearch.cpp FullTextSearch.hpp

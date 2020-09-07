@@ -173,7 +173,7 @@ void PatientSheet::deletePatientFolder_withBackup(Patient *patient, bool backup)
 #if 1
     std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
 #else
-    NSString *documentsDir = [MLUtilities documentsDirectory];
+    wxString documentsDir = UTI::documentsDirectory();
     NSString *patientDir = [documentsDir stringByAppendingString:[NSString stringWithFormat:@"/%@", patient.uniqueId]];
     
     if (backup) {
@@ -324,14 +324,14 @@ void PatientSheet::OnSelectPatient( wxMouseEvent& event )
 
 #if 0 // TODO: notification
     if (mSelectedPatient) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientChanged" object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:"MLPrescriptionPatientChanged" object:self];
     }
 
     EndModal(wxID_OK); // remove
 #else
     EndModal(wxID_OK); // remove
 
-    // call the notification target directly
+    // Call the notification target directly
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
     vc->prescriptionPatientChanged();
 #endif
