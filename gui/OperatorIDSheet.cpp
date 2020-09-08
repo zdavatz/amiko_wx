@@ -49,11 +49,7 @@ void OperatorIDSheet::saveSettings()
     defaults->setString(mPostalAddress->GetValue(), DEFAULTS_DOC_ADDRESS);
     defaults->setString(mZipCode->GetValue(), DEFAULTS_DOC_ZIP);
     defaults->setString(mCity->GetValue(), DEFAULTS_DOC_CITY);
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO: mCountry" << std::endl;
-#else
-    defaults->setString(mCountry->GetValue(), DEFAULTS_DOC_COUNTRY);
-#endif
+    //defaults->setString(mCountry->GetValue(), DEFAULTS_DOC_COUNTRY);
     defaults->setString(mPhoneNumber->GetValue(), DEFAULTS_DOC_PHONE);
     defaults->setString(mEmailAddress->GetValue(), DEFAULTS_DOC_EMAIL);
     defaults->Flush();
@@ -74,7 +70,6 @@ void OperatorIDSheet::loadSettings()
             std::cerr << __FUNCTION__ << " couldn't load " << filePath << std::endl;
     }
 
-
     // 208
     Operator *oper = loadOperator(); // 'operator' is a C++ reserved word
     
@@ -84,13 +79,7 @@ void OperatorIDSheet::loadSettings()
     mPostalAddress->SetValue( oper->postalAddress);
     mZipCode->SetValue( oper->zipCode);
     mCity->SetValue( oper->city);
-
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO: mCountry" << std::endl;
-#else
-    mCountry->SetValue( oper->country);
-#endif
-
+    //mCountry->SetValue( oper->country);
     mPhoneNumber->SetValue( oper->phoneNumber);
     mEmailAddress->SetValue( oper->emailAddress);
 }
