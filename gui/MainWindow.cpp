@@ -39,6 +39,7 @@
 #include "PrescriptionsCart.hpp"
 #include "ItemCellView.hpp"
 #include "config.h"
+#include "SignatureView.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -504,14 +505,15 @@ void MainWindow::setOperatorID()
     
     wxString documentsDirectory = UTI::documentsDirectory();
     wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO: setSignature" << std::endl;
-#else
-    if (filePath!=nil) {
-        NSImage *signatureImg = [[NSImage alloc] initWithContentsOfFile:filePath];
-        mySignView->setSignature(signatureImg);
+    if (wxFileName::Exists(filePath)) {
+        wxImage image;
+        if (image.LoadFile(filePath, wxBITMAP_TYPE_PNG)) {
+            mySignView->SetBitmap( wxBitmap(image));
+            mySignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
+        }
+        else
+            std::cerr << __FUNCTION__ << " couldn't load " << filePath << std::endl;
     }
-#endif
 }
 
 
@@ -2992,7 +2994,7 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 
 void MainWindow::mySectionTitles_reloadData()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << std::endl;
 
     mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will probably be called
     int n = mListOfSectionTitles.size();

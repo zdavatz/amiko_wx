@@ -10,6 +10,8 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+class SignatureView;
+
 #include <wx/string.h>
 #include <wx/srchctrl.h>
 #include <wx/gdicmn.h>
@@ -26,7 +28,7 @@
 #include <wx/stattext.h>
 #include <wx/webview.h>
 #include <wx/textctrl.h>
-#include <wx/bmpbuttn.h>
+#include <wx/statbmp.h>
 #include <wx/treectrl.h>
 #include <wx/simplebook.h>
 #include <wx/dataview.h>
@@ -37,7 +39,6 @@
 #include <wx/radiobox.h>
 #include <wx/listctrl.h>
 #include <wx/dialog.h>
-#include <wx/statbmp.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +111,6 @@ class MainWindowBase : public wxFrame
 		wxPanel* panel_inter;
 		wxPanel* panel_rezept;
 		wxButton* m_button7;
-		wxBitmapButton* m_bpButton1;
 		wxTreeCtrl* myPrescriptionsTableView;
 		wxButton* btnNewPrescription;
 		wxButton* btnCheckInter;
@@ -165,6 +165,7 @@ class MainWindowBase : public wxFrame
 		wxTextCtrl* myPatientAddressTextField;
 		wxStaticText* myPlaceDateField;
 		wxTextCtrl* myOperatorIDTextField;
+		SignatureView* mySignView;
 		wxButton* saveButton;
 		wxButton* sendButton;
 		wxDataViewListCtrl* mySectionTitles;
@@ -290,7 +291,7 @@ class OperatorIDSheetBase : public wxDialog
 		wxTextCtrl* mZipCode;
 		wxTextCtrl* mPhoneNumber;
 		wxTextCtrl* mEmailAddress;
-		wxStaticBitmap* mSignView;
+		SignatureView* mSignView;
 
 		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 451,512 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~OperatorIDSheetBase();
