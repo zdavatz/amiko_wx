@@ -2,12 +2,15 @@
 #include "Operator.hpp"
 #include "MainWindow.h"
 #include "DefaultsController.hpp"
+#include "Utilities.hpp"
+#include "SignatureView.hpp"
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
 :
 OperatorIDSheetBase( parent )
 {
+    loadSettings();
 
 }
 
@@ -56,23 +59,77 @@ void OperatorIDSheet::saveSettings()
     defaults->Flush();
 }
 
+// 199
+void OperatorIDSheet::loadSettings()
+{
+    wxString documentsDirectory = UTI::documentsDirectory();
+    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+    if (wxFileName::Exists(filePath)) {
+        wxImage image;
+        if (image.LoadFile(filePath, wxBITMAP_TYPE_PNG)) {
+            mSignView->SetBitmap( wxBitmap(image));
+            mSignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
+        }
+        else
+            std::cerr << __FUNCTION__ << " couldn't load " << filePath << std::endl;
+    }
+
+
+    // 208
+    Operator *oper = loadOperator(); // 'operator' is a C++ reserved word
+    
+    mTitle->SetValue( oper->title);
+    mFamilyName->SetValue( oper->familyName);
+    mGivenName->SetValue( oper->givenName);
+    mPostalAddress->SetValue( oper->postalAddress);
+    mZipCode->SetValue( oper->zipCode);
+    mCity->SetValue( oper->city);
+
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO: mCountry" << std::endl;
+#else
+    mCountry->SetValue( oper->country);
+#endif
+
+    mPhoneNumber->SetValue( oper->phoneNumber);
+    mEmailAddress->SetValue( oper->emailAddress);
+}
+
 // /////////////////////////////////////////////////////////////////////////////
+// 81
 void OperatorIDSheet::OnClearSignature( wxCommandEvent& event )
 {
 #if 1
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
 #else
-    // TODO: create new class SignatureView
     mSignView->clear();
 #endif
 }
 
+// 61
 void OperatorIDSheet::OnLoadSignature( wxCommandEvent& event )
 {
-#if 1
+    // Create a file open dialog class
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-#endif
+    wxFileDialog openDlgPanel(this,
+                              _("Please select signature file"),
+                              wxEmptyString,
+                              wxEmptyString,
+                              _("PNG files (*.png)|*.PNG|") +
+                              _("GIF files (*.gif)|*.GIF|") +
+                              _("JPG files (*.jpg)|*.JPG"),
+                              wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
+                              wxDefaultPosition);
+    
+    if (openDlgPanel.ShowModal() != wxID_OK)
+        return;
+    
+    // 74
+    // Grab reference to what has been selected
+    wxString fileURL = openDlgPanel.GetPath();
+    wxImage image;
+    image.LoadFile(fileURL);
+    mSignView->SetBitmap( wxBitmap(image));
 }
 
 // 53

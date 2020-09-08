@@ -6,7 +6,14 @@
 
 #include "SignatureView.hpp"
 
-SignatureView::SignatureView()
+SignatureView::SignatureView(wxWindow *parent,
+                      wxWindowID id,
+                      const wxBitmap& bitmap,
+                      const wxPoint& pos,
+                      const wxSize& size,
+                      long style,
+                      const wxString& name)
+: wxStaticBitmap(parent, id, bitmap, pos, size, style, name)
 {
     
 }

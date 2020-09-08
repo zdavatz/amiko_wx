@@ -6,9 +6,18 @@
 
 #pragma once
 
-class SignatureView
+#include <wx/statbmp.h>
+
+class SignatureView : public wxStaticBitmap
 {
 public:
-    SignatureView();
+    SignatureView(wxWindow *parent,
+                  wxWindowID id,
+                  const wxBitmap& bitmap,
+                  const wxPoint& pos = wxDefaultPosition,
+                  const wxSize& size = wxDefaultSize,
+                  long style = 0,
+                  const wxString& name = wxASCII_STR(wxStaticBitmapNameStr));
+
     virtual ~SignatureView() {}
 };

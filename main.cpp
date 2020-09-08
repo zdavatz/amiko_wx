@@ -32,6 +32,8 @@ bool MyApp::OnInit()
     
 	//std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
 
+    wxInitAllImageHandlers();
+
 #if 1
     if (wxString(APP_NAME) == "CoMed")
         m_lang = wxLANGUAGE_FRENCH;

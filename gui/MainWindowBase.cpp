@@ -5,6 +5,8 @@
 // PLEASE DO *NOT* EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
+#include "SignatureView.hpp"
+
 #include "MainWindowBase.h"
 
 #include "../res/xpm/AmiKo.xpm"
@@ -148,8 +150,8 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	myOperatorIDTextField = new wxTextCtrl( panel_rezept, wxID_ANY, _("Enter the doctor's address"), wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
 	bSizer12_doctor->Add( myOperatorIDTextField, 0, wxALL|wxEXPAND, 5 );
 
-	m_bpButton1 = new wxBitmapButton( panel_rezept, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 150,57 ), wxBU_AUTODRAW|0 );
-	bSizer12_doctor->Add( m_bpButton1, 0, wxALL, 5 );
+	mySignView = new SignatureView( panel_rezept, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 383,134 ), 0 );
+	bSizer12_doctor->Add( mySignView, 0, wxALL, 5 );
 
 
 	bSizer10->Add( bSizer12_doctor, 1, wxEXPAND, 5 );
@@ -723,7 +725,7 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	m_button20 = new wxButton( this, wxID_CLEAR_SIGNATURE, _("x"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
 	bSizer19->Add( m_button20, 0, wxALIGN_RIGHT|wxALL, 5 );
 
-	mSignView = new wxStaticBitmap( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 383,134 ), 0 );
+	mSignView = new SignatureView( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 383,134 ), 0 );
 	mSignView->SetBackgroundColour( wxColour( 254, 254, 254 ) );
 
 	bSizer19->Add( mSignView, 1, wxALL|wxEXPAND, 5 );

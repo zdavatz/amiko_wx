@@ -25,6 +25,7 @@ class OperatorIDSheet : public OperatorIDSheetBase
 		OperatorIDSheet( wxWindow* parent );
 	//// end generated class members
 
+    void loadSettings();
     void saveSettings();
     void remove();
     wxString retrieveIDAsString();
