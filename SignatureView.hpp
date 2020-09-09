@@ -7,6 +7,7 @@
 #pragma once
 
 #include <wx/statbmp.h>
+#include <wx/image.h>
 
 class SignatureView : public wxStaticBitmap
 {
@@ -20,4 +21,5 @@ public:
                   const wxString& name = wxASCII_STR(wxStaticBitmapNameStr));
 
     virtual ~SignatureView() {}
+    wxImage getSignaturePNG();
 };

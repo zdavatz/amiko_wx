@@ -31,14 +31,10 @@ void OperatorIDSheet::remove()
 void OperatorIDSheet::saveSettings()
 {
     // Signature is saved as a PNG to Documents Directory within the app
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO: png" << std::endl;
-#else
     wxString documentsDirectory = UTI::documentsDirectory();
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:DOC_SIGNATURE_FILENAME];
-    NSData *png = [mSignView getSignaturePNG];
-    [png writeToFile:filePath atomically:YES];
-#endif
+    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+    wxImage png = mSignView->getSignaturePNG();
+    png.SaveFile(filePath, wxBITMAP_TYPE_PNG);
 
     // All other settings are saved using NSUserDefaults
     DefaultsController* defaults = DefaultsController::Instance();

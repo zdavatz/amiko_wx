@@ -30,8 +30,6 @@ bool MyApp::OnInit()
     if (!wxApp::OnInit())
         return false;
     
-	//std::cerr << __PRETTY_FUNCTION__ << " APP_NAME " << APP_NAME << std::endl;
-
     wxInitAllImageHandlers();
 
 #if 1

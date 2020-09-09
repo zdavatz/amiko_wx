@@ -21,6 +21,8 @@ void PrescriptionsCart::makeNewUniqueHash()
 {
 #if 1
     std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    // https://github.com/benwebber/sqlite3-uuid
+    //uuidCreate();
 #else
     uniqueHash = [[NSUUID UUID] UUIDString];
 #endif
