@@ -344,9 +344,14 @@ void MainWindow::updatePrescriptionHistory()
         return;
     }
 
+    // 750
     // Extract section IDs
     if (!mMed)
         return;
+    
+    // not in amiko-osk
+    if (!mPatientSheet)
+        mPatientSheet = new PatientSheet(this);
 
     if (mMed->sectionIds) {
         wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionURLsForPatient( mPatientSheet->retrievePatient());
@@ -574,23 +579,73 @@ void MainWindow::savePrescription()
         return;
     }
 
+    // 1645
     if (!possibleToOverwrite) {
-        mPrescriptionAdapter->savePrescriptionForPatient_withUniqueHash_andOverwrite(patient
-                                          , mPrescriptionsCart[0].uniqueHash
-                                            , false);
+        mPrescriptionAdapter->savePrescriptionForPatient_withUniqueHash_andOverwrite( patient, mPrescriptionsCart[0].uniqueHash, false);
         possibleToOverwrite = true;
         modifiedPrescription = false;
         //updateButtons(); __deprecated
         updatePrescriptionHistory();
 
-#if 1 //def DYNAMIC_AMK_SELECTION
+#if 1
+        std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO" << std::endl;
+#else
+        #if 1 //def DYNAMIC_AMK_SELECTION
         // 1655
         // Select the topmost entry
         mySectionTitles->SelectRow(0);
+        #endif
 #endif
-
         return;
     }
+
+    // 1633
+    wxMessageDialog alert(this,
+                          _("Do you really want to overwrite the existing prescription ? (NO to generate a new one)"),
+                          _("Overwrite prescription?"),
+                          wxNO_DEFAULT | wxYES_NO | wxCANCEL | wxICON_WARNING);
+    // TODO: [alert addButtonWithTitle:NSLocalizedString(@"New prescription", nil)]; // NO button
+
+    int returnCode = alert.ShowModal();
+    
+    // 1684
+    // Create a new hash for both "overwrite" and "new file"
+    if (returnCode != wxID_CANCEL)
+        mPrescriptionsCart[0].makeNewUniqueHash();  // Issue #9
+
+    wxURL url;
+
+    switch ( returnCode )
+    {
+        case wxID_YES: // Overwrite
+            url = mPrescriptionAdapter->savePrescriptionForPatient_withUniqueHash_andOverwrite( patient, mPrescriptionsCart[0].uniqueHash, true);
+            modifiedPrescription = false;
+            //updateButtons(); __deprecated
+            break;
+
+        case wxID_NO: // NewFile
+            url = mPrescriptionAdapter->savePrescriptionForPatient_withUniqueHash_andOverwrite( patient, mPrescriptionsCart[0].uniqueHash, false);
+            possibleToOverwrite = true;
+            modifiedPrescription = false;
+            //updateButtons(); __deprecated
+            break;
+
+        default:
+            break;
+    }
+
+    updatePrescriptionHistory();
+
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO" << std::endl;
+#else
+        #ifdef DYNAMIC_AMK_SELECTION
+        // Select the topmost entry
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:0];
+        [mySectionTitles selectRowIndexes:indexSet byExtendingSelection:NO];
+        #endif
+    }];
+#endif
         
 }
 

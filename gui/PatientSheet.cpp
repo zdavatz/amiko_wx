@@ -97,19 +97,21 @@ void PatientSheet::friendlyNote()
     mNotification->SetLabel(wxString::Format(_("The contact was saved in the %s address book"), wxString(APP_NAME)));
 }
 
+// 246
+void PatientSheet::addPatient(Patient *patient)
+{
+    mSelectedPatient = patient;
+    mPatientUUID = mPatientDb->addEntry(patient);
+    mSearchFiltered = false;
+    mSearchKey->SetValue(wxEmptyString);
+    updateAmiKoAddressBookTableView();
+    friendlyNote();
+}
+
 // 261
 Patient * PatientSheet::retrievePatient()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-
-//    if (!mSelectedPatient)
-//        mSelectedPatient = new Patient; // still crash
-
-#if 0 // Issue #7
     return mSelectedPatient;
-#else
-    return nullptr;
-#endif
 }
 
 // 277
@@ -362,12 +364,14 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
         p = mFilteredArrayOfPatients[row];
     else
         p = mArrayOfPatients[row];
+    
+    wxString caption = wxString::Format(_("Are you sure you want to delete this contact from the %s Address Book?"), APP_NAME);
 
     wxMessageDialog alert(this,
                           _("Delete contact?"),
-                          _("Are you sure you want to delete this contact from the %s Address Book?"),
+                          caption,
                           wxNO_DEFAULT | wxYES | wxCANCEL | wxICON_INFORMATION);
-    switch( alert.ShowModal() )
+    switch ( alert.ShowModal() )
     {
         case wxID_YES:
             // 472

@@ -5,6 +5,8 @@
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 
 #include <wx/wx.h>
 #include <wx/arrstr.h>
@@ -54,6 +56,7 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
 // 160
 // It will in any case create a new file
 // if the overwrite flag is set, delete the original file
+// Instead of using nested dictionaries like in amiko-osx, work with JSON directly.
 wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwrite(Patient *p, wxString hash, bool overwrite)
 {
     wxURL url;
@@ -63,7 +66,7 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
         return url;
     }
 
-    if (overwrite && !currentFileName) {
+    if (overwrite && currentFileName.IsEmpty()) {
         std::cerr << __FUNCTION__ << " " << __LINE__ << ", cannot overwrite an empty filename\n";
         return url;
     }
@@ -102,15 +105,10 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     currentFileName = path;  // full path
     std::clog << __FUNCTION__ << " new currentFileName:" << currentFileName << std::endl;
 
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-    // TODO: instead of using nested dictionaries work in JSON directly
-#else
     // 210
-    NSMutableDictionary *prescriptionDict = [[NSMutableDictionary alloc] init];
-#endif
+    nlohmann::json jsonStr; // prescriptionDict
     
-    std::map<wxString, wxString> patientDict;
+    nlohmann::json patientDict;
     patientDict[KEY_AMK_PAT_ID] = patient->uniqueId;
     patientDict[KEY_AMK_PAT_SURNAME] = patient->familyName;
     patientDict[KEY_AMK_PAT_NAME] = patient->givenName;
@@ -124,10 +122,10 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     patientDict[KEY_AMK_PAT_COUNTRY] = patient->country;
     patientDict[KEY_AMK_PAT_PHONE] = patient->phoneNumber;
     patientDict[KEY_AMK_PAT_EMAIL] = patient->emailAddress;
-    
-    std::map<wxString, wxString> operatorDict;
+
     DefaultsController* defaults = DefaultsController::Instance();
-    
+
+    nlohmann::json operatorDict;
     operatorDict[KEY_AMK_DOC_TITLE] = defaults->getString(DEFAULTS_DOC_TITLE, "");
     operatorDict[KEY_AMK_DOC_SURNAME] = defaults->getString(DEFAULTS_DOC_SURNAME, "");
     operatorDict[KEY_AMK_DOC_NAME] = defaults->getString(DEFAULTS_DOC_NAME, "");
@@ -142,13 +140,14 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
                  UTI::prettyTime());
     
     wxString encodedImgStr;
-    wxString filePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-    if (filePath.length() > 0) {
+    wxString pngFilePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+    if (pngFilePath.length() > 0) {
 #if 1
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__
+        << " TODO: encode signature " << pngFilePath << " as base64" << std::endl;
 #else
         // 245
-        NSImage *img = [[NSImage alloc] initWithContentsOfFile:filePath];
+        NSImage *img = [[NSImage alloc] initWithContentsOfFile:pngFilePath];
         NSData *imgData = [img TIFFRepresentation];
         NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imgData];
         NSData *data = [imageRep representationUsingType:NSPNGFileType properties:@{}];
@@ -156,16 +155,12 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
 #endif
     }
     operatorDict[KEY_AMK_DOC_SIGNATURE] = encodedImgStr;
-    
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#else
+
     // 253
-    NSMutableArray *prescription = [[NSMutableArray alloc] init];
-#endif
+    nlohmann::json prescription = nlohmann::json::array();
 
     for (PrescriptionItem *item : cart) {
-        std::map<wxString, wxString> dict;
+        nlohmann::json dict;
 
         dict["product_name"] = item->title;
         dict["package"] = item->fullPackageInfo;
@@ -177,26 +172,22 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
         dict["owner"] = item->med->auth;
         dict["regnrs"] = item->med->regnrs;
         dict["atccode"] = item->med->atccode;
-#if 1
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#else
-        [prescription addObject:dict];
-#endif
+
+        prescription.push_back(dict);
     }
-        
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-    //prescriptionDict[prescription_hash] = hash;
-#else
-    [prescriptionDict setObject:hash forKey:@"prescription_hash"];
-    [prescriptionDict setObject:placeDate forKey:@"place_date"];
-    [prescriptionDict setObject:patientDict forKey:@"patient"];
-    [prescriptionDict setObject:operatorDict forKey:@"operator"];
-    [prescriptionDict setObject:prescription forKey:@"medications"];
-#endif
+
+    jsonStr["prescription_hash"] = hash;
+    jsonStr["place_date"] = placeDate;
+    jsonStr["patient"] = patientDict;
+    jsonStr["operator"] = operatorDict;
+    jsonStr["medications"] = prescription;
     
 #if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__
+    << " TODO: encode " << path << " as base64" << std::endl;
+
+    std::ofstream o(path, std::ios::trunc); // overwrite
+    o << std::setw(4) << jsonStr << std::endl;
     return wxURL(path);
 #else
     // Map cart array to json

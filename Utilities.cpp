@@ -43,7 +43,7 @@ wxString documentsDirectory()
 wxString currentTime()
 {
     wxDateTime now = wxDateTime::Now();
-    wxString s = now.Format("%Y-%m-%d'T'%H:%M.%S"); // strftime() syntax
+    wxString s = now.Format("%Y-%m-%dT%H:%M.%S"); // strftime() syntax
     return s;
 }
 

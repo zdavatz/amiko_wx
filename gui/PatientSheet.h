@@ -33,12 +33,13 @@ class PatientSheet : public PatientSheetBase
 	//// end generated class members
 
     Patient *retrievePatient();
-    Patient * getAllFields();
+    Patient *getAllFields();
     bool validateFields(Patient *patient);
     void updateAmiKoAddressBookTableView();
     void friendlyNote();
     void resetFieldsColors();
     wxString retrievePatientAsString();
+    void addPatient(Patient *patient);
     
     // 30
     PatientDBAdapter *mPatientDb;
