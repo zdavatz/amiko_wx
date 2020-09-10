@@ -13,6 +13,7 @@
 #include <wx/wfstream.h>
 #include <wx/base64.h>
 #include <wx/url.h>
+#include <wx/textfile.h>
 
 #include <nlohmann/json.hpp>
 
@@ -182,31 +183,23 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     jsonStr["operator"] = operatorDict;
     jsonStr["medications"] = prescription;
     
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__
-    << " TODO: encode " << path << " as base64" << std::endl;
-
+#ifndef NDEBUG
+    // For debugging skip the encode base64 step
     std::ofstream o(path, std::ios::trunc); // overwrite
     o << std::setw(4) << jsonStr << std::endl;
-    return wxURL(path);
 #else
-    // Map cart array to json
-    NSError *error = nil;
-    NSData *jsonObject = [NSJSONSerialization dataWithJSONObject:prescriptionDict
-                                                         options:NSJSONWritingPrettyPrinted
-                                                           error:&error];
-    // BOOL success = [jsonObject writeToFile:path options:NSUTF8StringEncoding error:&error];
+    wxString o;
+    o << jsonStr.dump(4);
+    std::cerr << "JSON AMK " << o << std::endl;
+    wxString base64Str = wxBase64Encode(o.c_str(), o.length());
     
-    NSString *jsonStr = [[NSString alloc] initWithData:jsonObject encoding:NSUTF8StringEncoding];
-    NSString *base64Str = [MLUtilities encodeStringToBase64:jsonStr];
-    
-    BOOL success = [base64Str writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    if (!success) {
-        NSLog(@"Error: %@", [error userInfo]);
-    }
-
-    return [[NSURL alloc] initWithString:path];
+    wxTextFile file( path );
+    file.Create();
+    file.AddLine( base64Str );
+    file.Write();
+    file.Close();
 #endif
+    return wxURL(path);
 }
 
 // 292

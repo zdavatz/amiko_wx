@@ -26,18 +26,6 @@ SignatureView::SignatureView(wxWindow *parent,
 // 144
 wxImage SignatureView::getSignaturePNG()
 {
-#if 1
     std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO" << std::endl;
     return GetBitmap().ConvertToImage();
-#else
-    NSData *data = [self dataWithPDFInsideRect:[self bounds]];
-    NSImage *img = [[NSImage alloc] initWithData:data];
-    NSData *tiffPresentation = [img TIFFRepresentation];
-    NSBitmapImageRep *rep = [NSBitmapImageRep imageRepWithData:tiffPresentation];
-
-    NSDictionary* props = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:1.0] forKey:NSImageCompressionFactor];
-    NSData *pngData = [rep representationUsingType:NSPNGFileType properties:props];
-    
-    return pngData;
-#endif
 }

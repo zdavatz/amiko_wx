@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include <wx/process.h>
+
 #include "PrescriptionsCart.hpp"
 #include "InteractionsCart.hpp"
 #include "PrescriptionItem.hpp"
@@ -17,15 +19,21 @@ PrescriptionsCart::PrescriptionsCart()
 
 // 48
 // Creates and returns a new UUID with RFC 4122 version 4 random bytes
+// amiko-osx     uniqueHash = [[NSUUID UUID] UUIDString];
 void PrescriptionsCart::makeNewUniqueHash()
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    // https://github.com/benwebber/sqlite3-uuid
-    //uuidCreate();
-#else
-    uniqueHash = [[NSUUID UUID] UUIDString];
-#endif
+    wxArrayString output, errors;
+    long pid = wxExecute("uuidgen", output, errors);
+
+    size_t count = output.GetCount();
+    if (count < 1) {
+        for ( size_t n = 0; n < errors.GetCount(); n++ )
+            std::cerr << errors[n] << std::endl;
+        
+        return;
+    }
+
+    uniqueHash = output[0];
 }
 
 // 66
