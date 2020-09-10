@@ -1,9 +1,8 @@
 # Public Domain Pharmaceutical Information in Switzerland
 ### Introduction to the ywesee world: political and technical background
 
-- Source of information: Zeno Davatz
-- Edited by Alex Bettarini, Zeno Davatz
-- 6.9.2020, 11.08
+- Source of information: Legal court documents, Zeno Davatz, Wikipedia
+- Edited by Alex Bettarini, Zeno Davatz, see git log.
 
 
 ---
@@ -12,27 +11,27 @@
 (in alphabetical order)
 
 - **BAG**
-	- BAG is only responsible for the pricing of medicines. The medical information side is done by Swissmedic, they "should" work together but they really don't.
+	- [BAG](http://spezialitätenliste.ch) is only responsible for the pricing of medicines. The medical information side is done by Swissmedic, they "should" work together but they really don't.
 	- they also have an Italian website
 	- You can't get a price from BAG if you don't have a Swissmedic registration
 	- If the product is on the BAG list, it's being paid by the health insurance of Switzerland
 
 - **epha**
 	- Separate company who used to release ATC-code based drug-drug *interactions* in the public domain, but they no longer do that, they are not making any updates at the moment
-- **swisspeddose** is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
-	- child dosage
-	- made by an independent foundation
-
-- **sapp**  is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
-	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **Galenica: Documed, e-mediat -> HCI-Solutions**
 	- Galenica AG, headquartered in Bern, is an internationally active Swiss pharmaceutical and logistics company group. Galenica was split into two companies in 2014: Vifor Pharma and Galenica Santé. Also see: https://de.wikipedia.org/wiki/Galenica
 	- e-mediat (now HCI-Solutions) copied the concept of the PZN (Pharmazentralnummer) and introduced the Pharmacode in Switzerland. The pharmacode is proprietary code and less exact then the Public Domain GTIN code that has the same function.
 	- Documed and e-mediat where merged into HCI-Solutions. ywesee initiated two WEKO inquiries against Documed (2008) and HCI-Solutions (2014). Documed got fined CHF 50'000, HCI-Solutions/Galenica got fined 4.5 million CHF by WEKO. The second case is still being debated at the Bundesverwaltungsgericht (BVGER) of Switzerland because Galenica is not accepting the fine. Both WEKO inquiries have been big, they sent out questionnaires to all big pharmaceutical companies and stakeholders.
+	- HCI-Solutions 
+	makes these websites:\
+			- *Compendium* (proprietary, since 2000)\
+			- *AIPS* (government)\
+			- pharmavista.ch\
+			- SAI for refdata.ch (since 2020)
 
 - **Refdata**
-	- Refdata is a non-profit foundation, not a company. All the major stakeholders are members of that foundation
+	- [Refdata](https://refdata.ch) is a non-profit foundation, not a company. All the major stakeholders are members of that foundation
 	- it's like a combination, it has all the medicines, and non-medical device which are being paid by the medical insurance
 	- Refata gave the contract of building the SAI to HCI-Solutions (2020). The price of the SAI contract is not pubic.
 	- The technical support of Refdata is done by HCI-Solutions
@@ -42,47 +41,48 @@
 	- A lot of the approvals that are done in Switzerland are also automatically approved for other countries in Africa that do not have such a thorough approval process.
 	- they do not deal with prices
 
-- **swisspeddose**
+- **swisspeddose** 
+	- [swisspeddose.ch](https://swisspeddose.ch) is public domain and distribute their data via swisspeddose.ch. This data is used in all AmiKo/CoMed databases. Swisspeddose is sponsored by the Swiss government with CHF 3.5 Million.
+	- child dosage
+	- made by an independent foundation
+
+- **sappinfo**  
+	- [sappinfo.ch](https://sappinfo.ch) is public domain but not yet sponsored by the Swiss government. The goal is to work together with swisspeddose. 
+	- The SAPP network collects information on medicines for *pregnant* and *breastfeeding* women.
 
 - **ywesee**
 	- competitor of HCI-Solutions
-	- from <https://www.maria-online.us/travel/article.php?lg=en&q=Galenica>
 
-- **Galenica**
+## Galenica vs ywesee
+- **Wikipedia**
 	- See: https://de.wikipedia.org/wiki/Galenica
+- **Legal proceedings and outcomes**
 	- Galenica bought Documend in 2004. Documed was founded in 1976. Documed has been publishing, since 1978, the drug compendium of Switzerland. Historically Swissmedic contracted Documed to publish their drug information, committing Documed to a monopoly that they defend with dubious means (according to the "Tages-Anzeiger" a daily newspaper published in Zurich). Documed filed their lawsuit against ywesee three days before christmas in 2003. After the BGE decision in 2008 Swissmedic had to "approve" the site of the open-source software company Ywesee. The Federal Administrative Court (Switzerland) then decided in June 2011 that Swissmedic's practice was neither appropriate nor necessary. As a result, Swissmedic was obliged to provide the drug information free of charge on an Internet platform called AIPS. The tender for the construction and operation of the platform was won by an offer from Documed, which according to the "Tages-Anzeiger" was noticeably below that of the competitors.
 	- The first court case started in 2003. Documed sued ywesee (and was then bought by Galenica in 2004) because ywesee wrote a web-scraping spider agent that scraped all the information on the Documed website. ywesee won the case because the Fachinfo (specialist, professional) and Consumer (patient) info is required by law, therefore it cannot be copyright protected.
-	- ywesee is no longer using that spider agent because after the second court case (BVGER 2011) Swissmedic had to do a public invitation to tender according to WTO rules (every government contract that exceeds CHF 275'000 has to be published in the official Schweizerisches Handelsamtsblatt SHAB) ywesee competed for the contract of AIPS, but ywesee was much more epensive than HCI-Solutions. HCI-Solutions offered to do the work for CHF 475,000 over 5 years, they have a hotline, support four languages; basically you can't do it for that amount of money, so the contract was subsidised by Galenica. That is how HCI-Solutoin won the public tender contract.<br>
-		How does HCI-Solutions get their data?<br>
-		Swissmedic, according with swiss law (AMZV) sends a out letters to the pharmaceutical companies which have Word files being uploaded into AIPS in each language, resulting in garbled XML data. They upload Word files into AIPS. AIPS has a web interface were you can publish information.
-		- 2004 ywesee won the **first** case against Documed, but in Switzerland you have to go through three courts. Documed also lost the second instance. Then the CEO of Documed said "We've made a mistake, we should never have sued Zeno" but then Galenica came and bought Documed and continued suing Mr Davatz because they wanted to preserve their monopoly and they knew they would lose the monopoly if they don't do it. They could have worked together with Zeno, but instead they wanted it all to themselves. In the end they also lost at the highest court
-		- 2008 first court case is closed
-		- WEKO fines Documed with CHF 50'000
-		- 2009 **second** case at the Bundesverwaltungsgericht (BVGER). The BVGER based their case on the BVG and WEKO case of 2008.
-		- 2011 BVGER decision taken. Birth of the AIPS
-		- WEKO II, the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
-
-		- Swissmedic always said:
-		<blockquote>Fachinformationen (medical information leaflet) or Patienten-Information (leaflet in the package, for the consumer) have to be published in a complete database where all the information is in.</blockquote>
-		Because ywesee had all this info, Swissmedic allowed ywesee and the pharmaceutical companies to publish the consumer leaflet only online. At this stage the pharmaceutical companies were allowed to publish the consumer leaflet either on ODDB.org generika.cc. The Fachinfo still had to be published in paper form in a book, a very heavy book (dismissed on 1 Jan 2014). Then pharmaceutical companies from the French part of Switzerland said we won't publish on ODDB.org or with HCI-Solutions, we will only publish our consumer leaflet on our website. Then Swissmedic said:
-		<blockquote>that's not okay</blockquote>
-		and they had a legal fight that went in front of the Bundesverwaltungsgericht (which takes care of all problem concerning the government). Then they decided that Swissmedic has to publish all the information on their website, in their own complete database with doctor and patient information in all languages. So Swissmedic said it's okay to publish the consumer leaflet at ywesee as well, because they are complete. Ywesee was much cheaper than Documed.
-		- **HCI-Solutions** now makes these websites:
-			- *Compendium* (proprietary, since 2000)
-			- *AIPS* (government)
-			- pharmavista.ch
-			- SAI (since 2020)
-
-		A lot of companies refused to publish their data on Compendium.ch website because it cost too much, e.g., a big pharma company paid CHF 1 million per year to publish their Fachinfo in the Compendium. The manager of Galenica was afraid that if Zeno wins the contract for AIPS everybody will publish there, and they lose control of the market. They won the contract by doing price dropping. The WEKO II case about them using their monopolistic power is still open. It is proven that they blackmailed companies: Documed through "HCI-Solutions" said <blockquote>if you don't pay for your price listing, GTIN, package size, galenic form, dosage, in our database we are going to drop your informtion, then if somebody wants to buy your product in the pharmacy, they won't find it</blockquote> They blackmailed the pharmaceutical companies.
-		- The pharmaceutical companies don't care if they have to pay that amount or more per year. They just want their product to be sold at the highest price they can get, in the highly-priced country of Switzerland, so they would do anything to keep up that high price. Of course if they can save that CHF 1 million they will try to save it. Some people are afraid faster. They will do anything if they are told to do so. For example if a pharmacy in the Zurich hospital says: 
-		<blockquote>we want to work with the data at HCI-Solutions...</blockquote>
-		so they started paying again to HCI-Solutions
+	- ywesee is no longer using that spider agent because after the second court case (BVGER 2011) Swissmedic had to do a public invitation to tender according to WTO rules (every government contract that exceeds CHF 275'000 has to be published in the official Schweizerisches Handelsamtsblatt [SHAB](https://www.shab.ch/#!/gazette)) ywesee competed for the contract of AIPS, but ywesee was much more expensive than HCI-Solutions. HCI-Solutions offered to do the work for CHF 475,000 over 5 years, they have a hotline, support four languages; basically you can't do it for that amount of money, so the contract was subsidised by Galenica. That is how HCI-Solutoin won the public tender contract.
+	- How does HCI-Solutions get their data? Swissmedic, according with swiss law ([AMZV](https://www.admin.ch/opc/de/classified-compilation/20011693/index.html#a18)) sends a out letters to the pharmaceutical companies which have Word files being uploaded into AIPS in each language, resulting in garbled XML data. They upload Word files into AIPS. AIPS has a web interface were you can publish information.
+- **Dates**
+	- 2004 ywesee won the **first** case against Documed, but in Switzerland you have to go through three courts. Documed also lost the second instance. Then the CEO of Documed said "We've made a mistake, we should never have sued Zeno" but then Galenica came and bought Documed and continued suing ywesee because they wanted to preserve their monopoly and they knew they would lose the monopoly if they didn't do it.
+	- [2008 BGE case is closed](https://www.ywesee.com/uploads/Main/ywesee_GmbH_Bundesgerichtsurteil.pdf)
+	- [2008 WEKO fines Documed with CHF 50'000](https://www.ywesee.com/uploads/Main/Eroeffnung_Verfuegung_WEKO_16.7.2008_web.pdf)
+	- 2009 **second** case at the Bundesverwaltungsgericht (BVGER). The BVGER based their case on the BVG and WEKO case of 2008.
+	- [2011 BVGER decision taken.](https://www.ywesee.com/uploads/Main/17.6.2011_BVGER_Swissmedic_Laboratoire_Reboh.pdf) Birth of the [AIPS](https://www.ywesee.com/Swissmedic/AIPS)
+	- [2017 WEKO II](https://www.ywesee.com/uploads/Main/Verfgung_WEKO_vom_19._Dezember_2016.pdf), the case being about HCI-Solutions and Galenica misusing their market power (not unlike the case of Microsoft accused of killing Netscape)
+## Swissmedic
+- **Historic developments that led to AIPS**
+	- [Swissmedic](https://swissmedic.ch) always said: "Fachinformationen (medical information leaflet) or Patienten-Information (leaflet in the package, for the consumer) have to be published in a complete database where all the information is in."
+	- Because ywesee had all this info, Swissmedic allowed ywesee and the pharmaceutical companies to publish the consumer leaflet only online. At this stage the pharmaceutical companies were allowed to publish the consumer leaflet on [ODDB.org](https://ch.oddb.org)/[generika.cc](https://generika.cc). The Fachinfo still had to be published in paper form in a book, a very heavy book (dismissed on 1 Jan 2014). Then one pharmaceutical companies from the French part of Switzerland (Laboratoire Jacques Reboh) said we won't publish on ODDB.org or with HCI-Solutions, we will only publish our consumer leaflet on our website. Then Swissmedic said: "That's not okay" and they had a legal fight that went in front of the Bundesverwaltungsgericht (which takes care of all problem concerning the government). Then they decided that Swissmedic has to publish all the information on their website, in their own complete database with doctor and patient information in all languages. So Swissmedic said it's okay to publish the consumer leaflet at ywesee as well, because they are complete. Ywesee was much cheaper than Documed.
+## WEKO
+- **Historic developments that led to WEKO II**
+	- A lot of companies refused to publish their data on Compendium.ch website because it cost too much, e.g., a big pharma company paid CHF 1 million per year to publish their Fachinfo in the Compendium. The manager of Galenica was afraid that if Zeno wins the contract for AIPS everybody will publish there, and they lose control of the market. They won the contract by doing price dropping. The WEKO II case about them using their monopolistic power is still open. It is proven that they blackmailed companies: Documed through "HCI-Solutions" said: "If you don't pay for your price listing, GTIN, package size, galenic form, dosage, in our database we are going to drop your informtion, then if somebody wants to buy your product in the pharmacy, they won't find it". They blackmailed the pharmaceutical companies.
+	- The pharmaceutical companies don't care if they have to pay that amount or more per year. They just want their product to be sold at the highest price they can get, in the highly-priced country of Switzerland, so they would do anything to keep up that high price. Of course if they can save that CHF 1 million they will try to save it. Some people get afraid easily. They will do anything if they are told to do so. For example if a pharmacy in the Zurich hospital says: "We want to work with the data at HCI-Solutions...", so they started paying again to HCI-Solutions
 
 ## Compare three online databases
 
-- AmiKo/ODDB <https://amiko.oddb.org/de/fi?gtin=7680517040107&type=atc&key=V10AX04>
-- Swissmedic <http://www.swissmedicinfo.ch/ShowText.aspx?textType=FI&lang=de&authNr=51704> 
-- Compendium <https://compendium.ch/mpro/mnr/25057/html/de?Platform=Desktop> is the Fachinfo website made by Documed.
+- [AmiKo Online](https://amiko.oddb.org/de/fi?gtin=7680517040107&type=atc&key=V10AX04)
+- [ODDB.org/Generika.cc](https://oddb.org)
+- [Swissmedic AIPS](http://www.swissmedicinfo.ch/ShowText.aspx?textType=FI&lang=de&authNr=51704)
+- [Compendium](https://compendium.ch/mpro/mnr/25057/html/de?Platform=Desktop) is the Fachinfo website made by Documed.
 
 ## Files in `downloads/`
 
@@ -97,7 +97,7 @@ These files are downloaded in a step of the master build.sh file
 		2. 9 entries  are a single long line, starting with `<div id="Monographie"><div class="Title">`
 		3. 4070 entries are a single long line, starting with `<?xml version="1.0" encoding="utf-8"?>`
 
-- bag <http://bag.e-mediat.net>
+- bag <http://www.xn--spezialittenliste-yqb.ch/File.axd?file=XMLPublications.zip>
 	- **bag_preparations.xml**
 
 - Erweiterte_Arzneimittelliste HAM.xlsx
@@ -106,7 +106,7 @@ These files are downloaded in a step of the master build.sh file
 	- no longer used. It was used to get ATC codes from RN
 	- **epha\_products\_de\_json.json**
 
-- peddose <https://db.swisspeddose.ch>
+- swisspeddose <https://db.swisspeddose.ch>
 	- **swisspeddosepublication-2019-02-21.xml**
 	- section number and name
 	- multiple ATC for one fachinfo
