@@ -220,6 +220,7 @@ class PatientSheetBase : public wxDialog
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectPatient( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnListItemSelected( wxListEvent& event ) { event.Skip(); }
 		virtual void OnNewPatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDeletePatient( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowContacts( wxCommandEvent& event ) { event.Skip(); }
