@@ -121,6 +121,7 @@ wxString PatientDBAdapter::addEntry(Patient *patient)
         wxString valueStr = wxString::Format("(%ld, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")", patient->rowId, timeStr, uuidStr, patient->familyName, patient->givenName, patient->birthDate, patient->gender, patient->weightKg, patient->heightCm, patient->zipCode, patient->city, patient->country, patient->postalAddress, patient->phoneNumber, patient->emailAddress);
 
         // Insert new entry into DB
+        bool ok =
         myPatientDb->insertRowIntoTable_forColumns_andValues(DATABASE_TABLE, columnStr, valueStr);
         return uuidStr;
     }
@@ -134,7 +135,7 @@ wxString PatientDBAdapter::insertEntry(Patient *patient)
     if (!myPatientDb)
         return wxEmptyString;
 
-    // If UUID exist re-use it!
+    // If UUID exists re-use it!
     if (patient->uniqueId.length() > 0)
     {
         wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"",
@@ -154,6 +155,8 @@ wxString PatientDBAdapter::insertEntry(Patient *patient)
         return patient->uniqueId;
     }
 
+    // It doesn't normally get here
+    std::clog << __FUNCTION__ << " Line " << __LINE__ << std::endl;
     return addEntry(patient);
 }
 
@@ -196,6 +199,7 @@ std::vector<Patient *> PatientDBAdapter::getAllPatients()
 
     wxString query = wxString::Format("select %s from %s", ALL_COLUMNS, DATABASE_TABLE);
     ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+    //std::clog << __FUNCTION__ << " # patients in DB: " << results.size() << std::endl;
     if (results.size() > 0) {
         for (auto cursor : results)
             listOfPatients.push_back(cursorToPatient(cursor));
@@ -220,7 +224,7 @@ Patient * PatientDBAdapter::getPatientWithUniqueID(wxString uniqueID)
     {
         wxString query = wxString::Format("select %s from %s where %s like '%s'", ALL_COLUMNS, DATABASE_TABLE, KEY_UID, uniqueID);
         ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
-        if (results.size() == 0) {
+        if (results.size() > 0) {
             ONE_SQL_RESULT cursor = results[0];
             return cursorToPatient(cursor);
         }
@@ -239,10 +243,8 @@ Patient * PatientDBAdapter::cursorToPatient(ONE_SQL_RESULT &cursor)
     patient->givenName = cursor[4].u.c;
     patient->birthDate = cursor[5].u.c;
     patient->gender = cursor[6].u.c;
-
-    patient->weightKg = wxAtoi(cursor[7].u.c);
-    patient->heightCm = wxAtoi(cursor[8].u.c);
-
+    patient->weightKg = cursor[7].u.i;
+    patient->heightCm = cursor[8].u.i;
     patient->zipCode = cursor[9].u.c;
     patient->city = cursor[10].u.c;
     patient->country = cursor[11].u.c;
