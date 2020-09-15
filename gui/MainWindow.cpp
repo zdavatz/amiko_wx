@@ -1810,12 +1810,13 @@ wxArrayString MainWindow::csvGetInputListFromFile()
     std::clog << __FUNCTION__ << std::endl;
     
     // Create a file open dialog class
+    wxString wildCard = wxString::Format("CSV %s (*.csv)|*.csv|TXT %s (*.txt)|*.txt",
+                                         _("files"), _("files"));
     wxFileDialog openDlgPanel(this,
                               _("Please select text file with one word or two words per line. The file can be created into a text editor. Encoding is UTF-8"),
                               wxEmptyString,
                               wxEmptyString,
-                              _("CSV files (*.csv)|*.CSV|") +
-                              _("TXT files (*.txt)|*.TXT"),
+                              wildCard,
                               wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
                               wxDefaultPosition);
 

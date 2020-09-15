@@ -578,7 +578,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	mSearchKey->ShowCancelButton( false );
 	bSizer13->Add( mSearchKey, 0, wxALL|wxEXPAND, 5 );
 
-	mTableView = new wxListCtrl( m_panel7Right, wxID_PATIENT_LIST, wxDefaultPosition, wxDefaultSize, wxLC_ICON|wxLC_SINGLE_SEL );
+	mTableView = new wxListCtrl( m_panel7Right, wxID_PATIENT_LIST, wxDefaultPosition, wxDefaultSize, wxLC_NO_HEADER|wxLC_REPORT|wxLC_SINGLE_SEL );
 	bSizer13->Add( mTableView, 1, wxALL|wxEXPAND, 5 );
 
 	wxBoxSizer* bSizer17;
