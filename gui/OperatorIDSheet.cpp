@@ -11,7 +11,7 @@ OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
 OperatorIDSheetBase( parent )
 {
     loadSettings();
-
+    Fit();
 }
 
 // 105

@@ -5,8 +5,12 @@
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include <wx/wx.h>
+#include <wx/textfile.h>
+#include <wx/filedlg.h>
 
 #include "Contacts.hpp"
 
@@ -26,11 +30,33 @@ std::vector<Patient *> Contacts::getAllContacts()
 }
 
 // 49
+// Read Google CSV file
+// See issue #30
 void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 {
-#ifdef __APPLE__
 #if 1
-    std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
+    wxFileDialog fdlog(wxTheApp->GetTopWindow(),
+                       _("Select Google CSV file"),
+                       wxEmptyString, // defaultDir
+                       wxEmptyString, // defaultFile
+                       _("CSV files (*.csv)|*.CSV"),
+                       wxFD_OPEN | wxFD_FILE_MUST_EXIST); // no wxFD_MULTIPLE
+
+    if (fdlog.ShowModal() != wxID_OK)
+        return;
+
+    wxTextFile tfile;
+    tfile.Open( fdlog.GetPath());
+
+    wxString header = tfile.GetFirstLine();
+    wxArrayString columns = wxSplit(header, ',');
+    std::clog << "Num columns: " << columns.size() << std::endl;
+
+    wxString str;
+    while (!tfile.Eof()) {
+        str = tfile.GetNextLine();
+        std::clog << " Line: <" << str << ">\n";
+    }
 #else
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied) {
@@ -98,11 +124,6 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
         }
     }
 #endif
-#endif // __APPLE__
-    
-#ifdef __linux__
-    // TODO: read CSV file, see issue #30
-#endif
-    
+
     //return arrayOfContacts;
 }

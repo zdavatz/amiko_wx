@@ -24,6 +24,7 @@ class PatientSheet : public PatientSheetBase
 		void OnCancel( wxCommandEvent& event );
 		void OnSavePatient( wxCommandEvent& event );
 		void OnSelectPatient( wxMouseEvent& event );
+		void OnListItemSelected( wxListEvent& event );
 		void OnNewPatient( wxCommandEvent& event );
 		void OnDeletePatient( wxCommandEvent& event );
 		void OnShowContacts( wxCommandEvent& event );
@@ -48,6 +49,7 @@ private:
     void setNumPatients(int numPatients);
     Patient * getContactAtRow(int row);
     void resetAllFields();
+    void setAllFields(Patient *p);
     void deletePatientFolder_withBackup(Patient *patient, bool backup);
     int numberOfRowsInTableView();
     void reloadData();

@@ -623,6 +623,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
 	mTableView->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
+	mTableView->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( PatientSheetBase::OnListItemSelected ), NULL, this );
 	m_button22->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );
 	m_button23->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnDeletePatient ), NULL, this );
 	m_button21->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnShowContacts ), NULL, this );
@@ -635,6 +636,7 @@ PatientSheetBase::~PatientSheetBase()
 	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
 	mTableView->Disconnect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
+	mTableView->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( PatientSheetBase::OnListItemSelected ), NULL, this );
 	m_button22->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );
 	m_button23->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnDeletePatient ), NULL, this );
 	m_button21->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnShowContacts ), NULL, this );

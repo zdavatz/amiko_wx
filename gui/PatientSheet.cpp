@@ -67,6 +67,49 @@ void PatientSheet::resetAllFields()
     mNotification->SetLabel(wxEmptyString);
 }
 
+// 175
+void PatientSheet::setAllFields(Patient *p)
+{
+    if (p->familyName.length() > 0)
+        mFamilyName->SetValue(p->familyName);
+    if (p->givenName.length() > 0)
+        mGivenName->SetValue(p->givenName);
+    if (p->birthDate.length() > 0)
+        mBirthDate->SetValue(p->birthDate);
+    if (p->city.length() > 0)
+        mCity->SetValue(p->city);
+    if (p->zipCode.length() > 0)
+        mZipCode->SetValue(p->zipCode);
+    if (p->weightKg>0)
+        mWeight_kg->SetValue(wxString::Format("%d", p->weightKg));
+    if (p->heightCm>0)
+        mHeight_cm->SetValue(wxString::Format("%d", p->heightCm));
+    if (p->phoneNumber.length() > 0)
+        mPhone->SetValue(p->phoneNumber);
+    if (p->country.length() > 0)
+        mCity->SetValue(p->city);
+    if (p->country.length() > 0)
+        mCountry->SetValue(p->country);
+    if (p->postalAddress.length() > 0)
+        mPostalAddress->SetValue(p->postalAddress);
+    if (p->emailAddress.length() > 0)
+        mEmail->SetValue(p->emailAddress);
+    if (p->phoneNumber.length() > 0)
+        mPhone->SetValue(p->phoneNumber);
+    if (p->uniqueId.length() > 0)
+        mPatientUUID = p->uniqueId;
+    if (p->gender.length() > 0) {
+        if (p->gender == "woman") {
+            mFemale = true;
+            mSex->SetSelection(0);
+        } else {
+            mFemale = false;
+            mSex->SetSelection(1);
+        }
+    }
+}
+
+
 // 219
 Patient * PatientSheet::getAllFields()
 {
@@ -295,6 +338,7 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
         patient->uniqueId = mPatientUUID;
 
     if (mPatientDb->getPatientWithUniqueID(mPatientUUID) == nullptr) {
+        // Not found in DB
         mPatientUUID = mPatientDb->addEntry(patient);
     }
     else {
@@ -338,6 +382,18 @@ void PatientSheet::OnSelectPatient( wxMouseEvent& event )
     vc->prescriptionPatientChanged();
 #endif
 
+}
+
+// 594
+// In amiko-osx the framework calls 'tableViewSelectionDidChange'
+// Double clicked a patient in the table view
+void PatientSheet::OnListItemSelected( wxListEvent& event )
+{
+    Patient *p = getContactAtRow( event.GetIndex() );
+    mPatientUUID = p->uniqueId;
+    resetAllFields();
+    setAllFields(p);
+    mNotification->SetLabel(wxEmptyString);
 }
 
 // 437
