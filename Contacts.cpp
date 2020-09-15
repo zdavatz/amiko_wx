@@ -7,12 +7,66 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <sstream>
+#include <istream>
 
 #include <wx/wx.h>
 #include <wx/textfile.h>
 #include <wx/filedlg.h>
 
 #include "Contacts.hpp"
+#include "Patient.hpp"
+
+#define EXPECTED_COL_CSV_GOOGLE     38
+#define EXPECTED_COL_CSV_OUTLOOK    88
+
+// /////////////////////////////////////////////////////////////////////////////
+// Not in amiko-osx
+// Adapted from http://www.zedwood.com/article/cpp-csv-parser
+std::vector<std::string>
+Contacts::csv_read_row(std::istream &in, char delimiter)
+{
+    std::stringstream ss;
+    bool inquotes = false;
+    std::vector<std::string> row; //relying on RVO
+    while (in.good())
+    {
+        char c = in.get();
+        if (!inquotes && c=='"') // begin quotechar
+        {
+            inquotes = true;
+        }
+        else if (inquotes && c=='"') // quotechar
+        {
+            if ( in.peek() == '"') // 2 consecutive quotes resolve to 1
+            {
+                ss << (char)in.get();
+            }
+            else // end quotechar
+            {
+                inquotes = false;
+            }
+        }
+        else if (!inquotes && c==delimiter) // end of field
+        {
+            row.push_back( ss.str() );
+            ss.str("");
+        }
+        else if (!inquotes && (c=='\r' || c=='\n') )
+        {
+            if (in.peek()=='\n')
+                in.get();
+
+            row.push_back( ss.str() );
+            return row;
+        }
+        else
+        {
+            ss << c;
+        }
+    }
+}
 
 // 29
 static std::vector<Patient *> groupOfContacts;
@@ -30,13 +84,12 @@ std::vector<Patient *> Contacts::getAllContacts()
 }
 
 // 49
-// Read Google CSV file
+// Read CSV file Google/Outlook
 // See issue #30
 void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 {
-#if 1
     wxFileDialog fdlog(wxTheApp->GetTopWindow(),
-                       _("Select Google CSV file"),
+                       _("Select Google/Outlook CSV file"),
                        wxEmptyString, // defaultDir
                        wxEmptyString, // defaultFile
                        _("CSV files (*.csv)|*.CSV"),
@@ -44,86 +97,80 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 
     if (fdlog.ShowModal() != wxID_OK)
         return;
-
-    wxTextFile tfile;
-    tfile.Open( fdlog.GetPath());
-
-    wxString header = tfile.GetFirstLine();
-    wxArrayString columns = wxSplit(header, ',');
-    std::clog << "Num columns: " << columns.size() << std::endl;
-
-    wxString str;
-    while (!tfile.Eof()) {
-        str = tfile.GetNextLine();
-        std::clog << " Line: <" << str << ">\n";
-    }
-#else
-    CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
-    if (status == CNAuthorizationStatusDenied) {
-        NSLog(@"This app was refused permissions to contacts.");
+    
+    std::ifstream in( fdlog.GetPath().c_str() );
+    if (in.fail()) {
+        std::cerr << "CSV file not found" << std::endl;
+        return;
     }
     
-    if ([CNContactStore class]) {
-        CNContactStore *addressBook = [[CNContactStore alloc] init];
-        
-        NSArray *keys = @[CNContactIdentifierKey,
-                          CNContactFamilyNameKey,
-                          CNContactGivenNameKey,
-                          CNContactBirthdayKey,
-                          CNContactPostalAddressesKey,
-                          CNContactPhoneNumbersKey,
-                          CNContactEmailAddressesKey];
-        
-        CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keys];
-        
-        NSError *error;
-        [addressBook enumerateContactsWithFetchRequest:request
-                                                 error:&error
-                                            usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop) {
-                                                if (error) {
-                                                    NSLog(@"error fetching contacts %@", error);
-                                                } else {
-                                                    MLPatient *patient = [[MLPatient alloc] init];
-                                                    patient.familyName = contact.familyName;
-                                                    patient.givenName = contact.givenName;
-                                                    // Postal address
-                                                    patient.postalAddress = @"";
-                                                    patient.zipCode = @"";
-                                                    patient.city = @"";
-                                                    patient.country = @"";
-                                                    if ([contact.postalAddresses count]>0) {
-                                                        CNPostalAddress *pa = [contact.postalAddresses[0] value];
-                                                        patient.postalAddress = pa.street;
-                                                        patient.zipCode = pa.postalCode;
-                                                        patient.city = pa.city;
-                                                        patient.country = pa.country;
-                                                    }
-                                                    // Email address
-                                                    patient.emailAddress = @"";
-                                                    if ([contact.emailAddresses count]>0)
-                                                        patient.emailAddress = [contact.emailAddresses[0] value];
-                                                    // Birthdate
-                                                    patient.birthDate = @"";
-                                                    if (contact.birthday.year>1900)
-                                                        patient.birthDate = [NSString stringWithFormat:@"%ld-%ld-%ld", contact.birthday.day, contact.birthday.month, contact.birthday.year];
-                                                    // Phone number
-                                                    patient.phoneNumber = @"";
-                                                    if ([contact.phoneNumbers count]>0)
-                                                        patient.phoneNumber = [[contact.phoneNumbers[0] value] stringValue];
-                                                    // Add only if patients names are meaningful
-                                                    if ([patient.familyName length]>0 && [patient.givenName length]>0) {
-                                                        patient.databaseType = eAddressBook;
-                                                        [arrayOfContacts addObject:patient];
-                                                    }
-                                                }
-                                            }];
-        // Sort alphabetically
-        if ([arrayOfContacts count]>0) {
-            NSSortDescriptor *nameSort = [NSSortDescriptor sortDescriptorWithKey:@"familyName" ascending:YES];
-            [arrayOfContacts sortUsingDescriptors:[NSArray arrayWithObject:nameSort]];
-        }
-    }
-#endif
+    std::vector<std::string> header;
+    if (in.good())
+        header = csv_read_row(in, ',');
 
-    //return arrayOfContacts;
+    int nCol = header.size();
+
+    switch (nCol) {
+        case EXPECTED_COL_CSV_GOOGLE:
+            arrayOfContacts.clear();                
+            while (in.good())
+            {
+                std::vector<std::string> row = csv_read_row(in, ',');
+                for (int i=0, leng=row.size(); i<leng; i++)
+                    std::cout << i << ":[" << row[i] << "]" << "\t";
+                std::cout << std::endl;
+                if (row.size() != nCol)
+                    continue;
+
+                Patient *patient = new Patient;
+
+                patient->givenName = row[1]; // B
+                patient->familyName = row[3]; // D
+                patient->birthDate = row[14]; // O
+                patient->postalAddress = row[31]; // AF street
+                patient->city = row[32]; // AG
+                patient->zipCode = row[35]; // AJ
+                patient->country = row[36]; // AK
+
+                arrayOfContacts.push_back(patient);
+            }
+            break;
+            
+        case EXPECTED_COL_CSV_OUTLOOK:
+            arrayOfContacts.clear();
+            while (in.good())
+            {
+                std::vector<std::string> row = csv_read_row(in, ',');
+
+                // row.size() is 89 because there is an extra trailing ','
+                if (row.size() < nCol)
+                    continue;
+
+                Patient *patient = new Patient;
+
+                patient->givenName = row[0];        // A
+                patient->familyName = row[2];       // C
+                //patient->gender = row[7];           // H
+                patient->birthDate = row[8];        // I
+                patient->emailAddress = row[14];    // O
+                patient->phoneNumber = row[17];     // R TODO: fallback S,U
+                patient->postalAddress = row[61];   // X TODO: fallback X,BJ
+                patient->city = row[65];            // BN
+                patient->zipCode = row[67];         // BP
+                patient->country = row[68];         // BQ
+
+                arrayOfContacts.push_back(patient);
+            }
+            break;
+            
+        default:
+            std::cerr << "Not a valid Google/Outlook CSV file, " << nCol << " columns\n";
+            break;
+    }
+
+    std::clog << __FUNCTION__ << " Line " << __LINE__
+    << ", # contacts:" << arrayOfContacts.size()
+    << std::endl;
+
+    in.close();
 }

@@ -16,4 +16,7 @@ public:
     
     std::vector<Patient *> getAllContacts();
     void addAllContactsToArray(std::vector<Patient *> &arrayOfContacts);
+
+private:
+    std::vector<std::string> csv_read_row(std::istream &in, char delimiter);
 };
