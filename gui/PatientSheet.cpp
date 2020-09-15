@@ -236,7 +236,7 @@ void PatientSheet::setNumPatients(int numPatients)
 {
     wxString label;
     if (mABContactsVisible) {
-        label = wxString::Format(_("Address Book Mac (%d)"), numPatients);
+        label = wxString::Format(_("Address Book Google (%d)"), numPatients);
     }
     else {
         label = wxString::Format(_("Address Book %s (%d)"),
@@ -276,8 +276,13 @@ int PatientSheet::numberOfRowsInTableView() // (NSTableView *)tableView
 //  tableView:viewForTableColumn:row:
 void PatientSheet::reloadData()
 {
-    // TODO: clear all data
-    mTableView->ClearAll();
+    // Clear all data
+    mTableView->ClearAll(); // also delete the columns
+    wxListItem itemCol;
+    itemCol.SetImage(-1);
+//    itemCol.SetWidth(mTableView->GetClientRect().GetWidth()); // TODO:
+//    itemCol.SetAlign(wxLIST_FORMAT_LEFT);
+    mTableView->InsertColumn(0, itemCol); // wxLIST_FORMAT_LEFT, autosize
 
     int n = numberOfRowsInTableView();
     for (int i=0; i<n; i++) {
@@ -287,7 +292,9 @@ void PatientSheet::reloadData()
         if (p) {
             wxString cellStr = wxString::Format("%s %s", p->familyName, p->givenName);
 #if 1
-            mTableView->InsertItem(i, cellStr);
+            long tmp = mTableView->InsertItem(i, cellStr);
+            if (p->databaseType == eAddressBook)
+                mTableView->SetItemTextColour(tmp, *wxLIGHT_GREY);
 #else
             wxListItem item;
             item.m_itemId = i;
@@ -305,6 +312,7 @@ void PatientSheet::reloadData()
         }
     }
     
+    mTableView->SetColumnWidth(0, -1); // autosize
     mTableView->wxWindow::Refresh();
 }
 

@@ -88,11 +88,12 @@ std::vector<Patient *> Contacts::getAllContacts()
 // See issue #30
 void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 {
+    wxString wildCard = wxString::Format("CSV %s (*.csv)|*.csv", _("files"));
     wxFileDialog fdlog(wxTheApp->GetTopWindow(),
                        _("Select Google/Outlook CSV file"),
                        wxEmptyString, // defaultDir
                        wxEmptyString, // defaultFile
-                       _("CSV files (*.csv)|*.CSV"),
+                       wildCard,
                        wxFD_OPEN | wxFD_FILE_MUST_EXIST); // no wxFD_MULTIPLE
 
     if (fdlog.ShowModal() != wxID_OK)
@@ -116,9 +117,9 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
             while (in.good())
             {
                 std::vector<std::string> row = csv_read_row(in, ',');
-                for (int i=0, leng=row.size(); i<leng; i++)
-                    std::cout << i << ":[" << row[i] << "]" << "\t";
-                std::cout << std::endl;
+//                for (int i=0, leng=row.size(); i<leng; i++)
+//                    std::cout << i << ":[" << row[i] << "]" << "\t";
+//                std::cout << std::endl;
                 if (row.size() != nCol)
                     continue;
 
@@ -132,6 +133,7 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
                 patient->zipCode = row[35]; // AJ
                 patient->country = row[36]; // AK
 
+                patient->databaseType = eAddressBook;
                 arrayOfContacts.push_back(patient);
             }
             break;
@@ -159,6 +161,7 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
                 patient->zipCode = row[67];         // BP
                 patient->country = row[68];         // BQ
 
+                patient->databaseType = eAddressBook;
                 arrayOfContacts.push_back(patient);
             }
             break;
