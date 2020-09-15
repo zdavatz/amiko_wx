@@ -10,6 +10,8 @@
 #include "Utilities.hpp"
 
 Patient::Patient()
+: weightKg(0)
+, heightCm(0)
 {
     
 }
