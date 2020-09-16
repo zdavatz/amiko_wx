@@ -571,11 +571,11 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxVERTICAL );
 
-	mSearchKey = new wxSearchCtrl( m_panel7Right, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	mSearchKey = new wxSearchCtrl( m_panel7Right, wxID_PAT_SEARCH_FIELD, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	#ifndef __WXMAC__
 	mSearchKey->ShowSearchButton( true );
 	#endif
-	mSearchKey->ShowCancelButton( false );
+	mSearchKey->ShowCancelButton( true );
 	bSizer13->Add( mSearchKey, 0, wxALL|wxEXPAND, 5 );
 
 	mTableView = new wxListCtrl( m_panel7Right, wxID_PATIENT_LIST, wxDefaultPosition, wxDefaultSize, wxLC_NO_HEADER|wxLC_REPORT|wxLC_SINGLE_SEL );
@@ -622,6 +622,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	mSex->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
+	mSearchKey->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( PatientSheetBase::OnSearchDatabase ), NULL, this );
 	mTableView->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
 	mTableView->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( PatientSheetBase::OnListItemSelected ), NULL, this );
 	m_button22->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );
@@ -635,6 +636,7 @@ PatientSheetBase::~PatientSheetBase()
 	mSex->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
+	mSearchKey->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( PatientSheetBase::OnSearchDatabase ), NULL, this );
 	mTableView->Disconnect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( PatientSheetBase::OnSelectPatient ), NULL, this );
 	mTableView->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( PatientSheetBase::OnListItemSelected ), NULL, this );
 	m_button22->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnNewPatient ), NULL, this );

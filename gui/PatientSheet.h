@@ -23,6 +23,7 @@ class PatientSheet : public PatientSheetBase
 		void OnSelectSex( wxCommandEvent& event );
 		void OnCancel( wxCommandEvent& event );
 		void OnSavePatient( wxCommandEvent& event );
+		void OnSearchDatabase( wxCommandEvent& event );
 		void OnSelectPatient( wxMouseEvent& event );
 		void OnListItemSelected( wxListEvent& event );
 		void OnNewPatient( wxCommandEvent& event );

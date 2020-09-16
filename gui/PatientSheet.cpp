@@ -361,6 +361,49 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
     friendlyNote();
 }
 
+// 352
+void PatientSheet::OnSearchDatabase( wxCommandEvent& event )
+{
+    wxString searchKey = mSearchKey->GetValue();
+    mFilteredArrayOfPatients.clear(); // removeAllObjects();
+    if (searchKey.length() > 0) {
+        for (auto p : mArrayOfPatients) {
+            wxString searchKeyLower = searchKey.Lower();
+            if (p->familyName.Lower().starts_with( searchKeyLower) ||
+                p->givenName.Lower().starts_with( searchKeyLower) ||
+                p->postalAddress.Lower().starts_with(searchKeyLower) ||
+                p->zipCode.starts_with(searchKeyLower))
+            {
+                mFilteredArrayOfPatients.push_back(p);
+            }
+        }
+    }
+
+    //if (mFilteredArrayOfPatients != nil)
+    {
+        if (mFilteredArrayOfPatients.size() > 0) {
+            setNumPatients(mFilteredArrayOfPatients.size());
+            mSearchFiltered = true;
+        }
+        else {
+            if (searchKey.length() > 0) {
+                setNumPatients(0);
+                mSearchFiltered = true;
+            }
+            else {
+                setNumPatients(mArrayOfPatients.size());
+                mSearchFiltered = false;
+            }
+        }
+    }
+//    else {
+//        setNumPatients(mArrayOfPatients.size());
+//        mSearchFiltered = false;
+//    }
+
+    reloadData(); // mTableView
+}
+
 // 517
 // Double clicked a patient in the table view
 void PatientSheet::OnSelectPatient( wxMouseEvent& event )
