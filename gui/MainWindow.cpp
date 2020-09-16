@@ -2280,14 +2280,15 @@ void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
 // 949
 void MainWindow::OnSearchNow( wxCommandEvent& event )
 {
+    wxString searchText = mySearchField->GetValue();
+
 #ifndef NDEBUG
     std::cerr << "=== " << __FUNCTION__
     << " from ID: " << event.GetId()  // wxID_MY_SEARCH_FIELD
-    << " <" << mySearchField->GetValue() << ">"
+    << " <" << searchText << ">"
     << std::endl;
 #endif
 
-    wxString searchText = mySearchField->GetValue();
 #if 0
     if (mCurrentSearchState == kss_WebView)
         return;

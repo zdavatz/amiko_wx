@@ -75,12 +75,13 @@ class SignatureView;
 #define wxID_SET_OPERATOR_ID 1030
 #define wxID_RB_SEX 1031
 #define wxID_SAVE_PATIENT 1032
-#define wxID_PATIENT_LIST 1033
-#define wxID_ADD_PATIENT 1034
-#define wxID_DELETE_PATIENT 1035
-#define wxID_CLEAR_SIGNATURE 1036
-#define wxID_LOAD_SIGNATURE 1037
-#define wxID_SAVE_OPERATOR 1038
+#define wxID_PAT_SEARCH_FIELD 1033
+#define wxID_PATIENT_LIST 1034
+#define wxID_ADD_PATIENT 1035
+#define wxID_DELETE_PATIENT 1036
+#define wxID_CLEAR_SIGNATURE 1037
+#define wxID_LOAD_SIGNATURE 1038
+#define wxID_SAVE_OPERATOR 1039
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -219,6 +220,7 @@ class PatientSheetBase : public wxDialog
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSearchDatabase( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectPatient( wxMouseEvent& event ) { event.Skip(); }
 		virtual void OnListItemSelected( wxListEvent& event ) { event.Skip(); }
 		virtual void OnNewPatient( wxCommandEvent& event ) { event.Skip(); }
