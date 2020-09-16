@@ -231,6 +231,12 @@ MainWindow::MainWindow( wxWindow* parent )
 
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
+
+#ifndef __APPLE__
+    // Issue #36
+    m_menuFile->AppendSeparator();
+    m_menuFile->Append(wxID_EXIT, wxString( _("Quit") ) + wxT('\t') + wxT("CTRL+Q"));
+#endif
 }
 
 // Purpose: access the search state from TableViewDelegate
@@ -1810,7 +1816,7 @@ wxArrayString MainWindow::csvGetInputListFromFile()
     std::clog << __FUNCTION__ << std::endl;
     
     // Create a file open dialog class
-    wxString wildCard = wxString::Format("CSV %s (*.csv)|*.csv|TXT %s (*.txt)|*.txt",
+    wxString wildCard = wxString::Format("CSV %s (*.csv;*.CSV)|*.csv;*.CSV|TXT %s (*.txt)|*.txt",
                                          _("files"), _("files"));
     wxFileDialog openDlgPanel(this,
                               _("Please select text file with one word or two words per line. The file can be created into a text editor. Encoding is UTF-8"),
