@@ -88,7 +88,7 @@ std::vector<Patient *> Contacts::getAllContacts()
 // See issue #30
 void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 {
-    wxString wildCard = wxString::Format("CSV %s (*.csv)|*.csv", _("files"));
+    wxString wildCard = wxString::Format("CSV %s (*.csv;*.CSV)|*.csv;*.CSV", _("files"));
     wxFileDialog fdlog(wxTheApp->GetTopWindow(),
                        _("Select Google/Outlook CSV file"),
                        wxEmptyString, // defaultDir

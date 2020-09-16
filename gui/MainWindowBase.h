@@ -122,7 +122,6 @@ class MainWindowBase : public wxFrame
 		wxToolBarToolBase* m_tool7;
 		wxToolBarToolBase* m_tool5;
 		wxMenuBar* m_menubar1;
-		wxMenu* m_menuFile;
 		wxMenu* m_menu11;
 		wxMenu* m_menuEdit;
 		wxMenu* m_menuPrescr;
@@ -172,6 +171,7 @@ class MainWindowBase : public wxFrame
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* m_tbMain;
 		wxToolBarToolBase* m_toolAbout;
+		wxMenu* m_menuFile;
 
 		MainWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1033,767 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
