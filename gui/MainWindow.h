@@ -102,6 +102,10 @@ public:
     void addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n);
     void prescriptionDoctorChanged();
     void prescriptionPatientChanged();
+#ifndef __APPLE_
+    void OnQuit( wxCommandEvent& event);
+#endif
+
 private:
     void setOperatorID();
     void savePrescription();
