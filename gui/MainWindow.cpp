@@ -11,6 +11,7 @@
 #include <wx/txtstrm.h>
 #include <wx/tglbtn.h>
 #include <wx/xml/xml.h>
+#include <wx/menu.h>
 
 #include <sqlite3.h>
 
@@ -235,9 +236,17 @@ MainWindow::MainWindow( wxWindow* parent )
 #ifndef __APPLE__
     // Issue #36
     m_menuFile->AppendSeparator();
-    m_menuFile->Append(wxID_EXIT, wxString( _("Quit") ) + wxT('\t') + wxT("CTRL+Q"));
+    m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
+    Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
 }
+
+#ifndef __APPLE_
+void MainWindow::OnQuit( wxCommandEvent& event)
+{
+    Close(true);
+}
+#endif
 
 // Purpose: access the search state from TableViewDelegate
 // It doesn't need to be a class member because 'mCurrentSearchState'
