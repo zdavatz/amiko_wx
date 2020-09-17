@@ -149,7 +149,7 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
             while (in.good())
             {
                 std::vector<std::string> row = csv_read_row(in, ',');
-                if (row.size() != nCol)
+                if (row.size() != nCol) // sanity check
                     continue;
 
                 Patient *patient = new Patient;
@@ -157,8 +157,8 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
                 patient->givenName = row[idx_name];
                 patient->familyName = row[idx_surname];
                 //patient->gender = row[idx_gender]; // TODO:
-                patient->birthDate = row[idx_birthdate];
-                patient->postalAddress = row[idx_address];
+                patient->birthDate = row[idx_birthdate]; // TODO:
+                patient->postalAddress = row[idx_address]; // See issue #39
                 patient->city = row[idx_city];
                 patient->zipCode = row[idx_zip];
                 patient->country = row[idx_country];
@@ -177,8 +177,9 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
             {
                 std::vector<std::string> row = csv_read_row(in, ',');
 
-                // row.size() is 89 because there is an extra trailing ','
-                if (row.size() < nCol)
+                // Normally row.size() is nCol+1 because there is an extra trailing ','
+                // but we also allow nCol, just ban the case < nCol
+                if (row.size() < nCol) // sanity check
                     continue;
 
                 Patient *patient = new Patient;

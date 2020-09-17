@@ -17,6 +17,7 @@ PatientSheet::PatientSheet( wxWindow* parent )
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
+    mBirthDate->SetHint("DD.MM.JJJJ");
 
 #if 0
     // TODO:
