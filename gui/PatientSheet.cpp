@@ -135,9 +135,21 @@ Patient * PatientSheet::getAllFields()
 }
 
 // 241
-void PatientSheet::friendlyNote()
+// friendlyNote
+void PatientSheet::friendlyNoteAdded()
 {
-    mNotification->SetLabel(wxString::Format(_("The contact was saved in the %s address book"), wxString(APP_NAME)));
+    mNotification->SetLabel(wxString::Format(_("The contact was added to the %s address book"),
+                                             wxString(APP_NAME)));
+}
+void PatientSheet::friendlyNoteUpdated()
+{
+    mNotification->SetLabel(wxString::Format(_("The contact was updated in the %s address book"),
+                                             wxString(APP_NAME)));
+}
+void PatientSheet::friendlyNoteDeleted()
+{
+    mNotification->SetLabel(wxString::Format(_("The contact has been removed from the %s address book"),
+                                             wxString(APP_NAME)));
 }
 
 // 246
@@ -148,7 +160,7 @@ void PatientSheet::addPatient(Patient *patient)
     mSearchFiltered = false;
     mSearchKey->SetValue(wxEmptyString);
     updateAmiKoAddressBookTableView();
-    friendlyNote();
+    friendlyNoteAdded();
 }
 
 // 261
@@ -348,9 +360,11 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
     if (mPatientDb->getPatientWithUniqueID(mPatientUUID) == nullptr) {
         // Not found in DB
         mPatientUUID = mPatientDb->addEntry(patient);
+        friendlyNoteAdded();
     }
     else {
         mPatientUUID = mPatientDb->insertEntry(patient); // Update row
+        friendlyNoteUpdated();
     }
 
     mSearchFiltered = false;
@@ -358,7 +372,6 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
 
     // 433
     updateAmiKoAddressBookTableView();
-    friendlyNote();
 }
 
 // 352
@@ -477,7 +490,7 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
     wxMessageDialog alert(this,
                           _("Delete contact?"),
                           caption,
-                          wxNO_DEFAULT | wxYES | wxCANCEL | wxICON_INFORMATION);
+                          wxYES_NO | wxICON_INFORMATION);
     switch ( alert.ShowModal() )
     {
         case wxID_YES:
@@ -486,7 +499,7 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
                 deletePatientFolder_withBackup(p, true);
                 resetAllFields();
                 updateAmiKoAddressBookTableView();
-                mNotification->SetLabel(wxString::Format(_("The contact has been removed from the %s Address Book"), wxString(APP_NAME)));
+                friendlyNoteDeleted();
 #if 1
                 std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO: postNotification" << std::endl;
 #else
@@ -496,6 +509,7 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
             break;
 
         default:
+        case wxID_NO:
         case wxID_CANCEL:
             break;
     }
