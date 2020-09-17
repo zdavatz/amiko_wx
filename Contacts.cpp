@@ -18,8 +18,11 @@
 #include "Contacts.hpp"
 #include "Patient.hpp"
 
-#define EXPECTED_COL_CSV_GOOGLE     38
-#define EXPECTED_COL_CSV_OUTLOOK    88
+enum {
+    CONTACT_IMPORT_CSV_GOOGLE,
+    CONTACT_IMPORT_CSV_OUTLOOK,
+    CONTACT_IMPORT_VCARD
+};
 
 // /////////////////////////////////////////////////////////////////////////////
 // Not in amiko-osx
@@ -110,35 +113,65 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
         header = csv_read_row(in, ',');
 
     int nCol = header.size();
+    
+    // Create map to associate header cells with indexes
+    std::map<wxString, int> headerMap;
+    for (int i=0; i<nCol; i++)
+        headerMap[header[i]] = i;
+    
+    // Pre-calculate the needed indexes for faster access later in the while loop
+    int idx_name = headerMap["Given Name"];
+    int idx_surname = headerMap["Family Name"];
+    int idx_birthdate = headerMap["Birthday"];
+    int idx_gender = headerMap["Gender"];
+    int idx_address = headerMap["Address 1 - Street"];
+    int idx_city = headerMap["Address 1 - City"];
+    int idx_zip = headerMap["Address 1 - Postal Code"];
+    int idx_country = headerMap["Address 1 - Country"];
+    
+    // Extra checks for optional fields:
+    std::map<wxString, int>::iterator it;
 
-    switch (nCol) {
-        case EXPECTED_COL_CSV_GOOGLE:
+    it = headerMap.find("E-mail 1 - Value");
+    int idx_email = (it != headerMap.end()) ? it->second : -1;
+
+    it = headerMap.find("Phone 1 - Value");
+    int idx_phone = (it != headerMap.end()) ? it->second : -1;
+
+    // We cannog decide between Google or Outlook based on the number of columns,
+    // because the Google CSV format has a variable number of columns, depending on the data.
+    // The solution is to decide from the first header cell.
+    int csvType = (header[0] == "Name") ? CONTACT_IMPORT_CSV_GOOGLE : CONTACT_IMPORT_CSV_OUTLOOK;
+
+    switch (csvType) {
+        case CONTACT_IMPORT_CSV_GOOGLE:
             arrayOfContacts.clear();                
             while (in.good())
             {
                 std::vector<std::string> row = csv_read_row(in, ',');
-//                for (int i=0, leng=row.size(); i<leng; i++)
-//                    std::cout << i << ":[" << row[i] << "]" << "\t";
-//                std::cout << std::endl;
                 if (row.size() != nCol)
                     continue;
 
                 Patient *patient = new Patient;
 
-                patient->givenName = row[1]; // B
-                patient->familyName = row[3]; // D
-                patient->birthDate = row[14]; // O
-                patient->postalAddress = row[31]; // AF street
-                patient->city = row[32]; // AG
-                patient->zipCode = row[35]; // AJ
-                patient->country = row[36]; // AK
+                patient->givenName = row[idx_name];
+                patient->familyName = row[idx_surname];
+                //patient->gender = row[idx_gender]; // TODO:
+                patient->birthDate = row[idx_birthdate];
+                patient->postalAddress = row[idx_address];
+                patient->city = row[idx_city];
+                patient->zipCode = row[idx_zip];
+                patient->country = row[idx_country];
+                // Extra checks for optional fields:
+                if (idx_email >= 0) patient->emailAddress = row[idx_email];
+                if (idx_phone >= 0) patient->phoneNumber = row[idx_phone];
 
                 patient->databaseType = eAddressBook;
                 arrayOfContacts.push_back(patient);
             }
             break;
             
-        case EXPECTED_COL_CSV_OUTLOOK:
+        case CONTACT_IMPORT_CSV_OUTLOOK:
             arrayOfContacts.clear();
             while (in.good())
             {
@@ -152,7 +185,7 @@ void Contacts::addAllContactsToArray(std::vector<Patient *> &arrayOfContacts)
 
                 patient->givenName = row[0];        // A
                 patient->familyName = row[2];       // C
-                //patient->gender = row[7];           // H
+                //patient->gender = row[7];         // H  TODO:
                 patient->birthDate = row[8];        // I
                 patient->emailAddress = row[14];    // O
                 patient->phoneNumber = row[17];     // R TODO: fallback S,U

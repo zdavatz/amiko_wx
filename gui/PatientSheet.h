@@ -38,7 +38,9 @@ class PatientSheet : public PatientSheetBase
     Patient *getAllFields();
     bool validateFields(Patient *patient);
     void updateAmiKoAddressBookTableView();
-    void friendlyNote();
+    void friendlyNoteAdded();
+    void friendlyNoteUpdated();
+    void friendlyNoteDeleted();
     void resetFieldsColors();
     wxString retrievePatientAsString();
     void addPatient(Patient *patient);
