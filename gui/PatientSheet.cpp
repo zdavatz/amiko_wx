@@ -17,7 +17,15 @@ PatientSheet::PatientSheet( wxWindow* parent )
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
-    mBirthDate->SetHint("DD.MM.JJJJ");
+
+    mBirthDate->SetHint(_("DD.MM.YYYY"));
+    wxTextValidator tv(wxFILTER_INCLUDE_CHAR_LIST);
+    wxString allowedChars = wxS("0123456789.");
+    tv.SetCharIncludes(allowedChars);
+    mBirthDate->SetValidator(tv);
+
+    mWeight_kg->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
+    mHeight_cm->SetValidator(wxTextValidator(wxFILTER_NUMERIC));
 
 #if 0
     // TODO:
@@ -196,7 +204,7 @@ bool PatientSheet::validateFields(Patient *patient)
         mGivenName->SetBackgroundColour(lightRed);
         valid = false;
     }
-    if (patient->birthDate.IsEmpty()) {
+    if (patient->birthDate.Length() != 10) {
         mBirthDate->SetBackgroundColour(lightRed);
         valid = false;
     }

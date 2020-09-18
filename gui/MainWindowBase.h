@@ -37,6 +37,7 @@ class SignatureView;
 #include <wx/menu.h>
 #include <wx/frame.h>
 #include <wx/radiobox.h>
+#include <wx/valtext.h>
 #include <wx/listctrl.h>
 #include <wx/dialog.h>
 

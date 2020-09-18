@@ -47,9 +47,24 @@ void Patient::importFromDict(PAT_DICT &dict)
 
 // 70
 // The UUID should be unique and should be based on family name, given name, and birthday
+// https://github.com/zdavatz/amiko_csharp/issues/81#issue-330573485
 wxString Patient::generateUniqueID()
 {
-    wxString uniqueHashString = wxString::Format("%s.%s.%s", familyName , givenName, birthDate);
+    wxArrayString dateFields = wxSplit(birthDate, '.');
+    
+    wxString birthDateSanitized = birthDate;
+    if (dateFields.size() == 3) {
+        // Strip possible leading zeros from day and month
+        int dd   = wxAtoi(dateFields[0]);
+        int mm   = wxAtoi(dateFields[1]);
+        int yyyy = wxAtoi(dateFields[2]);
+        birthDateSanitized.Printf("%d.%d.%d", dd, mm, yyyy);
+    }
+
+    wxString uniqueHashString = wxString::Format("%s.%s.%s",
+                                                 familyName,
+                                                 givenName,
+                                                 birthDateSanitized);
     uniqueHashString.LowerCase();
     return UTI::sha256(uniqueHashString);
 }
