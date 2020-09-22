@@ -297,7 +297,7 @@ class OperatorIDSheetBase : public wxDialog
 		wxTextCtrl* mEmailAddress;
 		SignatureView* mSignView;
 
-		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 451,512 ), long style = wxDEFAULT_DIALOG_STYLE );
+		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 337,608 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~OperatorIDSheetBase();
 
 };
