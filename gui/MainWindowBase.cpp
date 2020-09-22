@@ -749,7 +749,7 @@ OperatorIDSheetBase::OperatorIDSheetBase( wxWindow* parent, wxWindowID id, const
 	bSizer20->Add( m_button17, 0, wxALL, 5 );
 
 
-	bSizer19->Add( bSizer20, 1, wxEXPAND, 5 );
+	bSizer19->Add( bSizer20, 0, wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer19 );

@@ -34,6 +34,12 @@ PatientSheet::PatientSheet( wxWindow* parent )
                                                  name:NSControlTextDidChangeNotification
                                                object:nil];
 #endif
+    
+    // 88
+    // amiko-osx show
+    // Retrieves contacts from local patient database
+    updateAmiKoAddressBookTableView();
+    mNotification->SetLabel(wxEmptyString);
 }
 
 // 117
@@ -293,8 +299,8 @@ int PatientSheet::numberOfRowsInTableView() // (NSTableView *)tableView
 }
 
 // In amiko-osx the framework calls
-//  numberOfRowsInTableView
-//  tableView:viewForTableColumn:row:
+//  - numberOfRowsInTableView
+//  - tableView:viewForTableColumn:row:
 void PatientSheet::reloadData()
 {
     // Clear all data
@@ -509,11 +515,10 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
                 resetAllFields();
                 updateAmiKoAddressBookTableView();
                 friendlyNoteDeleted();
-#if 1
-                std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO: postNotification" << std::endl;
-#else
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientDeleted" object:self];
-#endif
+
+                // Call the notification 'PrescriptionPatientDeleted' target directly
+                MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+                vc->prescriptionPatientDeleted();
             }
             break;
 

@@ -184,19 +184,20 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     jsonStr["medications"] = prescription;
     
 #ifndef NDEBUG
+    std::cerr << "===JSON AMK:\n" << jsonStr << "\n===\n";
+#endif
+
+#if 0 //ndef NDEBUG
     // For debugging skip the encode base64 step
     std::ofstream o(path, std::ios::trunc); // overwrite
     o << std::setw(4) << jsonStr << std::endl;
 #else
     wxString o;
     o << jsonStr.dump(4);
-    std::cerr << "JSON AMK " << o << std::endl;
+    //std::cerr << "JSON AMK " << o << std::endl;
     wxString base64Str = wxBase64Encode(o.c_str(), o.length());
-    
-    wxTextFile file( path );
-    file.Create();
-    file.AddLine( base64Str );
-    file.Write();
+    wxFileOutputStream file( path );
+    file.Write(base64Str, base64Str.length());
     file.Close();
 #endif
     return wxURL(path);
@@ -220,7 +221,9 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
     wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
     
-    //std::clog << " buf: " << jsonStr << std::endl;
+#ifndef NDEBUG
+    std::clog << " buf: " << jsonStr << std::endl;
+#endif
     
     // 300
     currentFileName = filePath;
@@ -302,7 +305,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     // 325
     placeDate = jsonDict["place_date"];
     if (placeDate.length() == 0)
-        placeDate = jsonDict["date"];
+        placeDate = jsonDict["date"]; // is this for backward compatibility ?
 
     std::string hash = jsonDict["prescription_hash"];
     return hash;
