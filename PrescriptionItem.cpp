@@ -18,4 +18,13 @@ void PrescriptionItem::importFromDict(MED_DICT &dict)
     fullPackageInfo = dict[KEY_AMK_MED_PACKAGE];
     eanCode         = dict[KEY_AMK_MED_EAN];
     comment         = dict[KEY_AMK_MED_COMMENT];
+    
+#ifndef NDEBUG
+    std::clog << __FUNCTION__
+    << ", title: " << title
+    << ", fullPackageInfo: " << fullPackageInfo
+    << ", eanCode: " << eanCode
+    << ", comment: " << comment
+    << std::endl;
+#endif
 }

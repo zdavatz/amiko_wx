@@ -347,6 +347,27 @@ void MainWindow::prescriptionPatientChanged() // (NSNotification *)notification
     // TODO: m_tbMain->  //myToolbar->setSelectedItemIdentifier("Rezept");
 }
 
+// 720
+void MainWindow::prescriptionPatientDeleted() //NSNotification *)notification
+{
+    //if ([[notification name] isEqualToString:@"MLPrescriptionPatientDeleted"])
+    {
+        myPatientAddressTextField->SetValue(wxEmptyString);
+        setOperatorID();
+        mPrescriptionsCart[0].clearCart();
+        myPrescriptionsTableView->Refresh(); // reloadData
+        resetPrescriptionHistory();
+    }
+}
+
+// 734
+void MainWindow::resetPrescriptionHistory()
+{
+    // TODO: mListOfSectionTitles = [[NSArray alloc] init];
+    // TODO: mListOfSectionIds = [[NSArray alloc] init];
+    mySectionTitles_reloadData(); // reloadData
+}
+
 // 741
 void MainWindow::updatePrescriptionHistory()
 {

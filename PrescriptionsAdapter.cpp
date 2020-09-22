@@ -221,7 +221,9 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
     wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
     
-    //std::clog << " buf: " << jsonStr << std::endl;
+#ifndef NDEBUG
+    std::clog << " buf: " << jsonStr << std::endl;
+#endif
     
     // 300
     currentFileName = filePath;
@@ -303,7 +305,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     // 325
     placeDate = jsonDict["place_date"];
     if (placeDate.length() == 0)
-        placeDate = jsonDict["date"];
+        placeDate = jsonDict["date"]; // is this for backward compatibility ?
 
     std::string hash = jsonDict["prescription_hash"];
     return hash;

@@ -515,11 +515,10 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
                 resetAllFields();
                 updateAmiKoAddressBookTableView();
                 friendlyNoteDeleted();
-#if 1
-                std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO: postNotification" << std::endl;
-#else
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientDeleted" object:self];
-#endif
+
+                // Call the notification 'PrescriptionPatientDeleted' target directly
+                MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+                vc->prescriptionPatientDeleted();
             }
             break;
 
