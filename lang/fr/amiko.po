@@ -19,7 +19,7 @@ msgstr ""
 "Language: fr_CH\n"
 
 msgid "* Required fields"
-msgstr "* Required fields"
+msgstr "* Obligatoire"
 
 msgid "+"
 msgstr "+"
@@ -49,7 +49,7 @@ msgid "Active Substance"
 msgstr "Substance active"
 
 msgid "Active Substance / ATC Code"
-msgstr "Substance active / Code ATC"
+msgstr "Principe Actif / Code ATC"
 
 #, c-format
 msgid "Address Book %s (%d)"
@@ -86,10 +86,10 @@ msgid "Check interactions"
 msgstr "Check interactions"
 
 msgid "City"
-msgstr "Résidence"
+msgstr "Ville"
 
 msgid "City*"
-msgstr "Résidence*"
+msgstr "Ville*"
 
 msgid "Colour legend"
 msgstr "Légende des couleurs"
@@ -135,7 +135,7 @@ msgid "Doctor"
 msgstr "Doctor"
 
 msgid "Doctor signature"
-msgstr "Doctor signature"
+msgstr "Signature du médecin..."
 
 msgid "Done"
 msgstr "Done"
@@ -144,7 +144,7 @@ msgid "Downloading latest DB files, please wait..."
 msgstr "Downloading latest DB files, please wait..."
 
 msgid "Edit"
-msgstr "Edit"
+msgstr "Éditer"
 
 msgid "Edit Comment"
 msgstr "Edit Comment"
@@ -156,16 +156,16 @@ msgid "Enter the doctor's address"
 msgstr "Saisir l’adresse du médecin"
 
 msgid "Export"
-msgstr "Export"
+msgstr "Exportation"
 
 msgid "Favorites"
-msgstr "Favorites"
+msgstr "Favoris"
 
 msgid "Feedback"
 msgstr "Feedback"
 
 msgid "File"
-msgstr "File"
+msgstr "Fichier"
 
 msgid "Find Next..."
 msgstr "Find Next..."
@@ -189,7 +189,7 @@ msgid "Height (cm)"
 msgstr "Taille en cm"
 
 msgid "Help"
-msgstr "Help"
+msgstr "Aide"
 
 msgid "Interactions"
 msgstr "Interactions"
@@ -207,7 +207,7 @@ msgid "Link to the online reference"
 msgstr "Lien vers la référence en ligne"
 
 msgid "Load Prescription..."
-msgstr "Load Prescription..."
+msgstr "Charger une recette..."
 
 msgid "Looking up keywords. Please wait..."
 msgstr "Looking up keywords. Please wait..."
@@ -274,22 +274,22 @@ msgid "Prescription"
 msgstr "Ordonnance"
 
 msgid "Prescription Info"
-msgstr "Prescription Info"
+msgstr "Chercher la Notice Infopro"
 
 msgid "Print"
-msgstr "Print"
+msgstr "Imprimer"
 
 msgid "Print Label"
 msgstr "Print Label"
 
 msgid "Print prescription..."
-msgstr "Print prescription..."
+msgstr "Imprimer l'ordonnance..."
 
 msgid "Print search result..."
-msgstr "Print search result..."
+msgstr "Imprimer la Recherche..."
 
 msgid "Print technical information..."
-msgstr "Print technical information..."
+msgstr "Imprimer la Notice Infopro..."
 
 msgid "Rate"
 msgstr "Rate"
@@ -298,10 +298,10 @@ msgid "Reg. No"
 msgstr "No d’Autorisation"
 
 msgid "Registration Number"
-msgstr "Registration Number"
+msgstr "Nombre d'autorisation"
 
 msgid "Registration Owner"
-msgstr "Registration Owner"
+msgstr "Titulaire"
 
 msgid "Regular monitoring"
 msgstr "Doit être régulièrement surveillée"
@@ -319,13 +319,13 @@ msgid "Results"
 msgstr "Results"
 
 msgid "Save"
-msgstr "Save"
+msgstr "Sauver"
 
 msgid "Save Prescription..."
-msgstr "Save Prescription..."
+msgstr "Sauver la recette..."
 
 msgid "Save..."
-msgstr "Save..."
+msgstr "Sauver..."
 
 msgid "Search"
 msgstr "Recherche"
@@ -352,7 +352,7 @@ msgid "Share"
 msgstr "Share"
 
 msgid "Signature from file"
-msgstr "Signature from file"
+msgstr "Signature du fichier"
 
 msgid "Street"
 msgstr "Adresse"
@@ -402,10 +402,10 @@ msgid "Toggle between patient DB and system address book"
 msgstr "Toggle between patient DB and system address book"
 
 msgid "Update from file"
-msgstr "Update from file"
+msgstr "Ajourner la Banque des Données"
 
 msgid "Update via Internet"
-msgstr "Update via Internet"
+msgstr "Télécharger la Banque des Données"
 
 msgid "Weight (kg)"
 msgstr "Poids en kg"
@@ -414,7 +414,7 @@ msgid "Window"
 msgstr "Window"
 
 msgid "Word Analysis"
-msgstr "Word Analysis"
+msgstr "Analyse des Mots"
 
 msgid "Your medicine basket is empty"
 msgstr "Votre panier des médicaments est vide"

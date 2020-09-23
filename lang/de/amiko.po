@@ -19,7 +19,7 @@ msgstr ""
 "Language: de_CH\n"
 
 msgid "* Required fields"
-msgstr "* Required fields"
+msgstr "* Pflichtfelder"
 
 msgid "+"
 msgstr "+"
@@ -82,22 +82,22 @@ msgid "Chapter name"
 msgstr "Kapitelname"
 
 msgid "Check interactions"
-msgstr "Check interactions"
+msgstr "Interaktionen prüfen"
 
 msgid "City"
-msgstr "Wohnort"
+msgstr "Stadt"
 
 msgid "City*"
-msgstr "Wohnort*"
+msgstr "Stadt*"
 
 msgid "Colour legend"
 msgstr "Farblegende"
 
 msgid "Compendium"
-msgstr "Compendium"
+msgstr "Kompendium"
 
 msgid "Contacts"
-msgstr "Contacts"
+msgstr "Kontakte"
 
 msgid "Contextual Menu"
 msgstr "Contextual Menu"
@@ -131,7 +131,7 @@ msgstr ""
 "Wollen Sie dieses Rezept überschreiben oder ? (NO to generate a new one)"
 
 msgid "Doctor"
-msgstr "Doctor"
+msgstr "Arztstempel"
 
 msgid "Doctor signature"
 msgstr "Doctor signature"
@@ -155,16 +155,16 @@ msgid "Enter the doctor's address"
 msgstr "Bitte Arztstempel ergänzen"
 
 msgid "Export"
-msgstr "Export"
+msgstr "Exportieren"
 
 msgid "Favorites"
-msgstr "Favorites"
+msgstr "Favoriten"
 
 msgid "Feedback"
 msgstr "Feedback"
 
 msgid "File"
-msgstr "File"
+msgstr "Datei"
 
 msgid "Find Next..."
 msgstr "Find Next..."
@@ -188,7 +188,7 @@ msgid "Height (cm)"
 msgstr "Grösse in cm"
 
 msgid "Help"
-msgstr "Help"
+msgstr "Hilfe"
 
 msgid "Interactions"
 msgstr "Interaktionen"
@@ -245,7 +245,7 @@ msgid "Patient management..."
 msgstr "Patientenverwaltung…"
 
 msgid "Patient search"
-msgstr "Patient search"
+msgstr "Patient suchen"
 
 msgid "Phone"
 msgstr "Telefonnr."
@@ -276,7 +276,7 @@ msgid "Prescription Info"
 msgstr "Prescription Info"
 
 msgid "Print"
-msgstr "Print"
+msgstr "Druken"
 
 msgid "Print Label"
 msgstr "Print Label"
@@ -297,10 +297,10 @@ msgid "Reg. No"
 msgstr "Reg. Nr."
 
 msgid "Registration Number"
-msgstr "Registration Number"
+msgstr "Zulassungsnummer"
 
 msgid "Registration Owner"
-msgstr "Registration Owner"
+msgstr "Inhaberin"
 
 msgid "Regular monitoring"
 msgstr "Regelmässige Überwachung"
@@ -318,13 +318,13 @@ msgid "Results"
 msgstr "Results"
 
 msgid "Save"
-msgstr "Save"
+msgstr "Speichern"
 
 msgid "Save Prescription..."
 msgstr "Save Prescription..."
 
 msgid "Save..."
-msgstr "Save..."
+msgstr "Speichern..."
 
 msgid "Search"
 msgstr "Suche"
@@ -339,7 +339,7 @@ msgid "Select Google/Outlook CSV file"
 msgstr "Select Google/Outlook CSV file"
 
 msgid "Send"
-msgstr "Send"
+msgstr "Senden"
 
 msgid "Sentence that contains the word"
 msgstr "Satz, der das Wort enthält"
@@ -351,7 +351,7 @@ msgid "Share"
 msgstr "Share"
 
 msgid "Signature from file"
-msgstr "Signature from file"
+msgstr "Unterschrift aus Datei"
 
 msgid "Street"
 msgstr "Adresse"
