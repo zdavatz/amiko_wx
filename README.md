@@ -39,6 +39,9 @@ STEP_BUILD_JSON=y
 2. Build script also has to download all data files, see OSX version.
 3. Build script has to build executables named `AmiKo` and `CoMed`.
 
+## Config Hack
+In the file ~/AmiKo you can set language=57 on the first line. That will put the interface to English. In case you want to test in English.
+
 ## Setup
 1. Run `build.sh`
 2. Edit `steps.conf`
