@@ -25,8 +25,11 @@ public:
 
 private:
     // private constructor so that it can not be called
-    // INI file is called: "~/Library/Preferences/$APP_NAME Preferences"
-    DefaultsController() : wxConfig(APP_NAME, PROJECT_NAME) {}
+
+    // INI file is called:
+    //  macos: "~/Library/Preferences/$APP_NAME"
+    //  linux: "~/.$APP_NAME"
+    DefaultsController() : wxConfig(PROJECT_NAME, "ywesee", APP_NAME) {}
 
     static DefaultsController* m_pInstance;
 };
