@@ -7,50 +7,82 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-16 10:57+0200\n"
-"PO-Revision-Date: 2020-07-16 12:08+0200\n"
+"POT-Creation-Date: 2020-09-23 09:51+0200\n"
+"PO-Revision-Date: 2020-09-23 11:17+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Last-Translator: Alex Bettarini\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de_CH\n"
 
 msgid "* Required fields"
-msgstr ""
+msgstr "* Required fields"
+
+msgid "+"
+msgstr "+"
+
+msgid "-"
+msgstr "-"
 
 msgid "<"
-msgstr ""
+msgstr "<"
 
 msgid ">"
-msgstr ""
+msgstr ">"
 
 msgid "AIPS Database"
-msgstr ""
+msgstr "AIPS Database"
+
+msgid "AMK files (*.amk)|*.AMK"
+msgstr "AMK files (*.amk)|*.AMK"
 
 msgid "ATC Code"
-msgstr ""
+msgstr "ATC Code"
+
+msgid "ATC-Code"
+msgstr "ATC-Code"
+
+msgid "Active Substance"
+msgstr "Wirkstoff"
 
 msgid "Active Substance / ATC Code"
 msgstr "Wirkstoff / ATC Code"
 
-msgid "AmiKo Desitin"
-msgstr ""
+#, c-format
+msgid "Address Book %s (%d)"
+msgstr "Addressbuch %s (%d)"
 
-#. "Eviter la combinaison"
+#, c-format
+msgid "Address Book Google (%d)"
+msgstr "Addressbuch Google (%d)"
+
+msgid "AmiKo Desitin"
+msgstr "AmiKo Desitin"
+
+#, c-format
+msgid "Are you sure you want to delete this contact from the %s Address Book?"
+msgstr "Wollen Sie diesen Kontakt wirklich aus dem %s Adressbuch löschen?"
+
 msgid "Avoid combination"
 msgstr "Kombination vermeiden"
 
 msgid "Birthday*"
 msgstr "Geburtstag*"
 
+msgid "Brand-Name of the drug"
+msgstr "Markenname des Medikaments"
+
 msgid "Cancel"
 msgstr "Abbrechen"
 
+msgid "Chapter name"
+msgstr "Kapitelname"
+
 msgid "Check interactions"
-msgstr ""
+msgstr "Check interactions"
 
 msgid "City"
 msgstr "Wohnort"
@@ -62,59 +94,86 @@ msgid "Colour legend"
 msgstr "Farblegende"
 
 msgid "Compendium"
-msgstr ""
+msgstr "Compendium"
 
 msgid "Contacts"
-msgstr ""
+msgstr "Contacts"
 
 msgid "Contextual Menu"
-msgstr ""
+msgstr "Contextual Menu"
 
 msgid "Contraindicated"
 msgstr "Kontraindiziert"
 
 #, c-format
 msgid "Couldn't find/load the 'amiko' catalog for locale '%s'."
-msgstr ""
+msgstr "Couldn't find/load the 'amiko' catalog for locale '%s'."
 
 msgid "Country"
 msgstr "Land"
 
+msgid "DD.MM.YYYY"
+msgstr "TT.MM.JJJJ"
+
 msgid "Data source: Public domain data from EPha.ch."
 msgstr "Datenquelle: Public Domain Daten von EPha.ch."
 
-msgid "Doctor"
+msgid "Delete Package and Comment"
+msgstr "Delete Package and Comment"
+
+msgid "Delete contact?"
+msgstr "Delete contact?"
+
+msgid ""
+"Do you really want to overwrite the existing prescription ? (NO to generate "
+"a new one)"
 msgstr ""
+"Wollen Sie dieses Rezept überschreiben oder ? (NO to generate a new one)"
+
+msgid "Doctor"
+msgstr "Doctor"
 
 msgid "Doctor signature"
-msgstr ""
+msgstr "Doctor signature"
 
 msgid "Done"
-msgstr ""
+msgstr "Done"
+
+msgid "Downloading latest DB files, please wait..."
+msgstr "Downloading latest DB files, please wait..."
 
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
+
+msgid "Edit Comment"
+msgstr "Edit Comment"
 
 msgid "Email"
 msgstr "Email"
 
+msgid "Enter the doctor's address"
+msgstr "Bitte Arztstempel ergänzen"
+
+msgid "Export"
+msgstr "Export"
+
 msgid "Favorites"
-msgstr ""
+msgstr "Favorites"
 
 msgid "Feedback"
-msgstr ""
+msgstr "Feedback"
 
 msgid "File"
-msgstr ""
+msgstr "File"
 
 msgid "Find Next..."
-msgstr ""
+msgstr "Find Next..."
 
 msgid "Find Previous..."
-msgstr ""
+msgstr "Find Previous..."
 
 msgid "Find..."
-msgstr ""
+msgstr "Find..."
 
 msgid "Footnotes"
 msgstr "Fussnoten"
@@ -122,23 +181,35 @@ msgstr "Fussnoten"
 msgid "Full Text"
 msgstr "Volltext"
 
+msgid "GIF files (*.gif)|*.GIF|"
+msgstr "GIF files (*.gif)|*.GIF|"
+
 msgid "Height (cm)"
 msgstr "Grösse in cm"
 
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 msgid "Interactions"
-msgstr ""
+msgstr "Interaktionen"
+
+msgid "JPG files (*.jpg)|*.JPG"
+msgstr "JPG files (*.jpg)|*.JPG"
 
 msgid "Known Interactions"
 msgstr "Bekannte Interaktionen"
 
 msgid "Label"
-msgstr ""
+msgstr "Label"
+
+msgid "Link to the online reference"
+msgstr "Link zur Online-Referenz"
 
 msgid "Load Prescription..."
-msgstr ""
+msgstr "Load Prescription..."
+
+msgid "Looking up keywords. Please wait..."
+msgstr "Schlüsselwörter werden gesucht. Geduld bitte…"
 
 msgid "Medicines"
 msgstr "Medikamentenkorb"
@@ -150,7 +221,7 @@ msgid "Name*"
 msgstr "Vorname*"
 
 msgid "New Prescription"
-msgstr ""
+msgstr "Neues Rezept"
 
 msgid "No measures necessary"
 msgstr "Keine Massnahmen notwendig"
@@ -158,23 +229,39 @@ msgstr "Keine Massnahmen notwendig"
 msgid "Not specified"
 msgstr "k.A."
 
+msgid "Overwrite prescription?"
+msgstr "Rezept überschreiben?"
+
 msgid "Owner"
 msgstr "Inhaber"
+
+msgid "PNG files (*.png)|*.PNG|"
+msgstr "PNG files (*.png)|*.PNG|"
 
 msgid "Patient Management"
 msgstr "Patientenverwaltung"
 
 msgid "Patient management..."
-msgstr ""
+msgstr "Patientenverwaltung…"
 
 msgid "Patient search"
-msgstr ""
+msgstr "Patient search"
 
 msgid "Phone"
 msgstr "Telefonnr."
 
 msgid "Place and Date"
+msgstr "Place and Date"
+
+msgid "Please select signature file"
+msgstr "Please select signature file"
+
+msgid ""
+"Please select text file with one word or two words per line. The file can be "
+"created into a text editor. Encoding is UTF-8"
 msgstr ""
+"Bitte Text-Datei mit einem Wort oder zwei Wörter pro Zeile wählen. Die Datei "
+"kann in einen Text-Editor erstellt werden. Encoding ist UTF-8."
 
 msgid "Precautionary measures recommended"
 msgstr "Vorsichtsmassnahmen empfohlen"
@@ -186,31 +273,34 @@ msgid "Prescription"
 msgstr "Rezept"
 
 msgid "Prescription Info"
-msgstr ""
+msgstr "Prescription Info"
 
 msgid "Print"
-msgstr ""
+msgstr "Print"
+
+msgid "Print Label"
+msgstr "Print Label"
 
 msgid "Print prescription..."
-msgstr ""
+msgstr "Print prescription..."
 
 msgid "Print search result..."
-msgstr ""
+msgstr "Print search result..."
 
 msgid "Print technical information..."
-msgstr ""
+msgstr "Print technical information..."
 
 msgid "Rate"
-msgstr ""
+msgstr "Rate"
 
 msgid "Reg. No"
 msgstr "Reg. Nr."
 
 msgid "Registration Number"
-msgstr ""
+msgstr "Registration Number"
 
 msgid "Registration Owner"
-msgstr ""
+msgstr "Registration Owner"
 
 msgid "Regular monitoring"
 msgstr "Regelmässige Überwachung"
@@ -219,34 +309,49 @@ msgid "Remove all"
 msgstr "Korb leeren"
 
 msgid "Report"
-msgstr ""
+msgstr "Report"
 
 msgid "Report interaction"
 msgstr "Interaktion melden"
 
 msgid "Results"
-msgstr ""
+msgstr "Results"
 
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
 msgid "Save Prescription..."
-msgstr ""
+msgstr "Save Prescription..."
+
+msgid "Save..."
+msgstr "Save..."
 
 msgid "Search"
 msgstr "Suche"
 
+msgid "Search Term from Uploaded file"
+msgstr "Suchbegriff aus hochgeladener Datei"
+
+msgid "Select AMK file"
+msgstr "Select AMK file"
+
+msgid "Select Google/Outlook CSV file"
+msgstr "Select Google/Outlook CSV file"
+
 msgid "Send"
-msgstr ""
+msgstr "Send"
+
+msgid "Sentence that contains the word"
+msgstr "Satz, der das Wort enthält"
 
 msgid "Sex*"
 msgstr "Geschlecht*"
 
 msgid "Share"
-msgstr ""
+msgstr "Share"
 
 msgid "Signature from file"
-msgstr ""
+msgstr "Signature from file"
 
 msgid "Street"
 msgstr "Adresse"
@@ -263,6 +368,18 @@ msgstr "Name"
 msgid "Surname*"
 msgstr "Name*"
 
+#, c-format
+msgid "The contact has been removed from the %s address book"
+msgstr "Kontakt wurde vom %s Addressbuch gelöscht"
+
+#, c-format
+msgid "The contact was added to the %s address book"
+msgstr "Kontakt was added to the %s Addressbuch gelöscht"
+
+#, c-format
+msgid "The contact was updated in the %s address book"
+msgstr "Kontakt was updated in the %s Addressbuch gelöscht"
+
 msgid "Therapy"
 msgstr "Therapie"
 
@@ -270,48 +387,63 @@ msgid ""
 "There are currently no interactions between these drugs in the EPha.ch "
 "database. For more information, see the technical information."
 msgstr ""
-"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der "
-"EPha.ch-Datenbank vorhanden. Weitere Informationen finden Sie in der "
+"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha."
+"ch-Datenbank vorhanden. Weitere Informationen finden Sie in der "
 "Fachinformation."
 
 msgid "This language is not supported by the system."
-msgstr ""
+msgstr "This language is not supported by the system."
 
 msgid "Title"
 msgstr "Titel"
 
+msgid "Toggle between patient DB and system address book"
+msgstr "Toggle between patient DB and system address book"
+
 msgid "Update from file"
-msgstr ""
+msgstr "Update from file"
 
 msgid "Update via Internet"
-msgstr ""
+msgstr "Update via Internet"
 
 msgid "Weight (kg)"
 msgstr "Gewicht in kg"
 
 msgid "Window"
-msgstr ""
+msgstr "Window"
 
 msgid "Word Analysis"
-msgstr ""
+msgstr "Wortanalyse"
 
 msgid "Your medicine basket is empty"
 msgstr "Ihr Medikamentenkorb ist leer"
 
+msgid "ZIP"
+msgstr "PLZ"
+
 msgid "ZIP*"
 msgstr "PLZ*"
 
-msgid "a page"
-msgstr ""
-
 msgid "count"
-msgstr ""
+msgstr "count"
 
 msgid "female"
 msgstr "weiblich"
 
+msgid "files"
+msgstr "files"
+
+msgid "interaktionen"
+msgstr "interaktionen"
+
+msgid "kompendium"
+msgstr "kompendium"
+
 msgid "male"
 msgstr "männlich"
 
+msgid "rezept"
+msgstr "rezept"
+
 msgid "unknown"
-msgstr ""
+msgstr "unbekannt"

@@ -131,6 +131,11 @@ set( SRCS_JS
     res/main_callbacks.js
 	)
 
+set( SRCS_LANG
+    lang/de/amiko.po
+    lang/fr/amiko.po
+    )
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
@@ -139,6 +144,7 @@ source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
 source_group(doctor FILES ${SRCS_DOCTOR})
 source_group(javascript FILES ${SRCS_JS})
+source_group(lang FILES ${SRCS_LANG})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -156,6 +162,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_JS}
     customURLConnection.cpp customURLConnection.hpp
+    ${SRCS_LANG}
     )
 
 #ADD_DEFINITIONS("-DwxWidgets_USE_STATIC=OFF")
