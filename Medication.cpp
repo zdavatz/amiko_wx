@@ -158,8 +158,8 @@ void Medication::importFromDict(std::map<std::string, std::string> &dict)
     regnrs  = dict[KEY_AMK_MED_REG_N];
     atccode = dict[KEY_AMK_MED_ATC];
 
-#ifndef NDEBUG
-    std::clog << __FUNCTION__
+#if 0 //ndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__
     << ", title: " << title
     << ", auth: " << auth
     << ", reg: " << regnrs

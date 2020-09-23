@@ -41,6 +41,7 @@
 #include "ItemCellView.hpp"
 #include "config.h"
 #include "SignatureView.hpp"
+#include "DefaultsController.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -136,6 +137,9 @@ MainWindow::MainWindow( wxWindow* parent )
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // TODO: Register applications defaults if necessary
+    DefaultsController* defaults = DefaultsController::Instance();
+    std::clog << "Defaults local path: <" << defaults->GetLocalFileName(APP_NAME) << ">" << std::endl;
+
     // TODO: Start timer to check if database needs to be updated (checks every hour)
 
     // 275
@@ -1655,7 +1659,9 @@ void MainWindow::updateInteractionsView()
 // 2589
 void MainWindow::updatePrescriptionsView()
 {
-    myTabView->ChangeSelection(2); // 2592
+    // 2591
+    // Switch tab view
+    myTabView->ChangeSelection(2);
 
     // Update date
     wxString placeDate = mPrescriptionAdapter->placeDate;

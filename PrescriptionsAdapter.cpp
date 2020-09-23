@@ -100,7 +100,9 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     currentTime.Replace(".", "");
     wxString fileName = wxString::Format("RZ_%s.amk", currentTime);
     
-    wxMkdir(patientDir);
+    if (!wxDirExists(patientDir))
+        wxMkdir(patientDir);
+
     wxString path = patientDir + wxFILE_SEP_PATH + fileName;
 
     currentFileName = path;  // full path
@@ -209,6 +211,8 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
 // see AmiKo-ios importFromURL
 wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
 {
+    std::string hash;
+
     wxFFileInputStream file(filePath);
     size_t FileSize = file.GetSize();
     
@@ -218,28 +222,35 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     wxString base64Str = wxString::FromUTF8(buffer);
     //std::clog << " base64Str: " << base64Str << std::endl;
 
-    wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
-    wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
+    try {
+        wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
+        wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
+        
+#ifndef NDEBUG
+        std::clog << "buf.GetDataLen(): " << buf.GetDataLen() << std::endl;
+        std::clog << "jsonStr.length(): " << jsonStr.length() << std::endl;
+        std::clog << "jsonStr: " << jsonStr << std::endl;
+#endif
+
+        // 300
+        currentFileName = filePath;
+        
+        //nlohmann::json tree;
+
+        //auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
+        auto jsonDict = nlohmann::json::parse((char *)jsonStr.char_str());
     
 #ifndef NDEBUG
-    std::clog << " buf: " << jsonStr << std::endl;
+    for (auto & element : jsonDict)
+        std::clog << "element "  << element.dump(4) << std::endl;
 #endif
-    
-    // 300
-    currentFileName = filePath;
-    
-    //nlohmann::json tree;
-
-    auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
-//    for (auto & element : jsonDict) {
-//        std::clog << "element "  << element << std::endl;
-//    }
 
     auto medicat = jsonDict["medications"];
-    //std::clog << "number of meds: " << medicat.count() << std::endl;
-//    for (auto & op : medicat.items()) {
-//        std::clog << op.key() << ", value: " << op.value() << std::endl;
-//    }
+#if 0 //ndef NDEBUG
+    std::clog << "medications: " << medicat.dump(4) << std::endl;
+    for (auto & op : medicat.items())
+        std::clog << op.key() << ", value: " << op.value() << std::endl;
+#endif
 
     // 303
     // Prescription
@@ -307,6 +318,12 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     if (placeDate.length() == 0)
         placeDate = jsonDict["date"]; // is this for backward compatibility ?
 
-    std::string hash = jsonDict["prescription_hash"];
+        hash = jsonDict["prescription_hash"];
+        
+    }
+    catch (const std::exception&e) {
+        std::cerr << "jsonStr: " << e.what() << std::endl;
+    }
+
     return hash;
 }
