@@ -85,7 +85,7 @@ bool PatientDBAdapter::openDatabase(wxString dbName)
 
     // 101
     // Get documents directory
-    wxString documentsDir = wxStandardPaths::Get().GetDocumentsDir();
+    wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
     wxString filePath( documentsDir + wxFILE_SEP_PATH + dbName);
 
     // 104
