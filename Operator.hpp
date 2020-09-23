@@ -12,15 +12,15 @@
 #include <wx/wx.h>
 
 // 26
-#define DEFAULTS_DOC_TITLE      "title"
-#define DEFAULTS_DOC_NAME       "givenname"
-#define DEFAULTS_DOC_SURNAME    "familyname"
-#define DEFAULTS_DOC_ADDRESS    "postaladdress"
-#define DEFAULTS_DOC_CITY       "city"
-#define DEFAULTS_DOC_ZIP        "zipcode"
-#define DEFAULTS_DOC_PHONE      "phonenumber"
-#define DEFAULTS_DOC_EMAIL      "emailaddress"
-#define DEFAULTS_DOC_COUNTRY    "country"
+#define DEFAULTS_DOC_TITLE      "doc/title"
+#define DEFAULTS_DOC_NAME       "doc/givenname"
+#define DEFAULTS_DOC_SURNAME    "doc/familyname"
+#define DEFAULTS_DOC_ADDRESS    "doc/postaladdress"
+#define DEFAULTS_DOC_CITY       "doc/city"
+#define DEFAULTS_DOC_ZIP        "doc/zipcode"
+#define DEFAULTS_DOC_PHONE      "doc/phonenumber"
+#define DEFAULTS_DOC_EMAIL      "doc/emailaddress"
+#define DEFAULTS_DOC_COUNTRY    "doc/country"
 
 // 36
 #define KEY_AMK_DOC_TITLE       "title"

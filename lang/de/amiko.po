@@ -134,7 +134,7 @@ msgid "Doctor"
 msgstr "Arztstempel"
 
 msgid "Doctor signature"
-msgstr "Doctor signature"
+msgstr "Arztstempel..."
 
 msgid "Done"
 msgstr "Done"
@@ -239,10 +239,10 @@ msgid "PNG files (*.png)|*.PNG|"
 msgstr "PNG files (*.png)|*.PNG|"
 
 msgid "Patient Management"
-msgstr "Patientenverwaltung"
+msgstr "Patienten verwaltung"
 
 msgid "Patient management..."
-msgstr "Patientenverwaltung…"
+msgstr "Patienten verwaltung…"
 
 msgid "Patient search"
 msgstr "Patient suchen"
