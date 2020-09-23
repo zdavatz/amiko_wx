@@ -46,7 +46,8 @@ bool MyApp::OnInit()
     // in the default locations, but when the program is not installed the
     // catalogs are in the build directory where we wouldn't find them by
     // default
-    wxLocale::AddCatalogLookupPathPrefix("./lang");
+    wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
+    wxLocale::AddCatalogLookupPathPrefix(documentsDir + wxFILE_SEP_PATH + "lang");
     // Initialize the catalogs we'll be using
     const wxLanguageInfo* pInfo = wxLocale::GetLanguageInfo(m_lang);
     if (!m_locale.AddCatalog("amiko"))
