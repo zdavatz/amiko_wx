@@ -189,3 +189,15 @@ make $MAKE_FLAGS
 echo "=== Install into $BIN_APP"
 make install
 fi
+
+#-------------------------------------------------------------------------------
+if [ $STEP_COPY_LANG_FILES ] ; then
+
+if [[ $(uname -s) == "Linux" ]] ; then
+for f in AmiKo CoMed
+do
+rsync -az --delete $(pwd)/lang $HOME/.$f
+done
+fi
+fi
+
