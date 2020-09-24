@@ -19,23 +19,21 @@ Prerequisites:
 
         $ git submodule init
         $ git submodule update
-then enable this in `steps.conf`
-```
-#STEP_CONFIGURE_JSON=y
-#STEP_BUILD_JSON=y
-```
 
 then enable this in `steps.conf`
 ```
 STEP_CONFIGURE_JSON=y
 STEP_BUILD_JSON=y
+STEP_COPY_LANG_FILES=y
 ```
 
-- OpenSSL development libraries, required for the calculation of the patient UUID (SHA256)
+- OpenSSL development libraries, required for the calculation of the patient hash (SHA256)
 
         $ sudo apt install libssl-dev
         
 - **uuidgen** for the generation of prescription UUIDs
+
+		    $ uuidgen
 
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
