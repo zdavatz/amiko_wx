@@ -22,6 +22,7 @@
 
 #include "main.hpp"
 #include "MainWindow.h"
+#include "DefaultsController.hpp"
 
 IMPLEMENT_APP(MyApp)
 
@@ -33,10 +34,15 @@ bool MyApp::OnInit()
     wxInitAllImageHandlers();
 
 #if 1
+    wxLanguage initialLanguage;
+
     if (wxString(APP_NAME) == "CoMed")
-        m_lang = wxLANGUAGE_FRENCH;
+        initialLanguage = wxLANGUAGE_FRENCH;
     else
-        m_lang = wxLANGUAGE_GERMAN;
+        initialLanguage = wxLANGUAGE_GERMAN;
+
+    DefaultsController* defaults = DefaultsController::Instance();
+    m_lang = (wxLanguage)defaults->getInt("language", initialLanguage);
 
     if ( !m_locale.Init(m_lang, wxLOCALE_DONT_LOAD_DEFAULT) ) {
         wxLogWarning(_("This language is not supported by the system."));

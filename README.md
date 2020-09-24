@@ -34,6 +34,9 @@ STEP_BUILD_JSON=y
 - OpenSSL development libraries, required for the calculation of the patient UUID (SHA256)
 
         $ sudo apt install libssl-dev
+        
+- **uuidgen** for the generation of prescription UUIDs
+
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.
