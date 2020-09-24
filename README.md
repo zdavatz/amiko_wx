@@ -17,8 +17,13 @@ Prerequisites:
 
 - JSON [nlohmann](https://github.com/nlohmann/json)
 
-		$ git submodule init
-		$ git submodule update
+        $ git submodule init
+        $ git submodule update
+then enable this in `steps.conf`
+```
+#STEP_CONFIGURE_JSON=y
+#STEP_BUILD_JSON=y
+```
 
 then enable this in `steps.conf`
 ```
@@ -36,6 +41,9 @@ STEP_BUILD_JSON=y
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.
 3. Build script has to build executables named `AmiKo` and `CoMed`.
+
+### Config Hack
+In the file `~/AmiKo` you can set `language=57` on the first line. That will put the interface to English. In case you want to test in English.
 
 ## Setup
 1. Run `build.sh`
