@@ -38,12 +38,13 @@ fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
 SQLITE=sqlite-amalgamation-$SQLITE_VERSION
+WD=$(pwd)
 
 eval SRC=$CONFIG_SRC_DIR
-SRC_JSON=$(pwd)/json
+SRC_JSON=$WD/json
 SRC_SQLITE=$SRC/$SQLITE
 SRC_WXWIDGETS=$SRC/$WXWIDGETS
-SRC_APP=$(pwd)
+SRC_APP=$WD
 
 eval BLD=$CONFIG_BLD_DIR/$APP
 BLD_JSON=$BLD/json
@@ -196,7 +197,7 @@ if [ $STEP_COPY_LANG_FILES ] ; then
 if [[ $(uname -s) == "Linux" ]] ; then
 for f in AmiKo CoMed
 do
-rsync -az --delete $(pwd)/lang $HOME/.$f
+rsync -az --delete $WD/lang $HOME/.$f
 done
 fi
 fi
