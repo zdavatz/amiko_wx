@@ -93,6 +93,7 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_WEBVIEW_NAVIGATING(wxID_ANY, MainWindow::OnNavigationRequest)
     EVT_WEBVIEW_TITLE_CHANGED(wxID_ANY, MainWindow::OnTitleChanged)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
+    EVT_DROP_FILES(MainWindow::OnDropFiles)
 END_EVENT_TABLE()
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -122,7 +123,7 @@ MainWindow::MainWindow( wxWindow* parent )
 #endif
     if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
-        m_tbMain->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
+        myToolbar->SetToolNormalBitmap(wxID_ABOUT, wxBitmap( CoMed_xpm ));
     }
 
     mySectionTitles->AppendTextColumn( "Sections" );
@@ -136,10 +137,12 @@ MainWindow::MainWindow( wxWindow* parent )
 
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
-    // TODO: Register applications defaults if necessary
+    // 256
+    // TODO: Register applications defaults if necessary 'DBLastUpdate'
     DefaultsController* defaults = DefaultsController::Instance();
     std::clog << "Defaults local path: <" << defaults->GetLocalFileName(APP_NAME) << ">" << std::endl;
 
+    // 267
     // TODO: Start timer to check if database needs to be updated (checks every hour)
 
     // 275
@@ -191,14 +194,64 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 308
     // TODO: Register drag and drop on prescription table view
+#if 1
+    // wxEVT_DROP_FILES
+    // cannot use DragAcceptFiles() and SetDropTarget() together
+    DragAcceptFiles(true);
+#else
+    mySectionTitles->SetDropTarget(wxDropTarget *dropTarget);
+#endif
+    
+#ifdef TEST_MIME_TYPE
+    m_mimeDatabase = new wxMimeTypesManager;
+    wxString ext("amk");
+    ftInfo = new wxFileTypeInfo("application/octet-stream",
+                                wxEmptyString,
+                                wxEmptyString,
+                                "AmiKo Prescription File",
+                                ext, wxNullPtr);
+    m_mimeDatabase->Associate(*ftInfo);
+    {
+        std::clog << "MIME info about extension ." << ext << std::endl;
+
+        wxFileType *filetype = m_mimeDatabase->GetFileTypeFromExtension(ext);
+
+        wxString type;
+        if (filetype->GetMimeType(&type))
+            std::clog << "\tMIME type: " << type << std::endl;
+
+        wxString desc;
+        if (filetype->GetDescription(&desc))
+            std::clog << "\tDescription: " << desc << std::endl;
+
+        wxIconLocation loc;
+        if (filetype->GetIcon(&loc) && loc.IsOk())
+            std::clog << "\tIcon: " << loc.GetFileName() << std::endl;
+
+        wxString filename = "filename";
+        filename << "." << ext;
+        wxFileType::MessageParameters params(filename, type);
+        wxString open;
+        if (filetype->GetOpenCommand(&open, params))
+            std::clog << "\tCommand to open: " << open << std::endl;
+
+        wxArrayString mimeTypes;
+        if (filetype->GetMimeTypes(mimeTypes))
+            for (auto m : mimeTypes)
+                std::clog << "\t\tMIME types: " << m << std::endl;
+
+        // it is your responsibility to delete the returned pointer when you're done with it!
+        delete filetype;
+    }
+#endif
 
     // 315
-    // TODO: Initialize webview
+    // Initialize webview
     myWebView->SetPage("<html><head></head><body></body></html>", wxString()); // loadHTMLString
     //myWebView->Fit();
 
     // 321
-    // TODO: Initialize favorites (articles + full text entries)
+    // Initialize favorites (articles + full text entries)
     DataStore *favorites = new DataStore;
     loadFavorites(favorites);
     favoriteMedsSet = favorites->favMedsSet;
@@ -212,6 +265,7 @@ MainWindow::MainWindow( wxWindow* parent )
     // 327
     // Set default database
     //mUsedDatabase = kdbt_Aips; // already done above
+    myToolbar->ToggleTool(wxID_TB_COMPENDIUM, true); // setSelectedItemIdentifier("AIPS")
 
     // 331
     // Set search state
@@ -244,6 +298,16 @@ MainWindow::MainWindow( wxWindow* parent )
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
 }
+
+#ifdef TEST_MIME_TYPE
+MainWindow::~MainWindow()
+{
+#if 1 //ndef __APPLE__ // MIME
+    wxFileType *filetype = m_mimeDatabase->GetFileTypeFromExtension("amk");
+    m_mimeDatabase->Unassociate(filetype);
+#endif
+}
+#endif
 
 #ifndef __APPLE_
 void MainWindow::OnQuit( wxCommandEvent& event)
@@ -347,8 +411,9 @@ void MainWindow::prescriptionPatientChanged() // (NSNotification *)notification
     updatePrescriptionHistory();
 
     // Switch tab view
-    myTabView->ChangeSelection(2); // selectTabViewItemAtIndex:2];
-    // TODO: m_tbMain->  //myToolbar->setSelectedItemIdentifier("Rezept");
+    myTabView->ChangeSelection(2); // selectTabViewItemAtIndex:2;
+    // and corresponding toolbar button
+    myToolbar->ToggleTool(wxID_TB_PRESCRIPTION, true); // setSelectedItemIdentifier("Rezept")
 }
 
 // 720
@@ -1662,6 +1727,8 @@ void MainWindow::updatePrescriptionsView()
     // 2591
     // Switch tab view
     myTabView->ChangeSelection(2);
+    // and corresponding toolbar button
+    myToolbar->ToggleTool(wxID_TB_PRESCRIPTION, true); // setSelectedItemIdentifier("Rezept")
 
     // Update date
     wxString placeDate = mPrescriptionAdapter->placeDate;
@@ -1670,8 +1737,6 @@ void MainWindow::updatePrescriptionsView()
 
     myPrescriptionsTableView->Refresh(); // TODO: reloadData
     mPrescriptionMode = true;
-
-    // TODO: m_tbMain-> //myToolbar->setSelectedItemIdentifier("Rezept");
 }
 
 // 2603
@@ -2648,8 +2713,9 @@ void MainWindow::OnCheckForInteractions( wxCommandEvent& event )
     mUsedDatabase = kdbt_Aips;
     mSearchInteractions = true;
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
-    // TODO: m_tbMain->  //myToolbar.setSelectedItemIdentifier("Interaktionen");
+
     myTabView->ChangeSelection(0); // selectTabViewItemAtIndex
+    myToolbar->ToggleTool(wxID_TB_INTERACTIONS, true); // setSelectedItemIdentifier("Interaktionen")
 }
 
 // 1439
@@ -2890,6 +2956,9 @@ void MainWindow::OnExportWordListSearchResults( wxCommandEvent& event )
 }
 
 // 1415
+// amiko-osx: OnLoadPrescription -> loadPrescriptionFromFile
+// amiko-ios: -> importFromURL
+// generika: -> importReceiptFromURL
 void MainWindow::OnLoadPrescription( wxCommandEvent& event )
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
@@ -3107,3 +3176,14 @@ void MainWindow::mySectionTitles_reloadData()
     //mySectionTitles->Fit();   // ng
     //GetSizer()->Layout();     // ng
 }
+
+void MainWindow::OnDropFiles(wxDropFilesEvent& event)
+{
+    if (event.GetNumberOfFiles() < 1)
+        return;
+
+    std::clog << __FUNCTION__ << " File: " << event.GetFiles()[0] << std::endl;
+    mPrescriptionAdapter->loadPrescriptionFromFile(event.GetFiles()[0]);
+    updatePrescriptionsView();
+}
+    

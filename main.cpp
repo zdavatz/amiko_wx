@@ -44,7 +44,8 @@ bool MyApp::OnInit()
     DefaultsController* defaults = DefaultsController::Instance();
     m_lang = (wxLanguage)defaults->getInt("language", initialLanguage);
 
-    if ( !m_locale.Init(m_lang, wxLOCALE_DONT_LOAD_DEFAULT) ) {
+    if (!m_locale.Init(m_lang, wxLOCALE_DONT_LOAD_DEFAULT) )
+    {
         wxLogWarning(_("This language is not supported by the system."));
         // continue nevertheless
     }
@@ -56,7 +57,8 @@ bool MyApp::OnInit()
     wxLocale::AddCatalogLookupPathPrefix(documentsDir + wxFILE_SEP_PATH + "lang");
     // Initialize the catalogs we'll be using
     const wxLanguageInfo* pInfo = wxLocale::GetLanguageInfo(m_lang);
-    if (!m_locale.AddCatalog("amiko"))
+    if (m_lang != wxLANGUAGE_ENGLISH &&
+        !m_locale.AddCatalog("amiko"))
     {
         wxLogError(_("Couldn't find/load the 'amiko' catalog for locale '%s'."),
                    pInfo ? pInfo->GetLocaleName() : _("unknown"));

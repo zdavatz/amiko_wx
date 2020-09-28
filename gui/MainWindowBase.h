@@ -170,7 +170,7 @@ class MainWindowBase : public wxFrame
 		wxButton* saveButton;
 		wxButton* sendButton;
 		wxDataViewListCtrl* mySectionTitles;
-		wxToolBar* m_tbMain;
+		wxToolBar* myToolbar;
 		wxToolBarToolBase* m_toolAbout;
 		wxMenu* m_menuFile;
 

@@ -107,7 +107,7 @@ Medication::indexToTitlesDict()
     
     int n1 = ids .size();
     int n2 = titles.size();
-    int n = n1 < n2 ? n1 : n2;
+    int n = (n1 < n2) ? n1 : n2;
     for (int i=0; i<n; ++i) {
         wxString id = ids[i];
         id.Replace("section", "");

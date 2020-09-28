@@ -144,7 +144,7 @@ Patient * PatientSheet::getAllFields()
     patient->country = mCountry->GetValue();
     patient->phoneNumber = mPhone->GetValue();
     patient->emailAddress = mEmail->GetValue();
-    patient->gender = mSex->GetSelection() == 0 ? "woman" : "man";
+    patient->gender = (mSex->GetSelection() == 0) ? "woman" : "man";
     
     return patient;
 }
