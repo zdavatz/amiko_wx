@@ -226,7 +226,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
         wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
         
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
         std::clog << "buf.GetDataLen(): " << buf.GetDataLen() << std::endl;
         std::clog << "jsonStr.length(): " << jsonStr.length() << std::endl;
         std::clog << "jsonStr: " << jsonStr << std::endl;

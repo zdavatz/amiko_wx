@@ -64,10 +64,12 @@ bool MyApp::OnInit()
                    pInfo ? pInfo->GetLocaleName() : _("unknown"));
     }
 
+#if 0 // issue #42
     // Now try to add wxstd.mo so that loading "NOTEXIST.ING" file will produce
     // a localized error message:
     m_locale.AddCatalog("wxstd");
     // NOTE: it's not an error if we couldn't find it!
+#endif
 
     // This catalog is installed in standard location on Linux systems and
     // shows that you may make use of the standard message catalogs as well

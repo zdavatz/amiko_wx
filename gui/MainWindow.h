@@ -103,6 +103,7 @@ private:
     void saveFavorites();
     void loadFavorites(DataStore *favorites);
     void tappedOnStar(int row);
+    void loadPrescription_andRefreshHistory(wxString filename, bool refresh);
 public:
     Medication * getShortMediWithId(long mid);
     void storeAllPrescriptionComments();

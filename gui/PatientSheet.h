@@ -44,6 +44,9 @@ class PatientSheet : public PatientSheetBase
     void resetFieldsColors();
     wxString retrievePatientAsString();
     void addPatient(Patient *patient);
+    Patient * retrievePatientWithUniqueID(wxString uniqueID);
+    bool patientExistsWithID(wxString uniqueID);
+    void setSelectedPatient(Patient *patient);
     
     // 30
     PatientDBAdapter *mPatientDb;
