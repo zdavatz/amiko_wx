@@ -201,6 +201,49 @@ MainWindow::MainWindow( wxWindow* parent )
 #else
     mySectionTitles->SetDropTarget(wxDropTarget *dropTarget);
 #endif
+    
+#ifdef TEST_MIME_TYPE
+    m_mimeDatabase = new wxMimeTypesManager;
+    wxString ext("amk");
+    ftInfo = new wxFileTypeInfo("application/octet-stream",
+                                wxEmptyString,
+                                wxEmptyString,
+                                "AmiKo Prescription File",
+                                ext, wxNullPtr);
+    m_mimeDatabase->Associate(*ftInfo);
+    {
+        std::clog << "MIME info about extension ." << ext << std::endl;
+
+        wxFileType *filetype = m_mimeDatabase->GetFileTypeFromExtension(ext);
+
+        wxString type;
+        if (filetype->GetMimeType(&type))
+            std::clog << "\tMIME type: " << type << std::endl;
+
+        wxString desc;
+        if (filetype->GetDescription(&desc))
+            std::clog << "\tDescription: " << desc << std::endl;
+
+        wxIconLocation loc;
+        if (filetype->GetIcon(&loc) && loc.IsOk())
+            std::clog << "\tIcon: " << loc.GetFileName() << std::endl;
+
+        wxString filename = "filename";
+        filename << "." << ext;
+        wxFileType::MessageParameters params(filename, type);
+        wxString open;
+        if (filetype->GetOpenCommand(&open, params))
+            std::clog << "\tCommand to open: " << open << std::endl;
+
+        wxArrayString mimeTypes;
+        if (filetype->GetMimeTypes(mimeTypes))
+            for (auto m : mimeTypes)
+                std::clog << "\t\tMIME types: " << m << std::endl;
+
+        // it is your responsibility to delete the returned pointer when you're done with it!
+        delete filetype;
+    }
+#endif
 
     // 315
     // Initialize webview
@@ -255,6 +298,16 @@ MainWindow::MainWindow( wxWindow* parent )
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
 }
+
+#ifdef TEST_MIME_TYPE
+MainWindow::~MainWindow()
+{
+#if 1 //ndef __APPLE__ // MIME
+    wxFileType *filetype = m_mimeDatabase->GetFileTypeFromExtension("amk");
+    m_mimeDatabase->Unassociate(filetype);
+#endif
+}
+#endif
 
 #ifndef __APPLE_
 void MainWindow::OnQuit( wxCommandEvent& event)
