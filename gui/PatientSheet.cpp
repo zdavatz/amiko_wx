@@ -178,10 +178,29 @@ void PatientSheet::addPatient(Patient *patient)
     friendlyNoteAdded();
 }
 
+// 256
+void PatientSheet::setSelectedPatient(Patient *patient)
+{
+    mSelectedPatient = patient;
+}
+
 // 261
 Patient * PatientSheet::retrievePatient()
 {
     return mSelectedPatient;
+}
+
+// 266
+Patient * PatientSheet::retrievePatientWithUniqueID(wxString uniqueID)
+{
+    return mPatientDb->getPatientWithUniqueID(uniqueID);
+}
+
+// 271
+bool PatientSheet::patientExistsWithID(wxString uniqueID)
+{
+    Patient *p = retrievePatientWithUniqueID(uniqueID);
+    return (p != nullptr);
 }
 
 // 277

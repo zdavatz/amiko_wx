@@ -30,6 +30,7 @@
 #include "DataObject.hpp"
 #include "PrescriptionsAdapter.hpp"
 #include "PatientSheet.h"
+#include "Patient.hpp"
 #include "OperatorIDSheet.h"
 #include "Operator.hpp"
 #include "FullTextSearch.hpp"
@@ -653,6 +654,49 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
     // will not take place.
     evt.Veto();
 #endif
+}
+
+// 1573
+// 'filename' contains the full path
+void MainWindow::loadPrescription_andRefreshHistory(wxString filename, bool refresh)
+{
+    wxString hash = mPrescriptionAdapter->loadPrescriptionFromFile(filename);
+
+    mPrescriptionsCart[0].cart = mPrescriptionAdapter->cart;
+    mPrescriptionsCart[0].uniqueHash = hash;
+
+    // Set patient found in prescription
+    Patient *p = mPrescriptionAdapter->patient;
+    if (p) {
+        wxString patientHash = p->uniqueId;
+
+        if (!mPatientSheet)
+            mPatientSheet = new PatientSheet(this);
+
+        if (!mPatientSheet->patientExistsWithID(patientHash))
+            mPatientSheet->addPatient(p);            // Import patient...
+
+        myPatientAddressTextField->SetValue( p->asString());
+        mPatientSheet->setSelectedPatient(p);
+    }
+    
+    // 1601
+    // Update views
+    updatePrescriptionsView();
+    if (refresh)
+        updatePrescriptionHistory();
+    
+    // Set operator / doctor found in prescription
+    /*
+    Operator *o = mPrescriptionAdapter->doctor;
+    if (o != nullptr) {
+        myOperatorIDTextField.stringValue = o->retrieveOperatorAsString();
+    }
+    */
+
+    possibleToOverwrite = true;
+    modifiedPrescription = false;
+    // updateButtons(); __deprecated
 }
 
 // 1627
@@ -2775,8 +2819,7 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     // 2981
     if (mPrescriptionMode) {
         //NSLog(@"%s row:%ld, %s", __FUNCTION__, row, mListOfSectionIds[row]);
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO loadPrescription()\n";
-        // TODO: loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
+        loadPrescription_andRefreshHistory(mListOfSectionIds[row], false);
     }
     // 2985
     else if (mCurrentSearchState != kss_FullText ||
@@ -3177,13 +3220,16 @@ void MainWindow::mySectionTitles_reloadData()
     //GetSizer()->Layout();     // ng
 }
 
+// 2889
+// tableView:acceptDrop:row:dropOperation:
 void MainWindow::OnDropFiles(wxDropFilesEvent& event)
 {
     if (event.GetNumberOfFiles() < 1)
         return;
 
-    std::clog << __FUNCTION__ << " File: " << event.GetFiles()[0] << std::endl;
-    mPrescriptionAdapter->loadPrescriptionFromFile(event.GetFiles()[0]);
-    updatePrescriptionsView();
+    // TODO: check file extension == amk
+    
+    // 2900
+    loadPrescription_andRefreshHistory(event.GetFiles()[0], true);
 }
     
