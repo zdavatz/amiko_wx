@@ -14,6 +14,7 @@
 #include <wx/base64.h>
 #include <wx/url.h>
 #include <wx/textfile.h>
+#include <wx/dir.h>
 
 #include <nlohmann/json.hpp>
 
@@ -39,19 +40,59 @@ PrescriptionsAdapter::PrescriptionsAdapter()
 // just the basename with the extension ".amk" stripped off
 wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-    wxArrayString a;
-    return a;
+    wxArrayString amkFiles;
+
+    if (p == nullptr)
+        return amkFiles;
+    
+    wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+
+    // 53
+    // Check if patient has already a directory, if not create one
+    patientDir.AppendDir(p->uniqueId);
+
+    if (wxDir::Exists(patientDir.GetFullPath())) {
+        // 59
+        // List content of directory
+        wxArrayString rzList;
+        wxDir::GetAllFiles(patientDir.GetFullPath(), &rzList, "*.amk");
+        for (auto rz : rzList) {
+            wxFileName fn(rz);
+            amkFiles.Add( fn.GetName());
+        }
+        
+        // 70
+        // TODO: Sort
+    }
+
+    return amkFiles;
 }
 
 // 79
-// Returns an array of filenames (wxString), the full path
+// Returns an array of filenames, the full path, including the extension .amk
 wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+    wxArrayString amkURLs;
 
-    wxArrayString a;
-    return a;
+    if (p == nullptr)
+        return amkURLs;
+
+    wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+    
+    // 92
+    // Check if patient has already a directory, if not create one
+    patientDir.AppendDir(p->uniqueId);
+    
+    if (wxDir::Exists(patientDir.GetFullPath())) {
+        // 98
+        // List content of directory
+        wxDir::GetAllFiles(patientDir.GetFullPath(), &amkURLs, "*.amk");
+        
+        // 108
+        // TODO: Sort
+    }
+    
+    return amkURLs;
 }
 
 // 160
@@ -240,7 +281,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         //auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
         auto jsonDict = nlohmann::json::parse((char *)jsonStr.char_str());
     
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     for (auto & element : jsonDict)
         std::clog << "element "  << element.dump(4) << std::endl;
 #endif
