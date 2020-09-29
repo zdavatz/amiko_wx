@@ -464,6 +464,7 @@ void MainWindow::updatePrescriptionHistory()
         mListOfSectionIds = listOfPrescriptions;  // array of full paths
     }
 
+    // 756
     // Extract section titles
     if (mMed->sectionTitles) {
         Patient *p = mPatientSheet->retrievePatient();
@@ -3086,7 +3087,7 @@ void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
 // Handler for EVT_HTML_CELL_CLICKED
 // See MLMainWindowController.m:2783 tableView:viewForTableColumn:row:
 // See MLMainWindowController.m:2917 tableViewSelectionDidChange
-// FIXME: not very reliable, sometimes we have to click more than once for the event to be detected
+// FIXME: now we have to click on the cell before the link can be clicked
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 {
     if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
@@ -3203,9 +3204,11 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     event.Skip();
 }
 
+// 2783
+// amiko-osx tableView:viewForTableColumn:row:
 void MainWindow::mySectionTitles_reloadData()
 {
-    //std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << " tab: " << myTabView->GetSelection() << std::endl;
 
     mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will probably be called
     int n = mListOfSectionTitles.size();
@@ -3215,6 +3218,7 @@ void MainWindow::mySectionTitles_reloadData()
         values.push_back(wxVariant(mListOfSectionTitles[i]));
         mySectionTitles->AppendItem(values);
     }
+
     mySectionTitles->Refresh();
     //mySectionTitles->Fit();   // ng
     //GetSizer()->Layout();     // ng
