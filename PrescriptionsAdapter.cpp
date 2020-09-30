@@ -314,50 +314,50 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         prescription.push_back(item);
     }
     
-    cart = prescription;
+        cart = prescription;
 
-    // 317
-    {
-        auto patientDict = jsonDict["patient"];
-        PAT_DICT dict;
-        dict[KEY_AMK_PAT_BIRTHDATE] = patientDict["birth_date"];
-        dict[KEY_AMK_PAT_CITY] = patientDict["city"];
-        dict[KEY_AMK_PAT_COUNTRY] = patientDict["country"];
-        dict[KEY_AMK_PAT_EMAIL] = patientDict["email_address"];
-        dict[KEY_AMK_PAT_SURNAME] = patientDict["family_name"];
-        dict[KEY_AMK_PAT_GENDER] = patientDict["gender"];
-        dict[KEY_AMK_PAT_NAME] = patientDict["given_name"];
-        dict[KEY_AMK_PAT_HEIGHT] = patientDict["height_cm"];
-        dict[KEY_AMK_PAT_ID] = patientDict["patient_id"];
-        dict[KEY_AMK_PAT_PHONE] = patientDict["phone_number"];
-        dict[KEY_AMK_PAT_ADDRESS] = patientDict["postal_address"];
-        dict[KEY_AMK_PAT_WEIGHT] = patientDict["weight_kg"];
-        dict[KEY_AMK_PAT_ZIP] = patientDict["zip_code"];
-        patient = new Patient;
-        patient->importFromDict(dict);
-    }
+        // 317
+        {
+            auto patientDict = jsonDict["patient"];
+            PAT_DICT dict;
+            dict[KEY_AMK_PAT_BIRTHDATE] = patientDict["birth_date"];
+            dict[KEY_AMK_PAT_CITY] = patientDict["city"];
+            dict[KEY_AMK_PAT_COUNTRY] = patientDict["country"];
+            dict[KEY_AMK_PAT_EMAIL] = patientDict["email_address"];
+            dict[KEY_AMK_PAT_SURNAME] = patientDict["family_name"];
+            dict[KEY_AMK_PAT_GENDER] = patientDict["gender"];
+            dict[KEY_AMK_PAT_NAME] = patientDict["given_name"];
+            dict[KEY_AMK_PAT_HEIGHT] = patientDict["height_cm"];
+            dict[KEY_AMK_PAT_ID] = patientDict["patient_id"];
+            dict[KEY_AMK_PAT_PHONE] = patientDict["phone_number"];
+            dict[KEY_AMK_PAT_ADDRESS] = patientDict["postal_address"];
+            dict[KEY_AMK_PAT_WEIGHT] = patientDict["weight_kg"];
+            dict[KEY_AMK_PAT_ZIP] = patientDict["zip_code"];
+            patient = new Patient;
+            patient->importFromDict(dict);
+        }
     
-    // 321
-    {
-        auto operatorDict = jsonDict["operator"];
-        OPER_DICT dict;
-        dict[KEY_AMK_DOC_CITY] = operatorDict["city"];
-        dict[KEY_AMK_DOC_EMAIL] = operatorDict["email_address"];
-        dict[KEY_AMK_DOC_SURNAME] = operatorDict["family_name"];
-        dict[KEY_AMK_DOC_NAME] = operatorDict["given_name"];
-        dict[KEY_AMK_DOC_PHONE] = operatorDict["phone_number"];
-        dict[KEY_AMK_DOC_ADDRESS] = operatorDict["postal_address"];
-        dict[KEY_AMK_DOC_SIGNATURE] = operatorDict["signature"];
-        dict[KEY_AMK_DOC_TITLE] = operatorDict["title"];
-        dict[KEY_AMK_DOC_ZIP] = operatorDict["zip_code"];
-        doctor = new Operator;
-        doctor->importFromDict(dict);
-    }
+        // 321
+        {
+            auto operatorDict = jsonDict["operator"];
+            OPER_DICT dict;
+            dict[KEY_AMK_DOC_CITY] = operatorDict["city"];
+            dict[KEY_AMK_DOC_EMAIL] = operatorDict["email_address"];
+            dict[KEY_AMK_DOC_SURNAME] = operatorDict["family_name"];
+            dict[KEY_AMK_DOC_NAME] = operatorDict["given_name"];
+            dict[KEY_AMK_DOC_PHONE] = operatorDict["phone_number"];
+            dict[KEY_AMK_DOC_ADDRESS] = operatorDict["postal_address"];
+            dict[KEY_AMK_DOC_SIGNATURE] = operatorDict["signature"];
+            dict[KEY_AMK_DOC_TITLE] = operatorDict["title"];
+            dict[KEY_AMK_DOC_ZIP] = operatorDict["zip_code"];
+            doctor = new Operator;
+            doctor->importFromDict(dict);
+        }
     
-    // 325
-    placeDate = jsonDict["place_date"];
-    if (placeDate.length() == 0)
-        placeDate = jsonDict["date"]; // is this for backward compatibility ?
+        // 325
+        placeDate = jsonDict["place_date"];
+        if (placeDate.length() == 0)
+            placeDate = jsonDict["date"]; // is this for backward compatibility ?
 
         hash = jsonDict["prescription_hash"];
         
