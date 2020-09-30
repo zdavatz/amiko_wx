@@ -425,7 +425,7 @@ void MainWindow::prescriptionPatientDeleted() //NSNotification *)notification
         myPatientAddressTextField->SetValue(wxEmptyString);
         setOperatorID();
         mPrescriptionsCart[0].clearCart();
-        myPrescriptionsTableView->Refresh(); // reloadData
+        myPrescriptionsTableView_reloadData(0);
         resetPrescriptionHistory();
     }
 }
@@ -441,8 +441,6 @@ void MainWindow::resetPrescriptionHistory()
 // 741
 void MainWindow::updatePrescriptionHistory()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-
     if (!mPrescriptionMode) {
 #ifndef NDEBUG
         std::clog << __FUNCTION__ << " not prescription mode" << std::endl;
@@ -908,7 +906,7 @@ void MainWindow::switchTabs(int item)
 #if 1
             myTabView->ChangeSelection(2);
             setOperatorID();
-            myPrescriptionsTableView->Refresh(); // TODO: reloadData
+            myPrescriptionsTableView_reloadData(0);
             // TODO: myPrescriptionsPrintTV->reloadData();
             //updateButtons(); __deprecated
 #else
@@ -1780,7 +1778,7 @@ void MainWindow::updatePrescriptionsView()
     if (!placeDate.IsEmpty())
         myPlaceDateField->SetLabel(placeDate);
 
-    myPrescriptionsTableView->Refresh(); // TODO: reloadData
+    myPrescriptionsTableView_reloadData(0);
     mPrescriptionMode = true;
 }
 
@@ -1922,26 +1920,11 @@ void MainWindow::addItem_toPrescriptionCartWithId(PrescriptionItem *item, int n)
         // Get all prescription comments from table
         storeAllPrescriptionComments();
 
+        // 2672
         // Get medi
         item->med = mDb->getShortMediWithId(item->mid);
         mPrescriptionsCart[n].addItemToCart(item);
-
-#if 1
-        {
-            // This code is not in amiko-osx
-            // Here we are not using any "model" for myPrescriptionsTableView,
-            // so we need to add the data directly. Also, no need to reload.
-            wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
-            wxTreeItemId med =
-            myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
-            myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
-
-            myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
-            myPrescriptionsTableView->ExpandAll();
-        }
-#else
-        myPrescriptionsTableView->Refresh(); //reloadData();
-#endif
+        myPrescriptionsTableView_reloadData(n);
 
         modifiedPrescription = true;
         //updateButtons(); // __deprecated
@@ -2645,7 +2628,7 @@ void MainWindow::OnTreeEndLabelEdit( wxTreeEvent& event )
     // If new text is empty remove comment
     if (event.GetLabel().IsEmpty()) {
         myPrescriptionsTableView->Delete(event.GetItem());
-        //myPrescriptionsTableView->Refresh();
+        myPrescriptionsTableView_reloadData(0);
         event.Skip();
         return;
     }
@@ -2735,7 +2718,7 @@ void MainWindow::OnNewPrescription( wxCommandEvent& event )
 {
     setOperatorID();
     mPrescriptionsCart[0].clearCart();
-    myPrescriptionsTableView->Refresh(); // TODO: reloadData
+    myPrescriptionsTableView_reloadData(0);
     possibleToOverwrite = false;
     modifiedPrescription = false;
     //updateButtons(); // __deprecated
@@ -3222,6 +3205,28 @@ void MainWindow::mySectionTitles_reloadData()
     mySectionTitles->Refresh();
     //mySectionTitles->Fit();   // ng
     //GetSizer()->Layout();     // ng
+}
+
+// This code is not in amiko-osx
+// Here we are not using any "model" for myPrescriptionsTableView
+void MainWindow::myPrescriptionsTableView_reloadData(int cartNo)
+{
+    if (mPrescriptionsCart[cartNo].cart.size() < 1)
+        return;
+
+    wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
+    myPrescriptionsTableView->DeleteChildren(root);
+
+    for (PrescriptionItem *item : mPrescriptionsCart[cartNo].cart) {
+        wxTreeItemId med =
+        myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
+        myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
+
+        myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
+    }
+
+    myPrescriptionsTableView->ExpandAll();
+    myPrescriptionsTableView->Refresh();
 }
 
 // 2889

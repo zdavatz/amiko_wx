@@ -131,6 +131,7 @@ private:
     int m_findCount;
     wxColour fiSearchFieldBGColor; //GetBackgroundColour()
     void mySectionTitles_reloadData(); // [mySectionTitles reloadData]
+    void myPrescriptionsTableView_reloadData(int cartNo);
 #ifdef TEST_MIME_TYPE
     wxMimeTypesManager *m_mimeDatabase;
     wxFileTypeInfo *ftInfo;
