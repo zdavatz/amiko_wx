@@ -165,13 +165,13 @@ msgid "File"
 msgstr "Datei"
 
 msgid "Find Next..."
-msgstr "Find Next..."
+msgstr "Finde nächstes..."
 
 msgid "Find Previous..."
-msgstr "Find Previous..."
+msgstr "Finde vorheriges..."
 
 msgid "Find..."
-msgstr "Find..."
+msgstr "Finde..."
 
 msgid "Footnotes"
 msgstr "Fussnoten"
