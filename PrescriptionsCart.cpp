@@ -52,6 +52,19 @@ void PrescriptionsCart::addItemToCart(PrescriptionItem *item)
     }
 }
 
+void PrescriptionsCart::removeItemFromCart(PrescriptionItem *item)
+{
+    if (cart.size() < 1)
+        return;
+
+    cart.erase(std::remove(cart.begin(), cart.end(), item), cart.end());
+
+#if 0 // TODO: define interactionsCart->cart as a std::map ?
+    interactionsCart->cart.removeObjectForKey(item->title);
+#endif
+    std::clog << "Removed med " << item->title << " from basket " << cartId;
+}
+
 // 82
 void PrescriptionsCart::clearCart()
 {
@@ -60,4 +73,13 @@ void PrescriptionsCart::clearCart()
         interactionsCart->cart.clear(); // removeAllObjects
         makeNewUniqueHash();
     }
+}
+
+// 94
+PrescriptionItem * PrescriptionsCart::getItemAtIndex(int index)
+{
+    if ((index < 0) || (index >= cart.size()))
+        return nullptr;
+
+    return cart[index];
 }

@@ -132,6 +132,9 @@ private:
     wxColour fiSearchFieldBGColor; //GetBackgroundColour()
     void mySectionTitles_reloadData(); // [mySectionTitles reloadData]
     void myPrescriptionsTableView_reloadData(int cartNo);
+    int myPrescriptionsTableView_rowForView();
+    void removeItemFromPrescription();
+    void printMedicineLabel();
 #ifdef TEST_MIME_TYPE
     wxMimeTypesManager *m_mimeDatabase;
     wxFileTypeInfo *ftInfo;

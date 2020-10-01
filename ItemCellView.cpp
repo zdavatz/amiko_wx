@@ -29,10 +29,12 @@ ItemCellView* ItemCellView::Instance()
 // 148
 void ItemCellView::tableViewSelectionDidChange(int row, int packageIndex, DataObject *dobj) // NSNotification *notification
 {
+#ifndef NDEBUG
     std::clog << __FUNCTION__
     << " row:" << row
     << " packageIndex:" << packageIndex
     << std::endl;
+#endif
     
 //    if ([notification object] != self.packagesView)
 //        return;

@@ -24,6 +24,8 @@ public:
     void clearCart();
     void makeNewUniqueHash();
     void addItemToCart(PrescriptionItem *item);
+    PrescriptionItem * getItemAtIndex(int index);
+    void removeItemFromCart(PrescriptionItem *item);
     
     // 31
     int cartId;

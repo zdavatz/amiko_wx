@@ -626,6 +626,60 @@ void MainWindow::setOperatorID()
     }
 }
 
+// in amiko-osx [self.myPrescriptionsTableView rowForView:sender];
+int MainWindow::myPrescriptionsTableView_rowForView()
+{
+    int row = -1;
+
+    wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
+    if (!rootItem.IsOk())
+        return;
+
+    wxTreeItemIdValue cookie;
+    for (wxTreeItemId medItem = myPrescriptionsTableView->GetFirstChild(rootItem, cookie);
+         medItem.IsOk();
+         medItem = myPrescriptionsTableView->GetNextChild(rootItem, cookie))
+    {
+        if (myPrescriptionsTableView->IsSelected(medItem))
+            break;
+
+        row++;
+    }
+
+    return row;
+}
+
+// 1281
+void MainWindow::removeItemFromPrescription()
+{
+    int row = myPrescriptionsTableView_rowForView();
+    if (row == -1)
+        return;
+    
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << "Removing item " << row << " from prescription" << std::endl;
+#endif
+
+    // Get item with index
+    const int cartNo = 0;
+    PrescriptionItem *item = mPrescriptionsCart[ cartNo].getItemAtIndex(row);
+    if (item != nullptr) {
+        mPrescriptionsCart[ cartNo].removeItemFromCart(item);
+
+        // If prescription cart is not empty, generate new hash
+        if (mPrescriptionsCart[ cartNo].cart.size() > 0)
+            mPrescriptionsCart[ cartNo].makeNewUniqueHash();
+
+        myPrescriptionsTableView_reloadData( cartNo);
+        // updateButtons(); __deprecated
+    }
+}
+
+// 1381
+void MainWindow::printMedicineLabel()
+{
+    std::cerr << __PRETTY_FUNCTION__ << " TODO:\n";
+}
 
 // 1558
 // Handler for EVT_WEBVIEW_NAVIGATING
@@ -721,7 +775,7 @@ void MainWindow::savePrescription()
     
     if (mPrescriptionsCart[0].cart.size() < 1) {
         // TODO: maybe the save button should be disabled to prevent coming here
-#ifdef DEBUG
+#ifndef NDEBUG
         std::cerr << __FUNCTION__ << " cart is empty" << std::endl;
 #endif
         return;
@@ -1891,10 +1945,12 @@ void MainWindow::storeAllPrescriptionComments()
     int row = 0;
     for (PrescriptionItem *item : mPrescriptionsCart[0].cart) {
         if (row < numRows) {
+#ifndef NDEBUG
             std::cerr << __LINE__
             << " <" << item->comment
             << "> <" << comments[row] << ">"
             << std::endl;
+#endif
 
             if (item->comment != comments[row]) {
                 item->comment = comments[row];
@@ -2209,7 +2265,7 @@ void MainWindow::searchKeyword_inMedication_chapters_regnr(wxString aKeyword,
 #endif
 
         NSArray *paragraphs = [el children];
-#ifdef DEBUG
+#ifndef NDEBUG
         NSLog(@"Line %d, use section (%d) with %lu paragraphs", __LINE__,
               numberString.intValue,
               (unsigned long)[paragraphs count]);
@@ -2679,15 +2735,16 @@ void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
 
     switch (rc - wxID_HIGHEST) {
         case 0:
-            std::clog << "TODO: Print label\n";
-            // amiko-osx printMedicineLabel
+            printMedicineLabel();
             break;
             
         case 1: // Edit comment
         {
             // If the comment is not there, add it
             int childrenCount = myPrescriptionsTableView->GetChildrenCount(medItem);
+#ifndef NDEBUG
             std::clog << "med has " << childrenCount << " children" << std::endl;
+#endif
             if (childrenCount == 1) // only GTIN so far
                 myPrescriptionsTableView->AppendItem(medItem, wxEmptyString);
 
@@ -2699,13 +2756,7 @@ void MainWindow::OnTreeItemMenu( wxTreeEvent& event )
             break;
             
         case 2: // Delete
-            // amiko-osx removeItemFromPrescription
-            if (medItem.IsOk()) {
-                myPrescriptionsTableView->Delete(medItem);
-                
-                // TODO: also remove it from mPrescriptionsCart[0]
-            }
-
+            removeItemFromPrescription();
             break;
             
         default:
