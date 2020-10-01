@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 09:51+0200\n"
-"PO-Revision-Date: 2020-10-01 15:25+0200\n"
+"PO-Revision-Date: 2020-10-01 15:31+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,8 +106,8 @@ msgid "Contraindicated"
 msgstr "Kontraindiziert"
 
 #, c-format
-msgid "Couldn't find/load the 'amiko' catalog for locale '%s'."
-msgstr "Couldn't find/load the 'amiko' catalog for locale '%s'."
+msgid "Couldn't find/load the 'AmiKo' catalog for locale '%s'."
+msgstr "Der AmiKo Katalog für locale '%s' kann nicht gefunden/geladen werden."
 
 msgid "Country"
 msgstr "Land"
@@ -129,7 +129,7 @@ msgstr ""
 "Wollen Sie dieses Rezept überschreiben oder ein neues generieren? Klicken Sie 'Nein' für ein neues Rezept."
 
 msgid "Doctor"
-msgstr "Arztstempel"
+msgstr "Arzt"
 
 msgid "Doctor signature"
 msgstr "Arztstempel..."
@@ -204,7 +204,7 @@ msgid "Link to the online reference"
 msgstr "Link zur Online-Referenz"
 
 msgid "Load Prescription..."
-msgstr "Load Prescription..."
+msgstr "Rezept Laden..."
 
 msgid "Looking up keywords. Please wait..."
 msgstr "Schlüsselwörter werden gesucht. Geduld bitte…"
@@ -237,13 +237,13 @@ msgid "PNG files (*.png)|*.PNG|"
 msgstr "PNG files (*.png)|*.PNG|"
 
 msgid "Patient Management"
-msgstr "Patienten verwaltung"
+msgstr "Patient/In"
 
 msgid "Patient management..."
-msgstr "Patienten verwaltung…"
+msgstr "Patient/In"
 
 msgid "Patient search"
-msgstr "Patient suchen"
+msgstr "Patient/In suchen"
 
 msgid "Phone"
 msgstr "Telefonnr."
@@ -271,7 +271,7 @@ msgid "Prescription"
 msgstr "Rezept"
 
 msgid "Prescription Info"
-msgstr "Prescription Info"
+msgstr "Rezeptinfo"
 
 msgid "Print"
 msgstr "Druken"
