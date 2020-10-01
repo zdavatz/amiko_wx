@@ -33,7 +33,7 @@ STEP_COPY_LANG_FILES=y
         
 - **uuidgen** for the generation of prescription UUIDs
 
-		    $ uuidgen
+        $ uuidgen
 
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
