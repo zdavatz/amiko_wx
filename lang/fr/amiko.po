@@ -64,8 +64,7 @@ msgstr "AmiKo Desitin"
 
 #, c-format
 msgid "Are you sure you want to delete this contact from the %s Address Book?"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer ce contact du carnet d’adresses %s ?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce contact du carnet d’adresses %s ?"
 
 msgid "Avoid combination"
 msgstr "Eviter la combinaison"

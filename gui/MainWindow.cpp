@@ -633,7 +633,7 @@ int MainWindow::myPrescriptionsTableView_rowForView()
 
     wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
     if (!rootItem.IsOk())
-        return;
+        return row;
 
     wxTreeItemIdValue cookie;
     for (wxTreeItemId medItem = myPrescriptionsTableView->GetFirstChild(rootItem, cookie);
