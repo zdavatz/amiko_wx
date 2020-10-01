@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 09:51+0200\n"
-"PO-Revision-Date: 2020-09-23 11:17+0200\n"
+"PO-Revision-Date: 2020-10-01 15:25+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,16 +119,14 @@ msgid "Data source: Public domain data from EPha.ch."
 msgstr "Datenquelle: Public Domain Daten von EPha.ch."
 
 msgid "Delete Package and Comment"
-msgstr "Delete Package and Comment"
+msgstr "Packung und Kommentar löschen"
 
 msgid "Delete contact?"
-msgstr "Delete contact?"
+msgstr "Kontakt löschen?"
 
-msgid ""
-"Do you really want to overwrite the existing prescription ? (NO to generate "
-"a new one)"
+msgid "Do you really want to overwrite the existing prescription ? (NO to generate a new one)"
 msgstr ""
-"Wollen Sie dieses Rezept überschreiben oder ? (NO to generate a new one)"
+"Wollen Sie dieses Rezept überschreiben oder ein neues generieren? Klicken Sie 'Nein' für ein neues Rezept."
 
 msgid "Doctor"
 msgstr "Arztstempel"
@@ -140,13 +138,13 @@ msgid "Done"
 msgstr "Done"
 
 msgid "Downloading latest DB files, please wait..."
-msgstr "Downloading latest DB files, please wait..."
+msgstr "Die neue DB wird runtergeladen, bitte warten..."
 
 msgid "Edit"
-msgstr "Edit"
+msgstr "Editieren"
 
 msgid "Edit Comment"
-msgstr "Edit Comment"
+msgstr "Kommentar Editieren"
 
 msgid "Email"
 msgstr "Email"
@@ -251,17 +249,17 @@ msgid "Phone"
 msgstr "Telefonnr."
 
 msgid "Place and Date"
-msgstr "Place and Date"
+msgstr "Ort und Datum"
 
 msgid "Please select signature file"
-msgstr "Please select signature file"
+msgstr "Bitte Signaturbild wählen"
 
 msgid ""
-"Please select text file with one word or two words per line. The file can be "
-"created into a text editor. Encoding is UTF-8"
+"Please select text file with one word or two words per line. The file can be created into a text editor. "
+"Encoding is UTF-8"
 msgstr ""
-"Bitte Text-Datei mit einem Wort oder zwei Wörter pro Zeile wählen. Die Datei "
-"kann in einen Text-Editor erstellt werden. Encoding ist UTF-8."
+"Bitte Text-Datei mit einem Wort oder zwei Wörter pro Zeile wählen. Die Datei kann in einen Text-Editor "
+"erstellt werden. Encoding ist UTF-8."
 
 msgid "Precautionary measures recommended"
 msgstr "Vorsichtsmassnahmen empfohlen"
@@ -279,19 +277,19 @@ msgid "Print"
 msgstr "Druken"
 
 msgid "Print Label"
-msgstr "Print Label"
+msgstr "Etikette Drucken"
 
 msgid "Print prescription..."
-msgstr "Print prescription..."
+msgstr "Rezept Drucken"
 
 msgid "Print search result..."
-msgstr "Print search result..."
+msgstr "Suchresultat Drucken"
 
 msgid "Print technical information..."
-msgstr "Print technical information..."
+msgstr "Fachinformation Drucken"
 
 msgid "Rate"
-msgstr "Rate"
+msgstr "Bewertung"
 
 msgid "Reg. No"
 msgstr "Reg. Nr."
@@ -321,7 +319,7 @@ msgid "Save"
 msgstr "Speichern"
 
 msgid "Save Prescription..."
-msgstr "Save Prescription..."
+msgstr "Rezept Speichern..."
 
 msgid "Save..."
 msgstr "Speichern..."
@@ -333,10 +331,10 @@ msgid "Search Term from Uploaded file"
 msgstr "Suchbegriff aus hochgeladener Datei"
 
 msgid "Select AMK file"
-msgstr "Select AMK file"
+msgstr "AMK Datei wählen."
 
 msgid "Select Google/Outlook CSV file"
-msgstr "Select Google/Outlook CSV file"
+msgstr "Google/Outlook CSV Datei wählen"
 
 msgid "Send"
 msgstr "Senden"
@@ -348,7 +346,7 @@ msgid "Sex*"
 msgstr "Geschlecht*"
 
 msgid "Share"
-msgstr "Share"
+msgstr "Teilen"
 
 msgid "Signature from file"
 msgstr "Unterschrift aus Datei"
@@ -384,27 +382,27 @@ msgid "Therapy"
 msgstr "Therapie"
 
 msgid ""
-"There are currently no interactions between these drugs in the EPha.ch "
-"database. For more information, see the technical information."
+"There are currently no interactions between these drugs in the EPha.ch database. For more information, "
+"see the technical information."
 msgstr ""
-"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha."
-"ch-Datenbank vorhanden. Weitere Informationen finden Sie in der "
-"Fachinformation."
+"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha.ch-Datenbank vorhanden. "
+"Weitere Informationen finden Sie in der Fachinformation."
 
 msgid "This language is not supported by the system."
-msgstr "This language is not supported by the system."
+msgstr ""
+"Diese Sprache wird durch das System noch nicht unterstützt. Bitte wenden Sie sich an zdavatz@ywesee.com"
 
 msgid "Title"
 msgstr "Titel"
 
 msgid "Toggle between patient DB and system address book"
-msgstr "Toggle between patient DB and system address book"
+msgstr "Umschalten zwischen Patienten DB und Adressbuch."
 
 msgid "Update from file"
-msgstr "Update from file"
+msgstr "Aktualisierung via Datei"
 
 msgid "Update via Internet"
-msgstr "Update via Internet"
+msgstr "Aktualisierung via Internet"
 
 msgid "Weight (kg)"
 msgstr "Gewicht in kg"
@@ -425,25 +423,25 @@ msgid "ZIP*"
 msgstr "PLZ*"
 
 msgid "count"
-msgstr "count"
+msgstr "Zähler"
 
 msgid "female"
 msgstr "weiblich"
 
 msgid "files"
-msgstr "files"
+msgstr "Dateien"
 
 msgid "interaktionen"
-msgstr "interaktionen"
+msgstr "Interaktionen"
 
 msgid "kompendium"
-msgstr "kompendium"
+msgstr "Kompendium"
 
 msgid "male"
 msgstr "männlich"
 
 msgid "rezept"
-msgstr "rezept"
+msgstr "Rezept"
 
 msgid "unknown"
 msgstr "unbekannt"
