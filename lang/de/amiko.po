@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 09:51+0200\n"
-"PO-Revision-Date: 2020-10-01 15:31+0200\n"
+"PO-Revision-Date: 2020-10-02 09:26+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,11 +122,10 @@ msgid "Delete Package and Comment"
 msgstr "Packung und Kommentar löschen"
 
 msgid "Delete contact?"
-msgstr "Kontakt löschen?"
+msgstr "Wollen Sie den Kontakt und alle seine Rezepte löschen?"
 
 msgid "Do you really want to overwrite the existing prescription ? (NO to generate a new one)"
-msgstr ""
-"Wollen Sie dieses Rezept überschreiben oder ein neues generieren? Klicken Sie 'Nein' für ein neues Rezept."
+msgstr "Wollen Sie dieses Rezept überschreiben oder ein neues generieren? Klicken Sie 'Nein' für ein neues Rezept."
 
 msgid "Doctor"
 msgstr "Arzt"
@@ -258,8 +257,8 @@ msgid ""
 "Please select text file with one word or two words per line. The file can be created into a text editor. "
 "Encoding is UTF-8"
 msgstr ""
-"Bitte Text-Datei mit einem Wort oder zwei Wörter pro Zeile wählen. Die Datei kann in einen Text-Editor "
-"erstellt werden. Encoding ist UTF-8."
+"Bitte Text-Datei mit einem Wort oder zwei Wörter pro Zeile wählen. Die Datei kann in einen Text-Editor erstellt "
+"werden. Encoding ist UTF-8."
 
 msgid "Precautionary measures recommended"
 msgstr "Vorsichtsmassnahmen empfohlen"
@@ -331,7 +330,7 @@ msgid "Search Term from Uploaded file"
 msgstr "Suchbegriff aus hochgeladener Datei"
 
 msgid "Select AMK file"
-msgstr "AMK Datei wählen."
+msgstr "AMK Datei wählen"
 
 msgid "Select Google/Outlook CSV file"
 msgstr "Google/Outlook CSV Datei wählen"
@@ -372,31 +371,30 @@ msgstr "Kontakt wurde vom %s Addressbuch gelöscht"
 
 #, c-format
 msgid "The contact was added to the %s address book"
-msgstr "Kontakt was added to the %s Addressbuch gelöscht"
+msgstr "Der Kontakt wurde zum %s Adressbuch hinzugefügt"
 
 #, c-format
 msgid "The contact was updated in the %s address book"
-msgstr "Kontakt was updated in the %s Addressbuch gelöscht"
+msgstr "Der Kontakt wurde im Adressbuch %s aktualisiert"
 
 msgid "Therapy"
 msgstr "Therapie"
 
 msgid ""
-"There are currently no interactions between these drugs in the EPha.ch database. For more information, "
-"see the technical information."
+"There are currently no interactions between these drugs in the EPha.ch database. For more information, see the "
+"technical information."
 msgstr ""
-"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha.ch-Datenbank vorhanden. "
-"Weitere Informationen finden Sie in der Fachinformation."
+"Zur Zeit sind keine Interaktionen zwischen diesen Medikamenten in der EPha.ch-Datenbank vorhanden. Weitere "
+"Informationen finden Sie in der Fachinformation."
 
 msgid "This language is not supported by the system."
-msgstr ""
-"Diese Sprache wird durch das System noch nicht unterstützt. Bitte wenden Sie sich an zdavatz@ywesee.com"
+msgstr "Diese Sprache wird durch das System noch nicht unterstützt. Bitte wenden Sie sich an zdavatz@ywesee.com."
 
 msgid "Title"
 msgstr "Titel"
 
 msgid "Toggle between patient DB and system address book"
-msgstr "Umschalten zwischen Patienten DB und Adressbuch."
+msgstr "Umschalten zwischen Patienten DB und Adressbuch"
 
 msgid "Update from file"
 msgstr "Aktualisierung via Datei"
