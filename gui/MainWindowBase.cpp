@@ -195,8 +195,20 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer4->Add( myTabView, 1, wxEXPAND | wxALL, 0 );
 
+	wxBoxSizer* bSizer22;
+	bSizer22 = new wxBoxSizer( wxVERTICAL );
+
+	bSizer22->SetMinSize( wxSize( 100,-1 ) );
+	btnDelAmk = new wxButton( m_panelRight, wxID_DELETE_PRESCRIPTION, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+	btnDelAmk->SetToolTip( _("Delete prescription") );
+
+	bSizer22->Add( btnDelAmk, 0, wxALL|wxEXPAND, 5 );
+
 	mySectionTitles = new wxDataViewListCtrl( m_panelRight, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
-	bSizer4->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
+	bSizer22->Add( mySectionTitles, 1, wxALL|wxEXPAND, 5 );
+
+
+	bSizer4->Add( bSizer22, 1, wxEXPAND, 5 );
 
 
 	m_panelRight->SetSizer( bSizer4 );
@@ -356,6 +368,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	btnCheckInter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
 	saveButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
 	sendButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	btnDelAmk->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnDeletePrescription ), NULL, this );
 	mySectionTitles->Connect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
 	this->Connect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
 	this->Connect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
@@ -401,6 +414,7 @@ MainWindowBase::~MainWindowBase()
 	btnCheckInter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
 	saveButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
 	sendButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	btnDelAmk->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnDeletePrescription ), NULL, this );
 	mySectionTitles->Disconnect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
 	this->Disconnect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
 	this->Disconnect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );

@@ -63,26 +63,27 @@ class SignatureView;
 #define wxID_CHECK_INTERACTIONS 1017
 #define wxID_SAVE_PRESCRIPTION 1018
 #define wxID_SEND_PRESCRIPTION 1019
-#define wxID_SECTION_TITLES 1020
-#define wxID_TB_COMPENDIUM 1021
-#define wxID_TB_FAVORITES 1022
-#define wxID_TB_INTERACTIONS 1023
-#define wxID_TB_PRESCRIPTION 1024
-#define wxID_EXPORT_WORDLIST 1025
-#define wxID_FI_FIND_SHOW 1026
-#define wxID_UPDATE_DB 1027
-#define wxID_LOAD_DB 1028
-#define wxID_LOAD_PRESCRIPTION 1029
-#define wxID_SET_OPERATOR_ID 1030
-#define wxID_RB_SEX 1031
-#define wxID_SAVE_PATIENT 1032
-#define wxID_PAT_SEARCH_FIELD 1033
-#define wxID_PATIENT_LIST 1034
-#define wxID_ADD_PATIENT 1035
-#define wxID_DELETE_PATIENT 1036
-#define wxID_CLEAR_SIGNATURE 1037
-#define wxID_LOAD_SIGNATURE 1038
-#define wxID_SAVE_OPERATOR 1039
+#define wxID_DELETE_PRESCRIPTION 1020
+#define wxID_SECTION_TITLES 1021
+#define wxID_TB_COMPENDIUM 1022
+#define wxID_TB_FAVORITES 1023
+#define wxID_TB_INTERACTIONS 1024
+#define wxID_TB_PRESCRIPTION 1025
+#define wxID_EXPORT_WORDLIST 1026
+#define wxID_FI_FIND_SHOW 1027
+#define wxID_UPDATE_DB 1028
+#define wxID_LOAD_DB 1029
+#define wxID_LOAD_PRESCRIPTION 1030
+#define wxID_SET_OPERATOR_ID 1031
+#define wxID_RB_SEX 1032
+#define wxID_SAVE_PATIENT 1033
+#define wxID_PAT_SEARCH_FIELD 1034
+#define wxID_PATIENT_LIST 1035
+#define wxID_ADD_PATIENT 1036
+#define wxID_DELETE_PATIENT 1037
+#define wxID_CLEAR_SIGNATURE 1038
+#define wxID_LOAD_SIGNATURE 1039
+#define wxID_SAVE_OPERATOR 1040
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -146,6 +147,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnCheckForInteractions( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSendPrescription( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDeletePrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSelectionDidChange( wxDataViewEvent& event ) { event.Skip(); }
 		virtual void OnToolbarAction( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnExportWordListSearchResults( wxCommandEvent& event ) { event.Skip(); }
@@ -169,6 +171,7 @@ class MainWindowBase : public wxFrame
 		SignatureView* mySignView;
 		wxButton* saveButton;
 		wxButton* sendButton;
+		wxButton* btnDelAmk;
 		wxDataViewListCtrl* mySectionTitles;
 		wxToolBar* myToolbar;
 		wxToolBarToolBase* m_toolAbout;

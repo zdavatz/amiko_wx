@@ -278,17 +278,6 @@ MainWindow::MainWindow( wxWindow* parent )
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
-#if 0 //ndef NDEBUG
-    for (int i=1; i <= 12; i++) {
-        wxTreeItemId med =
-        myPrescriptionsTableView->AppendItem(root, wxString::Format("Medicine %d", i));
-        myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
-
-        myPrescriptionsTableView->AppendItem(med, wxString::Format("GTIN %d", i));
-        //myPrescriptionsTableView->AppendItem(med, wxString::Format("Comment %d", i));
-    }
-#endif
-
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
 
@@ -297,7 +286,7 @@ MainWindow::MainWindow( wxWindow* parent )
     m_menuFile->AppendSeparator();
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
-#endif
+#endif    
 }
 
 #ifdef TEST_MIME_TYPE
@@ -2467,6 +2456,21 @@ void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
     }
     
     // See also validateMenuItem()
+    
+    // "Delete amk" button
+    if (mPrescriptionMode)
+    {
+        btnDelAmk->Show();
+        if (mySectionTitles->GetItemCount() > 0)
+            btnDelAmk->Enable(true);
+        else
+            btnDelAmk->Enable(false);
+    }
+    else
+    {
+        btnDelAmk->Hide();
+        btnDelAmk->Enable(false);
+    }
 }
 
 // 949
@@ -2885,6 +2889,45 @@ void MainWindow::OnSelectionDidChange( wxDataViewEvent& event )
     
     // 3003
     //updateButtons(); // __deprecated
+}
+
+// 1500
+void MainWindow::OnDeletePrescription( wxCommandEvent& event )
+{
+    if (! mPrescriptionMode)
+        return;
+
+    wxMessageDialog *alert = new wxMessageDialog(this,
+                          _("Do you really want to delete this prescription?"),
+                          _("Delete prescription?"),
+                          wxOK | wxCANCEL | wxICON_WARNING);
+
+    alert->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+                &MainWindow::deletePrescription_returnCode_contextInfo,
+                this);
+
+    alert->ShowWindowModal();
+}
+
+// 1519
+// Handler for window-modal message box
+void MainWindow::deletePrescription_returnCode_contextInfo(wxWindowModalDialogEvent& event)
+{
+    wxDialog* dialog = event.GetDialog();
+
+    // 1521
+    if (dialog->GetReturnCode() == wxID_OK)
+    {
+        if (mPrescriptionMode) {
+            int row = mySectionTitles->GetSelectedRow();
+            mPrescriptionAdapter->deletePrescriptionWithName_forPatient( mListOfSectionTitles[row], mPatientSheet->retrievePatient());
+            updatePrescriptionHistory();
+            mPrescriptionsCart[0].clearCart();
+            myPrescriptionsTableView_reloadData(0);
+        }
+    }
+
+    delete dialog;
 }
 
 void MainWindow::OnToolbarAction( wxCommandEvent& event )

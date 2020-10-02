@@ -15,6 +15,7 @@
 #include <wx/url.h>
 #include <wx/textfile.h>
 #include <wx/dir.h>
+#include <wx/utils.h>
 
 #include <nlohmann/json.hpp>
 
@@ -47,12 +48,10 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
     
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
 
-    // 53
-    // Check if patient has already a directory, if not create one
+    // Check if patient has already a directory, TODO: if not create one
     patientDir.AppendDir(p->uniqueId);
 
     if (wxDir::Exists(patientDir.GetFullPath())) {
-        // 59
         // List content of directory
         wxArrayString rzList;
         wxDir::GetAllFiles(patientDir.GetFullPath(), &rzList, "*.amk");
@@ -93,6 +92,26 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
     }
     
     return amkURLs;
+}
+
+// 117
+void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, Patient *p)
+{
+    if (p == nullptr)
+        return;
+
+    // Assign patient
+    patient = p;
+    
+    wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+    
+    patientDir.AppendDir(p->uniqueId);
+    patientDir.SetName(name);
+    patientDir.SetExt("amk");
+
+    // Delete file
+    if (wxFileName::Exists(patientDir.GetFullPath()))
+        wxRemoveFile(patientDir.GetFullPath());
 }
 
 // 160
