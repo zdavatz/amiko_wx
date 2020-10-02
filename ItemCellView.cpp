@@ -70,7 +70,9 @@ void ItemCellView::tableViewSelectionDidChange(int row, int packageIndex, DataOb
     const int rc = win->GetPopupMenuSelectionFromUser(menu, wxDefaultPosition);
     if ( rc != wxID_NONE )
     {
-        std::clog << "You have selected \"%d\"" << rc - wxID_HIGHEST << std::endl;
+#ifndef NDEBUG
+        std::clog << "You have selected \"%d\" " << rc - wxID_HIGHEST << std::endl;
+#endif
         ItemCellView::Instance()->selectBasket(1);
     }
 
@@ -80,7 +82,9 @@ void ItemCellView::tableViewSelectionDidChange(int row, int packageIndex, DataOb
 // 179
 void ItemCellView::selectBasket(int cartNumber)
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+#ifndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__  << " " << cartNumber << std::endl;
+#endif
 
     if (selectedPackage.length() > 0 && selectedMedi)
     {

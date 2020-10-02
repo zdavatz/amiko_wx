@@ -62,7 +62,7 @@ void PrescriptionsCart::removeItemFromCart(PrescriptionItem *item)
 #if 0 // TODO: define interactionsCart->cart as a std::map ?
     interactionsCart->cart.removeObjectForKey(item->title);
 #endif
-    std::clog << "Removed med " << item->title << " from basket " << cartId;
+    std::clog << "Removed med " << item->title << " from basket " << cartId << std::endl;
 }
 
 // 82
