@@ -640,10 +640,11 @@ int MainWindow::myPrescriptionsTableView_rowForView()
          medItem.IsOk();
          medItem = myPrescriptionsTableView->GetNextChild(rootItem, cookie))
     {
+        row++;
+
+        // Stop counting at the first selected item
         if (myPrescriptionsTableView->IsSelected(medItem))
             break;
-
-        row++;
     }
 
     return row;
@@ -657,7 +658,7 @@ void MainWindow::removeItemFromPrescription()
         return;
     
 #ifndef NDEBUG
-    std::cerr << __FUNCTION__ << "Removing item " << row << " from prescription" << std::endl;
+    std::cerr << __FUNCTION__ << " Removing item " << row << " from prescription" << std::endl;
 #endif
 
     // Get item with index
@@ -3262,8 +3263,10 @@ void MainWindow::mySectionTitles_reloadData()
 // Here we are not using any "model" for myPrescriptionsTableView
 void MainWindow::myPrescriptionsTableView_reloadData(int cartNo)
 {
-    if (mPrescriptionsCart[cartNo].cart.size() < 1)
-        return;
+    // Issue #55 Don't do this. Maybe we just deleted the last item
+    // an we want to refresh the empty view
+//    if (mPrescriptionsCart[cartNo].cart.size() < 1)
+//        return;
 
     wxTreeItemId root = myPrescriptionsTableView->GetRootItem();
     myPrescriptionsTableView->DeleteChildren(root);
