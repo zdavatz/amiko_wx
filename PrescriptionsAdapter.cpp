@@ -15,6 +15,8 @@
 #include <wx/url.h>
 #include <wx/textfile.h>
 #include <wx/dir.h>
+#include <wx/utils.h>
+#include <wx/mstream.h>
 
 #include <nlohmann/json.hpp>
 
@@ -47,12 +49,10 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
     
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
 
-    // 53
-    // Check if patient has already a directory, if not create one
+    // Check if patient has already a directory, TODO: if not create one
     patientDir.AppendDir(p->uniqueId);
 
     if (wxDir::Exists(patientDir.GetFullPath())) {
-        // 59
         // List content of directory
         wxArrayString rzList;
         wxDir::GetAllFiles(patientDir.GetFullPath(), &rzList, "*.amk");
@@ -95,6 +95,26 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
     return amkURLs;
 }
 
+// 117
+void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, Patient *p)
+{
+    if (p == nullptr)
+        return;
+
+    // Assign patient
+    patient = p;
+    
+    wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+    
+    patientDir.AppendDir(p->uniqueId);
+    patientDir.SetName(name);
+    patientDir.SetExt("amk");
+
+    // Delete file
+    if (wxFileName::Exists(patientDir.GetFullPath()))
+        wxRemoveFile(patientDir.GetFullPath());
+}
+
 // 160
 // It will in any case create a new file
 // if the overwrite flag is set, delete the original file
@@ -122,11 +142,13 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     // Assign patient
     patient = p;
     
-    wxString documentsDir = UTI::documentsDirectory();
-
     // Check if patient has already a directory, if not create one
-    wxString patientDir = documentsDir + wxFILE_SEP_PATH + patient->uniqueId;
-    
+    wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString);
+
+    patientDir.AppendDir(p->uniqueId);
+    if (!wxDirExists(patientDir.GetFullPath()))
+        wxMkdir(patientDir.GetFullPath());
+
     if (overwrite) {
         // Delete old file
         if (!wxRemoveFile(currentFileName)) {
@@ -139,15 +161,22 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxString currentTime = UTI::currentTime();
     currentTime.Replace(":", "");
     currentTime.Replace(".", "");
-    wxString fileName = wxString::Format("RZ_%s.amk", currentTime);
-    
-    if (!wxDirExists(patientDir))
-        wxMkdir(patientDir);
 
-    wxString path = patientDir + wxFILE_SEP_PATH + fileName;
+    wxFileName pathBase64 = patientDir;
+    pathBase64.SetName("RZ_" + currentTime);
+    pathBase64.SetExt("amk");
 
-    currentFileName = path;  // full path
+#ifndef NDEBUG
+    wxFileName pathJson = patientDir;
+    pathJson.SetName("RZ_" + currentTime);
+    pathJson.SetExt("json");
+#endif
+
+    currentFileName = pathBase64.GetFullPath();
+
+#ifndef NDEBUG
     std::clog << __FUNCTION__ << " new currentFileName:" << currentFileName << std::endl;
+#endif
 
     // 210
     nlohmann::json jsonStr; // prescriptionDict
@@ -226,24 +255,32 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     jsonStr["operator"] = operatorDict;
     jsonStr["medications"] = prescription;
     
+    //std::cerr << "===JSON AMK:\n" << jsonStr << "\n===\n";
+
 #ifndef NDEBUG
-    std::cerr << "===JSON AMK:\n" << jsonStr << "\n===\n";
+    // Crete JSON file
+    std::ofstream o1(pathJson.GetFullPath(), std::ios::trunc); // overwrite
+    o1 << std::setw(4) << jsonStr << std::endl;
 #endif
 
-#if 0 //ndef NDEBUG
-    // For debugging skip the encode base64 step
-    std::ofstream o(path, std::ios::trunc); // overwrite
-    o << std::setw(4) << jsonStr << std::endl;
-#else
+    // Crete amk file, encoded Base64
     wxString o;
     o << jsonStr.dump(4);
-    //std::cerr << "JSON AMK " << o << std::endl;
-    wxString base64Str = wxBase64Encode(o.c_str(), o.length());
-    wxFileOutputStream file( path );
+#ifndef NDEBUG
+    //std::cerr << "Line " << __LINE__ << " jsonStr\n" << o << std::endl;
+#endif
+    wxCharBuffer buffer = o.ToUTF8();
+    wxMemoryOutputStream mos(buffer.data(), strlen(buffer.data()));
+    wxString base64Str = wxBase64Encode(mos.GetOutputStreamBuffer()->GetBufferStart(),
+                                        mos.GetSize()); // Issue #52
+#ifndef NDEBUG
+    //std::cerr << "Line " << __LINE__ << " base64Str\n" << base64Str << std::endl;
+#endif
+    wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(base64Str, base64Str.length());
     file.Close();
-#endif
-    return wxURL(path);
+
+    return wxURL(pathBase64.GetFullPath());
 }
 
 // 292
@@ -282,15 +319,15 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         auto jsonDict = nlohmann::json::parse((char *)jsonStr.char_str());
     
 #if 0 //ndef NDEBUG
-    for (auto & element : jsonDict)
-        std::clog << "element "  << element.dump(4) << std::endl;
+        for (auto & element : jsonDict)
+            std::clog << "element "  << element.dump(4) << std::endl;
 #endif
 
-    auto medicat = jsonDict["medications"];
+        auto medicat = jsonDict["medications"];
 #if 0 //ndef NDEBUG
-    std::clog << "medications: " << medicat.dump(4) << std::endl;
-    for (auto & op : medicat.items())
-        std::clog << op.key() << ", value: " << op.value() << std::endl;
+        std::clog << "medications: " << medicat.dump(4) << std::endl;
+        for (auto & op : medicat.items())
+            std::clog << op.key() << ", value: " << op.value() << std::endl;
 #endif
 
     // 303
@@ -360,10 +397,10 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
             placeDate = jsonDict["date"]; // is this for backward compatibility ?
 
         hash = jsonDict["prescription_hash"];
-        
     }
     catch (const std::exception&e) {
-        std::cerr << "jsonStr: " << e.what() << std::endl;
+        std::cerr << "Error parsing: " << filePath << std::endl
+        << e.what() << std::endl;
     }
 
     return hash;

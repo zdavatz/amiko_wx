@@ -51,6 +51,7 @@ class MainWindow : public MainWindowBase
 		void OnCheckForInteractions( wxCommandEvent& event );
 		void OnSavePrescription( wxCommandEvent& event );
 		void OnSendPrescription( wxCommandEvent& event );
+		void OnDeletePrescription( wxCommandEvent& event );
 		void OnSelectionDidChange( wxDataViewEvent& event );
 		void OnToolbarAction( wxCommandEvent& event );
 		void OnExportWordListSearchResults( wxCommandEvent& event );
@@ -135,6 +136,8 @@ private:
     int myPrescriptionsTableView_rowForView();
     void removeItemFromPrescription();
     void printMedicineLabel();
+    void deletePrescription_returnCode_contextInfo(wxWindowModalDialogEvent& event);
+
 #ifdef TEST_MIME_TYPE
     wxMimeTypesManager *m_mimeDatabase;
     wxFileTypeInfo *ftInfo;

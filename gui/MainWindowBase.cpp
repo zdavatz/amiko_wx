@@ -68,7 +68,14 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
-	myTabView = new wxSimplebook( m_panelRight, wxID_TABVIEW, wxDefaultPosition, wxDefaultSize, 0 );
+	m_splitter3 = new wxSplitterWindow( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	m_splitter3->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter3OnIdle ), NULL, this );
+
+	m_panel10 = new wxPanel( m_splitter3, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer24;
+	bSizer24 = new wxBoxSizer( wxVERTICAL );
+
+	myTabView = new wxSimplebook( m_panel10, wxID_TABVIEW, wxDefaultPosition, wxDefaultSize, 0 );
 	panel_komp = new wxPanel( myTabView, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	fiSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -193,10 +200,30 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer7->Fit( panel_rezept );
 	myTabView->AddPage( panel_rezept, _("rezept"), false );
 
-	bSizer4->Add( myTabView, 1, wxEXPAND | wxALL, 0 );
+	bSizer24->Add( myTabView, 1, wxEXPAND | wxALL, 0 );
 
-	mySectionTitles = new wxDataViewListCtrl( m_panelRight, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
-	bSizer4->Add( mySectionTitles, 0, wxALL|wxEXPAND, 5 );
+
+	m_panel10->SetSizer( bSizer24 );
+	m_panel10->Layout();
+	bSizer24->Fit( m_panel10 );
+	m_panel12 = new wxPanel( m_splitter3, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer231;
+	bSizer231 = new wxBoxSizer( wxVERTICAL );
+
+	btnDelAmk = new wxButton( m_panel12, wxID_DELETE_PRESCRIPTION, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+	btnDelAmk->SetToolTip( _("Delete prescription") );
+
+	bSizer231->Add( btnDelAmk, 0, wxALL|wxEXPAND, 5 );
+
+	mySectionTitles = new wxDataViewListCtrl( m_panel12, wxID_SECTION_TITLES, wxDefaultPosition, wxSize( 200,-1 ), wxDV_NO_HEADER );
+	bSizer231->Add( mySectionTitles, 1, wxALL|wxEXPAND, 5 );
+
+
+	m_panel12->SetSizer( bSizer231 );
+	m_panel12->Layout();
+	bSizer231->Fit( m_panel12 );
+	m_splitter3->SplitVertically( m_panel10, m_panel12, 0 );
+	bSizer4->Add( m_splitter3, 1, wxEXPAND, 5 );
 
 
 	m_panelRight->SetSizer( bSizer4 );
@@ -356,6 +383,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	btnCheckInter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
 	saveButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
 	sendButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	btnDelAmk->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnDeletePrescription ), NULL, this );
 	mySectionTitles->Connect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
 	this->Connect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
 	this->Connect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
@@ -401,6 +429,7 @@ MainWindowBase::~MainWindowBase()
 	btnCheckInter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnCheckForInteractions ), NULL, this );
 	saveButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), NULL, this );
 	sendButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnSendPrescription ), NULL, this );
+	btnDelAmk->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnDeletePrescription ), NULL, this );
 	mySectionTitles->Disconnect( wxEVT_COMMAND_DATAVIEW_SELECTION_CHANGED, wxDataViewEventHandler( MainWindowBase::OnSelectionDidChange ), NULL, this );
 	this->Disconnect( m_tool1->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
 	this->Disconnect( m_tool2->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnToolbarAction ) );
