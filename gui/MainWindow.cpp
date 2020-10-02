@@ -286,7 +286,7 @@ MainWindow::MainWindow( wxWindow* parent )
     m_menuFile->AppendSeparator();
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
-#endif    
+#endif
 }
 
 #ifdef TEST_MIME_TYPE
@@ -3022,13 +3022,13 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 // 1192
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    std::clog << __PRETTY_FUNCTION__  << " TODO" << std::endl;
 }
 
 // 1871 and 3400
 void MainWindow::OnExportWordListSearchResults( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << std::endl;
     
     mUsedDatabase = kdbt_Aips;
     stopProgressIndicator();

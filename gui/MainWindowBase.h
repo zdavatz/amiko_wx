@@ -104,6 +104,8 @@ class MainWindowBase : public wxFrame
 		wxButton* m_button6;
 		TableViewDelegate* myTableView;
 		wxPanel* m_panelRight;
+		wxSplitterWindow* m_splitter3;
+		wxPanel* m_panel10;
 		wxSimplebook* myTabView;
 		wxPanel* panel_komp;
 		wxSearchCtrl* fiSearchField;
@@ -117,6 +119,7 @@ class MainWindowBase : public wxFrame
 		wxTreeCtrl* myPrescriptionsTableView;
 		wxButton* btnNewPrescription;
 		wxButton* btnCheckInter;
+		wxPanel* m_panel12;
 		wxToolBarToolBase* m_tool1;
 		wxToolBarToolBase* m_tool2;
 		wxToolBarToolBase* m_tool3;
@@ -185,6 +188,12 @@ class MainWindowBase : public wxFrame
 		{
 			m_splitter1->SetSashPosition( 0 );
 			m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
+		}
+
+		void m_splitter3OnIdle( wxIdleEvent& )
+		{
+			m_splitter3->SetSashPosition( 0 );
+			m_splitter3->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter3OnIdle ), NULL, this );
 		}
 
 };
