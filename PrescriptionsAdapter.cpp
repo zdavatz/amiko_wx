@@ -269,12 +269,21 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
 #ifndef NDEBUG
     //std::cerr << "Line " << __LINE__ << " jsonStr\n" << o << std::endl;
 #endif
+    // Issue #52
     wxCharBuffer buffer = o.ToUTF8();
+
     wxMemoryOutputStream mos(buffer.data(), strlen(buffer.data()));
     wxString base64Str = wxBase64Encode(mos.GetOutputStreamBuffer()->GetBufferStart(),
-                                        mos.GetSize()); // Issue #52
+                                        mos.GetSize());
+
+    size_t len = wxBase64DecodedSize(o.length());
+    wxMemoryBuffer *buffy = new wxMemoryBuffer;
+    buffy->GetWriteBuf(len);
+    buffy->AppendData(buffer.data(), strlen(buffer.data()));
+    wxString base64Str2 = wxBase64Encode(*buffy);
 #ifndef NDEBUG
-    //std::cerr << "Line " << __LINE__ << " base64Str\n" << base64Str << std::endl;
+    std::cerr << "Line " << __LINE__ << " base64Str\n" << base64Str << std::endl;
+    std::cerr << "Line " << __LINE__ << " base64Str2\n" << base64Str2 << std::endl;
 #endif
     wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(base64Str, base64Str.length());
@@ -289,6 +298,8 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
 // see AmiKo-ios importFromURL
 wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
 {
+    std::clog << __FUNCTION__  << "\n\t" << filePath << std::endl;
+
     std::string hash;
 
     wxFFileInputStream file(filePath);
@@ -298,11 +309,23 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     file.Read(buffer, FileSize);
     
     wxString base64Str = wxString::FromUTF8(buffer);
-    //std::clog << " base64Str: " << base64Str << std::endl;
+    base64Str += wxT("\n");  // This parser seems to expect a line terminator
+    
+#if 0 //ndef NDEBUG
+    std::clog << __FUNCTION__ << " line " << __LINE__
+    << " base64Str:\n" << base64Str
+    << ">>> >>> >>>\n";
+#endif
 
     try {
-        wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_Strict);
+        wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_SkipWS);
         wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
+        
+#if 0 //ndef NDEBUG
+        std::clog << __FUNCTION__ << " line " << __LINE__
+        << " jsonStr:\n" << jsonStr
+        << ">>> >>> >>>\n";
+#endif
         
 #if 0 //ndef NDEBUG
         std::clog << "buf.GetDataLen(): " << buf.GetDataLen() << std::endl;

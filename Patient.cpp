@@ -41,7 +41,9 @@ void Patient::importFromDict(PAT_DICT &dict)
         uniqueId = newUniqueID; // assign it here
     }
     else if (uniqueId != newUniqueID) {
-        std::clog << "WARNING: imported ID:" << uniqueId << ", expected ID " << newUniqueID;
+        std::clog << "WARNING: imported ID:\n\t" << uniqueId
+        << "\nexpected ID:\n\t" << newUniqueID
+        << std::endl;
     }
 }
 

@@ -892,7 +892,7 @@ void MainWindow::switchTabs(int item)
             searchResults = retrieveAllFavorites();
             searchResultsFT = retrieveAllFTFavorites();
             
-            // /1828
+            // 1828
             // Update tableview
             updateTableView();
 
@@ -2500,6 +2500,7 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
         mSearchInProgress = true;
     }
 
+    // TODO: amiko-osx issue #131
     if (searchText.length() > 0) { // TODO: > 2 ?
         //searchResults =
         searchAnyDatabasesWith(searchText); // it updates searchResults and searchResultsFT
@@ -3083,14 +3084,14 @@ void MainWindow::OnExportWordListSearchResults( wxCommandEvent& event )
 // generika: -> importReceiptFromURL
 void MainWindow::OnLoadPrescription( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << std::endl;
     
     // Create a file open dialog class
     wxFileDialog openDlgPanel(this,
                               _("Select AMK file"),
                               wxEmptyString,
                               wxEmptyString,
-                              _("AMK files (*.amk)|*.AMK"),
+                              _("AMK files (*.amk)|*.amk"),
                               wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
                               wxDefaultPosition);
     
