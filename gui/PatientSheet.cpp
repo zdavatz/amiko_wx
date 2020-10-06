@@ -1,10 +1,13 @@
 #include <iostream>
 
+#include <wx/filefn.h>
+
 #include "PatientSheet.h"
 #include "Patient.hpp"
 #include "PatientDBAdapter.hpp"
 #include "Contacts.hpp"
 #include "MainWindow.h"
+#include "Utilities.hpp"
 
 // 46
 PatientSheet::PatientSheet( wxWindow* parent )
@@ -261,20 +264,19 @@ void PatientSheet::updateAmiKoAddressBookTableView()
 // 484
 void PatientSheet::deletePatientFolder_withBackup(Patient *patient, bool backup)
 {
-#if 1
-    std::clog << __FUNCTION__ << " Line " << __LINE__ << " TODO" << std::endl;
-#else
-    wxString documentsDir = UTI::documentsDirectory();
-    NSString *patientDir = [documentsDir stringByAppendingString:[NSString stringWithFormat:@"/%@", patient.uniqueId]];
-    
+    wxFileName documentsDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+
+    wxFileName patientDir = documentsDir;
+    patientDir.AppendDir(patient->uniqueId);
+
     if (backup) {
-        NSString *backupDir = [documentsDir stringByAppendingString:[NSString stringWithFormat:@"/.%@", patient.uniqueId]];
-        [[NSFileManager defaultManager] moveItemAtPath:patientDir toPath:backupDir error:nil];
+        wxFileName backupDir = documentsDir;
+        backupDir.AppendDir(wxT(".") + patient->uniqueId);
+        wxRenameFile( patientDir.GetFullPath(), backupDir.GetFullPath());
     }
     else {
-        [[NSFileManager defaultManager] removeItemAtPath:patientDir error:nil];
+        wxRmdir( patientDir.GetFullPath());
     }
-#endif
 }
 
 // 537
