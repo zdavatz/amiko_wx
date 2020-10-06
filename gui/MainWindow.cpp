@@ -753,7 +753,6 @@ void MainWindow::loadPrescription_andRefreshHistory(wxString filename, bool refr
  */
 void MainWindow::savePrescription()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
     if (!mPatientSheet)
         mPatientSheet = new PatientSheet(this);
     
