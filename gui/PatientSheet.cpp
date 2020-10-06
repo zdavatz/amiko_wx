@@ -532,7 +532,7 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
         case wxID_YES:
             // 472
             if (mPatientDb->deleteEntry(p)) {
-                deletePatientFolder_withBackup(p, true);
+                deletePatientFolder_withBackup(p, false);
                 resetAllFields();
                 updateAmiKoAddressBookTableView();
                 friendlyNoteDeleted();
