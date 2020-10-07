@@ -56,7 +56,7 @@ private:
     Patient * getContactAtRow(int row);
     void resetAllFields();
     void setAllFields(Patient *p);
-    void deletePatientFolder_withBackup(Patient *patient, bool backup);
+    void deletePatientFolder_withBackup(Patient *patient, bool backup = false);
     int numberOfRowsInTableView();
     void reloadData();
 
