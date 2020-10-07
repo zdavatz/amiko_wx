@@ -280,10 +280,11 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxMemoryBuffer *buffy = new wxMemoryBuffer;
     buffy->GetWriteBuf(len);
     buffy->AppendData(buffer.data(), strlen(buffer.data()));
-    wxString base64Str2 = wxBase64Encode(*buffy);
 #ifndef NDEBUG
     std::cerr << "Line " << __LINE__ << " base64Str\n" << base64Str << std::endl;
-    std::cerr << "Line " << __LINE__ << " base64Str2\n" << base64Str2 << std::endl;
+
+    //wxString base64Str2 = wxBase64Encode(*buffy);
+    //std::cerr << "Line " << __LINE__ << " base64Str2\n" << base64Str2 << std::endl;
 #endif
     wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(base64Str, base64Str.length());
