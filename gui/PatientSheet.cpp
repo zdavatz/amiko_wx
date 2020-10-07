@@ -269,6 +269,9 @@ void PatientSheet::deletePatientFolder_withBackup(Patient *patient, bool backup)
     wxFileName patientDir = documentsDir;
     patientDir.AppendDir(patient->uniqueId);
 
+    if (!wxDirExists( patientDir.GetFullPath() ))
+        return; // nothing to do
+
     if (backup) {
         wxFileName backupDir = documentsDir;
         backupDir.AppendDir(wxT(".") + patient->uniqueId);
@@ -506,8 +509,12 @@ void PatientSheet::OnNewPatient( wxCommandEvent& event )
 // 443
 void PatientSheet::OnDeletePatient( wxCommandEvent& event )
 {
-    if (mTableView->GetSelectedItemCount() == 0) // not in amiko-osx
+    if (mTableView->GetSelectedItemCount() == 0)  { // not in amiko-osx
+#ifndef NDEBUG
+        std::clog << __FUNCTION__ << " No patient selected, nothing to do" << std::endl;
+#endif
         return;
+    }
     
     // 446
     if (mABContactsVisible)
@@ -532,7 +539,7 @@ void PatientSheet::OnDeletePatient( wxCommandEvent& event )
         case wxID_YES:
             // 472
             if (mPatientDb->deleteEntry(p)) {
-                deletePatientFolder_withBackup(p, false);
+                deletePatientFolder_withBackup(p);
                 resetAllFields();
                 updateAmiKoAddressBookTableView();
                 friendlyNoteDeleted();

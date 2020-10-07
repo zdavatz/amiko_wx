@@ -191,6 +191,14 @@ long PatientDBAdapter::getLargestRowId()
 
     return 0L;
 }
+
+static bool
+less_than_patient_name(const Patient * p1, const Patient * p2) {
+    if (p1->familyName == p2->familyName)
+        return strcmp(p1->givenName.Lower().c_str(), p2->givenName.Lower().c_str()) < 0;
+
+    return strcmp(p1->familyName.Lower().c_str(), p2->familyName.Lower().c_str()) < 0;
+}
     
 // 200
 std::vector<Patient *> PatientDBAdapter::getAllPatients()
@@ -204,14 +212,9 @@ std::vector<Patient *> PatientDBAdapter::getAllPatients()
         for (auto cursor : results)
             listOfPatients.push_back(cursorToPatient(cursor));
 
-#if 1
-        std::clog << __FUNCTION__ << " Line " << __LINE__ << ", TODO: sort list of patients" << std::endl;
-#else
         // 210
         // Sort alphabetically
-        NSSortDescriptor *nameSort = [NSSortDescriptor sortDescriptorWithKey:@"familyName" ascending:YES];
-        [listOfPatients sortUsingDescriptors:[NSArray arrayWithObject:nameSort]];
-#endif
+        std::sort(listOfPatients.begin(), listOfPatients.end(), less_than_patient_name);
     }
 
     return listOfPatients;

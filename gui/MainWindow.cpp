@@ -88,12 +88,15 @@ static PrescriptionsCart mPrescriptionsCart[NUM_ACTIVE_PRESCRIPTIONS];
 BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_LISTBOX(wxID_ANY, MainWindow::OnLboxSelect)
     EVT_LISTBOX_DCLICK(wxID_ANY, MainWindow::OnLboxDClick)
+
     EVT_HTML_LINK_CLICKED(wxID_ANY, MainWindow::OnHtmlLinkClicked)
     EVT_HTML_CELL_HOVER(wxID_ANY, MainWindow::OnHtmlCellHover)
     EVT_HTML_CELL_CLICKED(wxID_ANY, MainWindow::OnHtmlCellClicked)
+
     EVT_WEBVIEW_NAVIGATING(wxID_ANY, MainWindow::OnNavigationRequest)
     EVT_WEBVIEW_TITLE_CHANGED(wxID_ANY, MainWindow::OnTitleChanged)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
+
     EVT_DROP_FILES(MainWindow::OnDropFiles)
 END_EVENT_TABLE()
 
@@ -3265,17 +3268,25 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
     int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
 
+    // Find the row number
+    // FIXME: this is not necessarily the cell where we clicked
+    // TODO: find a way of updating the selection before we proceed
+    int row = myTableView->GetSelection();
+
 #ifndef NDEBUG
+    wxHtmlContainerCell* cellParent = event.GetLinkInfo().GetHtmlCell()->GetParent();
+
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
+    << ", cell parent Id: " << cellParent->GetId()
+    << ", int: " << event.GetInt()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
     << ", package at index: <" << packageIndex << ">"
+    << ", selected row: " << row
     << std::endl;
 #endif
 
-    // Find the row number
-    int row = myTableView->GetSelection(); // TODO: this is not reliable
     DataObject *dobj = myTableView->searchRes[row];
     ItemCellView::Instance()->tableViewSelectionDidChange(row, packageIndex, dobj);
 
@@ -3316,10 +3327,14 @@ void MainWindow::myPrescriptionsTableView_reloadData(int cartNo)
 
     for (PrescriptionItem *item : mPrescriptionsCart[cartNo].cart) {
         wxTreeItemId med =
-        myPrescriptionsTableView->AppendItem(root, item->med->title); // TODO: add package name instead
+        myPrescriptionsTableView->AppendItem(root, item->fullPackageInfo);
         myPrescriptionsTableView->SetItemTextColour(med, *wxBLUE);
 
-        myPrescriptionsTableView->AppendItem(med, "TODO: EANCODE");   // TODO: add EAN code
+        myPrescriptionsTableView->AppendItem(med, item->med->atccode);
+        
+        // If there is a comment, add it
+        if (item->comment.length() > 0)
+            myPrescriptionsTableView->AppendItem(med, item->comment);
     }
 
     myPrescriptionsTableView->ExpandAll();
