@@ -21,23 +21,11 @@ msgstr ""
 msgid "* Required fields"
 msgstr "* Pflichtfelder"
 
-msgid "+"
-msgstr "+"
-
-msgid "-"
-msgstr "-"
-
-msgid "<"
-msgstr "<"
-
-msgid ">"
-msgstr ">"
-
 msgid "AIPS Database"
 msgstr "AIPS Database"
 
-msgid "AMK files (*.amk)|*.AMK"
-msgstr "AMK files (*.amk)|*.AMK"
+msgid "AMK files (*.amk)|*.amk"
+msgstr "AMK files (*.amk)|*.amk"
 
 msgid "ATC Code"
 msgstr "ATC Code"
@@ -119,11 +107,23 @@ msgstr "TT.MM.JJJJ"
 msgid "Data source: Public domain data from EPha.ch."
 msgstr "Datenquelle: Public Domain Daten von EPha.ch."
 
+msgid "Delete"
+msgstr ""
+
 msgid "Delete Package and Comment"
 msgstr "Packung und Kommentar löschen"
 
 msgid "Delete contact?"
 msgstr "Wollen Sie den Kontakt und alle seine Rezepte löschen?"
+
+msgid "Delete prescription"
+msgstr "Rezept löschen"
+
+msgid "Delete prescription?"
+msgstr "Rezept löschen?"
+
+msgid "Do you really want to delete this prescription?"
+msgstr "Wollen Sie dieses Rezept wirklich löschen?"
 
 msgid ""
 "Do you really want to overwrite the existing prescription ? (NO to generate "
