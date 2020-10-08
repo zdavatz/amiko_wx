@@ -249,11 +249,11 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
         prescription.push_back(dict);
     }
 
-    jsonStr["prescription_hash"] = hash;
-    jsonStr["place_date"] = placeDate;
-    jsonStr["patient"] = patientDict;
-    jsonStr["operator"] = operatorDict;
-    jsonStr["medications"] = prescription;
+    jsonStr[KEY_AMK_PRESC_HASH] = hash;
+    jsonStr[KEY_AMK_PRESC_PLACE_DATE] = placeDate;
+    jsonStr[KEY_AMK_PRESC_PAT] = patientDict;
+    jsonStr[KEY_AMK_PRESC_DOC] = operatorDict;
+    jsonStr[KEY_AMK_PRESC_MEDS] = prescription;
     
     //std::cerr << "===JSON AMK:\n" << jsonStr << "\n===\n";
 
@@ -347,7 +347,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
             std::clog << "element "  << element.dump(4) << std::endl;
 #endif
 
-        auto medicat = jsonDict["medications"];
+        auto medicat = jsonDict[KEY_AMK_PRESC_MEDS];
 #if 0 //ndef NDEBUG
         std::clog << "medications: " << medicat.dump(4) << std::endl;
         for (auto & op : medicat.items())
@@ -359,10 +359,16 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     std::vector<PrescriptionItem *> prescription;
     for (auto & p : medicat) {
         MED_DICT mediDict;
-        mediDict[KEY_AMK_MED_TITLE] = p["title"];
-        mediDict[KEY_AMK_MED_OWNER] = p["owner"];
-        mediDict[KEY_AMK_MED_REG_N] = p["regnrs"];
-        mediDict[KEY_AMK_MED_ATC] = p["atccode"];
+        // For Medication:
+        mediDict[KEY_AMK_MED_TITLE] = p[KEY_AMK_MED_TITLE];
+        mediDict[KEY_AMK_MED_OWNER] = p[KEY_AMK_MED_OWNER];
+        mediDict[KEY_AMK_MED_REG_N] = p[KEY_AMK_MED_REG_N];
+        mediDict[KEY_AMK_MED_ATC] = p[KEY_AMK_MED_ATC];
+        // For PrescriptionItem:
+        mediDict[KEY_AMK_MED_PROD_NAME] = p[KEY_AMK_MED_PROD_NAME];
+        mediDict[KEY_AMK_MED_PACKAGE] = p[KEY_AMK_MED_PACKAGE];
+        mediDict[KEY_AMK_MED_EAN] = p[KEY_AMK_MED_EAN];
+        mediDict[KEY_AMK_MED_COMMENT] = p[KEY_AMK_MED_COMMENT];
 
         Medication *med = new Medication;
         med->importFromDict(mediDict);
@@ -379,48 +385,48 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
 
         // 317
         {
-            auto patientDict = jsonDict["patient"];
+            auto patientDict = jsonDict[KEY_AMK_PRESC_PAT];
             PAT_DICT dict;
-            dict[KEY_AMK_PAT_BIRTHDATE] = patientDict["birth_date"];
-            dict[KEY_AMK_PAT_CITY] = patientDict["city"];
-            dict[KEY_AMK_PAT_COUNTRY] = patientDict["country"];
-            dict[KEY_AMK_PAT_EMAIL] = patientDict["email_address"];
-            dict[KEY_AMK_PAT_SURNAME] = patientDict["family_name"];
-            dict[KEY_AMK_PAT_GENDER] = patientDict["gender"];
-            dict[KEY_AMK_PAT_NAME] = patientDict["given_name"];
-            dict[KEY_AMK_PAT_HEIGHT] = patientDict["height_cm"];
-            dict[KEY_AMK_PAT_ID] = patientDict["patient_id"];
-            dict[KEY_AMK_PAT_PHONE] = patientDict["phone_number"];
-            dict[KEY_AMK_PAT_ADDRESS] = patientDict["postal_address"];
-            dict[KEY_AMK_PAT_WEIGHT] = patientDict["weight_kg"];
-            dict[KEY_AMK_PAT_ZIP] = patientDict["zip_code"];
+            dict[KEY_AMK_PAT_BIRTHDATE] = patientDict[KEY_AMK_PAT_BIRTHDATE];
+            dict[KEY_AMK_PAT_CITY] = patientDict[KEY_AMK_PAT_CITY];
+            dict[KEY_AMK_PAT_COUNTRY] = patientDict[KEY_AMK_PAT_COUNTRY];
+            dict[KEY_AMK_PAT_EMAIL] = patientDict[KEY_AMK_PAT_EMAIL];
+            dict[KEY_AMK_PAT_SURNAME] = patientDict[KEY_AMK_PAT_SURNAME];
+            dict[KEY_AMK_PAT_GENDER] = patientDict[KEY_AMK_PAT_GENDER];
+            dict[KEY_AMK_PAT_NAME] = patientDict[KEY_AMK_PAT_NAME];
+            dict[KEY_AMK_PAT_HEIGHT] = patientDict[KEY_AMK_PAT_HEIGHT];
+            dict[KEY_AMK_PAT_ID] = patientDict[KEY_AMK_PAT_ID];
+            dict[KEY_AMK_PAT_PHONE] = patientDict[KEY_AMK_PAT_PHONE];
+            dict[KEY_AMK_PAT_ADDRESS] = patientDict[KEY_AMK_PAT_ADDRESS];
+            dict[KEY_AMK_PAT_WEIGHT] = patientDict[KEY_AMK_PAT_WEIGHT];
+            dict[KEY_AMK_PAT_ZIP] = patientDict[KEY_AMK_PAT_ZIP];
             patient = new Patient;
             patient->importFromDict(dict);
         }
     
         // 321
         {
-            auto operatorDict = jsonDict["operator"];
+            auto operatorDict = jsonDict[KEY_AMK_PRESC_DOC];
             OPER_DICT dict;
-            dict[KEY_AMK_DOC_CITY] = operatorDict["city"];
-            dict[KEY_AMK_DOC_EMAIL] = operatorDict["email_address"];
-            dict[KEY_AMK_DOC_SURNAME] = operatorDict["family_name"];
-            dict[KEY_AMK_DOC_NAME] = operatorDict["given_name"];
-            dict[KEY_AMK_DOC_PHONE] = operatorDict["phone_number"];
-            dict[KEY_AMK_DOC_ADDRESS] = operatorDict["postal_address"];
-            dict[KEY_AMK_DOC_SIGNATURE] = operatorDict["signature"];
-            dict[KEY_AMK_DOC_TITLE] = operatorDict["title"];
-            dict[KEY_AMK_DOC_ZIP] = operatorDict["zip_code"];
+            dict[KEY_AMK_DOC_CITY] = operatorDict[KEY_AMK_DOC_CITY];
+            dict[KEY_AMK_DOC_EMAIL] = operatorDict[KEY_AMK_DOC_EMAIL];
+            dict[KEY_AMK_DOC_SURNAME] = operatorDict[KEY_AMK_DOC_SURNAME];
+            dict[KEY_AMK_DOC_NAME] = operatorDict[KEY_AMK_DOC_NAME];
+            dict[KEY_AMK_DOC_PHONE] = operatorDict[KEY_AMK_DOC_PHONE];
+            dict[KEY_AMK_DOC_ADDRESS] = operatorDict[KEY_AMK_DOC_ADDRESS];
+            dict[KEY_AMK_DOC_SIGNATURE] = operatorDict[KEY_AMK_DOC_SIGNATURE];
+            dict[KEY_AMK_DOC_TITLE] = operatorDict[KEY_AMK_DOC_TITLE];
+            dict[KEY_AMK_DOC_ZIP] = operatorDict[KEY_AMK_DOC_ZIP];
             doctor = new Operator;
             doctor->importFromDict(dict);
         }
     
         // 325
-        placeDate = jsonDict["place_date"];
+        placeDate = jsonDict[KEY_AMK_PRESC_PLACE_DATE];
         if (placeDate.length() == 0)
-            placeDate = jsonDict["date"]; // is this for backward compatibility ?
+            placeDate = jsonDict[KEY_AMK_PRESC_PLACE_DATE_OLD]; // backward compatibility ?
 
-        hash = jsonDict["prescription_hash"];
+        hash = jsonDict[KEY_AMK_PRESC_HASH];
     }
     catch (const std::exception&e) {
         std::cerr << "Error parsing: " << filePath << std::endl

@@ -48,7 +48,9 @@ void PrescriptionsCart::addItemToCart(PrescriptionItem *item)
         interactionsCart->cart.setObject_forKey(item->med, item->title);
 #endif
 
-        std::clog << "Num med in basket: " << cartId << " -> " << cart.size() << std::endl;
+#ifndef NDEBUG
+        std::clog << "Basket ID: " << cartId << ", # meds: " << cart.size() << std::endl;
+#endif
     }
 }
 
