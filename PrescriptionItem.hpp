@@ -11,6 +11,13 @@
 
 #include "Medication.hpp"
 
+#define KEY_AMK_PRESC_PLACE_DATE        "place_date"
+#define KEY_AMK_PRESC_PLACE_DATE_OLD    "date"
+#define KEY_AMK_PRESC_HASH              "prescription_hash"
+#define KEY_AMK_PRESC_PAT               "patient"
+#define KEY_AMK_PRESC_DOC               "operator"
+#define KEY_AMK_PRESC_MEDS              "medications"
+
 class PrescriptionItem
 {
 public:

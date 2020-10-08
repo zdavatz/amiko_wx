@@ -390,9 +390,7 @@ void MainWindow::prescriptionPatientChanged() // (NSNotification *)notification
         myPatientAddressTextField->SetValue( mPatientSheet->retrievePatientAsString());
         
         // 703
-        // If prescription cart is not empty, generate new hash
-        if (mPrescriptionsCart[0].cart.size() > 0)
-            mPrescriptionsCart[0].makeNewUniqueHash();
+        mPrescriptionsCart[0].makeNewUniqueHash();
         
         modifiedPrescription = true;
         //updateButtons(); __deprecated
@@ -3297,10 +3295,14 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 // amiko-osx tableView:viewForTableColumn:row:
 void MainWindow::mySectionTitles_reloadData()
 {
-    //std::clog << __PRETTY_FUNCTION__ << " tab: " << myTabView->GetSelection() << std::endl;
-
     mySectionTitles->DeleteAllItems(); // OnSelectionDidChange() will probably be called
     int n = mListOfSectionTitles.size();
+#ifndef NDEBUG
+    std::clog << __FUNCTION__ << " line " << __LINE__
+    << " tab: " << myTabView->GetSelection()
+    << " n: " << n
+    << std::endl;
+#endif
     wxVector<wxVariant> values;
     for (int i=0; i<n; i++) {
         values.clear();

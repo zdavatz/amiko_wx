@@ -36,8 +36,8 @@ msgstr ">"
 msgid "AIPS Database"
 msgstr "AIPS Database"
 
-msgid "AMK files (*.amk)|*.AMK"
-msgstr "AMK files (*.amk)|*.AMK"
+msgid "AMK files (*.amk)|*.amk"
+msgstr "AMK files (*.amk)|*.amk"
 
 msgid "ATC Code"
 msgstr "Code ATC"
@@ -118,11 +118,23 @@ msgstr "JJ.MM.AAAA"
 msgid "Data source: Public domain data from EPha.ch."
 msgstr "Source des données : données du domaine publique de EPha.ch."
 
+msgid "Delete"
+msgstr ""
+
 msgid "Delete Package and Comment"
 msgstr "Delete Package and Comment"
 
 msgid "Delete contact?"
 msgstr "Supprimer le contact?"
+
+msgid "Delete prescription"
+msgstr "Effacer l'ordonnance"
+
+msgid "Delete prescription?"
+msgstr "Effacer l'ordonnance?"
+
+msgid "Do you really want to delete this prescription?"
+msgstr "Voulez-vous vraiment effacer cette ordonnance?"
 
 msgid ""
 "Do you really want to overwrite the existing prescription ? (NO to generate "
