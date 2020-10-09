@@ -21,7 +21,7 @@
  if (SCARD_S_SUCCESS != rv) \
  { \
   printf(f ": %s\n", pcsc_stringify_error(rv)); \
-  return -1; \
+  return; \
  }
 
 SmartCard::SmartCard()
