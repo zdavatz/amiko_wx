@@ -43,6 +43,7 @@
 #include "config.h"
 #include "SignatureView.hpp"
 #include "DefaultsController.hpp"
+#include "HealthCard.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -121,6 +122,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
 , csvMedication(nullptr)
+, healthCard(nullptr)
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -191,13 +193,15 @@ MainWindow::MainWindow( wxWindow* parent )
     mFullTextSearch = new FullTextSearch;
 
     // 301
-    // TODO: Initialize all three prescription baskets
+    // Initialize all three prescription baskets
+    for (int i=0; i<NUM_ACTIVE_PRESCRIPTIONS; ++i)
+        mPrescriptionsCart[i].setInteractionsAdapter(mInteractions);
 
     // 306
     mPrescriptionAdapter = new PrescriptionsAdapter;
 
     // 308
-    // TODO: Register drag and drop on prescription table view
+    // Register drag and drop on prescription table view
 #if 1
     // wxEVT_DROP_FILES
     // cannot use DragAcceptFiles() and SetDropTarget() together
@@ -276,8 +280,7 @@ MainWindow::MainWindow( wxWindow* parent )
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
-    // TODO:
-    //healthCard = new HealthCard;
+    healthCard = new HealthCard;
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 

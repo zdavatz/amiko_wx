@@ -36,6 +36,12 @@ void PrescriptionsCart::makeNewUniqueHash()
     uniqueHash = output[0];
 }
 
+// 54
+void PrescriptionsCart::setInteractionsAdapter(InteractionsAdapter *adapter)
+{
+    interactionsAdapter = adapter;
+}
+
 // 66
 void PrescriptionsCart::addItemToCart(PrescriptionItem *item)
 {

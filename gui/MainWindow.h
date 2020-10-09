@@ -30,6 +30,7 @@ class PatientSheet;
 class OperatorIDSheet;
 class FullTextSearch;
 class DataStore;
+class HealthCard;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -142,17 +143,15 @@ private:
     wxMimeTypesManager *m_mimeDatabase;
     wxFileTypeInfo *ftInfo;
 #endif
+    
+    // 60
+    HealthCard *healthCard;
 
-    // 105
+    // .m 105
     int mUsedDatabase;
-    // 110
+    // .m 110
     bool mSearchInteractions;
     bool mPrescriptionMode;
-    // 150
-    DBAdapter *mDb;
-    // 153
-    FullTextDBAdapter *mFullTextDb;
-    FullTextEntry *mFullTextEntry;
 
     // .m 138
     wxString csv;
@@ -160,12 +159,11 @@ private:
 
     // .m 149
     Medication *mMed;
-
-    // .m 151
+    DBAdapter *mDb;
     InteractionsAdapter *mInteractions;
     InteractionsHtmlView *mInteractionsView;
-
-    // .m 155
+    FullTextDBAdapter *mFullTextDb;
+    FullTextEntry *mFullTextEntry;
     FullTextSearch *mFullTextSearch;
 
     PatientSheet *mPatientSheet;
