@@ -14,6 +14,7 @@
 class PrescriptionItem;
 class Medication;
 class InteractionsCart;
+class InteractionsAdapter;
 
 class PrescriptionsCart
 {
@@ -23,6 +24,7 @@ public:
     
     void clearCart();
     void makeNewUniqueHash();
+    void setInteractionsAdapter(InteractionsAdapter *adapter);
     void addItemToCart(PrescriptionItem *item);
     PrescriptionItem * getItemAtIndex(int index);
     void removeItemFromCart(PrescriptionItem *item);
@@ -32,7 +34,8 @@ public:
     std::vector<PrescriptionItem *> cart;
     wxString uniqueHash;
     
-    // .m 32
+    // .m 31
     //std::map<wxString, Medication *>
+    InteractionsAdapter *interactionsAdapter;
     InteractionsCart *interactionsCart;
 };

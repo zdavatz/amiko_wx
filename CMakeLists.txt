@@ -42,6 +42,32 @@ endif (NOT APPLE)
 endif (UNIX)
 
 #=============================================================================
+if (UNIX)
+if (NOT APPLE)
+# Linux
+PKG_CHECK_MODULES(PCSC libpcsclite REQUIRED)
+MESSAGE(STATUS "PCSC_FOUND: ${PCSC_FOUND}")
+MESSAGE(STATUS "PCSC_INCLUDE_DIRS: ${PCSC_INCLUDE_DIRS}")
+MESSAGE(STATUS "PCSC_LIBRARIES: ${PCSC_LIBRARIES}")
+
+FIND_PATH(PCSC_INCLUDE_DIR winscard.h
+	HINTS
+	/usr/include/PCSC
+	PATH_SUFFIXES PCSC
+	)
+
+FIND_LIBRARY(PCSC_LIBRARY NAMES pcsclite libpcsclite PCSC
+	HINTS
+	${PC_PCSC_LIBDIR}
+	${PC_PCSC_LIBRARY_DIRS}
+	)
+
+MESSAGE(STATUS "PCSC_INCLUDE_DIR: ${PCSC_INCLUDE_DIR}")
+MESSAGE(STATUS "PCSC_LIBRARY: ${PCSC_LIBRARY}")
+endif (NOT APPLE)
+endif (UNIX)
+
+#=============================================================================
 
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
 
@@ -135,6 +161,11 @@ set( SRCS_LANG
     lang/de/amiko.po
     lang/fr/amiko.po
     )
+    
+set( SRCS_CARD
+    card/HealthCard.cpp card/HealthCard.hpp
+    card/SmartCard.cpp card/SmartCard.hpp
+    )
 
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
@@ -145,6 +176,7 @@ source_group(patients FILES ${SRCS_PATIENT})
 source_group(doctor FILES ${SRCS_DOCTOR})
 source_group(javascript FILES ${SRCS_JS})
 source_group(lang FILES ${SRCS_LANG})
+source_group(card FILES ${SRCS_CARD})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -160,7 +192,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     DataStore.cpp DataStore.hpp
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
-		${SRCS_DOCTOR} ${SRCS_JS}
+		${SRCS_DOCTOR} ${SRCS_JS} ${SRCS_CARD}
     customURLConnection.cpp customURLConnection.hpp
     ${SRCS_LANG}
     )
@@ -168,10 +200,11 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
 #ADD_DEFINITIONS("-DwxWidgets_USE_STATIC=OFF")
 target_include_directories( ${APP_NAME} PUBLIC 
     ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/card
     ${CMAKE_SOURCE_DIR}/gui
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS}
-		${OPENSSL_INCLUDE_DIR} )
+    ${OPENSSL_INCLUDE_DIR} )
   
 target_link_libraries( ${APP_NAME}
 		${wxWidgets_LIBRARIES}
@@ -181,10 +214,13 @@ target_link_libraries( ${APP_NAME}
 if (UNIX)
 if (APPLE)
   # macOS
-  target_link_libraries( ${APP_NAME} ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a)
+  target_link_libraries( ${APP_NAME}
+    ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a
+    "-framework PCSC")
 else (APPLE)
   # Linux
-  target_link_libraries( ${APP_NAME} ${WEBKIT_LIBRARIES})
+  target_include_directories( ${APP_NAME} PUBLIC ${PCSC_INCLUDE_DIR})
+  target_link_libraries( ${APP_NAME} ${WEBKIT_LIBRARIES} ${PCSC_LIBRARY})
 endif (APPLE)
 endif (UNIX)
 

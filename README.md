@@ -20,17 +20,20 @@ Prerequisites:
         $ git submodule init
         $ git submodule update
 
-then enable this in `steps.conf`
-```
-STEP_CONFIGURE_JSON=y
-STEP_BUILD_JSON=y
-STEP_COPY_LANG_FILES=y
-```
+    then enable this in `steps.conf`
+
+        STEP_CONFIGURE_JSON=y
+        STEP_BUILD_JSON=y
+        STEP_COPY_LANG_FILES=y
 
 - OpenSSL development libraries, required for the calculation of the patient hash (SHA256)
 
         $ sudo apt install libssl-dev
-        
+
+- PCSC development libraries, required for the smart card functionality
+
+        $ sudo apt install libpcsclite-dev
+
 - **uuidgen** for the generation of prescription UUIDs
 
         $ uuidgen
