@@ -30,13 +30,13 @@ Prerequisites:
 
         $ sudo apt install libssl-dev
 
-- Smart card
+- Smart card support
 
-    - PCSC development libraries
+    - Developers
 
             $ sudo apt install libpcsclite-dev
 
-    - device driver
+    - Developers and users
 
             $ sudo apt install pcscd
 
