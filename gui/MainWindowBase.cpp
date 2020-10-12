@@ -39,23 +39,29 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	mySearchField->ShowCancelButton( true );
 	bSizerLeft->Add( mySearchField, 0, wxALL|wxEXPAND, 5 );
 
+	wxBoxSizer* bSizer241;
+	bSizer241 = new wxBoxSizer( wxVERTICAL );
+
 	m_button1 = new wxButton( m_panelLeft, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
 
 	m_button2 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
 
 	m_button3 = new wxButton( m_panelLeft, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
 
 	m_button4 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
 
 	m_button5 = new wxButton( m_panelLeft, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
 
 	m_button6 = new wxButton( m_panelLeft, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerLeft->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
+	bSizer241->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
+
+
+	bSizerLeft->Add( bSizer241, 0, wxEXPAND, 5 );
 
 	myTableView = new TableViewDelegate(this, false);
 	bSizerLeft->Add( myTableView, 2, wxEXPAND, 0 );
@@ -648,6 +654,8 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	this->Connect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
+	this->Connect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
 	mSex->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
@@ -662,6 +670,8 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 PatientSheetBase::~PatientSheetBase()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
+	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
 	mSex->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );

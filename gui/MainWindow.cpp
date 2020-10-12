@@ -43,7 +43,6 @@
 #include "config.h"
 #include "SignatureView.hpp"
 #include "DefaultsController.hpp"
-#include "HealthCard.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -122,7 +121,6 @@ MainWindow::MainWindow( wxWindow* parent )
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
 , csvMedication(nullptr)
-, healthCard(nullptr)
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -280,7 +278,7 @@ MainWindow::MainWindow( wxWindow* parent )
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
-    healthCard = new HealthCard;
+    //healthCard = new HealthCard;
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
