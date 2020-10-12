@@ -30,9 +30,15 @@ Prerequisites:
 
         $ sudo apt install libssl-dev
 
-- PCSC development libraries, required for the smart card functionality
+- Smart card
 
-        $ sudo apt install libpcsclite-dev
+    - PCSC development libraries
+
+            $ sudo apt install libpcsclite-dev
+
+   - device driver
+
+            $ sudo apt install pcscd
 
 - **uuidgen** for the generation of prescription UUIDs
 
