@@ -30,7 +30,6 @@ class PatientSheet;
 class OperatorIDSheet;
 class FullTextSearch;
 class DataStore;
-class HealthCard;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -145,7 +144,7 @@ private:
 #endif
     
     // 60
-    HealthCard *healthCard;
+    //HealthCard *healthCard; // moved to PatientSheet
 
     // .m 105
     int mUsedDatabase;

@@ -8,13 +8,6 @@
 #include <iomanip>
 #include <string>
 
-#ifdef __APPLE__
-#include <PCSC/winscard.h>
-#include <PCSC/wintypes.h>
-#else
-#include <winscard.h>
-#endif
-
 #include "SmartCard.hpp"
 
 #define CHECK(f, rv) \
@@ -24,25 +17,99 @@
   return; \
  }
 
+#define TIMEOUT 1000    /* 1 second timeout */
+
 SmartCard::SmartCard()
 {
-#if 1
-    // https://ludovicrousseau.blogspot.com/2010/04/pcsc-sample-in-c.html
-    SCARDCONTEXT hContext;
-    LPTSTR mszReaders;
-    SCARDHANDLE hCard;
-    DWORD dwReaders, dwActiveProtocol, dwRecvLength;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+
+#ifndef NDEBUG
+    start();
     
-    SCARD_IO_REQUEST pioSendPci;
-    BYTE pbRecvBuffer[258];
-    BYTE cmd1[] = { 0x00, 0xA4, 0x04, 0x00, 0x0A, 0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x01, 0x0C, 0x06, 0x01 };
-    BYTE cmd2[] = { 0x00, 0x00, 0x00, 0x00 };
+    // APDU commands
 
-    unsigned int i;
+    {
+        std::vector<BYTE> cmd = {
+            0x00,
+            INS_SELECT_FILE,
+            0x04, 0x00, // P1 P2
+            0x02,
+            0x2f, 0x06
+        };
+        sendIns(cmd);
+        // Response 6A 82
+    }
+    
+    {
+        std::vector<BYTE> cmd = {
+            0x00,
+            INS_SELECT_FILE,
+            0, 0,       // P1 P2
+            2, 0x3F, 0  // Select Master File
+        };
+        sendIns(cmd);
+        // Response 90 00
+    }
 
+    {
+        std::vector<BYTE> cmd = {
+            0x00,
+            INS_SELECT_FILE,
+            0x04, 0x00, // P1 P2
+            0x0A,       // data length (TBC)
+            0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x01, 0x0C, 0x06, 0x01
+        };
+        sendIns(cmd);
+        // Response 6A 82
+    }
+
+    {
+        std::vector<BYTE> cmd = {
+            0x00,
+            INS_SELECT_FILE,
+            0x08, 0,    // P1 P2
+            0x2f, 0x06  // Selection by path from Master File
+        };
+        sendIns(cmd);
+        // Response 67 00
+    }
+
+    {
+        std::vector<BYTE> cmd = {
+            0x00, INS_INVALID, 0x00, 0x00
+        };
+        sendIns(cmd);
+        // Response 6D 00
+    }
+
+    stop();
+#endif // NDEBUG
+}
+
+void SmartCard::detectChanges()
+{
+    static unsigned int count = 0;
+    
+    if (count++ > 5)
+        return;  // temporary
+
+#ifndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__ << " " << count
+    << std::endl;
+#endif
+
+    // Not available in the constructor
+    processValidCard(hContext);     // handled by subclass
+}
+
+void SmartCard::start()
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    
     LONG rv = SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &hContext);
     CHECK("SCardEstablishContext", rv)
     
+    {
 #ifdef SCARD_AUTOALLOCATE
     dwReaders = SCARD_AUTOALLOCATE;
 
@@ -57,7 +124,28 @@ SmartCard::SmartCard()
     CHECK("SCardListReaders", rv)
 #endif
     
-    std::clog << __PRETTY_FUNCTION__ << " reader name: " << mszReaders << std::endl;
+    std::clog << "Reader name: " << mszReaders << std::endl;
+    }
+    
+#if 1
+    int pnp = true;
+    rgReaderStates[0].szReader = "\\\\?PnP?\\Notification";
+    rgReaderStates[0].dwCurrentState = SCARD_STATE_UNAWARE;
+
+    rv = SCardGetStatusChange(hContext, 0, rgReaderStates, 1);
+    if (rgReaderStates[0].dwEventState & SCARD_STATE_UNKNOWN)
+    {
+        printf("Plug'n play reader name not supported. Using polling every %d ms.\n", TIMEOUT);
+
+        pnp = false;
+    }
+    else
+    {
+        printf("Using reader plug'n play mechanism\n");
+    }
+#endif
+
+    DWORD dwActiveProtocol;
 
     rv = SCardConnect(hContext, mszReaders, SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hCard, &dwActiveProtocol);
     CHECK("SCardConnect", rv)
@@ -73,34 +161,23 @@ SmartCard::SmartCard()
             std::clog << "\tprotocol T1\n";
             pioSendPci = *SCARD_PCI_T1;
             break;
+            
+        case SCARD_PROTOCOL_RAW:
+            std::clog << "\tprotocol raw\n";
+            pioSendPci = *SCARD_PCI_RAW;
+            break;
+
+        default:
+            fprintf(stderr, "Unknown protocol\n");
+            break;
     }
+}
+
+void SmartCard::stop()
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
     
-    // Command 1
-
-    dwRecvLength = sizeof(pbRecvBuffer);
-    rv = SCardTransmit(hCard, &pioSendPci, cmd1, sizeof(cmd1), NULL, pbRecvBuffer, &dwRecvLength);
-    CHECK("SCardTransmit", rv)
-
-    std::clog << "first response: "; // 6A 82
-
-    for (i=0; i<dwRecvLength; i++)
-        std::clog << std::hex << std::setw(2) << std::setfill('0') << pbRecvBuffer[i];
-
-    std::clog << std::endl;
-
-    // Command 2
-
-    dwRecvLength = sizeof(pbRecvBuffer);
-    rv = SCardTransmit(hCard, &pioSendPci, cmd2, sizeof(cmd2), NULL, pbRecvBuffer, &dwRecvLength);
-    CHECK("SCardTransmit", rv)
-
-    std::clog << "second response: "; // 6D 00
-    for (i=0; i<dwRecvLength; i++)
-        std::clog << std::hex << std::setw(2) << std::setfill('0') << pbRecvBuffer[i];
-
-    std::clog << std::endl;
-
-    rv = SCardDisconnect(hCard, SCARD_LEAVE_CARD);
+    LONG rv = SCardDisconnect(hCard, SCARD_LEAVE_CARD);
     CHECK("SCardDisconnect", rv)
 
 #ifdef SCARD_AUTOALLOCATE
@@ -110,17 +187,62 @@ SmartCard::SmartCard()
      free(mszReaders);
 #endif
 
-     rv = SCardReleaseContext(hContext);
-     CHECK("SCardReleaseContext", rv)
+    rv = SCardReleaseContext(hContext);
+    CHECK("SCardReleaseContext", rv)
+}
 
-#else
-    self.mngr = [TKSmartCardSlotManager defaultManager];
-    assert(self.mngr);
+void SmartCard::scSelectFile(const std::vector<BYTE> & ef_id)
+{
+    std::clog << __FUNCTION__ << std::hex << std::endl;
+
+    std::clog << "ed_if:\n";
+    for (int i=0; i < ef_id.size(); i++)
+    std::clog << " " << std::setw(2) << std::setfill('0') << (int)ef_id[i];
+    std::clog << std::dec << std::endl;
+
+    std::vector<BYTE> cmd = {
+        0x00,
+        INS_SELECT_FILE,
+        8,      // P1: Selection by path from MF
+        0       // P2
+    };
     
-    // Observe readers joining and leaving.
-    [self.mngr addObserver:self
-                forKeyPath:@"slotNames"
-                   options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial
-                   context:nil];
-#endif
+    cmd.insert(cmd.end(), ef_id.begin(), ef_id.end());
+    
+    std::clog << "cmd:\n" << std::hex;
+    for (int i=0; i < cmd.size(); i++)
+    std::clog << " " << std::setw(2) << std::setfill('0') << (int)cmd[i];
+
+    std::clog << std::dec << std::endl;
+    
+    sendIns(cmd);
+}
+
+//void SmartCard::sendIns2(const std::vector<BYTE> &cmd)
+//{
+//    sendIns(cmd.data(), cmd.size());
+//}
+
+void SmartCard::sendIns(const std::vector<BYTE> &cmd2)
+{
+    const unsigned char *cmd = cmd2.data();
+    DWORD cmdLength = cmd2.size();
+
+//    std::clog << __FUNCTION__
+//    << " " << sizeof(cmd)
+//    << " " << cmdLength << "\n";
+
+    BYTE pbRecvBuffer[256 + 2];
+    DWORD dwRecvLength = sizeof(pbRecvBuffer);
+    LONG rv = SCardTransmit(hCard, &pioSendPci, cmd, cmdLength, NULL, pbRecvBuffer, &dwRecvLength);
+    CHECK("SCardTransmit", rv)
+
+    std::clog << __FUNCTION__
+    << std::hex
+    << " INS: " << (int)cmd2[1]
+    << ", response: ";
+    for (int i=0; i<dwRecvLength; i++)
+        std::clog << std::setw(2) << std::setfill('0') << (int)pbRecvBuffer[i] << " ";
+
+    std::clog << std::dec << std::endl;
 }

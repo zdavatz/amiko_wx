@@ -22,8 +22,8 @@ class SignatureView;
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
-#include "TableViewDelegate.hpp"
 #include <wx/sizer.h>
+#include "TableViewDelegate.hpp"
 #include <wx/panel.h>
 #include <wx/stattext.h>
 #include <wx/webview.h>
@@ -230,6 +230,8 @@ class PatientSheetBase : public wxDialog
 		wxButton* m_button21;
 
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnActivate( wxActivateEvent& event ) { event.Skip(); }
+		virtual void OnIdle( wxIdleEvent& event ) { event.Skip(); }
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSavePatient( wxCommandEvent& event ) { event.Skip(); }

@@ -16,6 +16,11 @@ public:
     HealthCard();
     virtual ~HealthCard() {}
     
+    virtual void processValidCard(SCARDCONTEXT &hContext);
+    virtual void parseCardData(const std::vector<BYTE> & data);
+
+    uint8_t parseTLV(const std::vector<BYTE> & data);
+    
     wxString familyName;
     wxString givenName;
     wxString birthDate;

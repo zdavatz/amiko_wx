@@ -8,6 +8,7 @@
 #include "Contacts.hpp"
 #include "MainWindow.h"
 #include "Utilities.hpp"
+#include "HealthCard.hpp"
 
 // 46
 PatientSheet::PatientSheet( wxWindow* parent )
@@ -17,6 +18,7 @@ PatientSheet::PatientSheet( wxWindow* parent )
 , mABContactsVisible(false)
 , mSearchFiltered(false)
 , mFemale(false)
+, healthCard(nullptr)
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
@@ -43,6 +45,8 @@ PatientSheet::PatientSheet( wxWindow* parent )
     // Retrieves contacts from local patient database
     updateAmiKoAddressBookTableView();
     mNotification->SetLabel(wxEmptyString);
+    
+    healthCard = new HealthCard;
 }
 
 // 117
@@ -368,6 +372,34 @@ void PatientSheet::reloadData()
 }
 
 // /////////////////////////////////////////////////////////////////////////////
+
+void PatientSheet::OnActivate( wxActivateEvent& event )
+{
+    if (event.GetActive())
+        healthCard->start();
+    else
+        healthCard->stop();
+}
+
+void PatientSheet::OnIdle( wxIdleEvent& event )
+{
+    if (!IsActive())
+        return;
+
+//#ifndef NDEBUG
+//    static unsigned int count = 0;
+//    std::clog << __PRETTY_FUNCTION__ << " " << count++
+//    << std::endl;
+//#endif
+    
+    // TODO: SCardGetStatusChange
+    // TODO: SCardStatus
+    //SCARD_READERSTATE * rgReaderStates;
+    healthCard->detectChanges();
+    
+    // TODO: smartcard
+    // - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+}
 
 void PatientSheet::OnSelectSex( wxCommandEvent& event )
 {
