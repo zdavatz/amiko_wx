@@ -36,7 +36,7 @@ Prerequisites:
 
             $ sudo apt install libpcsclite-dev
 
-   - device driver
+    - device driver
 
             $ sudo apt install pcscd
 
