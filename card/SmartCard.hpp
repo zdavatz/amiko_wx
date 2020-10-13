@@ -17,33 +17,42 @@
 
 #define INS_SELECT_FILE    0xA4
 #define INS_READ_BIN       0xB0
+#define INS_GET_DATA       0xCA
 /* for our transaction tracking, not defined in the specification */
 #define INS_INVALID        0x00
+
+#define TEST_POLLING_SC
 
 class SmartCard
 {
 public:
     SmartCard();
-    virtual ~SmartCard() {}
+    virtual ~SmartCard();
 
     virtual void processValidCard(SCARDCONTEXT &hContext) = 0;
     virtual void parseCardData(const std::vector<BYTE> & data) = 0;
 
     void detectChanges();
+    void connectCard();
+    void disconnectCard();
     void start();
     void stop();
     void sendIns(const std::vector<BYTE> &cmd, std::vector<BYTE> &response);
     void scSelectMF();
     void scSelectFile(const std::vector<BYTE> & ef_id);
+    LONG getReaders();
 
     SCARDHANDLE hCard;
 
 private:
     SCARDCONTEXT hContext;
-    SCARD_READERSTATE *rgReaderStates_t = nullptr;
+    SCARD_READERSTATE *rgReaderStates_t;
     SCARD_READERSTATE rgReaderStates[1];
     DWORD dwReaders = 0, dwReadersOld;
     LPTSTR mszReaders;
+    const char **readers;
+    int nbReaders;
+    int pnp;
 
     SCARD_IO_REQUEST pioSendPci;
 };

@@ -378,11 +378,11 @@ void PatientSheet::OnActivate( wxActivateEvent& event )
 {
     if (event.GetActive()) {
         // FIXME: annoyance: we get here also when the Cancel button is clicked
-        healthCard->start();
+        //healthCard->start();
         healthCardProcessed = false;
     }
-    else
-        healthCard->stop();
+    //else
+        //healthCard->stop();
 }
 
 void PatientSheet::OnIdle( wxIdleEvent& event )
@@ -399,11 +399,15 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
     // TODO: SCardGetStatusChange
     // TODO: SCardStatus
     //SCARD_READERSTATE * rgReaderStates;
+#ifdef TEST_POLLING_SC
+    healthCard->detectChanges();
+#else
     if (!healthCardProcessed) {
         healthCard->detectChanges();
         healthCardProcessed = true; // do it only once for now
     }
-    
+#endif
+
     // TODO: smartcard
     // - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 }
