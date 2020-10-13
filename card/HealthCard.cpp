@@ -18,12 +18,13 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
     if (data.size() < 2)
-        return;
+        return 0;
     
     uint8_t tag = data[0];
     uint8_t length = data[1];
     
     // TODO: switch tag
+    return length + 2;
 }
 
 // 101
