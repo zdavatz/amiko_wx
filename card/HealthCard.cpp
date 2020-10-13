@@ -173,7 +173,8 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
     
-    // Elementary file
+    // Elementary file - identification data
+    // pdf section 4.8
     std::vector<BYTE> ef_id = { 0x2F, 0x06 };
     scSelectFile(ef_id);
 
@@ -188,8 +189,8 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     sendIns(cmdReadBinary, dataResponse);
     parseCardData(dataResponse);
     
-    //
-    
+    // Elementary file - administrative data
+    // pdf section 4.9
     std::vector<BYTE> ef_ad = { 0x2F, 0x07 };
     scSelectFile(ef_ad);
 
