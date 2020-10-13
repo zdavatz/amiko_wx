@@ -30,6 +30,7 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
 void HealthCard::parseCardData(const std::vector<BYTE> & data)
 {
     std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+
     if (data.size() < 2)
         return;
     
@@ -51,30 +52,31 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     
     std::vector<BYTE> ef_id = { 0x2F, 0x06 };
     scSelectFile(ef_id);
-    // Response: 67 00
 
     std::vector<BYTE> cmdReadBinary = {
-        0x00,
+        0,
         INS_READ_BIN,
-        0, 0 // P1 P2
+        0, 0, // P1 P2
+        //0x10
         // no data
+        84 // Le
     };
-    sendIns(cmdReadBinary);
-    // Response: 69,86
-
-    std::vector<BYTE> data;
-    parseCardData(data);
+    std::vector<BYTE> dataResponse;
+    sendIns(cmdReadBinary, dataResponse);
+    parseCardData(dataResponse);
     
     //
     
     std::vector<BYTE> ef_ad = { 0x2F, 0x07 };
     scSelectFile(ef_ad);
-    // Response: 67 00
 
-    // TODO: INS_READ_BIN
-    sendIns(cmdReadBinary);
-    // Response: 69 86
-    
-    std::vector<BYTE> data2;
-    parseCardData(data2);
+    std::vector<BYTE> cmdReadBinary2 = {
+        0,
+        INS_READ_BIN,
+        0, 0, // P1 P2
+        // no data
+        95 // Le
+    };
+    sendIns(cmdReadBinary2, dataResponse);
+    parseCardData(dataResponse);
 }

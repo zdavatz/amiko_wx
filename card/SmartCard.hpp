@@ -32,8 +32,8 @@ public:
     void detectChanges();
     void start();
     void stop();
-    void sendIns(const std::vector<BYTE> &cmd);
-    //void sendIns(const unsigned char *cmd, DWORD cmdLength);
+    void sendIns(const std::vector<BYTE> &cmd, std::vector<BYTE> &response);
+    void scSelectMF();
     void scSelectFile(const std::vector<BYTE> & ef_id);
 
     SCARDHANDLE hCard;

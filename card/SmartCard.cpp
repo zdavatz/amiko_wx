@@ -28,26 +28,31 @@ SmartCard::SmartCard()
     
     // APDU commands
 
+    scSelectMF();
+    
+    std::vector<BYTE> dataResponse;
+
     {
         std::vector<BYTE> cmd = {
             0x00,
             INS_SELECT_FILE,
             0x04, 0x00, // P1 P2
-            0x02,
+            2,          // Lc
             0x2f, 0x06
         };
-        sendIns(cmd);
+        sendIns(cmd, dataResponse);
         // Response 6A 82
     }
     
-    {
+    { // See scSelectMF
         std::vector<BYTE> cmd = {
             0x00,
             INS_SELECT_FILE,
             0, 0,       // P1 P2
-            2, 0x3F, 0  // Select Master File
+            2,          // Lc
+            0x3F, 0     // Select Master File
         };
-        sendIns(cmd);
+        sendIns(cmd, dataResponse);
         // Response 90 00
     }
 
@@ -56,10 +61,11 @@ SmartCard::SmartCard()
             0x00,
             INS_SELECT_FILE,
             0x04, 0x00, // P1 P2
-            0x0A,       // data length (TBC)
-            0xA0, 0x00, 0x00, 0x00, 0x62, 0x03, 0x01, 0x0C, 0x06, 0x01
+            10,         // Lc
+            0xA0, 0x00, 0x00, 0x00, 0x62,
+            0x03, 0x01, 0x0C, 0x06, 0x01
         };
-        sendIns(cmd);
+        sendIns(cmd, dataResponse);
         // Response 6A 82
     }
 
@@ -68,17 +74,18 @@ SmartCard::SmartCard()
             0x00,
             INS_SELECT_FILE,
             0x08, 0,    // P1 P2
+            2,
             0x2f, 0x06  // Selection by path from Master File
         };
-        sendIns(cmd);
-        // Response 67 00
+        sendIns(cmd, dataResponse);
+        // Response 90 00
     }
 
     {
         std::vector<BYTE> cmd = {
             0x00, INS_INVALID, 0x00, 0x00
         };
-        sendIns(cmd);
+        sendIns(cmd, dataResponse);
         // Response 6D 00
     }
 
@@ -90,7 +97,7 @@ void SmartCard::detectChanges()
 {
     static unsigned int count = 0;
     
-    if (count++ > 5)
+    if (count++ > 2)
         return;  // temporary
 
 #ifndef NDEBUG
@@ -191,13 +198,35 @@ void SmartCard::stop()
     CHECK("SCardReleaseContext", rv)
 }
 
-void SmartCard::scSelectFile(const std::vector<BYTE> & ef_id)
-{
-    std::clog << __FUNCTION__ << std::hex << std::endl;
+// ISO 7816 commands
 
-    std::clog << "ed_if:\n";
-    for (int i=0; i < ef_id.size(); i++)
-    std::clog << " " << std::setw(2) << std::setfill('0') << (int)ef_id[i];
+// 62
+void SmartCard::scSelectMF()
+{
+    std::clog << __FUNCTION__ << std::endl;
+    std::vector<BYTE> dataResponse;
+
+    std::vector<BYTE> cmd = {
+        0x00,
+        INS_SELECT_FILE,
+        0,          // P1: Select MF, DF or EF
+        0,          // P2
+        2,          // Lc
+        0x3F, 0     // Select Master File
+    };
+    sendIns(cmd, dataResponse);
+}
+
+// 86
+void SmartCard::scSelectFile(const std::vector<BYTE> & filePath)
+{
+    //std::clog << "Start of " << __FUNCTION__ << std::endl;
+
+    std::clog << __FUNCTION__ << " filePath:\n" << std::hex;
+    for (int i=0; i < filePath.size(); i++) {
+        std::clog << " " << std::setw(2) << std::setfill('0')
+        << (int)filePath[i];
+    }
     std::clog << std::dec << std::endl;
 
     std::vector<BYTE> cmd = {
@@ -207,28 +236,29 @@ void SmartCard::scSelectFile(const std::vector<BYTE> & ef_id)
         0       // P2
     };
     
-    cmd.insert(cmd.end(), ef_id.begin(), ef_id.end());
+    cmd.push_back(filePath.size());
+    cmd.insert(cmd.end(), filePath.begin(), filePath.end());
+    // no Le
     
-    std::clog << "cmd:\n" << std::hex;
-    for (int i=0; i < cmd.size(); i++)
-    std::clog << " " << std::setw(2) << std::setfill('0') << (int)cmd[i];
-
-    std::clog << std::dec << std::endl;
+//    std::clog << "cmd:\n" << std::hex;
+//    for (int i=0; i < cmd.size(); i++)
+//    std::clog << " " << std::setw(2) << std::setfill('0') << (int)cmd[i];
+//    std::clog << std::dec << std::endl;
     
-    sendIns(cmd);
+    std::vector<BYTE> dataResponse;
+    sendIns(cmd, dataResponse);
+    //std::clog << "End of " << __FUNCTION__ << std::endl;
 }
 
-//void SmartCard::sendIns2(const std::vector<BYTE> &cmd)
-//{
-//    sendIns(cmd.data(), cmd.size());
-//}
-
-void SmartCard::sendIns(const std::vector<BYTE> &cmd2)
+// CLA INS P1 P2 - Lc Data Le
+void SmartCard::sendIns(const std::vector<BYTE> &cmd2, std::vector<BYTE> &response)
 {
     const unsigned char *cmd = cmd2.data();
     DWORD cmdLength = cmd2.size();
+    
+    response.clear();
 
-//    std::clog << __FUNCTION__
+//    std::clog << "Start of " << __FUNCTION__
 //    << " " << sizeof(cmd)
 //    << " " << cmdLength << "\n";
 
@@ -237,12 +267,32 @@ void SmartCard::sendIns(const std::vector<BYTE> &cmd2)
     LONG rv = SCardTransmit(hCard, &pioSendPci, cmd, cmdLength, NULL, pbRecvBuffer, &dwRecvLength);
     CHECK("SCardTransmit", rv)
 
-    std::clog << __FUNCTION__
-    << std::hex
-    << " INS: " << (int)cmd2[1]
-    << ", response: ";
-    for (int i=0; i<dwRecvLength; i++)
-        std::clog << std::setw(2) << std::setfill('0') << (int)pbRecvBuffer[i] << " ";
+    if (cmdLength >= 4)
+        std::clog << __FUNCTION__
+            << std::hex << std::setw(2) << std::setfill('0')
+            << "\n\tcmd:"
+            << " CLA=" << (int)cmd2[0]
+            << " INS=" << (int)cmd2[1]
+            << " P1="  << (int)cmd2[2]
+            << " P2="  << (int)cmd2[3];
+    if (cmdLength > 4)
+        std::clog  << " -";
+    for (int i=4; i < cmdLength; i++) {
+        std::clog << " " << std::setw(2) << std::setfill('0')
+        << (int)cmd[i];
+    }
+
+    std::clog << "\n\tresponse (size 0x" << dwRecvLength << "):";
+    for (int i=0; i < dwRecvLength; i++) {
+        if (i%16 == 0)
+            std::clog << "\n\t\t";
+
+        std::clog << std::setw(2) << std::setfill('0')
+        << (int)pbRecvBuffer[i] << " ";
+        
+        response.push_back(pbRecvBuffer[i]);
+    }
 
     std::clog << std::dec << std::endl;
+    //std::clog << "End of " << __FUNCTION__ << std::endl;
 }
