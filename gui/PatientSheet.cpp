@@ -19,6 +19,7 @@ PatientSheet::PatientSheet( wxWindow* parent )
 , mSearchFiltered(false)
 , mFemale(false)
 , healthCard(nullptr)
+, healthCardProcessed(true) // temp
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
@@ -375,8 +376,11 @@ void PatientSheet::reloadData()
 
 void PatientSheet::OnActivate( wxActivateEvent& event )
 {
-    if (event.GetActive())
+    if (event.GetActive()) {
+        // FIXME: annoyance: we get here also when the Cancel button is clicked
         healthCard->start();
+        healthCardProcessed = false;
+    }
     else
         healthCard->stop();
 }
@@ -395,7 +399,10 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
     // TODO: SCardGetStatusChange
     // TODO: SCardStatus
     //SCARD_READERSTATE * rgReaderStates;
-    healthCard->detectChanges();
+    if (!healthCardProcessed) {
+        healthCard->detectChanges();
+        healthCardProcessed = true; // do it only once for now
+    }
     
     // TODO: smartcard
     // - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

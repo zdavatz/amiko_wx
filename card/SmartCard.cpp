@@ -23,12 +23,12 @@ SmartCard::SmartCard()
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     start();
     
     // APDU commands
 
-    scSelectMF();
+    //scSelectMF();
     
     std::vector<BYTE> dataResponse;
 
@@ -95,13 +95,14 @@ SmartCard::SmartCard()
 
 void SmartCard::detectChanges()
 {
-    static unsigned int count = 0;
-    
-    if (count++ > 2)
-        return;  // temporary
+//    static unsigned int count = 0;
+//
+//    if (count++ > 2)
+//        return;  // temporary
 
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " " << count
+    std::clog << __PRETTY_FUNCTION__
+//    << " " << count
     << std::endl;
 #endif
 
@@ -222,7 +223,7 @@ void SmartCard::scSelectFile(const std::vector<BYTE> & filePath)
 {
     //std::clog << "Start of " << __FUNCTION__ << std::endl;
 
-    std::clog << __FUNCTION__ << " filePath:\n" << std::hex;
+    std::clog << __FUNCTION__ << " filePath:" << std::hex;
     for (int i=0; i < filePath.size(); i++) {
         std::clog << " " << std::setw(2) << std::setfill('0')
         << (int)filePath[i];

@@ -52,6 +52,7 @@ class PatientSheet : public PatientSheetBase
     void setSelectedPatient(Patient *patient);
     
     HealthCard *healthCard;
+    bool healthCardProcessed; // temporary
 
     // 30
     PatientDBAdapter *mPatientDb;
