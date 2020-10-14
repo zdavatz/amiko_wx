@@ -4,6 +4,8 @@
 //  Created by Alex Bettarini on 9 Oct 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+// Reference: pcsc_scan source code
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -18,7 +20,7 @@
   return; \
  }
 
-// The ony difference is the return statement
+// The ony difference is in the return statement
 #define CHECK_RV(f, rv) \
  if (SCARD_S_SUCCESS != rv) \
  { \
@@ -34,77 +36,7 @@ SmartCard::SmartCard()
 , rgReaderStates_t(nullptr)
 , mszReaders(nullptr)
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
     start();
-
-#if 0 //ndef NDEBUG
-    //start();
-    
-    // APDU commands
-
-    //scSelectMF();
-    
-    std::vector<BYTE> dataResponse;
-
-    {
-        std::vector<BYTE> cmd = {
-            0x00,
-            INS_SELECT_FILE,
-            0x04, 0x00, // P1 P2
-            2,          // Lc
-            0x2f, 0x06
-        };
-        sendIns(cmd, dataResponse);
-        // Response 6A 82
-    }
-    
-    { // See scSelectMF
-        std::vector<BYTE> cmd = {
-            0x00,
-            INS_SELECT_FILE,
-            0, 0,       // P1 P2
-            2,          // Lc
-            0x3F, 0     // Select Master File
-        };
-        sendIns(cmd, dataResponse);
-        // Response 90 00
-    }
-
-    {
-        std::vector<BYTE> cmd = {
-            0x00,
-            INS_SELECT_FILE,
-            0x04, 0x00, // P1 P2
-            10,         // Lc
-            0xA0, 0x00, 0x00, 0x00, 0x62,
-            0x03, 0x01, 0x0C, 0x06, 0x01
-        };
-        sendIns(cmd, dataResponse);
-        // Response 6A 82
-    }
-
-    {
-        std::vector<BYTE> cmd = {
-            0x00,
-            INS_SELECT_FILE,
-            0x08, 0,    // P1 P2
-            2,
-            0x2f, 0x06  // Selection by path from Master File
-        };
-        sendIns(cmd, dataResponse);
-        // Response 90 00
-    }
-
-    {
-        std::vector<BYTE> cmd = {
-            0x00, INS_INVALID, 0x00, 0x00
-        };
-        sendIns(cmd, dataResponse);
-        // Response 6D 00
-    }
-
-    //stop();
-#endif // NDEBUG
 }
 
 SmartCard::~SmartCard()
@@ -112,22 +44,11 @@ SmartCard::~SmartCard()
     stop();
 }
 
-void SmartCard::detectChanges()
+// return true if new card data has been acquired
+bool SmartCard::detectChanges()
 {
-#ifndef NDEBUG
     //std::clog << __FUNCTION__ << std::endl;
-#endif
-
-#ifdef TEST_POLLING_SC
-    
-#if 0
-    LONG rv = getReaders();
-
-    std::clog << __FUNCTION__ << " line: " << __LINE__
-    << ", nbReaders: " << nbReaders
-    << ", rv: " << rv
-    << std::endl;
-#endif
+    bool newCardDataAcquired = false;
 
     /// 640
     /* Wait endlessly for all events in the list of readers
@@ -146,33 +67,26 @@ void SmartCard::detectChanges()
             /// 660
             if (rgReaderStates_t[nbReaders-1].dwEventState & SCARD_STATE_CHANGED)
             {
-                //goto get_readers; // 476
+                //goto get_readers; /// 476
                 getReaders();
             }
         }
         else {
-            // 670
+            /// 670
             /* A new reader appeared? */
-            if ((SCardListReaders(hContext, NULL, NULL, &dwReaders)
-                == SCARD_S_SUCCESS) && (dwReaders != dwReadersOld))
+            if ((SCardListReaders(hContext, NULL, NULL, &dwReaders) == SCARD_S_SUCCESS) &&
+                (dwReaders != dwReadersOld))
             {
                 // goto get_readers;
                 getReaders();
             }
         }
         
-        // 687
+        /// 687
         /* Now we have an event, check all the readers in the list to see what
          * happened */
         for (int current_reader=0; current_reader < nbReaders; current_reader++)
         {
-//            std::clog << __FUNCTION__ << " line: " << __LINE__
-//            << ", reader: " << current_reader
-//            << std::hex
-//            << ", c state: 0x" << rgReaderStates_t[current_reader].dwCurrentState
-//            << ", e state: 0x" << rgReaderStates_t[current_reader].dwEventState
-//            << std::dec << std::endl;
-
 #if defined(__APPLE__) || defined(WIN32)
             if (rgReaderStates_t[current_reader].dwCurrentState ==
                 rgReaderStates_t[current_reader].dwEventState)
@@ -181,30 +95,10 @@ void SmartCard::detectChanges()
             }
 #endif
             
-            // 697
+            /// 697
             if (rgReaderStates_t[current_reader].dwEventState &
                 SCARD_STATE_CHANGED)
             {
-#if 1 // @@@
-                if (rgReaderStates_t[current_reader].dwEventState &
-                    SCARD_STATE_EMPTY)
-                    printf("Card index %i removed\n", current_reader);
-
-                if (rgReaderStates_t[current_reader].dwEventState &
-                    SCARD_STATE_PRESENT)
-                {
-                    printf("Card index %i inserted\n", current_reader);
-                    
-                    // Get valid handle
-                    connectCard();
-                    
-                    // Not available in the constructor
-                    processValidCard(hContext);     // handled by subclass
-
-                    disconnectCard();
-                }
-#endif
-
                 /* If something has changed the new state is now the current
                  * state */
                 rgReaderStates_t[current_reader].dwCurrentState =
@@ -216,56 +110,38 @@ void SmartCard::detectChanges()
                 continue;
             }
             
-            // 744
-//            if (rgReaderStates_t[current_reader].dwEventState &
-//                SCARD_STATE_EMPTY)
-//                printf("SCARD_STATE_EMPTY\n");
-//
-//            if (rgReaderStates_t[current_reader].dwEventState &
-//                SCARD_STATE_PRESENT) {
-//                printf("SCARD_STATE_PRESENT\n");
-//            }
-        }
+#ifndef NDEBUG
+            // 726
+            /* Dump the full current state */
+            std::clog << "Card index " << current_reader;
+            dumpState( rgReaderStates_t[current_reader].dwEventState);
+#endif
+
+            if (rgReaderStates_t[current_reader].dwEventState &
+                SCARD_STATE_PRESENT)
+            {
+                if (connectCard()) {            // Get valid handle
+                    processValidCard(hContext); // Processed by subclass
+                    disconnectCard();
+                    newCardDataAcquired = true;
+                }
+            }
+        } // for reader
         
         break; // @@@ TODO: only one loop for now
     } // while
     
- 
-#else
-    // Not available in the constructor
-    processValidCard(hContext);     // handled by subclass
-#endif
+    return newCardDataAcquired;
 }
 
 void SmartCard::start()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << std::endl;
     
     // 453
     LONG rv = SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &hContext);
     CHECK("SCardEstablishContext", rv)
-    
-#if 0
-//    {
-//#ifdef SCARD_AUTOALLOCATE
-//    dwReaders = SCARD_AUTOALLOCATE;
-//
-//    rv = SCardListReaders(hContext, NULL, (LPTSTR)&mszReaders, &dwReaders);
-//    CHECK("SCardListReaders", rv)
-//#else
-//    rv = SCardListReaders(hContext, NULL, NULL, &dwReaders);
-//    CHECK("SCardListReaders", rv)
-//
-//    mszReaders = (LPTSTR)calloc(dwReaders, sizeof(char));
-//    rv = SCardListReaders(hContext, NULL, mszReaders, &dwReaders);
-//    CHECK("SCardListReaders", rv)
-//#endif
-//
-//    std::clog << "Reader name: " << mszReaders << std::endl;
-//    }
-#endif
-    
-#if 1
+
     /// 456
     rgReaderStates[0].szReader = "\\\\?PnP?\\Notification";
     rgReaderStates[0].dwCurrentState = SCARD_STATE_UNAWARE;
@@ -273,65 +149,24 @@ void SmartCard::start()
     rv = SCardGetStatusChange(hContext, 0, rgReaderStates, 1);
     if (rgReaderStates[0].dwEventState & SCARD_STATE_UNKNOWN)
     {
-        printf("Plug'n play reader name not supported. Using polling every %d ms.\n", TIMEOUT);
+        std::clog << "Plug'n play reader name not supported. Using polling"
+        //<< " every " << TIMEOUT << " ms."
+        << std::endl;
         pnp = false;
     }
     else
     {
-        printf("Using reader plug'n play mechanism\n");
+        std::clog << "Using reader plug'n play mechanism\n";
     }
-#endif
-    
-#ifdef TEST_POLLING_SC
+
     getReaders();
-    
-    return;
-    
-
-#endif // TEST_POLLING_SC
-
-#if 1
-    connectCard();
-#else
-    DWORD dwActiveProtocol;
-
-    rv = SCardConnect(hContext, mszReaders, SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hCard, &dwActiveProtocol);
-    CHECK("SCardConnect", rv)
-
-    switch (dwActiveProtocol)
-    {
-        case SCARD_PROTOCOL_T0:
-            std::clog << "\tprotocol T0\n";
-            pioSendPci = *SCARD_PCI_T0;
-            break;
-
-        case SCARD_PROTOCOL_T1:
-            std::clog << "\tprotocol T1\n";
-            pioSendPci = *SCARD_PCI_T1;
-            break;
-            
-        case SCARD_PROTOCOL_RAW:
-            std::clog << "\tprotocol raw\n";
-            pioSendPci = *SCARD_PCI_RAW;
-            break;
-
-        default:
-            fprintf(stderr, "Unknown protocol\n");
-            break;
-    }
-#endif
 }
 
 void SmartCard::stop()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << std::endl;
     
     LONG rv;
-    
-#ifndef TEST_POLLING_SC
-    rv = SCardDisconnect(hCard, SCARD_LEAVE_CARD);
-    CHECK("SCardDisconnect", rv)
-#endif
 
 #ifdef SCARD_AUTOALLOCATE
      rv = SCardFreeMemory(hContext, mszReaders);
@@ -349,7 +184,7 @@ void SmartCard::stop()
 // 62
 void SmartCard::scSelectMF()
 {
-    std::clog << __FUNCTION__ << std::endl;
+    //std::clog << __FUNCTION__ << std::endl;
     std::vector<BYTE> dataResponse;
 
     std::vector<BYTE> cmd = {
@@ -366,14 +201,14 @@ void SmartCard::scSelectMF()
 // 86
 void SmartCard::scSelectFile(const std::vector<BYTE> & filePath)
 {
-    //std::clog << "Start of " << __FUNCTION__ << std::endl;
-
+#ifndef NDEBUG
     std::clog << __FUNCTION__ << " filePath:" << std::hex;
     for (int i=0; i < filePath.size(); i++) {
         std::clog << " " << std::setw(2) << std::setfill('0')
         << (int)filePath[i];
     }
     std::clog << std::dec << std::endl;
+#endif
 
     std::vector<BYTE> cmd = {
         0x00,
@@ -386,14 +221,8 @@ void SmartCard::scSelectFile(const std::vector<BYTE> & filePath)
     cmd.insert(cmd.end(), filePath.begin(), filePath.end());
     // no Le
     
-//    std::clog << "cmd:\n" << std::hex;
-//    for (int i=0; i < cmd.size(); i++)
-//    std::clog << " " << std::setw(2) << std::setfill('0') << (int)cmd[i];
-//    std::clog << std::dec << std::endl;
-    
     std::vector<BYTE> dataResponse;
     sendIns(cmd, dataResponse);
-    //std::clog << "End of " << __FUNCTION__ << std::endl;
 }
 
 // CLA INS P1 P2 - Lc Data Le
@@ -401,18 +230,13 @@ void SmartCard::sendIns(const std::vector<BYTE> &cmd2, std::vector<BYTE> &respon
 {
     const unsigned char *cmd = cmd2.data();
     DWORD cmdLength = cmd2.size();
-    
-    response.clear();
-
-//    std::clog << "Start of " << __FUNCTION__
-//    << " " << sizeof(cmd)
-//    << " " << cmdLength << "\n";
 
     BYTE pbRecvBuffer[256 + 2];
     DWORD dwRecvLength = sizeof(pbRecvBuffer);
     LONG rv = SCardTransmit(hCard, &pioSendPci, cmd, cmdLength, NULL, pbRecvBuffer, &dwRecvLength);
     CHECK("SCardTransmit", rv)
 
+#ifndef NDEBUG
     if (cmdLength >= 4)
         std::clog << __FUNCTION__
             << std::hex << std::setw(2) << std::setfill('0')
@@ -435,12 +259,14 @@ void SmartCard::sendIns(const std::vector<BYTE> &cmd2, std::vector<BYTE> &respon
 
         std::clog << std::setw(2) << std::setfill('0')
         << (int)pbRecvBuffer[i] << " ";
-        
-        response.push_back(pbRecvBuffer[i]);
     }
-
+    
     std::clog << std::dec << std::endl;
-    //std::clog << "End of " << __FUNCTION__ << std::endl;
+#endif
+
+    response.clear();
+    for (int i=0; i < dwRecvLength; i++)
+        response.push_back(pbRecvBuffer[i]);
 }
 
 /// 476
@@ -469,7 +295,15 @@ LONG SmartCard::getReaders()
      * 3. call with the real allocated buffer
      */
     /// 498
-    printf("Scanning present readers...\n");
+#ifndef NDEBUG
+    std::clog << "Scanning present readers...\n";
+#endif
+
+#ifdef SCARD_AUTOALLOCATE
+    dwReaders = SCARD_AUTOALLOCATE;
+    rv = SCardListReaders(hContext, NULL, (LPTSTR)&mszReaders, &dwReaders);
+    CHECK_RV("SCardListReaders", rv)
+#else
     LONG rv = SCardListReaders(hContext, NULL, NULL, &dwReaders);
     if (rv != SCARD_E_NO_READERS_AVAILABLE)
         CHECK_RV("SCardListReaders", rv)
@@ -479,8 +313,7 @@ LONG SmartCard::getReaders()
     
     /// 506
     /* if non NULL we came back so free first */
-    if (mszReaders)
-    {
+    if (mszReaders) {
         free(mszReaders);
         mszReaders = nullptr;
     }
@@ -491,6 +324,7 @@ LONG SmartCard::getReaders()
     /// 520
     *mszReaders = '\0';
     rv = SCardListReaders(hContext, NULL, mszReaders, &dwReaders);
+#endif // SCARD_AUTOALLOCATE
 
     /// 523
     /* Extract readers from the null separated string and get the total
@@ -510,7 +344,7 @@ LONG SmartCard::getReaders()
     if (SCARD_E_NO_READERS_AVAILABLE == rv || 0 == nbReaders)
     {
         /// 537
-        printf("Waiting for the first reader...\n");
+        std::clog << "Waiting for the first reader...\n";
 
         // 541
         if (pnp)
@@ -518,11 +352,11 @@ LONG SmartCard::getReaders()
             rgReaderStates[0].szReader = "\\\\?PnP?\\Notification";
             rgReaderStates[0].dwCurrentState = SCARD_STATE_UNAWARE;
             
-            // TODO: 547 
+            /// 547
             do
             {
                 rv = SCardGetStatusChange(hContext, TIMEOUT, rgReaderStates, 1);
-		break; // @@@
+                break; // @@@
             }
             while (SCARD_E_TIMEOUT == rv);
 
@@ -533,15 +367,21 @@ LONG SmartCard::getReaders()
         {
             /// 563
             rv = SCARD_S_SUCCESS; // 0
-            
-            // TODO: 565 while
-            rv = SCardListReaders(hContext, NULL, NULL, &dwReaders);
+            while ((SCARD_S_SUCCESS == rv) && (dwReaders == dwReadersOld))
+            {
+                rv = SCardListReaders(hContext, NULL, NULL, &dwReaders);
 
-            std::clog << __FUNCTION__ << " line: " << __LINE__
-            << std::hex << " rv: 0x" << rv << std::dec << std::endl;
+                std::clog << __FUNCTION__ << " line: " << __LINE__
+                << std::hex << " rv: 0x" << rv << std::dec << std::endl;
+
+                if (SCARD_E_NO_READERS_AVAILABLE == rv)
+                    rv = SCARD_S_SUCCESS;
+
+                break; // @@@
+            }
 
             if (SCARD_E_NO_READERS_AVAILABLE == rv) { // 0x8010002E
-                printf("SCARD_E_NO_READERS_AVAILABLE\n");
+                std::clog << "SCARD_E_NO_READERS_AVAILABLE\n";
                 return rv;
             }
         }
@@ -567,14 +407,13 @@ LONG SmartCard::getReaders()
         nbReaders++;
     }
     
+#ifndef NDEBUG
+    /// 602
     // print_readers
-    for (int i = 0;i < nbReaders; i++)
+    for (int i = 0; i < nbReaders; i++)
         printf("\t%d: <%s>\n", i, readers[i]);
+#endif
     
-    /// 605
-    //std::clog << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-    
-#if 1
     /// 608
     /* allocate the ReaderStates table */
     if (rgReaderStates_t == nullptr)
@@ -599,43 +438,89 @@ LONG SmartCard::getReaders()
         rgReaderStates_t[nbReaders].dwCurrentState = SCARD_STATE_UNAWARE;
         nbReaders++;
     }
-#endif
     
     return SCARD_S_SUCCESS;
 }
 
-void SmartCard::connectCard()
+bool SmartCard::connectCard()
 {
-    DWORD dwActiveProtocol;
+    DWORD dwActiveProtocol = SCARD_PROTOCOL_UNDEFINED;
 
     LONG rv = SCardConnect(hContext, mszReaders, SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hCard, &dwActiveProtocol);
-    CHECK("SCardConnect", rv)
+    
+    if (SCARD_S_SUCCESS != rv) { // SCARD_E_NO_SMARTCARD
+        printf("SCardConnect: 0x%x %s\n", rv, pcsc_stringify_error(rv));
+        return false;
+    }
 
     switch (dwActiveProtocol)
     {
         case SCARD_PROTOCOL_T0:
-            std::clog << "\tprotocol T0\n";
             pioSendPci = *SCARD_PCI_T0;
             break;
 
         case SCARD_PROTOCOL_T1:
-            std::clog << "\tprotocol T1\n";
             pioSendPci = *SCARD_PCI_T1;
             break;
             
         case SCARD_PROTOCOL_RAW:
-            std::clog << "\tprotocol raw\n";
             pioSendPci = *SCARD_PCI_RAW;
             break;
 
         default:
-            fprintf(stderr, "Unknown protocol\n");
+            std::cerr << __PRETTY_FUNCTION__ << " Unknown protocol\n";
             break;
     }
+
+#ifndef NDEBUG
+    std::clog << "\tprotocol " << dwActiveProtocol <<"\n";
+#endif
+    
+    return true;
 }
 
 void SmartCard::disconnectCard()
 {
     LONG rv = SCardDisconnect(hCard, SCARD_LEAVE_CARD);
     CHECK("SCardDisconnect", rv)
+}
+
+/// 729
+void SmartCard::dumpState(uint32_t state)
+{
+#ifndef NDEBUG
+    std::clog << ", state: ";
+
+    if (state & SCARD_STATE_IGNORE)
+        std::clog << "Ignore this reader, ";
+
+    if (state & SCARD_STATE_UNKNOWN)
+    {
+        std::clog << "Unknown, ";
+        //goto get_readers;
+    }
+
+    if (state & SCARD_STATE_UNAVAILABLE)
+        std::clog << "Status unavailable, ";
+    
+    if (state & SCARD_STATE_EMPTY)
+        std::clog << "Card  removed, ";
+
+    if (state & SCARD_STATE_PRESENT)
+        std::clog << "Card inserted, ";
+    
+    if (state & SCARD_STATE_ATRMATCH)
+        std::clog << "ATR matches card, ";
+
+    if (state & SCARD_STATE_EXCLUSIVE)
+        std::clog << "Exclusive Mode, ";
+
+    if (state & SCARD_STATE_INUSE)
+        std::clog << "Shared Mode, ";
+
+    if (state & SCARD_STATE_MUTE)
+        std::clog << "Unresponsive card, ";
+    
+    std::clog << std::endl;
+#endif
 }

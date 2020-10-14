@@ -21,8 +21,6 @@
 /* for our transaction tracking, not defined in the specification */
 #define INS_INVALID        0x00
 
-#define TEST_POLLING_SC
-
 class SmartCard
 {
 public:
@@ -32,8 +30,8 @@ public:
     virtual void processValidCard(SCARDCONTEXT &hContext) = 0;
     virtual void parseCardData(const std::vector<BYTE> & data) = 0;
 
-    void detectChanges();
-    void connectCard();
+    bool detectChanges();
+    bool connectCard();
     void disconnectCard();
     void start();
     void stop();
@@ -41,6 +39,7 @@ public:
     void scSelectMF();
     void scSelectFile(const std::vector<BYTE> & ef_id);
     LONG getReaders();
+    void dumpState(uint32_t dwEventState);
 
     SCARDHANDLE hCard;
 

@@ -25,16 +25,6 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
     auto first = data.cbegin() + 2;
     auto last = first + length;
     std::vector<BYTE> value(first, last);
-
-#if 0
-    std::clog << __FUNCTION__
-    << std::hex << ", tag:0x" << (int)tag
-    << std::dec << ", length:" << (int)length;
-    std::clog << ", value: <";
-    for (auto c : value)
-        std::clog << c;
-    std::clog << ">" << std::endl;
-#endif
     
     switch (tag) {
         case 0x80:  // UTF8InternationalString
@@ -45,8 +35,10 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
             familyName = a[0];
             if (a.size() > 1) {
                 givenName = a[1];
-                givenName.Trim();
+                givenName.Trim(true);
+                givenName.Trim(false);
             }
+
             std::clog
             << "Family name: " << familyName
             << "\nGiven name: " << givenName
@@ -80,9 +72,7 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
                 gender = wxEmptyString;
 
             // 1=male, 2=female, 0=not known, 9=not appl.
-            std::clog << "Sex: "
-            //<< (int)sexEnum << " "
-            << gender << std::endl;
+            std::clog << "Sex: <" << gender << ">\n";
         }
             break;
 
@@ -96,14 +86,14 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
         case 0x91:  // UTF8InternationalString
         {
             std::string s(value.begin(), value.end());
-            std::clog << "name Of The Institution: " << s << std::endl;
+            std::clog << "Name Of The Institution: " << s << std::endl;
         }
             break;
             
         case 0x92:  // NUMERIC STRING
         {
             std::string s(value.begin(), value.end());
-            std::clog << "identificationNumber Of The Institution: " << s << std::endl;
+            std::clog << "IdentificationNumber Of The Institution: " << s << std::endl;
         }
             break;
 
@@ -171,8 +161,6 @@ void HealthCard::parseCardData(const std::vector<BYTE> & data)
 // 157
 void HealthCard::processValidCard(SCARDCONTEXT &hContext)
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-    
     // Elementary file - identification data
     // pdf section 4.8
     std::vector<BYTE> ef_id = { 0x2F, 0x06 };
@@ -181,9 +169,9 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     std::vector<BYTE> cmdReadBinary = {
         0,
         INS_READ_BIN,
-        0, 0, // P1 P2
-        84 // Lc
-        // no data
+        0, 0,   // P1 P2
+        84      // Lc
+                // no data
     };
     std::vector<BYTE> dataResponse;
     sendIns(cmdReadBinary, dataResponse);
@@ -197,10 +185,21 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     std::vector<BYTE> cmdReadBinary2 = {
         0,
         INS_READ_BIN,
-        0, 0, // P1 P2
-        95 // Lc
-        // no data
+        0, 0,   // P1 P2
+        95      // Lc
+                // no data
     };
     sendIns(cmdReadBinary2, dataResponse);
     parseCardData(dataResponse);
+    
+#if 1
+    // 201
+    std::clog << __PRETTY_FUNCTION__  << " line " << __LINE__
+    << " TODO: post notification smartCardDataAcquired\n";
+
+    // TODO: call MLPatientSheetController newHealthCardData
+    // TODO: call MLMainWindowController newHealthCardData
+#else
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"smartCardDataAcquired" object:patientDict];
+#endif
 }

@@ -390,26 +390,11 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
     if (!IsActive())
         return;
 
-//#ifndef NDEBUG
-//    static unsigned int count = 0;
-//    std::clog << __PRETTY_FUNCTION__ << " " << count++
-//    << std::endl;
-//#endif
-    
-    // TODO: SCardGetStatusChange
-    // TODO: SCardStatus
-    //SCARD_READERSTATE * rgReaderStates;
-#ifdef TEST_POLLING_SC
-    healthCard->detectChanges();
-#else
-    if (!healthCardProcessed) {
-        healthCard->detectChanges();
-        healthCardProcessed = true; // do it only once for now
+    if (healthCard->detectChanges()) {
+        std::clog << "Inserted card: "
+        << healthCard->familyName << " "
+        << healthCard->givenName << std::endl;
     }
-#endif
-
-    // TODO: smartcard
-    // - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 }
 
 void PatientSheet::OnSelectSex( wxCommandEvent& event )
