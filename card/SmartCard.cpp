@@ -301,8 +301,10 @@ LONG SmartCard::getReaders()
 
 #ifdef SCARD_AUTOALLOCATE
     dwReaders = SCARD_AUTOALLOCATE;
-    rv = SCardListReaders(hContext, NULL, (LPTSTR)&mszReaders, &dwReaders);
+    LONG rv = SCardListReaders(hContext, NULL, (LPTSTR)&mszReaders, &dwReaders);
     CHECK_RV("SCardListReaders", rv)
+
+    dwReadersOld = dwReaders;
 #else
     LONG rv = SCardListReaders(hContext, NULL, NULL, &dwReaders);
     if (rv != SCARD_E_NO_READERS_AVAILABLE)
@@ -449,7 +451,7 @@ bool SmartCard::connectCard()
     LONG rv = SCardConnect(hContext, mszReaders, SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hCard, &dwActiveProtocol);
     
     if (SCARD_S_SUCCESS != rv) { // SCARD_E_NO_SMARTCARD
-        printf("SCardConnect: 0x%x %s\n", rv, pcsc_stringify_error(rv));
+        printf("SCardConnect: 0x%lx %s\n", rv, pcsc_stringify_error(rv));
         return false;
     }
 
