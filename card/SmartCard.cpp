@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cstring> // for strlen
 
 #include "SmartCard.hpp"
 
@@ -499,7 +500,7 @@ LONG SmartCard::getReaders()
     char *ptr = mszReaders;
     while (*ptr != '\0')
     {
-        ptr += strlen(ptr)+1;
+        ptr += std::strlen(ptr)+1;
         nbReaders++;
     }
     
@@ -554,7 +555,7 @@ LONG SmartCard::getReaders()
     while (*ptr != '\0')
     {
         readers[nbReaders] = ptr;
-        ptr += strlen(ptr)+1;
+        ptr += std::strlen(ptr)+1;
         nbReaders++;
     }
     
