@@ -3,7 +3,6 @@
 #include <wx/filefn.h>
 
 #include "PatientSheet.h"
-#include "Patient.hpp"
 #include "PatientDBAdapter.hpp"
 #include "Contacts.hpp"
 #include "MainWindow.h"
@@ -19,7 +18,6 @@ PatientSheet::PatientSheet( wxWindow* parent )
 , mSearchFiltered(false)
 , mFemale(false)
 , healthCard(nullptr)
-, healthCardProcessed(true) // temp
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
@@ -48,6 +46,62 @@ PatientSheet::PatientSheet( wxWindow* parent )
     mNotification->SetLabel(wxEmptyString);
     
     healthCard = new HealthCard;
+}
+
+// category smartCard 16
+void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notification
+{
+    // 23
+    resetAllFields();
+    
+    // 26
+    // Create patient from health card data (incomplete dictionary)
+    Patient *incompletePatient = new Patient;
+    incompletePatient->importFromDict(dict);
+#ifndef NDEBUG
+    std::clog << "patient " << incompletePatient->description();
+#endif
+    
+    // 31
+    // If the ID exists in the patient_db just select it
+    Patient *existingPatient =  retrievePatientWithUniqueID(incompletePatient->uniqueId);
+    //NSLog(@"%s existing patient from DB:%@", __FUNCTION__, existingPatient);
+    if (existingPatient)
+    {
+        // Search the table view
+        int n = numberOfRowsInTableView(); //mTableView
+        for (int i=0; i<n; i++) {
+            Patient *p = getContactAtRow(i);
+            //NSLog(@"Line %d, %i/%ld, %@", __LINE__, i+1, (long)n, p);
+            if (p->uniqueId == incompletePatient->uniqueId) {
+                std::clog << "found at " << i << std::endl;
+
+#if 0 // TODO:
+                // 47
+                // Select it in the table view
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:i];
+                [mTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+                [mTableView scrollRowToVisible:[mTableView selectedRow]];
+
+                {
+                // Simulate double-click in mTableView to close panel
+                [self setSelectedPatient:existingPatient];
+                // Post a notification so that the Rezept view will be updated
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientChanged" object:self];
+                [self remove];
+                }
+
+                break;
+#endif
+            } // if
+        } // for
+
+        return;
+    }
+
+    // 70
+    // Just pre-fill some fields with the dictionary
+    setAllFields(incompletePatient);
 }
 
 // 117
@@ -374,15 +428,10 @@ void PatientSheet::reloadData()
 
 // /////////////////////////////////////////////////////////////////////////////
 
+// Note: we get here also when the Cancel button is clicked
 void PatientSheet::OnActivate( wxActivateEvent& event )
 {
-    if (event.GetActive()) {
-        // FIXME: annoyance: we get here also when the Cancel button is clicked
-        //healthCard->start();
-        healthCardProcessed = false;
-    }
-    //else
-        //healthCard->stop();
+    //std::clog << __PRETTY_FUNCTION__ << " " << event.GetActive() << std::endl;
 }
 
 void PatientSheet::OnIdle( wxIdleEvent& event )
@@ -390,10 +439,20 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
     if (!IsActive())
         return;
 
-    if (healthCard->detectChanges()) {
+    if (healthCard->detectChanges())
+    {
+#ifndef NDEBUG
         std::clog << "Inserted card: "
         << healthCard->familyName << " "
         << healthCard->givenName << std::endl;
+#endif
+        
+        PAT_DICT dict;
+        dict[KEY_AMK_PAT_BIRTHDATE] = healthCard->birthDate;
+        dict[KEY_AMK_PAT_SURNAME] = healthCard->familyName;
+        dict[KEY_AMK_PAT_GENDER] = healthCard->gender;
+        dict[KEY_AMK_PAT_NAME] = healthCard->givenName;
+        newHealthCardData(dict);
     }
 }
 

@@ -49,7 +49,13 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
         case 0x82:  // NUMERIC STRING
         {
             std::string s(value.begin(), value.end());
-            std::clog << "DOB: " << s << std::endl;
+            wxString ws(s.c_str(), wxConvUTF8);
+
+            // http://www.cplusplus.com/reference/ctime/strftime/
+            wxDateTime dt;
+            wxString::const_iterator end;
+            dt.ParseFormat(ws,"%Y%m%d", &end);      // convert from this
+            birthDate = dt.Format(wxT("%d.%m.%Y")); // to this
         }
             break;
             

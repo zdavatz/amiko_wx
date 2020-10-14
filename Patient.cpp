@@ -77,3 +77,8 @@ wxString Patient::asString()
     return wxString::Format("%s %s\n%s\nCH-%s %s\n%s\n%s", givenName, familyName, postalAddress, zipCode, city, phoneNumber, emailAddress);
 }
 
+wxString Patient::description()
+{
+    return wxString::Format("Patient givenName:%s, familyName:%s, birthDate:%s, uniqueId:%s", givenName, familyName, birthDate, uniqueId);
+}
+
