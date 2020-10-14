@@ -274,7 +274,6 @@ void SmartCard::start()
     if (rgReaderStates[0].dwEventState & SCARD_STATE_UNKNOWN)
     {
         printf("Plug'n play reader name not supported. Using polling every %d ms.\n", TIMEOUT);
-
         pnp = false;
     }
     else
@@ -519,7 +518,16 @@ LONG SmartCard::getReaders()
             rgReaderStates[0].szReader = "\\\\?PnP?\\Notification";
             rgReaderStates[0].dwCurrentState = SCARD_STATE_UNAWARE;
             
-            // TODO: 547 do {} while();
+            // TODO: 547 
+            do
+            {
+                rv = SCardGetStatusChange(hContext, TIMEOUT, rgReaderStates, 1);
+		break; // @@@
+            }
+            while (SCARD_E_TIMEOUT == rv);
+
+            std::clog << __FUNCTION__ << " line: " << __LINE__
+            << std::hex << " rv: 0x" << rv << std::dec << std::endl;
         }
         else
         {
