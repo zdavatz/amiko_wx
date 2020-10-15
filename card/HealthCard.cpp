@@ -118,7 +118,16 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
         case 0x94:  // NUMERIC STRING
         {
             std::string s(value.begin(), value.end());
-            std::clog << "ExpiryDate yyyyMMdd: " << s << std::endl;
+            //std::clog << "ExpiryDate yyyyMMdd: " << s << std::endl;
+            wxString ws(s.c_str(), wxConvUTF8);
+
+            wxDateTime dt;
+            wxString::const_iterator end;
+            dt.ParseFormat(ws,"%Y%m%d", &end);      // convert from this
+
+            expired = false;
+            if (dt < wxDateTime::Now())
+                expired = true;
         }
             break;
 
@@ -172,16 +181,11 @@ void HealthCard::parseCardData(const std::vector<BYTE> & data)
 // 126
 bool HealthCard::validAtr(const std::vector<uint8_t> & atr)
 {
+    // Swiss Health Insurance Card
     std::vector<uint8_t> mutuelBytes = {
-        0x3b,   // Direct convention
-        0x9f, 0x13, 0x81, 0xb1, 0x80,
-        0x37,   // '7'
-        0x1f,
-        0x03, 0x80,
-        0x31,   // '1'
-        0xf8,
-        0x69, 0x4d, 0x54, 0x43, 0x4f, 0x53, 0x70, // "iMTCOSp"
-        0x02, 0x01, 0x02, 0x81, 0x07, 0x86};
+        0x3b, 0x9f, 0x13, 0x81, 0xb1, 0x80, 0x37, 0x1f,
+        0x03, 0x80, 0x31, 0xf8, 0x69, 0x4d, 0x54, 0x43,
+        0x4f, 0x53, 0x70, 0x02, 0x01, 0x02, 0x81, 0x07, 0x86};
 
     if (atr == mutuelBytes)
         return true;

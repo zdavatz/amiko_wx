@@ -27,5 +27,7 @@ public:
     wxString givenName;
     wxString birthDate;
     wxString gender;
+    
+    bool expired;
 };
 

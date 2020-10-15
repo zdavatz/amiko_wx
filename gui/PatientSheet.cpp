@@ -453,6 +453,9 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
         dict[KEY_AMK_PAT_GENDER] = healthCard->gender;
         dict[KEY_AMK_PAT_NAME] = healthCard->givenName;
         newHealthCardData(dict);
+        
+        if (healthCard->expired)
+            mNotification->SetLabel(_("This card expired"));
     }
 }
 
