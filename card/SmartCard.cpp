@@ -156,12 +156,14 @@ bool SmartCard::detectChanges()
     #endif // __APPLE__
             } // if cbAtr > 0
 #else
-            std::vector<uint8_t> atrVector;
-            for (int j=0; j<rgReaderStates_t[current_reader].cbAtr; j++)
-                atrVector.push_back(rgReaderStates_t[current_reader].rgbAtr[j]);
-            
-            if (!validAtr( atrVector))
-                return false;
+            if (rgReaderStates_t[current_reader].cbAtr > 0) {
+                std::vector<uint8_t> atrVector;
+                for (int j=0; j<rgReaderStates_t[current_reader].cbAtr; j++)
+                    atrVector.push_back(rgReaderStates_t[current_reader].rgbAtr[j]);
+                
+                if (!validAtr( atrVector))
+                    return false;
+            }
 #endif
 
             if (rgReaderStates_t[current_reader].dwEventState &
