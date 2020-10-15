@@ -117,6 +117,53 @@ bool SmartCard::detectChanges()
             dumpState( rgReaderStates_t[current_reader].dwEventState);
 #endif
 
+            /// 773
+#if 0
+            /* Also dump the ATR if available */
+            if (rgReaderStates_t[current_reader].cbAtr > 0)
+            {
+                char atr[MAX_ATR_SIZE*3+1];    /* ATR in ASCII */
+                std::vector<uint8_t> atrVector;
+                printf("  ATR: ");
+
+                if (rgReaderStates_t[current_reader].cbAtr)
+                {
+                    unsigned int j;
+                    for (j=0; j<rgReaderStates_t[current_reader].cbAtr; j++) {
+                        sprintf(&atr[j*3], "%02X ", rgReaderStates_t[current_reader].rgbAtr[j]);
+                    }
+
+                    atr[j*3-1] = '\0';
+                }
+                else
+                    atr[0] = '\0';
+
+                std::clog << atr << std::endl;
+
+    #ifndef __APPLE__
+                // Analyse ATR
+                {
+                printf("\n");
+
+    // Command used to parse (on screen) the ATR:
+    // ATR_analysis '3B 9F 13 81 B1 80 37 1F 03 80 31 F8 69 4D 54 43 4F 53 70 02 01 02 81 07 86'
+                #define ATR_PARSER "ATR_analysis"
+                char atr_command[sizeof(atr)+sizeof(ATR_PARSER)+2+1];
+                sprintf(atr_command, ATR_PARSER " '%s'", atr);
+                if (system(atr_command))
+                    perror(atr_command);
+                }
+    #endif // __APPLE__
+            } // if cbAtr > 0
+#else
+            std::vector<uint8_t> atrVector;
+            for (int j=0; j<rgReaderStates_t[current_reader].cbAtr; j++)
+                atrVector.push_back(rgReaderStates_t[current_reader].rgbAtr[j]);
+            
+            if (!validAtr( atrVector))
+                return false;
+#endif
+
             if (rgReaderStates_t[current_reader].dwEventState &
                 SCARD_STATE_PRESENT)
             {
@@ -128,7 +175,13 @@ bool SmartCard::detectChanges()
             }
         } // for reader
         
+#if 1
         break; // @@@ TODO: only one loop for now
+#else
+        /// 820
+        rv = SCardGetStatusChange(hContext, TIMEOUT, rgReaderStates_t,
+                    nbReaders);
+#endif
     } // while
     
     return newCardDataAcquired;

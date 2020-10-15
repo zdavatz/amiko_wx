@@ -16,8 +16,10 @@ public:
     HealthCard();
     virtual ~HealthCard() {}
     
-    virtual void processValidCard(SCARDCONTEXT &hContext);
+    // 38
     virtual void parseCardData(const std::vector<BYTE> & data);
+    virtual void processValidCard(SCARDCONTEXT &hContext);
+    virtual bool validAtr(const std::vector<uint8_t> & data);
 
     uint8_t parseTLV(const std::vector<BYTE> & data);
     

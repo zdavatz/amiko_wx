@@ -15,6 +15,7 @@
 #include <winscard.h>
 #endif
 
+// https://github.com/boundary/wireshark/blob/master/epan/dissectors/packet-iso7816.c
 #define INS_SELECT_FILE    0xA4
 #define INS_READ_BIN       0xB0
 #define INS_GET_DATA       0xCA
@@ -27,8 +28,10 @@ public:
     SmartCard();
     virtual ~SmartCard();
 
-    virtual void processValidCard(SCARDCONTEXT &hContext) = 0;
+    // 38
     virtual void parseCardData(const std::vector<BYTE> & data) = 0;
+    virtual void processValidCard(SCARDCONTEXT &hContext) = 0;
+    virtual bool validAtr(const std::vector<uint8_t> & data) = 0;
 
     bool detectChanges();
     bool connectCard();
