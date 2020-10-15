@@ -5,6 +5,11 @@
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#include <wx/wx.h>
+#include <wx/msgdlg.h>
 
 #include "HealthCard.hpp"
 
@@ -113,7 +118,16 @@ uint8_t HealthCard::parseTLV(const std::vector<BYTE> & data)
         case 0x94:  // NUMERIC STRING
         {
             std::string s(value.begin(), value.end());
-            std::clog << "ExpiryDate yyyyMMdd: " << s << std::endl;
+            //std::clog << "ExpiryDate yyyyMMdd: " << s << std::endl;
+            wxString ws(s.c_str(), wxConvUTF8);
+
+            wxDateTime dt;
+            wxString::const_iterator end;
+            dt.ParseFormat(ws,"%Y%m%d", &end);      // convert from this
+
+            expired = false;
+            if (dt < wxDateTime::Now())
+                expired = true;
         }
             break;
 
@@ -162,6 +176,45 @@ void HealthCard::parseCardData(const std::vector<BYTE> & data)
 
         offset += parseTLV(dataRange);
     }
+}
+
+// 126
+bool HealthCard::validAtr(const std::vector<uint8_t> & atr)
+{
+    // Swiss Health Insurance Card
+    std::vector<uint8_t> mutuelBytes = {
+        0x3b, 0x9f, 0x13, 0x81, 0xb1, 0x80, 0x37, 0x1f,
+        0x03, 0x80, 0x31, 0xf8, 0x69, 0x4d, 0x54, 0x43,
+        0x4f, 0x53, 0x70, 0x02, 0x01, 0x02, 0x81, 0x07, 0x86};
+
+    if (atr == mutuelBytes)
+        return true;
+
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+    for (int i = 0; i < atr.size(); i++)
+        ss << std::setw(2) << (unsigned)atr[i];
+
+    wxString caption = _("This card can not be read"); // title, top line
+    wxString mainMessage = wxString::Format("%s Zeno Davatz\nzdavatz@ywesee.com\n+41 43 540 05 50\nATR: %s", _("Please contact"), ss.str()); // bottom line
+    wxMessageDialog alert(nullptr,
+                          mainMessage,
+                          caption,
+                          wxOK | wxICON_ERROR);
+    
+#if 0 // TODO: test in Linux
+    // macOS: top line not shown, 2nd becomes 1st, ext shown as 2nd
+    wxString extMessage = wxString::Format("ATR: %s", ss.str());
+    alert.SetExtendedMessage(extMessage);
+#endif
+
+    alert.ShowModal(); // don't care about return code
+    
+#ifndef NDEBUG
+    std::clog  << caption << std::endl << mainMessage << std::endl;
+#endif
+
+    return false;
 }
 
 // 157
