@@ -367,6 +367,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	this->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
 	m_button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
@@ -413,6 +414,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 MainWindowBase::~MainWindowBase()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
 	m_button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
@@ -656,6 +658,7 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 	// Connect Events
 	this->Connect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
 	this->Connect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
+	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( PatientSheetBase::OnUpdateUI ) );
 	mSex->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );
@@ -672,6 +675,7 @@ PatientSheetBase::~PatientSheetBase()
 	// Disconnect Events
 	this->Disconnect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
 	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
+	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( PatientSheetBase::OnUpdateUI ) );
 	mSex->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
 	m_button15->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnSavePatient ), NULL, this );

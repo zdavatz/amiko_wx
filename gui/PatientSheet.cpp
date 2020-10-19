@@ -7,7 +7,6 @@
 #include "Contacts.hpp"
 #include "MainWindow.h"
 #include "Utilities.hpp"
-#include "HealthCard.hpp"
 
 // 46
 PatientSheet::PatientSheet( wxWindow* parent )
@@ -17,7 +16,9 @@ PatientSheet::PatientSheet( wxWindow* parent )
 , mABContactsVisible(false)
 , mSearchFiltered(false)
 , mFemale(false)
+#ifndef HEALTH_CARD_IN_MAIN
 , healthCard(nullptr)
+#endif
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
@@ -45,12 +46,16 @@ PatientSheet::PatientSheet( wxWindow* parent )
     updateAmiKoAddressBookTableView();
     mNotification->SetLabel(wxEmptyString);
     
+#ifndef HEALTH_CARD_IN_MAIN
     healthCard = new HealthCard;
+#endif
 }
 
 // category smartCard 16
 void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notification
 {
+    std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << std::endl;
+
     // 23
     resetAllFields();
     
@@ -74,9 +79,11 @@ void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notifica
             Patient *p = getContactAtRow(i);
             //NSLog(@"Line %d, %i/%ld, %@", __LINE__, i+1, (long)n, p);
             if (p->uniqueId == incompletePatient->uniqueId) {
-                std::clog << "found at " << i << std::endl;
+                std::clog << "\n\tfound in patient list at index " << i << std::endl;
 
-#if 0 // TODO:
+#if 1 // TODO:
+                std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO:\n";
+#else
                 // 47
                 // Select it in the table view
                 NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:i];
@@ -439,6 +446,7 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
     if (!IsActive())
         return;
 
+#ifndef HEALTH_CARD_IN_MAIN
     if (healthCard->detectChanges())
     {
 #ifndef NDEBUG
@@ -447,16 +455,16 @@ void PatientSheet::OnIdle( wxIdleEvent& event )
         << healthCard->givenName << std::endl;
 #endif
         
-        PAT_DICT dict;
-        dict[KEY_AMK_PAT_BIRTHDATE] = healthCard->birthDate;
-        dict[KEY_AMK_PAT_SURNAME] = healthCard->familyName;
-        dict[KEY_AMK_PAT_GENDER] = healthCard->gender;
-        dict[KEY_AMK_PAT_NAME] = healthCard->givenName;
-        newHealthCardData(dict);
-        
         if (healthCard->expired)
             mNotification->SetLabel(_("This card expired"));
     }
+#endif
+}
+
+void PatientSheet::OnUpdateUI( wxUpdateUIEvent& event )
+{
+    // TODO: change the "save" button into "update"
+    // TODO: enable "check for interactions" button only if there is >1 package listed
 }
 
 void PatientSheet::OnSelectSex( wxCommandEvent& event )

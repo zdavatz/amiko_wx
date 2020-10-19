@@ -44,6 +44,8 @@
 #include "SignatureView.hpp"
 #include "DefaultsController.hpp"
 
+#include "HealthCard.hpp"
+
 #include "../res/xpm/CoMed.xpm"
 
 #define CSV_SEPARATOR       wxT(";")
@@ -121,6 +123,9 @@ MainWindow::MainWindow( wxWindow* parent )
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
 , csvMedication(nullptr)
+#ifdef HEALTH_CARD_IN_MAIN
+, healthCard(nullptr)
+#endif
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -278,7 +283,9 @@ MainWindow::MainWindow( wxWindow* parent )
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
-    //healthCard = new HealthCard;
+#ifdef HEALTH_CARD_IN_MAIN
+    healthCard = new HealthCard;
+#endif
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
@@ -372,6 +379,61 @@ bool MainWindow::openFullTextDatabase()
         mFullTextDb = new FullTextDBAdapter();
 
     return mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
+}
+
+// 640
+/*
+ if not visible && exists in patient_db
+    update patient text in main window
+ else
+    launch patient panel
+ */
+void MainWindow::newHealthCardData(PAT_DICT &dict) //(NSNotification *)notification
+{
+#if 1
+    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
+#else
+    NSDictionary *d = [notification object];
+    //NSLog(@"%s NSNotification:%@", __FUNCTION__, d);
+
+    MLPatient *incompletePatient = [[MLPatient alloc] init];
+    [incompletePatient importFromDict:d];
+    //NSLog(@"patient %@", incompletePatient);
+
+    MLPatientDBAdapter *patientDb = [MLPatientDBAdapter sharedInstance];
+    
+    MLPatient *existingPatient = [patientDb getPatientWithUniqueID:incompletePatient.uniqueId];
+    //NSLog(@"%s Existing patient from DB:%@", __FUNCTION__, existingPatient);
+    if (!mPatientSheet)
+        mPatientSheet = [[MLPatientSheetController alloc] init];
+
+    if (![mPatientSheet.mPanel isVisible] && existingPatient) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [mPatientSheet setSelectedPatient:existingPatient];
+
+            if ([[[myTabView selectedTabViewItem] identifier] intValue] != 2) {
+                [myTabView selectTabViewItemAtIndex:2];
+                [myToolbar setSelectedItemIdentifier:@"Rezept"];
+            }
+
+            myPatientAddressTextField.stringValue = [mPatientSheet retrievePatientAsString];
+            
+            // Update prescription history in right most pane
+            mPrescriptionMode = true;
+            [self updatePrescriptionHistory];
+        });
+    }
+    else {
+        if (![mPatientSheet.mPanel isVisible])
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                // UI API must be called on the main thread
+                [mPatientSheet show:[NSApp mainWindow]];
+                [mPatientSheet onNewPatient:nil];
+                [mPatientSheet setSelectedPatient:incompletePatient];
+                [mPatientSheet setAllFields:incompletePatient];
+            });
+    }
+#endif
 }
 
 // 690
@@ -2429,6 +2491,20 @@ void MainWindow::csvProcessKeywords(wxArrayString keywords)
 }
 
 // /////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::OnIdle( wxIdleEvent& event )
+{
+#ifdef HEALTH_CARD_IN_MAIN
+    if (healthCard->detectChanges())
+    {
+#ifndef NDEBUG
+        std::clog << "Inserted card: "
+        << healthCard->familyName << " "
+        << healthCard->givenName << std::endl;
+#endif
+    }
+#endif
+}
 
 // 3047
 // amiko-osx updateButtons

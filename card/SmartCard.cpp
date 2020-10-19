@@ -113,7 +113,7 @@ bool SmartCard::detectChanges()
 #ifndef NDEBUG
             // 726
             /* Dump the full current state */
-            std::clog << "Card index " << current_reader;
+            std::clog << "Card reader at index " << current_reader;
             dumpState( rgReaderStates_t[current_reader].dwEventState);
 #endif
 
@@ -433,9 +433,10 @@ LONG SmartCard::getReaders()
 
                 if (SCARD_E_NO_READERS_AVAILABLE == rv)
                     rv = SCARD_S_SUCCESS;
-
-                break; // @@@
-            }
+                
+                //sleep(1);
+                break; // @@@ TODO: TBC return rv ?
+            } // while
 
             if (SCARD_E_NO_READERS_AVAILABLE == rv) { // 0x8010002E
                 std::clog << "SCARD_E_NO_READERS_AVAILABLE\n";
