@@ -56,6 +56,9 @@ class PatientSheet : public PatientSheetBase
     HealthCard *healthCard;
 #endif
     void newHealthCardData(PAT_DICT &dict);
+    void newPatient( wxCommandEvent& event );
+    // 74
+    void setAllFields(Patient *p);
 
     // 30
     PatientDBAdapter *mPatientDb;
@@ -63,8 +66,8 @@ class PatientSheet : public PatientSheetBase
 private:
     void setNumPatients(int numPatients);
     Patient * getContactAtRow(int row);
+    // 73
     void resetAllFields();
-    void setAllFields(Patient *p);
     void deletePatientFolder_withBackup(Patient *patient, bool backup = false);
     int numberOfRowsInTableView();
     void reloadData();

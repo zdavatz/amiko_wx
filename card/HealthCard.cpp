@@ -254,11 +254,8 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     sendIns(cmdReadBinary2, dataResponse);
     parseCardData(dataResponse);
     
-#if 1
     // 201
-    std::clog << __PRETTY_FUNCTION__  << " line " << __LINE__
-    << " TODO: post notification smartCardDataAcquired\n";
-
+    // Post notification 'smartCardDataAcquired'
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
     
     PAT_DICT dict;
@@ -270,13 +267,14 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     if (vc->mPatientSheet &&
         vc->mPatientSheet->IsVisible())
     {
-        vc->mPatientSheet->newHealthCardData(dict); // MLPatientSheetController
+        // Notification to PatientSheetController
+        vc->mPatientSheet->newHealthCardData(dict);
         if (expired)
             vc->mPatientSheet->mNotification->SetLabel(_("This card expired"));
     }
     else
-        vc->newHealthCardData(dict); // MLMainWindowController
-#else
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"smartCardDataAcquired" object:patientDict];
-#endif
+    {
+        // Notification to MainWindow
+        vc->newHealthCardData(dict);
+    }
 }

@@ -45,6 +45,7 @@
 #include "DefaultsController.hpp"
 
 #include "HealthCard.hpp"
+#include "PatientDBAdapter.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -390,50 +391,55 @@ bool MainWindow::openFullTextDatabase()
  */
 void MainWindow::newHealthCardData(PAT_DICT &dict) //(NSNotification *)notification
 {
-#if 1
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
-#else
-    NSDictionary *d = [notification object];
-    //NSLog(@"%s NSNotification:%@", __FUNCTION__, d);
-
-    MLPatient *incompletePatient = [[MLPatient alloc] init];
-    [incompletePatient importFromDict:d];
-    //NSLog(@"patient %@", incompletePatient);
-
-    MLPatientDBAdapter *patientDb = [MLPatientDBAdapter sharedInstance];
-    
-    MLPatient *existingPatient = [patientDb getPatientWithUniqueID:incompletePatient.uniqueId];
-    //NSLog(@"%s Existing patient from DB:%@", __FUNCTION__, existingPatient);
-    if (!mPatientSheet)
-        mPatientSheet = [[MLPatientSheetController alloc] init];
-
-    if (![mPatientSheet.mPanel isVisible] && existingPatient) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            [mPatientSheet setSelectedPatient:existingPatient];
-
-            if ([[[myTabView selectedTabViewItem] identifier] intValue] != 2) {
-                [myTabView selectTabViewItemAtIndex:2];
-                [myToolbar setSelectedItemIdentifier:@"Rezept"];
-            }
-
-            myPatientAddressTextField.stringValue = [mPatientSheet retrievePatientAsString];
-            
-            // Update prescription history in right most pane
-            mPrescriptionMode = true;
-            [self updatePrescriptionHistory];
-        });
-    }
-    else {
-        if (![mPatientSheet.mPanel isVisible])
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                // UI API must be called on the main thread
-                [mPatientSheet show:[NSApp mainWindow]];
-                [mPatientSheet onNewPatient:nil];
-                [mPatientSheet setSelectedPatient:incompletePatient];
-                [mPatientSheet setAllFields:incompletePatient];
-            });
-    }
+    // 650
+    Patient *incompletePatient = new Patient;
+    incompletePatient->importFromDict(dict);
+#ifndef NDEBUG
+    std::clog << "patient " << incompletePatient->description();
 #endif
+
+    PatientDBAdapter *patientDb = PatientDBAdapter::sharedInstance();
+    Patient *existingPatient = patientDb->getPatientWithUniqueID(incompletePatient->uniqueId);
+
+#ifndef NDEBUG
+    if (existingPatient)
+        std::clog << "Existing patient from DB " << existingPatient->description();
+#endif
+    
+    if (!mPatientSheet)
+        mPatientSheet = new PatientSheet(this);
+    
+    if (mPatientSheet->IsVisible())
+        return; // handled by PatientSheet notification
+
+    // Patient sheet not visible
+
+    if (existingPatient) // show it in the prescription
+    {
+        mPatientSheet->setSelectedPatient(existingPatient);
+
+        if (myTabView->GetSelection() != 2) {
+            // 667
+            // Switch tab view
+            myTabView->ChangeSelection(2);
+            myToolbar->ToggleTool(wxID_TB_PRESCRIPTION, true); // setSelectedItemIdentifier("Rezept")
+        }
+
+        myPatientAddressTextField->SetValue( mPatientSheet->retrievePatientAsString());
+        
+        // Update prescription history in right most pane
+        mPrescriptionMode = true;
+        updatePrescriptionHistory();
+    }
+    else // prepare to define a new patient
+    {
+        // 682
+        mPatientSheet->ShowWindowModal();
+        wxCommandEvent event(wxEVT_BUTTON, wxID_ADD_PATIENT);
+        mPatientSheet->newPatient(event);
+        mPatientSheet->setSelectedPatient(incompletePatient);
+        mPatientSheet->setAllFields(incompletePatient);
+    }
 }
 
 // 690
@@ -1137,13 +1143,23 @@ void MainWindow::setSearchState(int searchState, int btnId)
 {
 	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
 
+#if 1
     // I don't know why setting the value of one button works,
     // but it does unselect the other buttons !
     // Also the cast is suspicious.
-    // Alternatively declare the buttons as wxToggleButton and manage them manually.
-    // Alternatively use radio buttons.
     wxToggleButton *btn = static_cast<wxToggleButton *>(FindWindowById(btnId));
     btn->SetValue(true);
+#endif
+#if 0
+    // Alternatively declare the buttons as wxToggleButton and manage them manually.
+    for (long i=wxID_BTN_PREPARATION; i<=wxID_BTN_FULL_TEXT; i++) {
+        auto tb = static_cast<wxToggleButton *>(FindWindowById(i));
+        tb->SetValue(i == btnId);
+    }
+#endif
+#if 0
+    // Alternatively use radio buttons.
+#endif
 
     switch (searchState)
     {

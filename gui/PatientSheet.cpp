@@ -111,6 +111,12 @@ void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notifica
     setAllFields(incompletePatient);
 }
 
+void PatientSheet::newPatient( wxCommandEvent& event )
+{
+    // call protected member
+    OnNewPatient(event);
+}
+
 // 117
 void PatientSheet::resetFieldsColors()
 {
