@@ -42,23 +42,23 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer241;
 	bSizer241 = new wxBoxSizer( wxVERTICAL );
 
-	m_button1 = new wxButton( m_panelLeft, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button1, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn1 = new wxToggleButton( m_panelLeft, wxID_BTN_PREPARATION, _("Preparation"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn1, 0, wxALL|wxEXPAND, 5 );
 
-	m_button2 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button2, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn2 = new wxToggleButton( m_panelLeft, wxID_BTN_REGISTRATION_OWNER, _("Registration Owner"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn2, 0, wxALL|wxEXPAND, 5 );
 
-	m_button3 = new wxButton( m_panelLeft, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button3, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn3 = new wxToggleButton( m_panelLeft, wxID_BTN_ACTIVE_SUBSTANCE, _("Active Substance / ATC Code"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn3, 0, wxALL|wxEXPAND, 5 );
 
-	m_button4 = new wxButton( m_panelLeft, wxID_BTN_REGISTRATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button4, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn4 = new wxToggleButton( m_panelLeft, wxID_BTN_REGISTRATION_NUMBER, _("Registration Number"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn4, 0, wxALL|wxEXPAND, 5 );
 
-	m_button5 = new wxButton( m_panelLeft, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button5, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn5 = new wxToggleButton( m_panelLeft, wxID_BTN_THERAPY, _("Therapy"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn5, 0, wxALL|wxEXPAND, 5 );
 
-	m_button6 = new wxButton( m_panelLeft, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer241->Add( m_button6, 0, wxALL|wxEXPAND, 5 );
+	m_toggleBtn6 = new wxToggleButton( m_panelLeft, wxID_BTN_FULL_TEXT, _("Full Text"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer241->Add( m_toggleBtn6, 0, wxALL|wxEXPAND, 5 );
 
 
 	bSizerLeft->Add( bSizer241, 0, wxEXPAND, 5 );
@@ -370,12 +370,12 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	this->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
-	m_button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button3->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button6->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn1->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn2->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn3->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn4->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn5->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn6->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	myTabView->Connect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGED, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanged ), NULL, this );
 	myTabView->Connect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGING, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanging ), NULL, this );
 	fiSearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );
@@ -417,12 +417,12 @@ MainWindowBase::~MainWindowBase()
 	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
-	m_button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button3->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
-	m_button6->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn1->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn2->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn3->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn4->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn5->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
+	m_toggleBtn6->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
 	myTabView->Disconnect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGED, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanged ), NULL, this );
 	myTabView->Disconnect( wxEVT_COMMAND_BOOKCTRL_PAGE_CHANGING, wxBookCtrlEventHandler( MainWindowBase::OnSimplebookPageChanging ), NULL, this );
 	fiSearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchFiNow ), NULL, this );

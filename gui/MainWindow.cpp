@@ -130,6 +130,8 @@ MainWindow::MainWindow( wxWindow* parent )
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
+    wxASSERT_MSG((wxID_BTN_PREPARATION+6-1) == wxID_BTN_FULL_TEXT,
+                 wxT("defines must be consecutive"));
 #endif
     if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -1141,25 +1143,11 @@ void MainWindow::loadFavorites(DataStore *favorites)
 // TODO: deprecate first parameter
 void MainWindow::setSearchState(int searchState, int btnId)
 {
-	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
-
-#if 1
-    // I don't know why setting the value of one button works,
-    // but it does unselect the other buttons !
-    // Also the cast is suspicious.
-    wxToggleButton *btn = static_cast<wxToggleButton *>(FindWindowById(btnId));
-    btn->SetValue(true);
-#endif
-#if 0
-    // Alternatively declare the buttons as wxToggleButton and manage them manually.
+    // Manage the wxToggleButton manually (radio behaviour)
     for (long i=wxID_BTN_PREPARATION; i<=wxID_BTN_FULL_TEXT; i++) {
         auto tb = static_cast<wxToggleButton *>(FindWindowById(i));
         tb->SetValue(i == btnId);
     }
-#endif
-#if 0
-    // Alternatively use radio buttons.
-#endif
 
     switch (searchState)
     {

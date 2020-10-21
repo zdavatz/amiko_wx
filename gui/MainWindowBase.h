@@ -18,13 +18,14 @@ class SignatureView;
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/button.h>
+#include <wx/tglbtn.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/sizer.h>
 #include "TableViewDelegate.hpp"
 #include <wx/panel.h>
+#include <wx/button.h>
 #include <wx/stattext.h>
 #include <wx/webview.h>
 #include <wx/textctrl.h>
@@ -96,12 +97,12 @@ class MainWindowBase : public wxFrame
 		wxSplitterWindow* m_splitter1;
 		wxPanel* m_panelLeft;
 		wxSearchCtrl* mySearchField;
-		wxButton* m_button1;
-		wxButton* m_button2;
-		wxButton* m_button3;
-		wxButton* m_button4;
-		wxButton* m_button5;
-		wxButton* m_button6;
+		wxToggleButton* m_toggleBtn1;
+		wxToggleButton* m_toggleBtn2;
+		wxToggleButton* m_toggleBtn3;
+		wxToggleButton* m_toggleBtn4;
+		wxToggleButton* m_toggleBtn5;
+		wxToggleButton* m_toggleBtn6;
 		TableViewDelegate* myTableView;
 		wxPanel* m_panelRight;
 		wxSplitterWindow* m_splitter3;
