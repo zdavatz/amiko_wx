@@ -12,6 +12,7 @@
 #include <wx/tglbtn.h>
 #include <wx/xml/xml.h>
 #include <wx/menu.h>
+#include <wx/event.h>
 
 #include <sqlite3.h>
 
@@ -436,11 +437,11 @@ void MainWindow::newHealthCardData(PAT_DICT &dict) //(NSNotification *)notificat
     else // prepare to define a new patient
     {
         // 682
-        mPatientSheet->ShowWindowModal();
         wxCommandEvent event(wxEVT_BUTTON, wxID_ADD_PATIENT);
         mPatientSheet->newPatient(event);
         mPatientSheet->setSelectedPatient(incompletePatient);
         mPatientSheet->setAllFields(incompletePatient);
+        mPatientSheet->ShowWindowModal();
     }
 }
 

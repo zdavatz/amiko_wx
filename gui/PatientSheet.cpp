@@ -54,7 +54,7 @@ PatientSheet::PatientSheet( wxWindow* parent )
 // category smartCard 16
 void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notification
 {
-    std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << std::endl;
+    //std::clog << __PRETTY_FUNCTION__ << " line " << __LINE__ << std::endl;
 
     // 23
     resetAllFields();
