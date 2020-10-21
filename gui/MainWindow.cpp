@@ -2511,7 +2511,7 @@ void MainWindow::csvProcessKeywords(wxArrayString keywords)
 void MainWindow::OnIdle( wxIdleEvent& event )
 {
 #ifdef HEALTH_CARD_IN_MAIN
-    if (healthCard->detectChanges())
+    if (healthCard && healthCard->detectChanges())
     {
 #ifndef NDEBUG
         std::clog << "Inserted card: "
