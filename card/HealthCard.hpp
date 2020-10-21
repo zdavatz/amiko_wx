@@ -10,6 +10,8 @@
 
 #include "SmartCard.hpp"
 
+#define HEALTH_CARD_IN_MAIN
+
 class HealthCard : public SmartCard
 {
 public:

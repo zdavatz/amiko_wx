@@ -12,6 +12,7 @@
 #include <wx/tglbtn.h>
 #include <wx/xml/xml.h>
 #include <wx/menu.h>
+#include <wx/event.h>
 
 #include <sqlite3.h>
 
@@ -43,6 +44,9 @@
 #include "config.h"
 #include "SignatureView.hpp"
 #include "DefaultsController.hpp"
+
+#include "HealthCard.hpp"
+#include "PatientDBAdapter.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 
@@ -121,9 +125,14 @@ MainWindow::MainWindow( wxWindow* parent )
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
 , csvMedication(nullptr)
+#ifdef HEALTH_CARD_IN_MAIN
+, healthCard(nullptr)
+#endif
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
+    wxASSERT_MSG((wxID_BTN_PREPARATION+6-1) == wxID_BTN_FULL_TEXT,
+                 wxT("defines must be consecutive"));
 #endif
     if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
@@ -278,7 +287,9 @@ MainWindow::MainWindow( wxWindow* parent )
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
-    //healthCard = new HealthCard;
+#ifdef HEALTH_CARD_IN_MAIN
+    healthCard = new HealthCard;
+#endif
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
@@ -372,6 +383,66 @@ bool MainWindow::openFullTextDatabase()
         mFullTextDb = new FullTextDBAdapter();
 
     return mFullTextDb->openDatabase( wxString::Format("amiko_frequency_%s", UTI::appLanguage()));
+}
+
+// 640
+/*
+ if not visible && exists in patient_db
+    update patient text in main window
+ else
+    launch patient panel
+ */
+void MainWindow::newHealthCardData(PAT_DICT &dict) //(NSNotification *)notification
+{
+    // 650
+    Patient *incompletePatient = new Patient;
+    incompletePatient->importFromDict(dict);
+#ifndef NDEBUG
+    std::clog << "patient " << incompletePatient->description();
+#endif
+
+    PatientDBAdapter *patientDb = PatientDBAdapter::sharedInstance();
+    Patient *existingPatient = patientDb->getPatientWithUniqueID(incompletePatient->uniqueId);
+
+#ifndef NDEBUG
+    if (existingPatient)
+        std::clog << "Existing patient from DB " << existingPatient->description();
+#endif
+    
+    if (!mPatientSheet)
+        mPatientSheet = new PatientSheet(this);
+    
+    if (mPatientSheet->IsVisible())
+        return; // handled by PatientSheet notification
+
+    // Patient sheet not visible
+
+    if (existingPatient) // show it in the prescription
+    {
+        mPatientSheet->setSelectedPatient(existingPatient);
+
+        if (myTabView->GetSelection() != 2) {
+            // 667
+            // Switch tab view
+            myTabView->ChangeSelection(2);
+            myToolbar->ToggleTool(wxID_TB_PRESCRIPTION, true); // setSelectedItemIdentifier("Rezept")
+        }
+
+        myPatientAddressTextField->SetValue( mPatientSheet->retrievePatientAsString());
+        
+        // Update prescription history in right most pane
+        mPrescriptionMode = true;
+        updatePrescriptionHistory();
+    }
+    else // prepare to define a new patient
+    {
+        // 682
+        wxCommandEvent event(wxEVT_BUTTON, wxID_ADD_PATIENT);
+        mPatientSheet->newPatient(event);
+        mPatientSheet->setSelectedPatient(incompletePatient);
+        mPatientSheet->setAllFields(incompletePatient);
+        mPatientSheet->ShowWindowModal();
+    }
 }
 
 // 690
@@ -1073,15 +1144,11 @@ void MainWindow::loadFavorites(DataStore *favorites)
 // TODO: deprecate first parameter
 void MainWindow::setSearchState(int searchState, int btnId)
 {
-	std::cerr << __PRETTY_FUNCTION__ << " " << searchState << std::endl;
-
-    // I don't know why setting the value of one button works,
-    // but it does unselect the other buttons !
-    // Also the cast is suspicious.
-    // Alternatively declare the buttons as wxToggleButton and manage them manually.
-    // Alternatively use radio buttons.
-    wxToggleButton *btn = static_cast<wxToggleButton *>(FindWindowById(btnId));
-    btn->SetValue(true);
+    // Manage the wxToggleButton manually (radio behaviour)
+    for (long i=wxID_BTN_PREPARATION; i<=wxID_BTN_FULL_TEXT; i++) {
+        auto tb = static_cast<wxToggleButton *>(FindWindowById(i));
+        tb->SetValue(i == btnId);
+    }
 
     switch (searchState)
     {
@@ -2429,6 +2496,20 @@ void MainWindow::csvProcessKeywords(wxArrayString keywords)
 }
 
 // /////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::OnIdle( wxIdleEvent& event )
+{
+#ifdef HEALTH_CARD_IN_MAIN
+    if (healthCard && healthCard->detectChanges())
+    {
+#ifndef NDEBUG
+        std::clog << "Inserted card: "
+        << healthCard->familyName << " "
+        << healthCard->givenName << std::endl;
+#endif
+    }
+#endif
+}
 
 // 3047
 // amiko-osx updateButtons

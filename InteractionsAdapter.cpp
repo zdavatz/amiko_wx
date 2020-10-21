@@ -95,9 +95,11 @@ bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
 #else
     wxFileInputStream input(filePath);
     wxTextInputStream text(input, wxT("\x09"), wxConvUTF8 );
+    unsigned long lineNumber = 0;
     while(input.IsOk() && !input.Eof() )
     {
         wxString line = text.ReadLine() + wxT("\n");
+        lineNumber++;
         if (line.length() == 0)
             continue;
 
@@ -115,8 +117,9 @@ bool InteractionsAdapter::readDrugInteractionMap(wxString filePath)
         }
 
         if (a.GetCount() < 3) {
-            std::clog << "Line " << line << std::endl;
-            std::clog << "a count: " << a.GetCount() << std::endl;
+            std::clog << __FUNCTION__ << ", CSV line " << lineNumber
+                << " <" << line << ">\n"
+                << "array  count: " << a.GetCount() << std::endl;
             continue;
         }
 

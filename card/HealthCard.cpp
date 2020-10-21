@@ -12,6 +12,9 @@
 #include <wx/msgdlg.h>
 
 #include "HealthCard.hpp"
+#include "MainWindow.h"
+#include "PatientSheet.h"
+#include "Patient.hpp"
 
 HealthCard::HealthCard()
 {
@@ -251,14 +254,27 @@ void HealthCard::processValidCard(SCARDCONTEXT &hContext)
     sendIns(cmdReadBinary2, dataResponse);
     parseCardData(dataResponse);
     
-#if 1
     // 201
-    std::clog << __PRETTY_FUNCTION__  << " line " << __LINE__
-    << " TODO: post notification smartCardDataAcquired\n";
+    // Post notification 'smartCardDataAcquired'
+    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+    
+    PAT_DICT dict;
+    dict[KEY_AMK_PAT_BIRTHDATE] = birthDate;
+    dict[KEY_AMK_PAT_SURNAME] = familyName;
+    dict[KEY_AMK_PAT_GENDER] = gender;
+    dict[KEY_AMK_PAT_NAME] = givenName;
 
-    // TODO: call MLPatientSheetController newHealthCardData
-    // TODO: call MLMainWindowController newHealthCardData
-#else
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"smartCardDataAcquired" object:patientDict];
-#endif
+    if (vc->mPatientSheet &&
+        vc->mPatientSheet->IsVisible())
+    {
+        // Notification to PatientSheetController
+        vc->mPatientSheet->newHealthCardData(dict);
+        if (expired)
+            vc->mPatientSheet->mNotification->SetLabel(_("This card expired"));
+    }
+    else
+    {
+        // Notification to MainWindow
+        vc->newHealthCardData(dict);
+    }
 }
