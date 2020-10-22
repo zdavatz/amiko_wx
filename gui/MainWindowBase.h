@@ -36,6 +36,7 @@ class SignatureView;
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/menu.h>
+#include <wx/timer.h>
 #include <wx/frame.h>
 #include <wx/radiobox.h>
 #include <wx/valtext.h>
@@ -76,15 +77,16 @@ class SignatureView;
 #define wxID_LOAD_DB 1029
 #define wxID_LOAD_PRESCRIPTION 1030
 #define wxID_SET_OPERATOR_ID 1031
-#define wxID_RB_SEX 1032
-#define wxID_SAVE_PATIENT 1033
-#define wxID_PAT_SEARCH_FIELD 1034
-#define wxID_PATIENT_LIST 1035
-#define wxID_ADD_PATIENT 1036
-#define wxID_DELETE_PATIENT 1037
-#define wxID_CLEAR_SIGNATURE 1038
-#define wxID_LOAD_SIGNATURE 1039
-#define wxID_SAVE_OPERATOR 1040
+#define wxID_SMART_CARD_TICK 1032
+#define wxID_RB_SEX 1033
+#define wxID_SAVE_PATIENT 1034
+#define wxID_PAT_SEARCH_FIELD 1035
+#define wxID_PATIENT_LIST 1036
+#define wxID_ADD_PATIENT 1037
+#define wxID_DELETE_PATIENT 1038
+#define wxID_CLEAR_SIGNATURE 1039
+#define wxID_LOAD_SIGNATURE 1040
+#define wxID_SAVE_OPERATOR 1041
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MainWindowBase
@@ -134,9 +136,9 @@ class MainWindowBase : public wxFrame
 		wxMenu* m_menuContacts;
 		wxMenu* m_menuWindow;
 		wxMenu* m_menuHelp;
+		wxTimer m_cardTimer;
 
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnIdle( wxIdleEvent& event ) { event.Skip(); }
 		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
@@ -163,6 +165,7 @@ class MainWindowBase : public wxFrame
 		virtual void OnLoadPrescription( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnManagePatients( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSetOperatorIdentity( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSmartCardTick( wxTimerEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -233,7 +236,6 @@ class PatientSheetBase : public wxDialog
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnActivate( wxActivateEvent& event ) { event.Skip(); }
-		virtual void OnIdle( wxIdleEvent& event ) { event.Skip(); }
 		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancel( wxCommandEvent& event ) { event.Skip(); }

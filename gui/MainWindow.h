@@ -38,7 +38,6 @@ class MainWindow : public MainWindowBase
 {
 	protected:
 		// Handlers for MainWindowBase events.
-		void OnIdle( wxIdleEvent& event );
 		void OnUpdateUI( wxUpdateUIEvent& event );
 		void OnSearchNow( wxCommandEvent& event );
 		void OnButtonPressed( wxCommandEvent& event );
@@ -65,15 +64,14 @@ class MainWindow : public MainWindowBase
 		void OnLoadPrescription( wxCommandEvent& event );
 		void OnManagePatients( wxCommandEvent& event );
 		void OnSetOperatorIdentity( wxCommandEvent& event );
+		void OnSmartCardTick( wxTimerEvent& event );
 	public:
 		/** Constructor */
 		MainWindow( wxWindow* parent );
 	//// end generated class members
 
 private:
-#ifdef TEST_MIME_TYPE
     virtual ~MainWindow();
-#endif
     void fadeInAndShow();
     void resetDataInTableView();
     void setSearchState(int searchState, int btnId);
@@ -148,9 +146,7 @@ private:
 #endif
     
     // 60
-#ifdef HEALTH_CARD_IN_MAIN
     HealthCard *healthCard;
-#endif
 
     // .m 105
     int mUsedDatabase;

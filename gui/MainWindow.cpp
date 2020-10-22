@@ -125,9 +125,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , possibleToOverwrite(false)
 , modifiedPrescription(false)
 , csvMedication(nullptr)
-#ifdef HEALTH_CARD_IN_MAIN
 , healthCard(nullptr)
-#endif
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -287,9 +285,8 @@ MainWindow::MainWindow( wxWindow* parent )
     setSearchState(kss_Title, wxID_BTN_PREPARATION);
 
     // 381
-#ifdef HEALTH_CARD_IN_MAIN
     healthCard = new HealthCard;
-#endif
+    m_cardTimer.Start(400);
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
@@ -304,15 +301,16 @@ MainWindow::MainWindow( wxWindow* parent )
 #endif
 }
 
-#ifdef TEST_MIME_TYPE
 MainWindow::~MainWindow()
 {
+    m_cardTimer.Stop();
+#ifdef TEST_MIME_TYPE
 #if 1 //ndef __APPLE__ // MIME
     wxFileType *filetype = m_mimeDatabase->GetFileTypeFromExtension("amk");
     m_mimeDatabase->Unassociate(filetype);
 #endif
-}
 #endif
+}
 
 #ifndef __APPLE_
 void MainWindow::OnQuit( wxCommandEvent& event)
@@ -2497,20 +2495,6 @@ void MainWindow::csvProcessKeywords(wxArrayString keywords)
 
 // /////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::OnIdle( wxIdleEvent& event )
-{
-#ifdef HEALTH_CARD_IN_MAIN
-    if (healthCard && healthCard->detectChanges())
-    {
-#ifndef NDEBUG
-        std::clog << "Inserted card: "
-        << healthCard->familyName << " "
-        << healthCard->givenName << std::endl;
-#endif
-    }
-#endif
-}
-
 // 3047
 // amiko-osx updateButtons
 void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
@@ -3213,6 +3197,18 @@ void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
         mOperatorIDSheet = new OperatorIDSheet(this);
 
     mOperatorIDSheet->ShowWindowModal();
+}
+
+void MainWindow::OnSmartCardTick( wxTimerEvent& event )
+{
+    if (healthCard && healthCard->detectChanges())
+    {
+#ifndef NDEBUG
+        std::clog << __FUNCTION__ << " Inserted card: "
+        << healthCard->familyName << " "
+        << healthCard->givenName << std::endl;
+#endif
+    }
 }
 
 // Handler for EVT_LISTBOX
