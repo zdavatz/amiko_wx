@@ -286,7 +286,7 @@ MainWindow::MainWindow( wxWindow* parent )
 
     // 381
     healthCard = new HealthCard;
-    m_cardTimer.Start(400);
+    m_cardTimer.Start(CARD_POLLING_PERIOD);
 
     wxTreeItemId root = myPrescriptionsTableView->AddRoot("Root"); // Hidden
 
@@ -3201,14 +3201,17 @@ void MainWindow::OnSetOperatorIdentity( wxCommandEvent& event )
 
 void MainWindow::OnSmartCardTick( wxTimerEvent& event )
 {
-    if (healthCard && healthCard->detectChanges())
-    {
+    if (!healthCard)
+        return;
+
+    bool scChanged = healthCard->detectChanges();
 #ifndef NDEBUG
+    if (scChanged) {
         std::clog << __FUNCTION__ << " Inserted card: "
         << healthCard->familyName << " "
         << healthCard->givenName << std::endl;
-#endif
     }
+#endif
 }
 
 // Handler for EVT_LISTBOX
