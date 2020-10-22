@@ -363,11 +363,11 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	this->SetMenuBar( m_menubar1 );
 
+	m_cardTimer.SetOwner( this, wxID_SMART_CARD_TICK );
 
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	this->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
 	m_toggleBtn1->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
@@ -409,12 +409,12 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_menuPrescr->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnSavePrescription ), this, m_menuItem11->GetId());
 	m_menuContacts->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnManagePatients ), this, m_menuItem12->GetId());
 	m_menuContacts->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MainWindowBase::OnSetOperatorIdentity ), this, m_menuItem13->GetId());
+	this->Connect( wxID_SMART_CARD_TICK, wxEVT_TIMER, wxTimerEventHandler( MainWindowBase::OnSmartCardTick ) );
 }
 
 MainWindowBase::~MainWindowBase()
 {
 	// Disconnect Events
-	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::OnIdle ) );
 	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( MainWindowBase::OnUpdateUI ) );
 	mySearchField->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( MainWindowBase::OnSearchNow ), NULL, this );
 	m_toggleBtn1->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( MainWindowBase::OnButtonPressed ), NULL, this );
@@ -446,6 +446,7 @@ MainWindowBase::~MainWindowBase()
 	this->Disconnect( m_tool7->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnExportWordListSearchResults ) );
 	this->Disconnect( m_tool5->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnPrintDocument ) );
 	this->Disconnect( m_toolAbout->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnShowAboutPanel ) );
+	this->Disconnect( wxID_SMART_CARD_TICK, wxEVT_TIMER, wxTimerEventHandler( MainWindowBase::OnSmartCardTick ) );
 
 }
 
@@ -657,7 +658,6 @@ PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Connect Events
 	this->Connect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
-	this->Connect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
 	this->Connect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( PatientSheetBase::OnUpdateUI ) );
 	mSex->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );
@@ -674,7 +674,6 @@ PatientSheetBase::~PatientSheetBase()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_ACTIVATE, wxActivateEventHandler( PatientSheetBase::OnActivate ) );
-	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( PatientSheetBase::OnIdle ) );
 	this->Disconnect( wxEVT_UPDATE_UI, wxUpdateUIEventHandler( PatientSheetBase::OnUpdateUI ) );
 	mSex->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( PatientSheetBase::OnSelectSex ), NULL, this );
 	m_button14->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PatientSheetBase::OnCancel ), NULL, this );

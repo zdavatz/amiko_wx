@@ -23,7 +23,6 @@ class PatientSheet : public PatientSheetBase
 	protected:
 		// Handlers for PatientSheetBase events.
 		void OnActivate( wxActivateEvent& event );
-		void OnIdle( wxIdleEvent& event );
 		void OnUpdateUI( wxUpdateUIEvent& event );
 		void OnSelectSex( wxCommandEvent& event );
 		void OnCancel( wxCommandEvent& event );
@@ -52,9 +51,6 @@ class PatientSheet : public PatientSheetBase
     Patient * retrievePatientWithUniqueID(wxString uniqueID);
     bool patientExistsWithID(wxString uniqueID);
     void setSelectedPatient(Patient *patient);
-#ifndef HEALTH_CARD_IN_MAIN
-    HealthCard *healthCard;
-#endif
     void newHealthCardData(PAT_DICT &dict);
     void newPatient( wxCommandEvent& event );
     // 74

@@ -16,9 +16,6 @@ PatientSheet::PatientSheet( wxWindow* parent )
 , mABContactsVisible(false)
 , mSearchFiltered(false)
 , mFemale(false)
-#ifndef HEALTH_CARD_IN_MAIN
-, healthCard(nullptr)
-#endif
 {
     // 54
     mPatientDb = PatientDBAdapter::sharedInstance();
@@ -45,10 +42,6 @@ PatientSheet::PatientSheet( wxWindow* parent )
     // Retrieves contacts from local patient database
     updateAmiKoAddressBookTableView();
     mNotification->SetLabel(wxEmptyString);
-    
-#ifndef HEALTH_CARD_IN_MAIN
-    healthCard = new HealthCard;
-#endif
 }
 
 // category smartCard 16
@@ -81,20 +74,23 @@ void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notifica
             if (p->uniqueId == incompletePatient->uniqueId) {
                 std::clog << "\n\tfound in patient list at index " << i << std::endl;
 
-#if 1 // TODO:
-                std::clog << __FUNCTION__ << " line " << __LINE__ << " TODO:\n";
-#else
                 // 47
                 // Select it in the table view
-                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:i];
-                [mTableView selectRowIndexes:indexSet byExtendingSelection:NO];
-                [mTableView scrollRowToVisible:[mTableView selectedRow]];
+                mTableView->SetItemState(i, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+                mTableView->EnsureVisible(i);
 
-                {
                 // Simulate double-click in mTableView to close panel
-                [self setSelectedPatient:existingPatient];
+                setSelectedPatient(existingPatient);
+#if 1
+                // Call the notification target directly
+                MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+                vc->prescriptionPatientChanged();
+
+                Close();
+#else
+                {
                 // Post a notification so that the Rezept view will be updated
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"MLPrescriptionPatientChanged" object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"PrescriptionPatientChanged" object:self];
                 [self remove];
                 }
 
@@ -102,13 +98,13 @@ void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notifica
 #endif
             } // if
         } // for
-
-        return;
     }
-
-    // 70
-    // Just pre-fill some fields with the dictionary
-    setAllFields(incompletePatient);
+    else {
+        // 70
+        // Non existing patient
+        // Just pre-fill some fields with the dictionary
+        setAllFields(incompletePatient);
+    }
 }
 
 void PatientSheet::newPatient( wxCommandEvent& event )
@@ -445,26 +441,6 @@ void PatientSheet::reloadData()
 void PatientSheet::OnActivate( wxActivateEvent& event )
 {
     //std::clog << __PRETTY_FUNCTION__ << " " << event.GetActive() << std::endl;
-}
-
-void PatientSheet::OnIdle( wxIdleEvent& event )
-{
-    if (!IsActive())
-        return;
-
-#ifndef HEALTH_CARD_IN_MAIN
-    if (healthCard->detectChanges())
-    {
-#ifndef NDEBUG
-        std::clog << "Inserted card: "
-        << healthCard->familyName << " "
-        << healthCard->givenName << std::endl;
-#endif
-        
-        if (healthCard->expired)
-            mNotification->SetLabel(_("This card expired"));
-    }
-#endif
 }
 
 void PatientSheet::OnUpdateUI( wxUpdateUIEvent& event )
