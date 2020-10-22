@@ -15,6 +15,9 @@
 #include <winscard.h>
 #endif
 
+#define CARD_POLLING_PERIOD 400     // 0.4 s
+#define TIMEOUT 100                 // 0.1 s
+
 // https://github.com/boundary/wireshark/blob/master/epan/dissectors/packet-iso7816.c
 #define INS_SELECT_FILE    0xA4
 #define INS_READ_BIN       0xB0

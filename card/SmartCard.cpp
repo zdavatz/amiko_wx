@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <string>
 #include <cstring> // for strlen
+#include <assert.h>
 
 #include "SmartCard.hpp"
 
@@ -28,14 +29,15 @@
   return rv; \
  }
 
-#define TIMEOUT 1000    /* 1 second timeout */
-
 SmartCard::SmartCard()
 : readers(nullptr)
 , pnp(true)
 , rgReaderStates_t(nullptr)
 , mszReaders(nullptr)
 {
+#ifndef NDEBUG
+    assert(TIMEOUT < CARD_POLLING_PERIOD);
+#endif
     start();
 }
 
