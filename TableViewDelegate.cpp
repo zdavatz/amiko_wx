@@ -53,15 +53,14 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
         MainWindow * parent = wxDynamicCast(m_parent, MainWindow); // GetParent()
         int m = parent->favoriteKeyData.size();
         // Compare index n with count m
-#if 0
-        wxASSERT_MSG( n < m, wxT("item index out of bounds") );
-#else
+
         if (n >= m) {
+#if 0 //ndef NDEBUG
             std::cerr << "ERROR: === " << __FUNCTION__
-            << " n:" << n << " out of bounds: " << m << " === " << std::endl;
+            << " n: " << n << " out of bounds: " << m << " === " << std::endl;
+#endif
         }
         else
-#endif
         {
             if (!searchStateFullText()) {
                 wxString regnrStr = parent->favoriteKeyData[n];
@@ -88,6 +87,9 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     
     wxString allPackagesList;
 
+    // Encode in the URL the row index and the package index
+    unsigned long rowIndex = (unsigned long)n;
+
     for (int i=0; i<listOfPackages.size(); i++) {
         // Set colors: O original red, G Generika green, default gray
         wxColour packageColor = typicalGray;
@@ -104,13 +106,15 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
         // Packages are clickable
 #if 0
         // This way we lose the color coding and gain an ugly underline
-        wxString onePackage_TAG = wxString::Format("<br><font color=%s><a href='%d'>%s</a></font>",
+        wxString onePackage_TAG = wxString::Format("<br><font color=%s><a href='%lu_%d'>%s</a></font>",
                                   packageColor.GetAsString(wxC2S_HTML_SYNTAX),
+                                  rowIndex,
                                   i,
                                   listOfPackages[i].c_str());
 #else
         // Ok color coding but adding "text-decoration: none;" is not effective in removing the underline
-        wxString onePackage_TAG = wxString::Format("<a href='%d' style=\"color: %s;\">%s</a>",
+        wxString onePackage_TAG = wxString::Format("<a href='%lu_%d' style=\"color: %s;\">%s</a>",
+                                  rowIndex,
                                   i,
                                   packageColorCSS,
                                   listOfPackages[i].c_str());
