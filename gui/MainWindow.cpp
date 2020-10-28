@@ -3291,14 +3291,7 @@ void MainWindow::OnLboxSelect(wxCommandEvent& event)
 {
     int row = event.GetInt();
 
-#ifndef NDEBUG
-    std::cerr << __FUNCTION__ << " Listbox selection is now " << row << std::endl;
-    //event.Skip();
-#endif
-
     cellProcessing(row);
-    if (clickedOnStar)
-        return;
 }
 
 // Handler for EVT_LISTBOX_DCLICK
