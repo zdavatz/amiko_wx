@@ -55,8 +55,6 @@
 // Alternatively implement its own tabview to show the results
 #define CSV_EXPORT_RESTORES_PREVIOUS_STATE
 
-#define NEW_CELL_HANDLING
-
 /// 84
 // Database types
 enum {
@@ -3297,12 +3295,10 @@ void MainWindow::OnLboxSelect(wxCommandEvent& event)
     std::cerr << __FUNCTION__ << " Listbox selection is now " << row << std::endl;
     //event.Skip();
 #endif
-    
-#ifdef NEW_CELL_HANDLING
+
     cellProcessing(row);
     if (clickedOnStar)
         return;
-#endif
 }
 
 // Handler for EVT_LISTBOX_DCLICK
@@ -3338,34 +3334,12 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         return;
     }
 
-    int row = myTableView->GetSelection();
-
     wxPoint absPosCell = event.GetCell()->GetAbsPos();
     wxPoint eventPoint = event.GetPoint();
     wxPoint calculatedPos = absPosCell + eventPoint;
 
     clickedOnStar = (calculatedPos.x < 20 &&
                      calculatedPos.y < 20);
-    
-#ifndef NDEBUG
-    std::clog << std::endl << __FUNCTION__
-        << " event int:" << event.GetInt()
-        << "\n\tClick over cell " << event.GetCell()
-        << "\n\tGetLinkClicked: " << event.GetLinkClicked()
-        << "\n\tcell ID < " << event.GetCell()->GetId() << ">"
-        << ", cell pos XY:(" << absPosCell.x << "," << absPosCell.y << ")"
-        << ", at XY:(" << event.GetPoint().x << "," << event.GetPoint().y << ")"
-        << ", calc pos XY:(" << calculatedPos.x << "," << calculatedPos.y << ")"
-        << "\n\ton star " << clickedOnStar
-        << "\n\told TV sel " << row
-        << std::endl;
-#endif
-
-#ifndef NEW_CELL_HANDLING
-    cellProcessing(row);
-    if (clickedOnStar)
-        return;
-#endif
     
     // 3003
     //updateButtons(); // __deprecated
@@ -3378,7 +3352,7 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 // amiko-ios MLViewController.m:3146 myLongPressMethod
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
-    int selRowBefore = myTableView->GetSelection();
+    //int selRowBefore = myTableView->GetSelection();
     wxArrayString idx = wxSplit(event.GetLinkInfo().GetHref(), '_');
     int rowIndex = wxAtoi(idx[0]);
     int packageIndex = wxAtoi(idx[1]);
