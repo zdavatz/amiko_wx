@@ -55,6 +55,8 @@
 // Alternatively implement its own tabview to show the results
 #define CSV_EXPORT_RESTORES_PREVIOUS_STATE
 
+#define NEW_CELL_HANDLING
+
 /// 84
 // Database types
 enum {
@@ -126,6 +128,7 @@ MainWindow::MainWindow( wxWindow* parent )
 , modifiedPrescription(false)
 , csvMedication(nullptr)
 , healthCard(nullptr)
+, clickedOnStar(false)
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -2002,8 +2005,8 @@ void MainWindow::storeAllPrescriptionComments()
     for (PrescriptionItem *item : mPrescriptionsCart[0].cart) {
         if (row < numRows) {
 #ifndef NDEBUG
-            std::cerr << __LINE__
-            << " <" << item->comment
+            std::cerr << __FUNCTION__ << " line: " << __LINE__
+            << ", comment <" << item->comment
             << "> <" << comments[row] << ">"
             << std::endl;
 #endif
@@ -3214,50 +3217,14 @@ void MainWindow::OnSmartCardTick( wxTimerEvent& event )
 #endif
 }
 
-// Handler for EVT_LISTBOX
-void MainWindow::OnLboxSelect(wxCommandEvent& event)
+void MainWindow::cellProcessing(int row)
 {
 #ifndef NDEBUG
-    std::cerr << "Listbox selection is now " << event.GetInt() << std::endl;
-    //event.Skip();
+    std::clog << __FUNCTION__
+        << ", row: " << row
+        << ", OnStar: " << clickedOnStar
+        << std::endl;
 #endif
-}
-
-// Handler for EVT_LISTBOX_DCLICK
-void MainWindow::OnLboxDClick(wxCommandEvent& event)
-{
-#ifndef NDEBUG
-    std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
-#endif
-}
-
-// Handler for EVT_HTML_CELL_HOVER
-void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
-{
-#if 0 //ndef NDEBUG
-    std::cerr << "Mouse over cell " << event.GetCell()
-    << ", cell ID " << event.GetCell()->GetId()
-    << ", cell link " << event.GetCell()->GetLink()
-    << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
-    << std::endl;
-#endif
-}
-
-// 2917
-// Handler for EVT_HTML_CELL_CLICKED
-// See MLMainWindowController.m:2783 tableView:viewForTableColumn:row:
-// See MLMainWindowController.m:2917 tableViewSelectionDidChange
-// FIXME: now we have to click on the cell before the link can be clicked
-void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
-{
-    if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
-        std::clog << "Skip event Id " << event.GetId() << std::endl;
-        event.Skip();
-        return;
-    }
-
-    int row = myTableView->GetSelection();
-    
     {
         // 2789
         ItemCellView* cellView = ItemCellView::Instance();
@@ -3272,29 +3239,15 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         
         // TODO: cellView->packagesView.Refresh()
     }
-
-    wxPoint absPosCell = event.GetCell()->GetAbsPos();
-    wxPoint eventPoint = event.GetPoint();
-    wxPoint calculatedPos = absPosCell + eventPoint;
-
-#if 0 //ndef NDEBUG
-    std::clog
-        << "Click over cell " << event.GetCell()
-        << ", cell ID " << event.GetCell()->GetId()
-        << ", cell pos " << absPosCell.x << ";" << absPosCell.y
-        << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
-        << ", calc pos " << calculatedPos.x << ";" << calculatedPos.y
-        << ", sel " << row
-        << std::endl;
-#endif
     
-    if (calculatedPos.x < 20 &&
-        calculatedPos.y < 20)
+    if (clickedOnStar)
     {
         tappedOnStar(row);
         myTableView->RefreshRow(row);
         return;
     }
+
+    // We didn't click on the favourites star
 
     // 2936
     if ( mCurrentSearchState != kss_FullText) {
@@ -3333,6 +3286,86 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         mCurrentWebView = kFullTextSearchView;
         updateFullTextSearchView(mFullTextContentStr);
     }
+}
+
+// Handler for EVT_LISTBOX
+void MainWindow::OnLboxSelect(wxCommandEvent& event)
+{
+    int row = event.GetInt();
+
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << " Listbox selection is now " << row << std::endl;
+    //event.Skip();
+#endif
+    
+#ifdef NEW_CELL_HANDLING
+    cellProcessing(row);
+    if (clickedOnStar)
+        return;
+#endif
+}
+
+// Handler for EVT_LISTBOX_DCLICK
+void MainWindow::OnLboxDClick(wxCommandEvent& event)
+{
+#ifndef NDEBUG
+    std::cerr << "Listbox item " << event.GetInt() << " double clicked." << std::endl;
+#endif
+}
+
+// Handler for EVT_HTML_CELL_HOVER
+void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
+{
+#if 0 //ndef NDEBUG
+    std::cerr << "Mouse over cell " << event.GetCell()
+    << ", cell ID " << event.GetCell()->GetId()
+    << ", cell link " << event.GetCell()->GetLink()
+    << ", at " << event.GetPoint().x << ";" << event.GetPoint().y
+    << std::endl;
+#endif
+}
+
+// 2917
+// Handler for EVT_HTML_CELL_CLICKED
+// See MLMainWindowController.m:2783 tableView:viewForTableColumn:row:
+// See MLMainWindowController.m:2917 tableViewSelectionDidChange
+// FIXME: now we have to click on the cell before the link can be clicked
+void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
+{
+    if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
+        std::clog << "Skip event Id " << event.GetId() << std::endl;
+        event.Skip();
+        return;
+    }
+
+    int row = myTableView->GetSelection();
+
+    wxPoint absPosCell = event.GetCell()->GetAbsPos();
+    wxPoint eventPoint = event.GetPoint();
+    wxPoint calculatedPos = absPosCell + eventPoint;
+
+    clickedOnStar = (calculatedPos.x < 20 &&
+                     calculatedPos.y < 20);
+    
+#ifndef NDEBUG
+    std::clog << std::endl << __FUNCTION__
+        << " event int:" << event.GetInt()
+        << "\n\tClick over cell " << event.GetCell()
+        << "\n\tGetLinkClicked: " << event.GetLinkClicked()
+        << "\n\tcell ID < " << event.GetCell()->GetId() << ">"
+        << ", cell pos XY:(" << absPosCell.x << "," << absPosCell.y << ")"
+        << ", at XY:(" << event.GetPoint().x << "," << event.GetPoint().y << ")"
+        << ", calc pos XY:(" << calculatedPos.x << "," << calculatedPos.y << ")"
+        << "\n\ton star " << clickedOnStar
+        << "\n\told TV sel " << row
+        << std::endl;
+#endif
+
+#ifndef NEW_CELL_HANDLING
+    cellProcessing(row);
+    if (clickedOnStar)
+        return;
+#endif
     
     // 3003
     //updateButtons(); // __deprecated
@@ -3345,12 +3378,13 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 // amiko-ios MLViewController.m:3146 myLongPressMethod
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
-    int packageIndex = wxAtoi(event.GetLinkInfo().GetHref());
-
-    // Find the row number
-    // FIXME: this is not necessarily the cell where we clicked
-    // TODO: find a way of updating the selection before we proceed
-    int row = myTableView->GetSelection();
+    int selRowBefore = myTableView->GetSelection();
+    wxArrayString idx = wxSplit(event.GetLinkInfo().GetHref(), '_');
+    int rowIndex = wxAtoi(idx[0]);
+    int packageIndex = wxAtoi(idx[1]);
+    
+    // Force the update of cell selection
+    myTableView->SetSelection(rowIndex);
 
 #ifndef NDEBUG
     wxHtmlContainerCell* cellParent = event.GetLinkInfo().GetHtmlCell()->GetParent();
@@ -3362,12 +3396,12 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
     << ", package at index: <" << packageIndex << ">"
-    << ", selected row: " << row
+    << ", selected row: " << rowIndex
     << std::endl;
 #endif
 
-    DataObject *dobj = myTableView->searchRes[row];
-    ItemCellView::Instance()->tableViewSelectionDidChange(row, packageIndex, dobj);
+    DataObject *dobj = myTableView->searchRes[rowIndex];
+    ItemCellView::Instance()->tableViewSelectionDidChange(rowIndex, packageIndex, dobj);
 
     event.Skip();
 }

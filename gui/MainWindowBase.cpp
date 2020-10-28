@@ -238,10 +238,10 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_splitter1->SplitVertically( m_panelLeft, m_panelRight, 0 );
 	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
 
-
 	this->SetSizer( bSizer1 );
 	this->Layout();
-	myToolbar = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
+
+    myToolbar = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
 	m_tool1 = myToolbar->AddTool( wxID_TB_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_RADIO, _("AIPS Database"), wxEmptyString, NULL );
 
 	m_tool2 = myToolbar->AddTool( wxID_TB_FAVORITES, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );

@@ -199,11 +199,13 @@ private:
     float m_delta;
     bool possibleToOverwrite;
     bool modifiedPrescription;  // if true, presenting save/overwrite option makes sense
+    bool clickedOnStar;
     
     void OnLboxSelect(wxCommandEvent& event);
     void OnLboxDClick(wxCommandEvent& event);
     
     // Delegate
+    void cellProcessing(int row);
     void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
     void OnHtmlCellHover(wxHtmlCellEvent &event);
     void OnHtmlCellClicked(wxHtmlCellEvent &event);
