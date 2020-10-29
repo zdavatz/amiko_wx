@@ -4,6 +4,8 @@
 //  Created by Alex Bettarini on 18 Jun 2020
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
+#include <wx/colour.h>
+
 #include "TableViewDelegate.hpp"
 #include "DataObject.hpp"
 #include "MainWindow.h"
@@ -21,6 +23,9 @@ TableViewDelegate::TableViewDelegate(wxWindow *parent, bool multi)
 
     SetMargins(5, 5);
     SetItemCount(0);
+    
+    // MLCustomTableView.m line 40
+    SetSelectionBackground(wxColor(0.8*255, 0.8*255, 255)); // selectBlue
 }
 
 void TableViewDelegate::OnDrawSeparator(wxDC& dc, wxRect& rect, size_t) const
