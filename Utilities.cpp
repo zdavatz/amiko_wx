@@ -27,7 +27,7 @@ namespace UTI
 // 64
 const char * appLanguage()
 {
-    if (APP_NAME == "CoMed")
+    if (wxString(APP_NAME) == "CoMed")
         return "fr";
 
     return "de";
@@ -37,6 +37,32 @@ const char * appLanguage()
 wxString documentsDirectory()
 {    
     return wxStandardPaths::Get().GetUserDataDir();
+}
+
+// 111
+bool checkFileIsAllowed(const wxString name)
+{
+    const char * languageCode = appLanguage();
+    if (wxString(languageCode) != "de" &&
+        wxString(languageCode) != "fr")
+    {
+        return false; // language not supported
+    }
+
+    wxString file1 = wxString::Format("amiko_db_full_idx_%s.db", languageCode);
+    wxString file2 = wxString::Format("amiko_report_%s.html", languageCode);
+    wxString file3 = wxString::Format("drug_interactions_csv_%s.csv", languageCode);
+    wxString file4 = wxString::Format("amiko_frequency_%s.db", languageCode);
+
+    if (name == file1 ||
+        name == file2 ||
+        name == file3 ||
+        name == file4)
+    {
+        return true;
+    }
+    
+    return false;
 }
 
 // 158
