@@ -191,13 +191,13 @@ class MainWindowBase : public wxFrame
 
 		void m_splitter1OnIdle( wxIdleEvent& )
 		{
-			m_splitter1->SetSashPosition( 0 );
+			m_splitter1->SetSashPosition( 300 );
 			m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
 		}
 
 		void m_splitter3OnIdle( wxIdleEvent& )
 		{
-			m_splitter3->SetSashPosition( 0 );
+			m_splitter3->SetSashPosition( 500 );
 			m_splitter3->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter3OnIdle ), NULL, this );
 		}
 

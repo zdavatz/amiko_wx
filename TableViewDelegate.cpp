@@ -41,8 +41,6 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
 	//std::cerr << "=== n:" << n << " === " << __PRETTY_FUNCTION__ << std::endl;
     
     const wxColour typicalGray(127,127,127); // MLColors.m:26
-    const wxColour typicalGreen(0,0.8F*255,0.2F*255);
-    const wxColour typicalRed(255,0,0);
     const wxColour lightYellow(255,255,0); // MLColors.m:32
 
     DataObject *dobj = searchRes[n];
@@ -52,6 +50,7 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
 
     // favoritesCheckBox
     wxColour starColor = typicalGray;
+    wxString starChar = wxString::FromUTF8("☆");
     {
         // MLMainWindowController.m:2801
         MainWindow * parent = wxDynamicCast(m_parent, MainWindow); // GetParent()
@@ -66,17 +65,24 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
         }
         else
         {
+            bool starOn(false);
+
             if (!searchStateFullText()) {
                 wxString regnrStr = parent->favoriteKeyData[n];
                 FAVORITES_SET::iterator it = parent->favoriteMedsSet.find(regnrStr);
-                if (it != parent->favoriteMedsSet.end())
-                    starColor = lightYellow;
+
+                starOn = (it != parent->favoriteMedsSet.end());
             }
             else {
                 wxString hashId = parent->favoriteKeyData[n];
                 FAVORITES_SET::iterator it = parent->favoriteFTEntrySet.find(hashId);
-                if (it != parent->favoriteFTEntrySet.end())
-                    starColor = lightYellow;
+
+                starOn = (it != parent->favoriteFTEntrySet.end());
+            }
+
+            if (starOn) {
+                starColor = lightYellow;
+                starChar = wxString::FromUTF8("★");
             }
         }
     }
@@ -84,8 +90,9 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
 
     // Note the string literal defined as: L"" because it contains a Unicode character
-    wxString star_TAG = wxString::Format(L"<font color=%s size=+3>★</font>",
-                                         starColor.GetAsString(wxC2S_HTML_SYNTAX));
+    wxString star_TAG = wxString::Format(L"<font color=%s size=+3>%s</font>",
+                                         starColor.GetAsString(wxC2S_HTML_SYNTAX),
+                                         starChar);
 
     wxString title_TAG = wxString::Format("<b><font size=+2> %s</font></b>", dobj->title);
     
@@ -94,40 +101,30 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     // Encode in the URL the row index and the package index
     unsigned long rowIndex = (unsigned long)n;
 
-    for (int i=0; i<listOfPackages.size(); i++) {
-        // Set colors: O original red, G Generika green, default gray
-        wxColour packageColor = typicalGray;
-        const char *packageColorCSS = "gray";
-        if (listOfPackages[i].Contains(", O]")) {
-            packageColor = typicalRed;
+    for (int i=0; i<listOfPackages.size(); i++)
+    {
+        const char *packageColorCSS = "gray";           // default
+        if (listOfPackages[i].Contains(", O]"))         // original
             packageColorCSS = "red";
-        }
-        else if (listOfPackages[i].Contains(", G]")) {
-            packageColor = typicalGreen;
+        else if (listOfPackages[i].Contains(", G]"))    // Generika
             packageColorCSS = "green";
-        }
 
         // Packages are clickable
-#if 0
-        // This way we lose the color coding and gain an ugly underline
-        wxString onePackage_TAG = wxString::Format("<br><font color=%s><a href='%lu_%d'>%s</a></font>",
-                                  packageColor.GetAsString(wxC2S_HTML_SYNTAX),
-                                  rowIndex,
-                                  i,
-                                  listOfPackages[i].c_str());
-#else
-        // Ok color coding but adding "text-decoration: none;" is not effective in removing the underline
         wxString onePackage_TAG = wxString::Format("<a href='%lu_%d' style=\"color: %s;\">%s</a>",
                                   rowIndex,
                                   i,
                                   packageColorCSS,
                                   listOfPackages[i].c_str());
-#endif
 
         allPackagesList += wxString::Format("<li>%s</li>", onePackage_TAG);
     }
 
-    wxString ul_TAG = wxString::Format("<ul>%s</ul>", allPackagesList);
+    wxString ul_TAG;
+    if (listOfPackages.size() > 0)
+        ul_TAG = wxString::Format("<ul>%s</ul>", allPackagesList);
+    else
+        ul_TAG = _("No packages"); // We should never get here
+
     wxString oneCell_HTML = wxString::Format("<br>%s %s%s", star_TAG, title_TAG, ul_TAG);
     return oneCell_HTML;
 }
