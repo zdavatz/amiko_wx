@@ -50,6 +50,7 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
 
     // favoritesCheckBox
     wxColour starColor = typicalGray;
+    wxString starChar = wxString::FromUTF8("☆");
     {
         // MLMainWindowController.m:2801
         MainWindow * parent = wxDynamicCast(m_parent, MainWindow); // GetParent()
@@ -64,17 +65,24 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
         }
         else
         {
+            bool starOn(false);
+
             if (!searchStateFullText()) {
                 wxString regnrStr = parent->favoriteKeyData[n];
                 FAVORITES_SET::iterator it = parent->favoriteMedsSet.find(regnrStr);
-                if (it != parent->favoriteMedsSet.end())
-                    starColor = lightYellow;
+
+                starOn = (it != parent->favoriteMedsSet.end());
             }
             else {
                 wxString hashId = parent->favoriteKeyData[n];
                 FAVORITES_SET::iterator it = parent->favoriteFTEntrySet.find(hashId);
-                if (it != parent->favoriteFTEntrySet.end())
-                    starColor = lightYellow;
+
+                starOn = (it != parent->favoriteFTEntrySet.end());
+            }
+
+            if (starOn) {
+                starColor = lightYellow;
+                starChar = wxString::FromUTF8("★");
             }
         }
     }
@@ -82,8 +90,9 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
     //label += "<STYLE>A {text-decoration: none;} </STYLE>"; // not effective
 
     // Note the string literal defined as: L"" because it contains a Unicode character
-    wxString star_TAG = wxString::Format(L"<font color=%s size=+3>★</font>",
-                                         starColor.GetAsString(wxC2S_HTML_SYNTAX));
+    wxString star_TAG = wxString::Format(L"<font color=%s size=+3>%s</font>",
+                                         starColor.GetAsString(wxC2S_HTML_SYNTAX),
+                                         starChar);
 
     wxString title_TAG = wxString::Format("<b><font size=+2> %s</font></b>", dobj->title);
     

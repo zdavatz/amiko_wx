@@ -123,8 +123,8 @@
                         <property name="window_extra_style"></property>
                         <property name="window_name"></property>
                         <property name="window_style"></property>
-                        <object class="splitteritem" expanded="1">
-                            <object class="wxPanel" expanded="1">
+                        <object class="splitteritem" expanded="0">
+                            <object class="wxPanel" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -175,7 +175,7 @@
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style">wxTAB_TRAVERSAL</property>
-                                <object class="wxBoxSizer" expanded="1">
+                                <object class="wxBoxSizer" expanded="0">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizerLeft</property>
                                     <property name="orient">wxVERTICAL</property>
@@ -246,7 +246,7 @@
                                             <event name="OnText">OnSearchNow</event>
                                         </object>
                                     </object>
-                                    <object class="sizeritem" expanded="1">
+                                    <object class="sizeritem" expanded="0">
                                         <property name="border">5</property>
                                         <property name="flag">wxEXPAND</property>
                                         <property name="proportion">0</property>
@@ -872,7 +872,7 @@
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
                                             <property name="window_style"></property>
-                                            <object class="splitteritem" expanded="1">
+                                            <object class="splitteritem" expanded="0">
                                                 <object class="wxPanel" expanded="0">
                                                     <property name="BottomDockable">1</property>
                                                     <property name="LeftDockable">1</property>
@@ -2396,7 +2396,7 @@
                                                     <property name="best_size"></property>
                                                     <property name="bg"></property>
                                                     <property name="caption"></property>
-                                                    <property name="caption_visible">1</property>
+                                                    <property name="caption_visible">0</property>
                                                     <property name="center_pane">0</property>
                                                     <property name="close_button">1</property>
                                                     <property name="context_help"></property>

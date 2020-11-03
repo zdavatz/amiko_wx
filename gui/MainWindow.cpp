@@ -955,6 +955,7 @@ void MainWindow::switchTabs(int item)
             updateExpertInfoView(wxEmptyString);
             // 1800
             myTabView->ChangeSelection(0);
+            btnDelAmk->Hide();
             break;
 
         case wxID_TB_FAVORITES:
@@ -973,8 +974,7 @@ void MainWindow::switchTabs(int item)
 
             // 1831
             myTableView->SetItemCount(searchResults.size()); // reloadData
-            if (searchResults.size() > 0)
-                myTableView->SetSelection(0);
+            myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
             myTableView->Refresh();
             
 #ifndef WITH_JS_BRIDGE
@@ -991,6 +991,7 @@ void MainWindow::switchTabs(int item)
             updateExpertInfoView(wxEmptyString);
             // 1840
             myTabView->ChangeSelection(0);
+            btnDelAmk->Hide();
             break;
 
         case wxID_TB_INTERACTIONS:
@@ -1009,6 +1010,7 @@ void MainWindow::switchTabs(int item)
             // 1854
             // Switch tab view
             myTabView->ChangeSelection(0);
+            btnDelAmk->Hide();
             break;
 
         case wxID_TB_PRESCRIPTION:
@@ -1033,7 +1035,7 @@ void MainWindow::switchTabs(int item)
 #else
             myTabView->SetSelection(2);
 #endif
-            Fit();
+            btnDelAmk->Show();
             break;
 
 #if 0 // TODO
@@ -1046,6 +1048,8 @@ void MainWindow::switchTabs(int item)
         default:
             break;
     }
+
+    Fit();
 }
 
 // 1897
@@ -2644,13 +2648,11 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
     if (mCurrentSearchState == kss_FullText) {
         myTableView->SetItemCount(searchResultsFT.size()); // reloadData
-        if (searchResultsFT.size() > 0)
-            myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
     }
     else {
         myTableView->SetItemCount(searchResults.size()); // reloadData
-        if (searchResults.size() > 0)
-            myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
     }
 
     myTableView->Refresh();
