@@ -2590,13 +2590,11 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
     
     if (mCurrentSearchState == kss_FullText) {
         myTableView->SetItemCount(searchResultsFT.size()); // reloadData
-        if (searchResultsFT.size()>0)
-            myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
     }
     else {
         myTableView->SetItemCount(searchResults.size()); // reloadData
-        if (searchResults.size()>0)
-            myTableView->SetSelection(0); // scrollRectToVisible
+        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
     }
 
     myTableView->Refresh();
@@ -3336,6 +3334,7 @@ void MainWindow::cellProcessing(int row)
 void MainWindow::OnLboxSelect(wxCommandEvent& event)
 {
     int row = event.GetInt();
+    std::clog << __FUNCTION__ << " row " << row << std::endl;
 
     cellProcessing(row);
 }
@@ -3379,7 +3378,9 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 
     clickedOnStar = (calculatedPos.x < 20 &&
                      calculatedPos.y < 20);
-    
+ 
+    std::clog << __FUNCTION__  << " star:" << clickedOnStar << std::endl;
+
     // 3003
     //updateButtons(); // __deprecated
 
