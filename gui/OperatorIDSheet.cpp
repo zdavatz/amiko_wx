@@ -94,8 +94,6 @@ void OperatorIDSheet::OnClearSignature( wxCommandEvent& event )
 // 61
 void OperatorIDSheet::OnLoadSignature( wxCommandEvent& event )
 {
-    // Create a file open dialog class
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << std::endl;
     wxFileDialog openDlgPanel(this,
                               _("Please select signature file"),
                               wxEmptyString,

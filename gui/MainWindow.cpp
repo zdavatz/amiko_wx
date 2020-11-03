@@ -3090,7 +3090,48 @@ void MainWindow::OnUpdateAipsDatabase( wxCommandEvent& event )
 // 1192
 void MainWindow::OnLoadAipsDatabase( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__  << " TODO" << std::endl;
+    wxString wildCard = wxString::Format("DB %s (*.db;*.DB)|*.db;*.DB|"
+                                         "HTML %s (*.html)|*.html|"
+                                         "CSV %s (*.csv)|*.csv",
+                                         _("files"), _("files"), _("files"));
+    wxFileDialog openDlgPanel(this,
+                              _("Please select DB file"),
+                              wxEmptyString,
+                              wxEmptyString,
+                              wildCard,
+                              wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
+                              wxDefaultPosition);
+    
+    if (openDlgPanel.ShowModal() != wxID_OK)
+        return;
+
+    // Grab reference to what has been selected
+    wxFileName fileURL = openDlgPanel.GetPath();
+    wxString fileName = fileURL.GetFullName(); // lastPathComponent
+
+    // Check if file is in the list of allowed files
+    if (!UTI::checkFileIsAllowed(fileName))
+        return;
+
+    // Get documents directory
+    wxFileName documentsDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
+    documentsDir.SetFullName(fileName);
+    wxString dstPath = documentsDir.GetFullPath();
+
+    // Extract source file path
+    wxString srcPath = fileURL.GetFullPath();
+
+    if (!srcPath.IsEmpty() &&
+        !dstPath.IsEmpty())
+    {
+        // If it exists, remove old file
+        if (wxFileName::Exists(dstPath))
+            wxRemoveFile(dstPath);
+
+        // Copy new file and notify (call the notification handler directly)
+        if (wxCopyFile(srcPath, dstPath))
+            finishedDownloading(); // postNotificationName:@"MLDidFinishLoading"
+    }
 }
 
 // 1871 and 3400

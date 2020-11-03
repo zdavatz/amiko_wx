@@ -13,6 +13,7 @@ namespace UTI
 
 const char * appLanguage();
 wxString documentsDirectory();
+bool checkFileIsAllowed(const wxString name);
 wxString currentTime();
 wxString prettyTime();
 wxString getColorCss();
