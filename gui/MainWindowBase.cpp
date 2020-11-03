@@ -27,6 +27,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer1 = new wxBoxSizer( wxHORIZONTAL );
 
 	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE );
+	m_splitter1->SetSashGravity( 0.3 );
 	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter1OnIdle ), NULL, this );
 
 	m_panelLeft = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -75,6 +76,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
 
 	m_splitter3 = new wxSplitterWindow( m_panelRight, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	m_splitter3->SetSashGravity( 0.6 );
 	m_splitter3->Connect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter3OnIdle ), NULL, this );
 
 	m_panel10 = new wxPanel( m_splitter3, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -228,20 +230,20 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_panel12->SetSizer( bSizer231 );
 	m_panel12->Layout();
 	bSizer231->Fit( m_panel12 );
-	m_splitter3->SplitVertically( m_panel10, m_panel12, 0 );
+	m_splitter3->SplitVertically( m_panel10, m_panel12, 500 );
 	bSizer4->Add( m_splitter3, 1, wxEXPAND, 5 );
 
 
 	m_panelRight->SetSizer( bSizer4 );
 	m_panelRight->Layout();
 	bSizer4->Fit( m_panelRight );
-	m_splitter1->SplitVertically( m_panelLeft, m_panelRight, 0 );
+	m_splitter1->SplitVertically( m_panelLeft, m_panelRight, 300 );
 	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
+
 
 	this->SetSizer( bSizer1 );
 	this->Layout();
-
-    myToolbar = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
+	myToolbar = this->CreateToolBar( wxTB_HORIZONTAL|wxTB_TEXT, wxID_ANY );
 	m_tool1 = myToolbar->AddTool( wxID_TB_COMPENDIUM, _("Compendium"), wxBitmap( compendium_xpm ), wxNullBitmap, wxITEM_RADIO, _("AIPS Database"), wxEmptyString, NULL );
 
 	m_tool2 = myToolbar->AddTool( wxID_TB_FAVORITES, _("Favorites"), wxBitmap( favorites_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );

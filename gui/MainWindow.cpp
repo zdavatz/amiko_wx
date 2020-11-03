@@ -616,6 +616,8 @@ void MainWindow::resetDataInTableView()
         myTableView->SetItemCount(searchResults.size()); // reloadData
         if (searchResults.size() > 0)
             myTableView->SetSelection(0); // scrollRectToVisible
+        else
+            myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
         myTableView->Refresh();
     }
 }
@@ -946,8 +948,7 @@ void MainWindow::switchTabs(int item)
             
             // 1791
             myTableView->SetItemCount(searchResults.size()); // reloadData
-            if (searchResults.size() > 0)
-                myTableView->SetSelection(0);
+            myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
             myTableView->Refresh();
 
             // Switch tab view
@@ -1032,6 +1033,7 @@ void MainWindow::switchTabs(int item)
 #else
             myTabView->SetSelection(2);
 #endif
+            Fit();
             break;
 
 #if 0 // TODO
