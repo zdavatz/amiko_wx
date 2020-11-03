@@ -16,11 +16,10 @@ extern bool searchStateFullText();
 wxIMPLEMENT_DYNAMIC_CLASS(TableViewDelegate, wxHtmlListBox);
 
 TableViewDelegate::TableViewDelegate(wxWindow *parent, bool multi)
-             : wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+: wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                              multi ? wxLB_MULTIPLE : 0)
+, m_change(false)
 {
-    m_change = true;
-
     SetMargins(5, 5);
     SetItemCount(0);
     
@@ -137,5 +136,3 @@ wxColour TableViewDelegate::GetSelectedTextColour(const wxColour& colFg) const
 {
     return m_change ? wxHtmlListBox::GetSelectedTextColour(colFg) : colFg;
 }
-
-
