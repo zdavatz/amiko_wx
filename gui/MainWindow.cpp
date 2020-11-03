@@ -614,7 +614,8 @@ void MainWindow::resetDataInTableView()
         updateTableView();
 
         myTableView->SetItemCount(searchResults.size()); // reloadData
-        myTableView->SetSelection(0); // scrollRectToVisible
+        if (searchResults.size() > 0)
+            myTableView->SetSelection(0); // scrollRectToVisible
         myTableView->Refresh();
     }
 }
@@ -945,6 +946,8 @@ void MainWindow::switchTabs(int item)
             
             // 1791
             myTableView->SetItemCount(searchResults.size()); // reloadData
+            if (searchResults.size() > 0)
+                myTableView->SetSelection(0);
             myTableView->Refresh();
 
             // Switch tab view
@@ -969,6 +972,8 @@ void MainWindow::switchTabs(int item)
 
             // 1831
             myTableView->SetItemCount(searchResults.size()); // reloadData
+            if (searchResults.size() > 0)
+                myTableView->SetSelection(0);
             myTableView->Refresh();
             
 #ifndef WITH_JS_BRIDGE
