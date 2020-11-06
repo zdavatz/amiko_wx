@@ -675,7 +675,10 @@ void MainWindow::setOperatorID()
     wxString operatorIDStr = mOperatorIDSheet->retrieveIDAsString();
     wxString operatorPlace = mOperatorIDSheet->retrieveCity();
     myOperatorIDTextField->SetValue( operatorIDStr);
-    myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
+    if (operatorPlace.IsEmpty())
+        myPlaceDateField->SetLabel(UTI::prettyTime());
+    else
+        myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
     
     wxString documentsDirectory = UTI::documentsDirectory();
     wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
