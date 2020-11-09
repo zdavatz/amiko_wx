@@ -278,7 +278,7 @@ msgid "Prescription Info"
 msgstr "Rezeptinfo"
 
 msgid "Print"
-msgstr "Druken"
+msgstr "Drucken"
 
 msgid "Print Label"
 msgstr "Etikette Drucken"
