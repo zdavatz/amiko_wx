@@ -305,11 +305,6 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
 
     wxFFileInputStream file(filePath);
     size_t FileSize = file.GetSize();
-
-#ifndef NDEBUG
-    std::clog << __FUNCTION__ << " line " << __LINE__
-    << ", FileSize: " << FileSize << std::endl;
-#endif
     
     char *buffer = new char[FileSize];
     if (!buffer) {
@@ -336,14 +331,12 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         return hash;
     }
 
-    //base64Str += wxT("\n");  // This parser seems to expect a line terminator
-
     try {
         wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_SkipWS);
 
         wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
         if (jsonStr.IsEmpty()) {
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
             std::cerr << __FUNCTION__ << " line " << __LINE__
             << "\n\tbase64Str:" << base64Str.length()
             << "\n" << base64Str << ">>> base64Str >>>\n";
@@ -355,8 +348,6 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         // 300
         currentFileName = filePath;
         
-        //nlohmann::json tree;
-
         nlohmann::json jsonDict;
         try {
             //auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
@@ -364,7 +355,7 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         }
         catch (const std::exception&e) {
             std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
             << "base64Str: " << base64Str.length() << "\n" << base64Str
             << ">>> base64Str >>>\n"
 
@@ -418,28 +409,13 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
             << e.what() << std::endl;
         }
 
-//        std::cerr << __FUNCTION__ << __LINE__
-//        << ", EAN1:" << mediDict[KEY_AMK_MED_EAN]
-//        << std::endl;
-
         mediDict[KEY_AMK_MED_COMMENT] = p[KEY_AMK_MED_COMMENT];
 
         Medication *med = new Medication;
         med->importFromDict(mediDict);
         
         PrescriptionItem *item = new PrescriptionItem;
-#if 1
         item->importFromDict(mediDict);
-#else
-        try {
-            item->importFromDict(mediDict);
-        }
-        catch (const std::exception&e) {
-            std::cerr << "Exception " << __FUNCTION__ << __LINE__
-            << e.what() << std::endl;
-        }
-#endif
-
         item->med = med;
         
         // 313
