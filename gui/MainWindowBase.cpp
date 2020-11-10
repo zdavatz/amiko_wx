@@ -149,8 +149,10 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_button7 = new wxButton( panel_rezept, wxID_PATIENT_SEARCH, _("Patient search"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer11_patient->Add( m_button7, 0, wxALL, 5 );
 
-	myPatientAddressTextField = new wxTextCtrl( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY|wxVSCROLL );
-	bSizer11_patient->Add( myPatientAddressTextField, 1, wxALL|wxEXPAND, 5 );
+	myPatientAddressTextField = new wxTextCtrl( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
+	myPatientAddressTextField->SetMinSize( wxSize( -1,120 ) );
+
+	bSizer11_patient->Add( myPatientAddressTextField, 0, wxALL|wxEXPAND, 5 );
 
 	myPlaceDateField = new wxStaticText( panel_rezept, wxID_ANY, _("Place and Date"), wxDefaultPosition, wxDefaultSize, 0 );
 	myPlaceDateField->Wrap( -1 );
