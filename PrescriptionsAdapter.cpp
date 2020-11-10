@@ -124,17 +124,17 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxURL url;
 
     if (!p) {
-        std::cerr << __FUNCTION__ << " " << __LINE__ << ", patient not defined\n";
+        std::cerr << "savePrescriptionForPatient " << __LINE__ << ", patient not defined\n";
         return url;
     }
 
     if (overwrite && currentFileName.IsEmpty()) {
-        std::cerr << __FUNCTION__ << " " << __LINE__ << ", cannot overwrite an empty filename\n";
+        std::cerr << "savePrescriptionForPatient " << __LINE__ << ", cannot overwrite an empty filename\n";
         return url;
     }
 
     if (cart.size() < 1) {
-        std::cerr << __FUNCTION__ << " " << __LINE__ << ", cart is empty\n";
+        std::cerr << "savePrescriptionForPatient " << __LINE__ << ", cart is empty\n";
         return url;
     }
 
@@ -175,7 +175,7 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     currentFileName = pathBase64.GetFullPath();
 
 #ifndef NDEBUG
-    std::clog << __FUNCTION__ << " new currentFileName:" << currentFileName << std::endl;
+    std::clog << "savePrescriptionForPatient() new currentFileName:" << currentFileName << std::endl;
 #endif
 
     // 210
@@ -267,25 +267,38 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxString o;
     o << jsonStr.dump(4);
 #ifndef NDEBUG
-    //std::cerr << "Line " << __LINE__ << " jsonStr\n" << o << std::endl;
+    std::cerr << "Line " << __LINE__ << ", JSON length " << o.length()
+    //<<< " jsonStr\n" << o
+    << std::endl;
 #endif
-    // Issue #52
-    wxCharBuffer buffer = o.ToUTF8();
 
+    wxCharBuffer buffer = o.ToUTF8();
     wxMemoryOutputStream mos(buffer.data(), strlen(buffer.data()));
+
+#ifndef NDEBUG
+    std::cerr << "Line " << __LINE__ << " mos.GetSize() " << mos.GetSize() << std::endl;
+#endif
+
     wxString base64Str = wxBase64Encode(mos.GetOutputStreamBuffer()->GetBufferStart(),
                                         mos.GetSize());
 
-    size_t len = wxBase64DecodedSize(o.length());
+#ifndef NDEBUG
+    std::cerr << "Line " << __LINE__ 
+            << " encoded base64Str size " << base64Str.length()
+            //<< " base64Str\n" << base64Str 
+            << std::endl;
+#endif
+
+#if 0 //ndef NDEBUG
     wxMemoryBuffer *buffy = new wxMemoryBuffer;
+    size_t len = wxBase64EncodedSize(o.length());
     buffy->GetWriteBuf(len);
     buffy->AppendData(buffer.data(), strlen(buffer.data()));
-#ifndef NDEBUG
-    std::cerr << "Line " << __LINE__ << " base64Str\n" << base64Str << std::endl;
-
     //wxString base64Str2 = wxBase64Encode(*buffy);
     //std::cerr << "Line " << __LINE__ << " base64Str2\n" << base64Str2 << std::endl;
+    delete buffy;
 #endif
+
     wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(base64Str, base64Str.length());
     file.Close();
@@ -316,7 +329,10 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     // Specifying the file size for FromUTF8() is very important in this case
     wxString base64Str = wxString::FromUTF8(buffer, FileSize);
     if (base64Str.IsEmpty()) {
-        std::cerr << __FUNCTION__ << " line " << __LINE__ << " Empty base64Str\n";
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+                << "\n\t file: " << filePath
+                << "\n\t FileSize: " << FileSize
+                << " Empty base64Str\n";
         delete [] buffer;
         return hash;
     }
@@ -330,6 +346,8 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         << std::endl;
         return hash;
     }
+
+    base64Str += wxT("\n");  // Linux parser seems to expect a line terminator
 
     try {
         wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_SkipWS);
