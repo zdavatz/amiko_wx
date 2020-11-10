@@ -1738,7 +1738,7 @@
                                                                                             <object class="sizeritem" expanded="0">
                                                                                                 <property name="border">5</property>
                                                                                                 <property name="flag">wxALL|wxEXPAND</property>
-                                                                                                <property name="proportion">1</property>
+                                                                                                <property name="proportion">0</property>
                                                                                                 <object class="wxTextCtrl" expanded="0">
                                                                                                     <property name="BottomDockable">1</property>
                                                                                                     <property name="LeftDockable">1</property>
@@ -1773,7 +1773,7 @@
                                                                                                     <property name="maxlength"></property>
                                                                                                     <property name="min_size"></property>
                                                                                                     <property name="minimize_button">0</property>
-                                                                                                    <property name="minimum_size"></property>
+                                                                                                    <property name="minimum_size">-1,120</property>
                                                                                                     <property name="moveable">1</property>
                                                                                                     <property name="name">myPatientAddressTextField</property>
                                                                                                     <property name="pane_border">1</property>

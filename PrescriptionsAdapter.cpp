@@ -235,16 +235,16 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     for (PrescriptionItem *item : cart) {
         nlohmann::json dict;
 
-        dict["product_name"] = item->title;
-        dict["package"] = item->fullPackageInfo;
+        dict[KEY_AMK_MED_PROD_NAME] = item->title;
+        dict[KEY_AMK_MED_PACKAGE] = item->fullPackageInfo;
         if (item->eanCode.length() > 0)
-            dict["eancode"] = item->eanCode;
+            dict[KEY_AMK_MED_EAN] = item->eanCode;
 
-        dict["comment"] = item->comment;
-        dict["title"] = item->med->title;
-        dict["owner"] = item->med->auth;
-        dict["regnrs"] = item->med->regnrs;
-        dict["atccode"] = item->med->atccode;
+        dict[KEY_AMK_MED_COMMENT] = item->comment;
+        dict[KEY_AMK_MED_TITLE] = item->med->title;
+        dict[KEY_AMK_MED_OWNER] = item->med->auth;
+        dict[KEY_AMK_MED_REG_N] = item->med->regnrs;
+        dict[KEY_AMK_MED_ATC] = item->med->atccode;
 
         prescription.push_back(dict);
     }
@@ -299,7 +299,7 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
 // see AmiKo-ios importFromURL
 wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
 {
-    std::clog << __FUNCTION__  << "\n\t" << filePath << std::endl;
+    //std::clog << __FUNCTION__  << "\n\t" << filePath << std::endl;
 
     std::string hash;
 
@@ -307,41 +307,70 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
     size_t FileSize = file.GetSize();
     
     char *buffer = new char[FileSize];
+    if (!buffer) {
+        std::cerr << __FUNCTION__ << __LINE__ << " Couldn't allocate buffer\n";
+        return hash;
+    }
     file.Read(buffer, FileSize);
     
-    wxString base64Str = wxString::FromUTF8(buffer);
-    base64Str += wxT("\n");  // This parser seems to expect a line terminator
+    // Specifying the file size for FromUTF8() is very important in this case
+    wxString base64Str = wxString::FromUTF8(buffer, FileSize);
+    if (base64Str.IsEmpty()) {
+        std::cerr << __FUNCTION__ << " line " << __LINE__ << " Empty base64Str\n";
+        delete [] buffer;
+        return hash;
+    }
     
-#if 0 //ndef NDEBUG
-    std::clog << __FUNCTION__ << " line " << __LINE__
-    << " base64Str:\n" << base64Str
-    << ">>> >>> >>>\n";
-#endif
+    delete [] buffer;
+    
+    if (FileSize != base64Str.length()) {
+        std::cerr << __FUNCTION__ << " line " << __LINE__
+        << ", FileSize: " << FileSize
+        << ", base64Str: " << base64Str.length()
+        << std::endl;
+        return hash;
+    }
 
     try {
         wxMemoryBuffer buf = wxBase64Decode(base64Str.c_str(), wxNO_LEN, wxBase64DecodeMode_SkipWS);
+
         wxString jsonStr((const char *)buf.GetData(), buf.GetDataLen());
-        
+        if (jsonStr.IsEmpty()) {
 #if 0 //ndef NDEBUG
-        std::clog << __FUNCTION__ << " line " << __LINE__
-        << " jsonStr:\n" << jsonStr
-        << ">>> >>> >>>\n";
+            std::cerr << __FUNCTION__ << " line " << __LINE__
+            << "\n\tbase64Str:" << base64Str.length()
+            << "\n" << base64Str << ">>> base64Str >>>\n";
 #endif
-        
-#if 0 //ndef NDEBUG
-        std::clog << "buf.GetDataLen(): " << buf.GetDataLen() << std::endl;
-        std::clog << "jsonStr.length(): " << jsonStr.length() << std::endl;
-        std::clog << "jsonStr: " << jsonStr << std::endl;
-#endif
+            std::cerr << __FUNCTION__ << __LINE__ << " Empty jsonStr\n";
+            return hash;
+        }
 
         // 300
         currentFileName = filePath;
         
-        //nlohmann::json tree;
+        nlohmann::json jsonDict;
+        try {
+            //auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
+            jsonDict = nlohmann::json::parse((char *)jsonStr.char_str());
+        }
+        catch (const std::exception&e) {
+            std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl
+#if 0 //ndef NDEBUG
+            << "base64Str: " << base64Str.length() << "\n" << base64Str
+            << ">>> base64Str >>>\n"
 
-        //auto jsonDict = nlohmann::json::parse((char *)buf.GetData());
-        auto jsonDict = nlohmann::json::parse((char *)jsonStr.char_str());
-    
+            << "jsonStr:" << jsonStr.length() << "\n" << jsonStr
+            << ">>> jsonStr >>>\n"
+
+            << "buf.GetDataLen(): " << buf.GetDataLen() << std::endl
+            << "jsonStr.length(): " << jsonStr.length() << std::endl
+            << "jsonStr: " << jsonStr << std::endl
+#endif
+            << "Exception " << e.what() << std::endl;
+
+            return hash;
+        }
+
 #if 0 //ndef NDEBUG
         for (auto & element : jsonDict)
             std::clog << "element "  << element.dump(4) << std::endl;
@@ -367,7 +396,19 @@ wxString PrescriptionsAdapter::loadPrescriptionFromFile(wxString filePath)
         // For PrescriptionItem:
         mediDict[KEY_AMK_MED_PROD_NAME] = p[KEY_AMK_MED_PROD_NAME];
         mediDict[KEY_AMK_MED_PACKAGE] = p[KEY_AMK_MED_PACKAGE];
-        mediDict[KEY_AMK_MED_EAN] = p[KEY_AMK_MED_EAN];
+
+        // If the GTIN is missing
+        // the field KEY_AMK_MED_PACKAGE in the JSON file is missing altogether,
+        // (it's not an empty string). This will cause an exception
+        // that we need to catch
+        try {
+            mediDict[KEY_AMK_MED_EAN] =  p[KEY_AMK_MED_EAN];
+        }
+        catch (const std::exception&e) {
+            std::cerr << "Missing " << KEY_AMK_MED_EAN << ", exception:"
+            << e.what() << std::endl;
+        }
+
         mediDict[KEY_AMK_MED_COMMENT] = p[KEY_AMK_MED_COMMENT];
 
         Medication *med = new Medication;

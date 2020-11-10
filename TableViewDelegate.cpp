@@ -94,8 +94,10 @@ wxString TableViewDelegate::OnGetItem(size_t n) const
                                          starColor.GetAsString(wxC2S_HTML_SYNTAX),
                                          starChar);
 
-    wxString title_TAG = wxString::Format("<b><font size=+2> %s</font></b>", dobj->title);
-    
+    wxString title_TAG = wxString::Format("<b><font color=%s> %s</font></b>",
+                                          wxSystemSettings::GetColour(wxSYS_COLOUR_BTNTEXT).GetAsString(wxC2S_HTML_SYNTAX),
+                                          dobj->title);
+
     wxString allPackagesList;
 
     // Encode in the URL the row index and the package index

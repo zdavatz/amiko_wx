@@ -21,10 +21,10 @@ void PrescriptionItem::importFromDict(MED_DICT &dict)
     
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__
-    << ", title: " << title
-    << ", fullPackageInfo: " << fullPackageInfo
-    << ", eanCode: " << eanCode
-    << ", comment: " << comment
+    << "\n\t title: " << title
+    << "\n\t fullPackageInfo: " << fullPackageInfo
+    << "\n\t eanCode: " << eanCode
+    << "\n\t comment: " << comment
     << std::endl;
 #endif
 }

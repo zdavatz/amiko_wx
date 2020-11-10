@@ -675,7 +675,10 @@ void MainWindow::setOperatorID()
     wxString operatorIDStr = mOperatorIDSheet->retrieveIDAsString();
     wxString operatorPlace = mOperatorIDSheet->retrieveCity();
     myOperatorIDTextField->SetValue( operatorIDStr);
-    myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
+    if (operatorPlace.IsEmpty())
+        myPlaceDateField->SetLabel(UTI::prettyTime());
+    else
+        myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
     
     wxString documentsDirectory = UTI::documentsDirectory();
     wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
@@ -779,6 +782,8 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
 void MainWindow::loadPrescription_andRefreshHistory(wxString filename, bool refresh)
 {
     wxString hash = mPrescriptionAdapter->loadPrescriptionFromFile(filename);
+    if (hash.IsEmpty())
+        std::cerr << __FUNCTION__ << __LINE__ << " Empty prescription hash\n";
 
     mPrescriptionsCart[0].cart = mPrescriptionAdapter->cart;
     mPrescriptionsCart[0].uniqueHash = hash;
