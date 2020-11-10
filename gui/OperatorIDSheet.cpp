@@ -94,13 +94,13 @@ void OperatorIDSheet::OnClearSignature( wxCommandEvent& event )
 // 61
 void OperatorIDSheet::OnLoadSignature( wxCommandEvent& event )
 {
+    wxString wildCard = wxString::Format("PNG %s (*.png;*.PNG)|*.png;*.PNG|GIF %s (*.gif;*.GIF)|*.gif;*.GIF|JPG %s (*.jpg;*.JPG)|*.jpg;*.JPG",
+                                         _("files"), _("files"), _("files"));
     wxFileDialog openDlgPanel(this,
                               _("Please select signature file"),
                               wxEmptyString,
                               wxEmptyString,
-                              _("PNG files (*.png)|*.PNG|") +
-                              _("GIF files (*.gif)|*.GIF|") +
-                              _("JPG files (*.jpg)|*.JPG"),
+                              wildCard,
                               wxFD_OPEN | wxFD_FILE_MUST_EXIST, // no wxFD_MULTIPLE
                               wxDefaultPosition);
     
