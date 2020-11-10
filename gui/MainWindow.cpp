@@ -782,6 +782,8 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
 void MainWindow::loadPrescription_andRefreshHistory(wxString filename, bool refresh)
 {
     wxString hash = mPrescriptionAdapter->loadPrescriptionFromFile(filename);
+    if (hash.IsEmpty())
+        std::cerr << __FUNCTION__ << __LINE__ << " Empty prescription hash\n";
 
     mPrescriptionsCart[0].cart = mPrescriptionAdapter->cart;
     mPrescriptionsCart[0].uniqueHash = hash;
