@@ -1675,9 +1675,25 @@ void MainWindow::pushToMedBasket(Medication *med)
 void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
 {
     wxString str = wxString::FromUTF8(evt.GetString());
+    if (str.IsEmpty())
+        return;
+
     // str now contains the JSON string set in the JavaScript
 
-    auto msg = nlohmann::json::parse((const char *)str.c_str());
+#ifndef NDEBUG
+    std::cerr << __PRETTY_FUNCTION__ << " line: " << __LINE__ << " JSON: <" << str << ">" << std::endl;
+#endif
+
+    nlohmann::json msg;
+    try {
+        msg = nlohmann::json::parse((const char *)str.c_str());
+    }
+    catch (const std::exception&e) {
+        std::cerr << __PRETTY_FUNCTION__ << " line: " << __LINE__ 
+                << " Exception: " << e.what() 
+                << std::endl;
+        return;
+    }
     
     if (msg.size() == 3) {              // Interactions
         // 2432
