@@ -9,6 +9,9 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/filename.h>
+#ifdef __linux__
+#include <wx/textfile.h>
+#endif
 
 #include "InteractionsHtmlView.hpp"
 #include "Medication.hpp"
@@ -32,7 +35,7 @@ void InteractionsHtmlView::pushToMedBasket(Medication *med)
     }
 
     wxString title = med->title;
-    std::clog << "Line " << __LINE__ << " title:<" << title << ">" << std::endl;
+    //std::clog << "Line " << __LINE__ << " title:<" << title << ">" << std::endl;
 
     title.Trim(true);
     title.Trim(false);
@@ -90,6 +93,10 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
             while (input.IsOk() && !input.Eof() )
                 interactionsCss += text.ReadLine() + wxT("\n");
         }
+        else {
+            std::cerr << __FUNCTION__ << " line: " << __LINE__
+                    << " File doesn't exist: " << interactionsCssPath << std::endl;            
+        }
         
         //
         interactions_Style = wxString::Format("<style type=\"text/css\">%s</style>", interactionsCss);
@@ -113,6 +120,10 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
             while (input.IsOk() && !input.Eof() )
                 jscriptStr += text.ReadLine() + wxT("\n");
         }
+        else {
+            std::cerr << __FUNCTION__ << " line: " << __LINE__
+                    << " File doesn't exist: " << jscriptPath << std::endl;            
+        }
     }
     
     // Generate main interaction table
@@ -131,8 +142,14 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
     wxFileName pathBase64( UTI::documentsDirectory(), wxEmptyString);
     pathBase64.SetName("debug-interactions");
     pathBase64.SetExt("html");
+#ifdef __linux__
+    wxTextFile file(pathBase64.GetFullPath());
+    file.AddLine(htmlStr);
+    file.Write();
+#else
     wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(htmlStr, htmlStr.length());
+#endif
     file.Close();
     std::clog << "Created file: " << pathBase64.GetFullPath() << std::endl;
 #endif
@@ -200,7 +217,8 @@ wxString InteractionsHtmlView::medBasketHtml()
                                         _("Your medicine basket is empty"));
     }
     
-    std::clog << __FUNCTION__ << "medBasketStr:\n" << medBasketStr << std::endl;
+    //std::clog << __FUNCTION__ << " medBasketStr:\n" << medBasketStr << std::endl << std::endl;
+
     return medBasketStr;
 }
 
