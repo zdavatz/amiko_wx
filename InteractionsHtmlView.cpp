@@ -48,6 +48,9 @@ void InteractionsHtmlView::pushToMedBasket(Medication *med)
 // 58
 void InteractionsHtmlView::removeFromMedBasketForKey(std::string key)
 {
+#ifndef NDEBUG
+    std::cerr << __FUNCTION__ << " line " << __LINE__ << std::endl;
+#endif
     medCart->cart.erase(key); //removeObjectForKey:key
 }
 
@@ -121,21 +124,17 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
             medBasketHtml(),
             interactionsHtml(interactions),
             footNoteHtml());
-    
-#if 0 //def DEBUG
-    // Create an HTML file of the Fachinfo, so it can be tested with Safari and inspected with an editor
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents directory
-    NSError *error;
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"interactions.html"];
-    BOOL succeed = [htmlStr writeToFile:path
-                             atomically:YES
-                               encoding:NSUTF8StringEncoding
-                                  error:&error];
-    if (succeed)
-        NSLog(@"Created file: %s", path);
-    else
-        NSLog(@"%s", error.localizedDescription);
+
+#ifndef NDEBUG
+    // 95
+    // Create an HTML file of the interactions, so it can be tested with Safari and inspected with an editor
+    wxFileName pathBase64( UTI::documentsDirectory(), wxEmptyString);
+    pathBase64.SetName("debug-interactions");
+    pathBase64.SetExt("html");
+    wxFileOutputStream file( pathBase64.GetFullPath() );
+    file.Write(htmlStr, htmlStr.length());
+    file.Close();
+    std::clog << "Created file: " << pathBase64.GetFullPath() << std::endl;
 #endif
     
     return htmlStr;
@@ -164,7 +163,9 @@ wxString InteractionsHtmlView::medBasketHtml()
             sortedNames.Add( it->first );
 
         // Loop through all meds
+        const wxString wastebasketChar = wxString::FromUTF8("🗑");
         for (auto name : sortedNames) {
+            //std::clog << __FUNCTION__ << "name: " << name << std::endl;
             Medication *med = medCart->cart[name];
             wxArrayString m_code = wxSplit(med->atccode, ';');
             wxString atc_code = "k.A.";
@@ -175,16 +176,18 @@ wxString InteractionsHtmlView::medBasketHtml()
                 active_ingredient = m_code[1];
             }
 
+            // 141
             // Increment med counter
             medCnt++;
+
             // Update medication basket
             medBasketStr += wxString::Format("<tr>"
                             "<td>%d</td>"
                             "<td>%s</td>"
                             "<td>%s</td>"
                             "<td>%s</td>"
-                            "<td align=\"right\"><input type=\"image\" src=\"217-trash.png\" onclick=\"deleteRow('InterTable',this)\" />"
-                            "</tr>", medCnt, name, atc_code, active_ingredient);
+                            "<td align=\"right\"><input type=\"button\" value=\"%s\" onclick=\"deleteRow('InterTable',this)\" />"
+                            "</tr>", medCnt, name, atc_code, active_ingredient, wastebasketChar);
         }
 
         // 152
@@ -197,6 +200,7 @@ wxString InteractionsHtmlView::medBasketHtml()
                                         _("Your medicine basket is empty"));
     }
     
+    std::clog << __FUNCTION__ << "medBasketStr:\n" << medBasketStr << std::endl;
     return medBasketStr;
 }
 

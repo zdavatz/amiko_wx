@@ -43,6 +43,9 @@ void PrescriptionsCart::setInteractionsAdapter(InteractionsAdapter *adapter)
 }
 
 // 66
+// in amiko-osx
+//      'cart' is an array of PrescriptionItem,
+//      'interactionsCart->cart' is a dictionary
 void PrescriptionsCart::addItemToCart(PrescriptionItem *item)
 {
     //if (cart)

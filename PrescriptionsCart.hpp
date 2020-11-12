@@ -37,5 +37,5 @@ public:
     // .m 31
     //std::map<wxString, Medication *>
     InteractionsAdapter *interactionsAdapter;
-    InteractionsCart *interactionsCart;
+    InteractionsCart *interactionsCart;  // unused ?
 };
