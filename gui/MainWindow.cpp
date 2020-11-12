@@ -1869,7 +1869,6 @@ void MainWindow::updateInteractionsView()
     // Generate main interaction table
     wxString htmlStr = mInteractionsView->fullInteractionsHtml(mInteractions);
     
-    // With the following implementation, the images are not loaded
     // NSURL *mainBundleURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
     // [[myWebView mainFrame] loadHTMLString:htmlStr baseURL:mainBundleURL];
  
@@ -3414,7 +3413,7 @@ void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 
     std::clog << __FUNCTION__
     << ", event Id: " << event.GetId()
-    << ", cell parent Id: " << cellParent->GetId()
+    //<< ", cell parent Id: " << cellParent->GetId() // crash Lubuntu running from terminal (ok from NetBeans IDE)
     << ", int: " << event.GetInt()
     << ", HTML cell " << event.GetLinkInfo().GetHtmlCell()
     << ", HTML cell ID " << event.GetLinkInfo().GetHtmlCell()->GetId()
