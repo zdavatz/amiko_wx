@@ -308,6 +308,10 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_miLoadDB = new wxMenuItem( m_menuFile, wxID_LOAD_DB, wxString( _("Update from file") ) + wxT('\t') + wxT("CTRL+L"), wxEmptyString, wxITEM_NORMAL );
 	m_menuFile->Append( m_miLoadDB );
 
+	wxMenuItem* m_miPreferences;
+	m_miPreferences = new wxMenuItem( m_menuFile, wxID_PREFERENCES, wxString( _("Preferences") ) , wxEmptyString, wxITEM_NORMAL );
+	m_menuFile->Append( m_miPreferences );
+
 	m_menuFile->AppendSeparator();
 
 	wxMenuItem* m_menuItem9;

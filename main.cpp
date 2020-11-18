@@ -19,12 +19,16 @@
 #include <wx/dir.h>
 #include "wx/fs_zip.h"
 #include <wx/zipstrm.h>
+#include <wx/preferences.h>
 
 #include "main.hpp"
-#include "MainWindow.h"
 #include "DefaultsController.hpp"
 
 IMPLEMENT_APP(MyApp)
+
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+EVT_MENU(wxID_PREFERENCES, MyApp::OnPrefs)
+END_EVENT_TABLE()
 
 bool MyApp::OnInit()
 {
@@ -90,9 +94,16 @@ bool MyApp::OnInit()
     wxFileSystem::AddHandler(new wxZipFSHandler);
 
     MainWindow* frame = new MainWindow(nullptr);
+    m_window = frame;
     frame->Show();
     SetTopWindow( frame );
     return true;
+}
+
+void MyApp::OnPrefs(wxCommandEvent& evt)
+{
+    wxPreferencesEditor *pref = new wxPreferencesEditor("Preferences");
+    pref->Show(this->m_window);
 }
 
 int MyApp::OnExit()
