@@ -23,6 +23,7 @@
 
 #include "main.hpp"
 #include "DefaultsController.hpp"
+#include "gui/SyncPreferencesPage.hpp"
 
 IMPLEMENT_APP(MyApp)
 
@@ -102,8 +103,9 @@ bool MyApp::OnInit()
 
 void MyApp::OnPrefs(wxCommandEvent& evt)
 {
-    wxPreferencesEditor *pref = new wxPreferencesEditor("Preferences");
-    pref->Show(this->m_window);
+    wxPreferencesEditor *editor = new wxPreferencesEditor("Preferences");
+    editor->AddPage(new SyncPreferencesPage());
+    editor->Show(this->m_window);
 }
 
 int MyApp::OnExit()
