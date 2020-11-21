@@ -7,7 +7,9 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <wx/event.h>
 #include "wx/preferences.h"
+#include "GoogleAuthSheet.h"
 
 class SyncPreferencesPage : public wxStockPreferencesPage
 {
@@ -22,4 +24,10 @@ class SyncPreferencesPagePanel : public wxPanel
 public:
     SyncPreferencesPagePanel(wxWindow *parent);
     ~SyncPreferencesPagePanel() {};
+private:
+    void OnCheckboxClick(wxCommandEvent& event);
+
+    GoogleAuthSheet *googleAuthSheet;
+
+    DECLARE_EVENT_TABLE()
 };

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Aug 24 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Nov 18 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -254,8 +254,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = myToolbar->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-    //myToolbar->AddSeparator();
-    myToolbar->AddStretchableSpace();
+	myToolbar->AddSeparator();
 
 	m_tool7 = myToolbar->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
@@ -820,5 +819,34 @@ OperatorIDSheetBase::~OperatorIDSheetBase()
 	m_button20->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnClearSignature ), NULL, this );
 	m_button16->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnLoadSignature ), NULL, this );
 	m_button17->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( OperatorIDSheetBase::OnSaveOperator ), NULL, this );
+
+}
+
+GoogleAuthSheetBase::GoogleAuthSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	fiSizer = new wxBoxSizer( wxVERTICAL );
+
+	myWebView = wxWebView::New(this, wxID_FI_WEBVIEW);
+	fiSizer->Add( myWebView, 1, wxALL|wxEXPAND, 5 );
+
+	m_closeButton = new wxButton( this, wxID_CANCEL, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	fiSizer->Add( m_closeButton, 0, wxALIGN_RIGHT|wxALL, 5 );
+
+
+	this->SetSizer( fiSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	m_closeButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthSheetBase::OnCloseClicked ), NULL, this );
+}
+
+GoogleAuthSheetBase::~GoogleAuthSheetBase()
+{
+	// Disconnect Events
+	m_closeButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthSheetBase::OnCloseClicked ), NULL, this );
 
 }
