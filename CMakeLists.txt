@@ -148,6 +148,7 @@ set( SRCS_PATIENT
 
 set( SRCS_PREFERENCES
     gui/SyncPreferencesPage.cpp gui/SyncPreferencesPage.hpp
+    sync/GoogleSyncManager.cpp sync/GoogleSyncManager.hpp
     )
 
 set( SRCS_DOCTOR
