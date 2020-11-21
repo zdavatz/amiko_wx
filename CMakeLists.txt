@@ -186,6 +186,18 @@ source_group(card FILES ${SRCS_CARD})
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
 
+if(APP_NAME STREQUAL AmiKo)
+    set(GOOGLE_CLIENT_ID $ENV{AMIKO_GOOGLE_CLIENT_ID})
+    set(GOOGLE_CLIENT_SECRET $ENV{AMIKO_GOOGLE_CLIENT_SECRET})
+elseif(APP_NAME STREQUAL CoMed)
+    set(GOOGLE_CLIENT_ID $ENV{COMED_GOOGLE_CLIENT_ID})
+    set(GOOGLE_CLIENT_SECRET $ENV{COMED_GOOGLE_CLIENT_SECRET})
+endif()
+
+configure_file(
+    "${CMAKE_SOURCE_DIR}/GoogleConfig.h.in"
+    "${CMAKE_BINARY_DIR}/GoogleConfig.h")
+
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
     Utilities.cpp Utilities.hpp
