@@ -17,7 +17,7 @@ public:
 
 protected:
     GoogleSyncManager();
-    virtual ~GoogleSyncManager() {}
+    ~GoogleSyncManager();
 
 public:
     std::string authURL();
