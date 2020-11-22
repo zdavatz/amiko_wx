@@ -18,6 +18,7 @@ source seed.conf
 
 WXWIDGETS_VERSION=3.1.4
 SQLITE_VERSION=3320300
+CURL_VERSION=7.73.0
 
 if [ $CONFIG_GENERATOR_XC ] ; then
     GENERATOR="Xcode"
@@ -38,20 +39,24 @@ fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
 SQLITE=sqlite-amalgamation-$SQLITE_VERSION
+CURL=curl-$CURL_VERSION
 WD=$(pwd)
 
 eval SRC=$CONFIG_SRC_DIR
 SRC_JSON=$WD/json
+SRC_CURL=$SRC/$CURL
 SRC_SQLITE=$SRC/$SQLITE
 SRC_WXWIDGETS=$SRC/$WXWIDGETS
 SRC_APP=$WD
 
 eval BLD=$CONFIG_BLD_DIR/$APP
+BLD_CURL=$BLD/curl
 BLD_JSON=$BLD/json
 BLD_WXWIDGETS=$BLD/$WXWIDGETS-$IDE
 BLD_APP=$BLD/$APP-$IDE
 
 eval BIN=$CONFIG_BIN_DIR/$APP
+BIN_CURL=$BIN/curl
 BIN_JSON=$BIN/json
 BIN_WXWIDGETS=$BIN/$WXWIDGETS
 BIN_APP=$BIN # each of the two targets will be in its own subdirectory
@@ -120,6 +125,36 @@ if [ $STEP_BUILD_JSON ] ; then
   make install
 fi
 
+#------------------------------------------------------------------------------
+
+if [ $STEP_DOWNLOAD_SOURCES_CURL ] ; then
+if [ -d $SRC_CURL ] ; then
+echo "=== Download $SRC_CURL exists"
+else
+cd $SRC
+echo "=== Download $SRC_CURL"
+    wget https://curl.se/download/$CURL.tar.gz
+    tar -xjf $CURL.tar.gz
+    rm $CURL.tar.gz
+fi
+fi
+
+if [ $STEP_CONFIGURE_CURL ] ; then
+mkdir -p $BLD_CURL ; cd $BLD_CURL
+echo "=== Configure CURL, install to $BIN_CURL"
+    if [[ $(uname -s) == "Darwin" ]] ; then
+        PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig" $SRC_CURL/configure --with-ssl
+    elif [[ $(uname -s) == "Linux" ]] ; then
+        $SRC_CURL/configure --with-ssl
+    fi
+fi
+
+if [ $STEP_BUILD_CURL ] ; then
+    cd $BLD_CURL
+    make $MAKE_FLAGS
+  make install
+fi
+
 #-------------------------------------------------------------------------------
 if [ $STEP_DOWNLOAD_SOURCES_WXWIDGETS ] ; then
 if [ -d $SRC_WXWIDGETS ] ; then
@@ -180,6 +215,7 @@ $CMAKE -G"$GENERATOR" \
     -D CMAKE_CXX_FLAGS="$COMPILER_FLAGS" \
     -D WX_ROOT=$BIN_WXWIDGETS \
     -D JSON_DIR=$BIN_JSON \
+    -D CURL_DIR=$BIN_CURL \
     $SRC_APP
 fi
 

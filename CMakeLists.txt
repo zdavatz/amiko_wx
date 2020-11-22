@@ -30,6 +30,10 @@ set(CMAKE_PREFIX_PATH ${JSON_DIR} ${CMAKE_PREFIX_PATH})
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 #=============================================================================
+message(STATUS "CURL_DIR: ${CURL_DIR}")
+set(CMAKE_PREFIX_PATH ${CURL_DIR} ${CMAKE_PREFIX_PATH})
+
+#=============================================================================
 if (UNIX)
 if (NOT APPLE)
 # Linux
@@ -102,6 +106,11 @@ endif(UNIX)
 #MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
 #MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
 #MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
+
+#=============================================================================
+
+set(CURL_LIBRARY "-lcurl")
+find_package(CURL REQUIRED)
 
 #=============================================================================
 
@@ -224,11 +233,13 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/gui
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS}
+    ${CURL_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR} )
   
 target_link_libraries( ${APP_NAME}
 		${wxWidgets_LIBRARIES}
 		${OPENSSL_LIBRARIES}
+        ${CURL_LIBRARIES}
 		nlohmann_json::nlohmann_json)
 
 if (UNIX)
