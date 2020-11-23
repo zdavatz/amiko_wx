@@ -28,6 +28,7 @@ private:
     void OnCheckboxClick(wxCommandEvent& event);
 
     GoogleAuthSheet *googleAuthSheet;
+    wxCheckBox *syncCheckbox;
 
     DECLARE_EVENT_TABLE()
 };
