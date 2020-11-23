@@ -23,6 +23,8 @@ public:
     std::string authURL();
 
     void receivedAuthCode(std::string code);
+    bool isGoogleLoggedIn();
+    void logout();
 private:
     static GoogleSyncManager* m_pInstance;
 };

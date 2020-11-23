@@ -6,7 +6,13 @@
 
 #include "GoogleSyncManager.hpp"
 #include "GoogleConfig.h"
+#include "../DefaultsController.hpp"
 #include <curl/curl.h>
+#include <nlohmann/json.hpp>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 GoogleSyncManager* GoogleSyncManager::m_pInstance;
 
@@ -38,7 +44,10 @@ std::string GoogleSyncManager::authURL() {
     return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto&client_id=" GOOGLE_CLIENT_ID;
 }
 
-
+bool GoogleSyncManager::isGoogleLoggedIn() {
+    DefaultsController *defaults = DefaultsController::Instance();
+    return defaults->Exists("google-access-token");
+}
 
 void GoogleSyncManager::receivedAuthCode(std::string code) {
     // Get Access token from code
@@ -59,11 +68,11 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
 
-    CURLcode res = curl_easy_perform(curl);
-
     std::clog << s << std::endl;
+    CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
+    auto json = nlohmann::json::parse(s);
     // Example response
     // {
     //   "access_token": "...",
@@ -73,4 +82,35 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
     //   "token_type": "Bearer",
     //   "id_token": "..."
     // }
+
+    std::string accessToken = json["access_token"].get<std::string>();
+    std::string refreshToken = json["refresh_token"].get<std::string>();
+    int expires = json["expires_in"].get<int>();
+
+    std::clog << "a: " << accessToken << std::endl;
+    std::clog << "r: " << refreshToken << std::endl;
+
+    auto now = std::chrono::system_clock::now();
+    auto expire = now + std::chrono::seconds(expires);
+    std::time_t expireT = std::chrono::system_clock::to_time_t(expire);
+
+    std::ostringstream ss;
+    ss << std::put_time(gmtime(&expireT), "%FT%TZ");
+    std::string expireIsoString = ss.str();
+
+    std::clog << "expire: " << expireIsoString << std::endl;
+
+    DefaultsController *defaults = DefaultsController::Instance();
+    defaults->setString(wxString(accessToken), "google-access-token");
+    defaults->setString(wxString(refreshToken), "google-refresh-token");
+    defaults->setString(wxString(expireIsoString), "google-access-token-expire");
+    defaults->Flush();
+}
+
+void GoogleSyncManager::logout() {
+    DefaultsController *defaults = DefaultsController::Instance();
+    defaults->DeleteEntry("google-access-token");
+    defaults->DeleteEntry("google-refresh-token");
+    defaults->DeleteEntry("google-access-token-expire");
+    defaults->Flush();
 }
