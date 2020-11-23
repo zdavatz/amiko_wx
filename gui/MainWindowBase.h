@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Aug 24 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Nov 23 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -42,6 +42,7 @@ class SignatureView;
 #include <wx/valtext.h>
 #include <wx/listctrl.h>
 #include <wx/dialog.h>
+#include <wx/checkbox.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -138,7 +139,7 @@ class MainWindowBase : public wxFrame
 		wxMenu* m_menuHelp;
 		wxTimer m_cardTimer;
 
-		// Virtual event handlers, overide them in your derived class
+		// Virtual event handlers, override them in your derived class
 		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSearchNow( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonPressed( wxCommandEvent& event ) { event.Skip(); }
@@ -234,7 +235,7 @@ class PatientSheetBase : public wxDialog
 		wxButton* m_button23;
 		wxButton* m_button21;
 
-		// Virtual event handlers, overide them in your derived class
+		// Virtual event handlers, override them in your derived class
 		virtual void OnActivate( wxActivateEvent& event ) { event.Skip(); }
 		virtual void OnUpdateUI( wxUpdateUIEvent& event ) { event.Skip(); }
 		virtual void OnSelectSex( wxCommandEvent& event ) { event.Skip(); }
@@ -299,7 +300,7 @@ class OperatorIDSheetBase : public wxDialog
 		wxButton* m_button18;
 		wxButton* m_button17;
 
-		// Virtual event handlers, overide them in your derived class
+		// Virtual event handlers, override them in your derived class
 		virtual void OnClearSignature( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnLoadSignature( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSaveOperator( wxCommandEvent& event ) { event.Skip(); }
@@ -318,6 +319,51 @@ class OperatorIDSheetBase : public wxDialog
 
 		OperatorIDSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Doctor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 337,608 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~OperatorIDSheetBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class GoogleAuthSheetBase
+///////////////////////////////////////////////////////////////////////////////
+class GoogleAuthSheetBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxWebView* myWebView;
+		wxButton* m_closeButton;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnCloseClicked( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+		wxBoxSizer* fiSizer;
+
+		GoogleAuthSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 800,600 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~GoogleAuthSheetBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class SyncPreferencesBase
+///////////////////////////////////////////////////////////////////////////////
+class SyncPreferencesBase : public wxFrame
+{
+	private:
+
+	protected:
+		wxCheckBox* syncCheckbox;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnCheckboxClick( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		SyncPreferencesBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 200,100 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~SyncPreferencesBase();
 
 };
 

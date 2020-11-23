@@ -30,6 +30,10 @@ set(CMAKE_PREFIX_PATH ${JSON_DIR} ${CMAKE_PREFIX_PATH})
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 #=============================================================================
+message(STATUS "CURL_DIR: ${CURL_DIR}")
+set(CMAKE_PREFIX_PATH ${CURL_DIR} ${CMAKE_PREFIX_PATH})
+
+#=============================================================================
 if (UNIX)
 if (NOT APPLE)
 # Linux
@@ -105,6 +109,11 @@ endif(UNIX)
 
 #=============================================================================
 
+set(CURL_LIBRARY "-lcurl")
+find_package(CURL REQUIRED)
+
+#=============================================================================
+
 if (APPLE)
 ADD_DEFINITIONS("-D_FILE_OFFSET_BITS=64")
 ADD_DEFINITIONS("-D_LARGE_FILES")
@@ -146,6 +155,12 @@ set( SRCS_PATIENT
     PatientDBAdapter.cpp PatientDBAdapter.hpp
     )
 
+set( SRCS_PREFERENCES
+    gui/PreferencesWindow.cpp gui/PreferencesWindow.hpp
+    gui/GoogleAuthSheet.cpp gui/GoogleAuthSheet.h
+    sync/GoogleSyncManager.cpp sync/GoogleSyncManager.hpp
+    )
+
 set( SRCS_DOCTOR
     gui/OperatorIDSheet.cpp gui/OperatorIDSheet.h
     Operator.cpp Operator.hpp
@@ -173,6 +188,7 @@ source_group(sqlite FILES ${SRCS_SQLITE})
 source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
+source_group(preferences FILES ${SRCS_PREFERENCES})
 source_group(doctor FILES ${SRCS_DOCTOR})
 source_group(javascript FILES ${SRCS_JS})
 source_group(lang FILES ${SRCS_LANG})
@@ -180,6 +196,18 @@ source_group(card FILES ${SRCS_CARD})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
+
+if(APP_NAME STREQUAL AmiKo)
+    set(GOOGLE_CLIENT_ID $ENV{AMIKO_GOOGLE_CLIENT_ID})
+    set(GOOGLE_CLIENT_SECRET $ENV{AMIKO_GOOGLE_CLIENT_SECRET})
+elseif(APP_NAME STREQUAL CoMed)
+    set(GOOGLE_CLIENT_ID $ENV{COMED_GOOGLE_CLIENT_ID})
+    set(GOOGLE_CLIENT_SECRET $ENV{COMED_GOOGLE_CLIENT_SECRET})
+endif()
+
+configure_file(
+    "${CMAKE_SOURCE_DIR}/GoogleConfig.h.in"
+    "${CMAKE_BINARY_DIR}/GoogleConfig.h")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
@@ -193,6 +221,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_JS} ${SRCS_CARD}
+        ${SRCS_PREFERENCES}
     customURLConnection.cpp customURLConnection.hpp
     ${SRCS_LANG}
     )
@@ -204,11 +233,13 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/gui
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS}
+    ${CURL_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR} )
   
 target_link_libraries( ${APP_NAME}
 		${wxWidgets_LIBRARIES}
 		${OPENSSL_LIBRARIES}
+        ${CURL_LIBRARIES}
 		nlohmann_json::nlohmann_json)
 
 if (UNIX)

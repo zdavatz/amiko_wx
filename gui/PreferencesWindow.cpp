@@ -1,0 +1,38 @@
+//  PreferencesWindow.cpp
+//  AmiKo-wx
+//
+//  Created by b123400 on 19 Nov 2020
+//  Copyright © 2020 Ywesee GmbH. All rights reserved.
+
+#include "PreferencesWindow.hpp"
+#include "../sync/GoogleSyncManager.hpp"
+#include "wx/checkbox.h"
+#include "wx/sizer.h"
+#include "wx/frame.h"
+#include <wx/preferences.h>
+
+
+PreferencesWindow::PreferencesWindow(wxWindow *parent)
+: SyncPreferencesBase(parent)
+, googleAuthSheet(nullptr)
+{
+    GoogleSyncManager *g = GoogleSyncManager::Instance();
+    syncCheckbox->SetValue(g->isGoogleLoggedIn());
+}
+
+void PreferencesWindow::OnCheckboxClick(wxCommandEvent& event)
+{
+    GoogleSyncManager *g = GoogleSyncManager::Instance();
+    if (!g->isGoogleLoggedIn()) {
+        if (!googleAuthSheet) {
+            googleAuthSheet = new GoogleAuthSheet(this);
+        } else {
+            googleAuthSheet->LoadAuthURL();
+        }
+        googleAuthSheet->ShowModal();
+        syncCheckbox->SetValue(g->isGoogleLoggedIn());
+    } else {
+        g->logout();
+    }
+}
+
