@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Nov 18 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Nov 23 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -42,6 +42,7 @@ class SignatureView;
 #include <wx/valtext.h>
 #include <wx/listctrl.h>
 #include <wx/dialog.h>
+#include <wx/checkbox.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -341,6 +342,28 @@ class GoogleAuthSheetBase : public wxDialog
 
 		GoogleAuthSheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 800,600 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~GoogleAuthSheetBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class SyncPreferencesBase
+///////////////////////////////////////////////////////////////////////////////
+class SyncPreferencesBase : public wxFrame
+{
+	private:
+
+	protected:
+		wxCheckBox* syncCheckbox;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnCheckboxClick( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		SyncPreferencesBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 200,100 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~SyncPreferencesBase();
 
 };
 

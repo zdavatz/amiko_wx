@@ -19,11 +19,10 @@
 #include <wx/dir.h>
 #include "wx/fs_zip.h"
 #include <wx/zipstrm.h>
-#include <wx/preferences.h>
 
 #include "main.hpp"
 #include "DefaultsController.hpp"
-#include "gui/SyncPreferencesPage.hpp"
+#include "gui/PreferencesWindow.hpp"
 
 IMPLEMENT_APP(MyApp)
 
@@ -103,9 +102,8 @@ bool MyApp::OnInit()
 
 void MyApp::OnPrefs(wxCommandEvent& evt)
 {
-    wxPreferencesEditor *editor = new wxPreferencesEditor("Preferences");
-    editor->AddPage(new SyncPreferencesPage());
-    editor->Show(this->m_window);
+    auto *p = new PreferencesWindow(this->m_window);
+    p->Show();
 }
 
 int MyApp::OnExit()

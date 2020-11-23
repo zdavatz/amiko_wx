@@ -113,7 +113,7 @@ fi
 if [ $STEP_CONFIGURE_JSON ] ; then
 mkdir -p $BLD_JSON ; cd $BLD_JSON
 echo "=== Configure JSON, install to $BIN_JSON"
-cmake -G"$GENERATOR" \
+$CMAKE -G"$GENERATOR" \
 	-D JSON_BuildTests=OFF \
 	-D CMAKE_INSTALL_PREFIX=$BIN_JSON \
 	$SRC_JSON
@@ -134,7 +134,7 @@ else
 cd $SRC
 echo "=== Download $SRC_CURL"
     wget https://curl.se/download/$CURL.tar.gz
-    tar -xjf $CURL.tar.gz
+    tar -xvzf $CURL.tar.gz
     rm $CURL.tar.gz
 fi
 fi

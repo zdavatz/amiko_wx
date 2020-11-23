@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Nov 18 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Nov 23 2020)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -848,5 +848,38 @@ GoogleAuthSheetBase::~GoogleAuthSheetBase()
 {
 	// Disconnect Events
 	m_closeButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthSheetBase::OnCloseClicked ), NULL, this );
+
+}
+
+SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* bSizer26;
+	bSizer26 = new wxBoxSizer( wxVERTICAL );
+
+
+	bSizer26->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	syncCheckbox = new wxCheckBox( this, wxID_ANY, _("Sync with Google Drive"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer26->Add( syncCheckbox, 0, wxALL, 5 );
+
+
+	bSizer26->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( bSizer26 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	syncCheckbox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
+}
+
+SyncPreferencesBase::~SyncPreferencesBase()
+{
+	// Disconnect Events
+	syncCheckbox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
 
 }
