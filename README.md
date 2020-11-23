@@ -26,6 +26,12 @@ Prerequisites:
         STEP_BUILD_JSON=y
         STEP_COPY_LANG_FILES=y
 
+- [Libcurl](https://curl.se)
+
+        STEP_DOWNLOAD_SOURCES_CURL=y
+        STEP_CONFIGURE_CURL=y
+        STEP_BUILD_CURL=y
+
 - OpenSSL development libraries, required for the calculation of the patient hash (SHA256)
 
         $ sudo apt install libssl-dev
