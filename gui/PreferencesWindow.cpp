@@ -13,7 +13,7 @@
 
 
 PreferencesWindow::PreferencesWindow(wxWindow *parent)
-: SyncPreferencesBase(parent)
+: SyncPreferencesBase(parent, -1, _("Preferences"))
 , googleAuthSheet(nullptr)
 {
     GoogleSyncManager *g = GoogleSyncManager::Instance();
@@ -36,3 +36,6 @@ void PreferencesWindow::OnCheckboxClick(wxCommandEvent& event)
     }
 }
 
+void PreferencesWindow::OnCloseClicked( wxCommandEvent& event ) {
+    EndModal(wxID_OK);
+}

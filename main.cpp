@@ -103,7 +103,7 @@ bool MyApp::OnInit()
 void MyApp::OnPrefs(wxCommandEvent& evt)
 {
     auto *p = new PreferencesWindow(this->m_window);
-    p->Show();
+    p->ShowWindowModal();
 }
 
 int MyApp::OnExit()
