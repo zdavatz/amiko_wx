@@ -126,7 +126,6 @@ MainWindow::MainWindow( wxWindow* parent )
 , modifiedPrescription(false)
 , csvMedication(nullptr)
 , healthCard(nullptr)
-, clickedOnStar(false)
 {
 #ifndef NDEBUG
     std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
@@ -3286,10 +3285,7 @@ void MainWindow::OnSmartCardTick( wxTimerEvent& event )
 void MainWindow::cellProcessing(int row)
 {
 #ifndef NDEBUG
-    std::clog << __FUNCTION__
-        << ", row: " << row
-        << ", OnStar: " << clickedOnStar
-        << std::endl;
+    std::clog << __FUNCTION__ << ", row: " << row << std::endl;
 #endif
     {
         // 2789
@@ -3304,13 +3300,6 @@ void MainWindow::cellProcessing(int row)
             cellView->showContextualMenu = false;
         
         // TODO: cellView->packagesView.Refresh()
-    }
-    
-    if (clickedOnStar)
-    {
-        tappedOnStar(row);
-        myTableView->RefreshRow(row);
-        return;
     }
 
     // We didn't click on the favourites star
@@ -3358,7 +3347,9 @@ void MainWindow::cellProcessing(int row)
 void MainWindow::OnLboxSelect(wxCommandEvent& event)
 {
     int row = event.GetInt();
+#ifndef NDEBUG
     std::clog << __FUNCTION__ << " row " << row << std::endl;
+#endif
 
     cellProcessing(row);
 }
@@ -3400,15 +3391,36 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
     wxPoint eventPoint = event.GetPoint();
     wxPoint calculatedPos = absPosCell + eventPoint;
 
-    clickedOnStar = (calculatedPos.x < 20 &&
-                     calculatedPos.y < 20);
+    bool clickedOnStar = (calculatedPos.x < 20 &&
+                          calculatedPos.y < 20);
+
+    // Finally worked out how to detect the row number:
+    //wxHtmlCell* cell = event.GetCell();
+    unsigned long clickedRow;
+    event.GetCell()->GetRootCell()->GetId().ToULong(&clickedRow);
  
-    std::clog << __FUNCTION__  << " star:" << clickedOnStar << std::endl;
+#ifndef NDEBUG
+    std::clog << std::endl << __FUNCTION__
+    << ", (old) row:" << myTableView->GetSelection()
+    << ", OnStar:" << clickedOnStar
+    //<< ", event int:" << event.GetInt() // always 0
+    //<< ", cell ID:<" << cell->GetId() << ">" // always empty
+    << ", (new) row:<" << clickedRow << ">"
+    << std::endl;
+#endif
 
     // 3003
     //updateButtons(); // __deprecated
+    
+    if (clickedOnStar)
+    {
+        tappedOnStar(clickedRow);
+        myTableView->RefreshRow(clickedRow);
+        // Don't skip the event, so that OnHtmlLinkClicked() won't be called.
+        return;
+    }
 
-    // if we don't skip the event, OnHtmlLinkClicked won't be called!
+    // Skip the event, so that OnHtmlLinkClicked() will be called.
     event.Skip();
 }
 
@@ -3416,7 +3428,6 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 // amiko-ios MLViewController.m:3146 myLongPressMethod
 void MainWindow::OnHtmlLinkClicked(wxHtmlLinkEvent& event)
 {
-    //int selRowBefore = myTableView->GetSelection();
     wxArrayString idx = wxSplit(event.GetLinkInfo().GetHref(), '_');
     int rowIndex = wxAtoi(idx[0]);
     int packageIndex = wxAtoi(idx[1]);
