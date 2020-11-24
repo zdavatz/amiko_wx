@@ -268,6 +268,9 @@ msgstr ""
 msgid "Precautionary measures recommended"
 msgstr "Vorsichtsmassnahmen empfohlen"
 
+msgid "Preferences"
+msgstr "Einstellungen"
+
 msgid "Preparation"
 msgstr "Präparat"
 

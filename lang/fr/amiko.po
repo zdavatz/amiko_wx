@@ -278,6 +278,9 @@ msgstr ""
 msgid "Precautionary measures recommended"
 msgstr "Mesures de précaution sont recommandées"
 
+msgid "Preferences"
+msgstr "Préférences"
+
 msgid "Preparation"
 msgstr "Préparation"
 
