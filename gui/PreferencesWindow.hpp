@@ -17,6 +17,7 @@ public:
     ~PreferencesWindow() {};
 private:
     void OnCheckboxClick(wxCommandEvent& event);
+    void OnCloseClicked( wxCommandEvent& event );
 
     GoogleAuthSheet *googleAuthSheet;
 };

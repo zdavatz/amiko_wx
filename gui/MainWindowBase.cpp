@@ -254,7 +254,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = myToolbar->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	myToolbar->AddSeparator();
+	myToolbar->AddStretchableSpace();
 
 	m_tool7 = myToolbar->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
@@ -851,7 +851,7 @@ GoogleAuthSheetBase::~GoogleAuthSheetBase()
 
 }
 
-SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
@@ -859,27 +859,33 @@ SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const
 	bSizer26 = new wxBoxSizer( wxVERTICAL );
 
 
-	bSizer26->Add( 0, 0, 1, wxEXPAND, 5 );
+	bSizer26->Add( 0, 20, 1, wxEXPAND, 5 );
 
 	syncCheckbox = new wxCheckBox( this, wxID_ANY, _("Sync with Google Drive"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer26->Add( syncCheckbox, 0, wxALL, 5 );
 
 
-	bSizer26->Add( 0, 0, 1, wxEXPAND, 5 );
+	bSizer26->Add( 0, 20, 1, wxEXPAND, 5 );
+
+	closeButton = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer26->Add( closeButton, 0, wxALIGN_RIGHT|wxALL, 5 );
 
 
 	this->SetSizer( bSizer26 );
 	this->Layout();
+	bSizer26->Fit( this );
 
 	this->Centre( wxBOTH );
 
 	// Connect Events
 	syncCheckbox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
+	closeButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
 }
 
 SyncPreferencesBase::~SyncPreferencesBase()
 {
 	// Disconnect Events
 	syncCheckbox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
+	closeButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
 
 }

@@ -143,7 +143,7 @@ if [ $STEP_CONFIGURE_CURL ] ; then
 mkdir -p $BLD_CURL ; cd $BLD_CURL
 echo "=== Configure CURL, install to $BIN_CURL"
     if [[ $(uname -s) == "Darwin" ]] ; then
-        PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig" $SRC_CURL/configure --with-ssl
+        PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig" $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL
     elif [[ $(uname -s) == "Linux" ]] ; then
         $SRC_CURL/configure --with-ssl
     fi
