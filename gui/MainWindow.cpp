@@ -670,8 +670,10 @@ void MainWindow::tappedOnStar(int row)
 void MainWindow::printTechInfo()
 {
     wxHtmlEasyPrinting *m_Prn = new wxHtmlEasyPrinting("Printing", this);
-    //m_Prn->PreviewText( myWebView->GetPageSource());
-    m_Prn->PrintText( myWebView->GetPageSource());
+    wxString pageSource = myWebView->GetPageSource();
+    //bool previewResult = m_Prn->PreviewText( pageSource); // it returns immediately
+    m_Prn->PrintText( pageSource);
+    wxDELETE(m_Prn);
 }
 
 // 1071
