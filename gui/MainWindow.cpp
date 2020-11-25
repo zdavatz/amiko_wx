@@ -13,6 +13,7 @@
 #include <wx/xml/xml.h>
 #include <wx/menu.h>
 #include <wx/event.h>
+#include "wx/html/htmprint.h"
 
 #include <sqlite3.h>
 
@@ -666,10 +667,11 @@ void MainWindow::tappedOnStar(int row)
 }
 
 // 1047
-// TODO: reference sample app htmlprinting.app
 void MainWindow::printTechInfo()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO: print myWebView\n";
+    wxHtmlEasyPrinting *m_Prn = new wxHtmlEasyPrinting("Printing", this);
+    //m_Prn->PreviewText( myWebView->GetPageSource());
+    m_Prn->PrintText( myWebView->GetPageSource());
 }
 
 // 1071
