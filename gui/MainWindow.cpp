@@ -13,6 +13,7 @@
 #include <wx/xml/xml.h>
 #include <wx/menu.h>
 #include <wx/event.h>
+#include "wx/html/htmprint.h"
 
 #include <sqlite3.h>
 
@@ -665,6 +666,23 @@ void MainWindow::tappedOnStar(int row)
     saveFavorites();
 }
 
+// 1047
+void MainWindow::printTechInfo()
+{
+    wxHtmlEasyPrinting *m_Prn = new wxHtmlEasyPrinting("Printing", this);
+    wxString pageSource = myWebView->GetPageSource();
+    //bool previewResult = m_Prn->PreviewText( pageSource); // it returns immediately
+    m_Prn->PrintText( pageSource);
+    wxDELETE(m_Prn);
+}
+
+// 1071
+// TODO: reference sample app printing.app
+void MainWindow::printPrescription()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO: layout prescription for printing\n";
+}
+
 // 1249
 void MainWindow::setOperatorID()
 {
@@ -743,9 +761,10 @@ void MainWindow::removeItemFromPrescription()
 }
 
 // 1381
+// TODO: reference sample app printing.app
 void MainWindow::printMedicineLabel()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " TODO:\n";
+    std::clog << __PRETTY_FUNCTION__ << " TODO: layout label for printing\n";
 }
 
 // 1558
@@ -1104,7 +1123,14 @@ FULLTEXT_RESULTS MainWindow::retrieveAllFTFavorites()
 void MainWindow::saveFavorites()
 {
     wxString path = wxStandardPaths::Get().FAVORITES_DIR();
-    std::clog << __FUNCTION__ << " to dir " << path << std::endl;
+    
+#ifndef NDEBUG
+    std::clog << __FUNCTION__ << " to dir " << path
+    << "\n\t favorites: " << favoriteMedsSet.size()
+    << "\n\t favoritesFT: " << favoriteFTEntrySet.size()
+    << std::endl;
+#endif
+
     FAVORITES_SET::iterator it;
 
     {
@@ -3033,7 +3059,10 @@ void MainWindow::OnToolbarAction( wxCommandEvent& event )
 // 1148
 void MainWindow::OnPrintDocument( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << event.GetId() << std::endl;
+    if (myTabView->GetSelection() == 2)
+        printPrescription();
+    else
+        printTechInfo();
 }
 
 // 1537
@@ -3300,6 +3329,9 @@ void MainWindow::cellProcessing(int row)
             cellView->showContextualMenu = false;
         
         // TODO: cellView->packagesView.Refresh()
+        
+        // 2801
+        // See TableViewDelegate::OnGetItem()
     }
 
     // We didn't click on the favourites star
@@ -3395,7 +3427,6 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
                           calculatedPos.y < 20);
 
     // Finally worked out how to detect the row number:
-    //wxHtmlCell* cell = event.GetCell();
     unsigned long clickedRow;
     event.GetCell()->GetRootCell()->GetId().ToULong(&clickedRow);
  

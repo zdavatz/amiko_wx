@@ -122,6 +122,9 @@ public:
 private:
     void setOperatorID();
     void savePrescription();
+    // 113
+    void printTechInfo();
+    void printPrescription();
     wxArrayString csvGetInputListFromFile();
     void csvProcessKeywords(wxArrayString keywords);
     void csvOutputResult();
