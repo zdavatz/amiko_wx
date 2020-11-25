@@ -665,6 +665,20 @@ void MainWindow::tappedOnStar(int row)
     saveFavorites();
 }
 
+// 1047
+// TODO: reference sample app htmlprinting.app
+void MainWindow::printTechInfo()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO: print myWebView\n";
+}
+
+// 1071
+// TODO: reference sample app printing.app
+void MainWindow::printPrescription()
+{
+    std::clog << __PRETTY_FUNCTION__ << " TODO: layout prescription for printing\n";
+}
+
 // 1249
 void MainWindow::setOperatorID()
 {
@@ -743,9 +757,10 @@ void MainWindow::removeItemFromPrescription()
 }
 
 // 1381
+// TODO: reference sample app printing.app
 void MainWindow::printMedicineLabel()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " TODO:\n";
+    std::clog << __PRETTY_FUNCTION__ << " TODO: layout label for printing\n";
 }
 
 // 1558
@@ -1104,7 +1119,14 @@ FULLTEXT_RESULTS MainWindow::retrieveAllFTFavorites()
 void MainWindow::saveFavorites()
 {
     wxString path = wxStandardPaths::Get().FAVORITES_DIR();
-    std::clog << __FUNCTION__ << " to dir " << path << std::endl;
+    
+#ifndef NDEBUG
+    std::clog << __FUNCTION__ << " to dir " << path
+    << "\n\t favorites: " << favoriteMedsSet.size()
+    << "\n\t favoritesFT: " << favoriteFTEntrySet.size()
+    << std::endl;
+#endif
+
     FAVORITES_SET::iterator it;
 
     {
@@ -3033,7 +3055,10 @@ void MainWindow::OnToolbarAction( wxCommandEvent& event )
 // 1148
 void MainWindow::OnPrintDocument( wxCommandEvent& event )
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO" << event.GetId() << std::endl;
+    if (myTabView->GetSelection() == 2)
+        printPrescription();
+    else
+        printTechInfo();
 }
 
 // 1537
@@ -3300,6 +3325,9 @@ void MainWindow::cellProcessing(int row)
             cellView->showContextualMenu = false;
         
         // TODO: cellView->packagesView.Refresh()
+        
+        // 2801
+        // See TableViewDelegate::OnGetItem()
     }
 
     // We didn't click on the favourites star
@@ -3395,7 +3423,6 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
                           calculatedPos.y < 20);
 
     // Finally worked out how to detect the row number:
-    //wxHtmlCell* cell = event.GetCell();
     unsigned long clickedRow;
     event.GetCell()->GetRootCell()->GetId().ToULong(&clickedRow);
  
