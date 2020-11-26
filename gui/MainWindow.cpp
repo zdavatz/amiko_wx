@@ -3376,14 +3376,12 @@ void MainWindow::cellProcessing(int row)
 }
 
 // Handler for EVT_LISTBOX
+// TODO: maybe now it can be removed
 void MainWindow::OnLboxSelect(wxCommandEvent& event)
 {
-    int row = event.GetInt();
 #ifndef NDEBUG
-    std::clog << __FUNCTION__ << " row " << row << std::endl;
+    std::clog << __FUNCTION__ << " row " << event.GetInt() << std::endl;
 #endif
-
-    cellProcessing(row);
 }
 
 // Handler for EVT_LISTBOX_DCLICK
@@ -3410,7 +3408,6 @@ void MainWindow::OnHtmlCellHover(wxHtmlCellEvent &event)
 // Handler for EVT_HTML_CELL_CLICKED
 // See MLMainWindowController.m:2783 tableView:viewForTableColumn:row:
 // See MLMainWindowController.m:2917 tableViewSelectionDidChange
-// FIXME: now we have to click on the cell before the link can be clicked
 void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
 {
     if (event.GetId() != myTableView->GetId()) { // wxID_MY_TV
@@ -3450,6 +3447,8 @@ void MainWindow::OnHtmlCellClicked(wxHtmlCellEvent &event)
         // Don't skip the event, so that OnHtmlLinkClicked() won't be called.
         return;
     }
+
+    cellProcessing(clickedRow);
 
     // Skip the event, so that OnHtmlLinkClicked() will be called.
     event.Skip();
