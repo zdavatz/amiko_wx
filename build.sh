@@ -71,7 +71,7 @@ WX_OPTIONS_OS_AUTOTOOLS="--with-cocoa --with-mac"
 WX_OPTIONS_OS_CMAKE=
 elif [[ $(uname -s) == "Linux" ]] ; then
 NCPU=$(nproc --all)
-  if [ $BUILD_TYPE == "Debug" ]; then
+  if [[ $BUILD_TYPE == "Debug" ]]; then
     WX_OPTIONS_OS_AUTOTOOLS_DEBUG="--enable-debug --enable-debug_gdb"
   fi
 WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3 --with-cxx=17 --enable-utf8 --with-regex --enable-html --enable-webview ${WX_OPTIONS_OS_AUTOTOOLS_DEBUG}"
