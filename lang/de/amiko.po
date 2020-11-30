@@ -78,6 +78,9 @@ msgstr "Stadt"
 msgid "City*"
 msgstr "Stadt*"
 
+msgid "Close"
+msgstr "Schliessen"
+
 msgid "Colour legend"
 msgstr "Farblegende"
 

@@ -90,6 +90,9 @@ msgstr "Ville"
 msgid "City*"
 msgstr "Ville*"
 
+msgid "Close"
+msgstr "Fermer"
+
 msgid "Colour legend"
 msgstr "Légende des couleurs"
 
