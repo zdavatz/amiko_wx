@@ -212,3 +212,49 @@ std::string GoogleSyncManager::getAccessToken() {
     defaults->Flush();
     return accessToken;
 }
+
+void GoogleSyncManager::uploadFile() {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return;
+    }
+
+    CURL *curl = curl_easy_init();
+    std::string s;
+    curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    curl_mime *form = curl_mime_init(curl);
+    curl_mimepart *field = NULL;
+
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "metadata");
+    curl_mime_data(field, "{\"appProperties\":{\"foo\":\"bar\"}, \"name\":\"hk.png\",\"parents\":[\"appDataFolder\"]}", CURL_ZERO_TERMINATED);
+    curl_mime_type(field, "application/json; charset=UTF-8");
+
+    /* Fill in the file upload field */ 
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "file");
+    curl_mime_filedata(field, "/Users/b123400/Downloads/Slice.png");
+    curl_mime_type(field, "image/png");
+
+    curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    std::clog << s << std::endl;
+    // auto json = nlohmann::json::parse(s);
+    // Example response
+    // {
+    //  "kind": "drive#file",
+    //  "id": "1NvrC5PUAH_-AUmE6R_YrkS_M8KFNWLofWaFOeqIznFOq6iyFDA",
+    //  "name": "hk.png",
+    //  "mimeType": "image/png"
+    // }
+}

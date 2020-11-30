@@ -26,6 +26,8 @@ public:
     bool isGoogleLoggedIn();
     void logout();
 
+    void uploadFile();
+
 private:
     static GoogleSyncManager* m_pInstance;
     std::string getAccessToken();
