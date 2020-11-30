@@ -25,6 +25,11 @@ public:
     void receivedAuthCode(std::string code);
     bool isGoogleLoggedIn();
     void logout();
+    void fetchFileList(std::string pageToken = "");
+
+    void uploadFile();
+
 private:
     static GoogleSyncManager* m_pInstance;
+    std::string getAccessToken();
 };
