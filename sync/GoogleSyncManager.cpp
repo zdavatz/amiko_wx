@@ -258,3 +258,48 @@ void GoogleSyncManager::uploadFile() {
     //  "mimeType": "image/png"
     // }
 }
+
+void GoogleSyncManager::fetchFileList(std::string pageToken) {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return;
+    }
+
+    std::string queryString = \
+        "?pageSize=1000" \
+        "&spaces=appDataFolder";
+
+    if (!pageToken.empty()) {
+        queryString += "&pageToken=" + pageToken;
+    }
+
+
+    CURL *curl = curl_easy_init();
+    std::string s;
+    curl_easy_setopt(curl, CURLOPT_URL, ("https://www.googleapis.com/drive/v3/files" + queryString).c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    std::clog << s << std::endl;
+    // auto json = nlohmann::json::parse(s);
+    // Example response
+    // {
+    //  "kind": "drive#fileList",
+    //  "incompleteSearch": false,
+    //  "files": [
+    //   {
+    //    "kind": "drive#file",
+    //    "id": "1NvrC5PUAH_-AUmE6R_YrkS_M8KFNWLofWaFOeqIznFOq6iyFDA",
+    //    "name": "hk.png",
+    //    "mimeType": "image/png"
+    //   }
+    //  ]
+    // }
+}

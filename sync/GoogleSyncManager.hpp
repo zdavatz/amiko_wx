@@ -25,6 +25,7 @@ public:
     void receivedAuthCode(std::string code);
     bool isGoogleLoggedIn();
     void logout();
+    void fetchFileList(std::string pageToken = "");
 
     void uploadFile();
 
