@@ -56,6 +56,10 @@ Prerequisites:
 
         $ uuidgen
 
+- To install dependencies on Gentoo:
+
+        $ emerge net-libs/webkit-gtk x11-libs/wxGTK sys-apps/pcsc-lite
+
 ## Build Script
 1. Download and install latest wxWidgets from source using build script.
 2. Build script also has to download all data files, see OSX version.
