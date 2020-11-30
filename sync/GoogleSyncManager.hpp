@@ -25,6 +25,8 @@ public:
     void receivedAuthCode(std::string code);
     bool isGoogleLoggedIn();
     void logout();
+
 private:
     static GoogleSyncManager* m_pInstance;
+    std::string getAccessToken();
 };
