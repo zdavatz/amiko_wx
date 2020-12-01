@@ -260,9 +260,27 @@ void GoogleSyncManager::uploadFile() {
 }
 
 void GoogleSyncManager::fetchFileList(std::string pageToken) {
+void GoogleSyncManager::deleteFile(std::string fileId) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
         return;
+    }
+
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, ("https://www.googleapis.com/drive/v3/files/" + fileId).c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+}
+
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return {};
     }
 
     std::string queryString = \

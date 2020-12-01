@@ -28,6 +28,7 @@ public:
     void fetchFileList(std::string pageToken = "");
 
     void uploadFile();
+    void deleteFile(std::string fileId);
 
 private:
     static GoogleSyncManager* m_pInstance;
