@@ -14,6 +14,29 @@
 #include <iomanip>
 #include <sstream>
 
+#define FILE_FIELDS "id,name,version,parents,mimeType,modifiedTime,size,properties"
+
+namespace GoogleAPITypes {
+    // struct RemoteFile {
+    //     std::string id;
+    //     std::string name;
+    //     std::string mimeType;
+    //     std::vector<std::string> parents;
+    //     std::string modifiedTime;
+    // };
+    void to_json(nlohmann::json& j, const RemoteFile& f) {
+        j = nlohmann::json{{"id", f.id}, {"name", f.name}, {"mimeType", f.mimeType}, {"parents", f.parents}, {"modifiedTime", f.modifiedTime}};
+    }
+
+    void from_json(const nlohmann::json& j, RemoteFile& f) {
+        j.at("id").get_to(f.id);
+        j.at("name").get_to(f.name);
+        j.at("mimeType").get_to(f.mimeType);
+        j.at("parents").get_to(f.parents);
+        j.at("modifiedTime").get_to(f.modifiedTime);
+    }
+}
+
 GoogleSyncManager* GoogleSyncManager::m_pInstance;
 
 // Singleton
@@ -213,10 +236,10 @@ std::string GoogleSyncManager::getAccessToken() {
     return accessToken;
 }
 
-void GoogleSyncManager::uploadFile() {
+std::string GoogleSyncManager::uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
-        return;
+        return "";
     }
 
     CURL *curl = curl_easy_init();
@@ -234,14 +257,17 @@ void GoogleSyncManager::uploadFile() {
 
     field = curl_mime_addpart(form);
     curl_mime_name(field, "metadata");
-    curl_mime_data(field, "{\"appProperties\":{\"foo\":\"bar\"}, \"name\":\"hk.png\",\"parents\":[\"appDataFolder\"]}", CURL_ZERO_TERMINATED);
+    nlohmann::json metadata;
+    metadata["name"] = name;
+    metadata["parents"] = parents;
+    curl_mime_data(field, metadata.dump().c_str(), CURL_ZERO_TERMINATED);
     curl_mime_type(field, "application/json; charset=UTF-8");
 
     /* Fill in the file upload field */ 
     field = curl_mime_addpart(form);
     curl_mime_name(field, "file");
-    curl_mime_filedata(field, "/Users/b123400/Downloads/Slice.png");
-    curl_mime_type(field, "image/png");
+    curl_mime_filedata(field, filePath.c_str());
+    curl_mime_type(field, mimeType.c_str());
 
     curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
 
@@ -257,9 +283,10 @@ void GoogleSyncManager::uploadFile() {
     //  "name": "hk.png",
     //  "mimeType": "image/png"
     // }
+    auto json = nlohmann::json::parse(s);
+    return json["id"].get<std::string>();
 }
 
-void GoogleSyncManager::fetchFileList(std::string pageToken) {
 void GoogleSyncManager::deleteFile(std::string fileId) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
@@ -278,6 +305,7 @@ void GoogleSyncManager::deleteFile(std::string fileId) {
     curl_easy_cleanup(curl);
 }
 
+std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::fetchFileList(std::string pageToken) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
         return {};
@@ -285,7 +313,8 @@ void GoogleSyncManager::deleteFile(std::string fileId) {
 
     std::string queryString = \
         "?pageSize=1000" \
-        "&spaces=appDataFolder";
+        "&spaces=appDataFolder" \
+        "&fields=nextPageToken,files(" FILE_FIELDS ")";
 
     if (!pageToken.empty()) {
         queryString += "&pageToken=" + pageToken;
@@ -306,8 +335,17 @@ void GoogleSyncManager::deleteFile(std::string fileId) {
     curl_easy_cleanup(curl);
 
     std::clog << s << std::endl;
-    // auto json = nlohmann::json::parse(s);
+    auto json = nlohmann::json::parse(s);
     // Example response
+    auto remoteFiles = json["files"].get<std::vector<GoogleAPITypes::RemoteFile>>();
+    nlohmann::json j = remoteFiles;
+    std::cout << "json: " << j << std::endl;
+
+    if (json.contains("nextPageToken")) {
+        auto rest = fetchFileList(json["nextPageToken"].get<std::string>());
+        remoteFiles.insert(remoteFiles.end(), rest.begin(), rest.end());
+    }
+    return remoteFiles;
     // {
     //  "kind": "drive#fileList",
     //  "incompleteSearch": false,

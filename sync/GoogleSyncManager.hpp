@@ -9,6 +9,20 @@
 #include <wx/wx.h>
 #include <wx/string.h>
 #include "wx/preferences.h"
+#include <nlohmann/json.hpp>
+
+namespace GoogleAPITypes {
+    struct RemoteFile {
+        std::string id;
+        std::string name;
+        std::string mimeType;
+        std::vector<std::string> parents;
+        std::string modifiedTime;
+    };
+    void to_json(nlohmann::json& j, const RemoteFile& f);
+
+    void from_json(const nlohmann::json& j, RemoteFile& f);
+};
 
 class GoogleSyncManager
 {
@@ -25,9 +39,9 @@ public:
     void receivedAuthCode(std::string code);
     bool isGoogleLoggedIn();
     void logout();
-    void fetchFileList(std::string pageToken = "");
+    std::vector<GoogleAPITypes::RemoteFile> fetchFileList(std::string pageToken = "");
 
-    void uploadFile();
+    std::string uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents);
     void deleteFile(std::string fileId);
 
 private:
