@@ -17,13 +17,6 @@
 #define FILE_FIELDS "id,name,version,parents,mimeType,modifiedTime,size,properties"
 
 namespace GoogleAPITypes {
-    // struct RemoteFile {
-    //     std::string id;
-    //     std::string name;
-    //     std::string mimeType;
-    //     std::vector<std::string> parents;
-    //     std::string modifiedTime;
-    // };
     void to_json(nlohmann::json& j, const RemoteFile& f) {
         j = nlohmann::json{{"id", f.id}, {"name", f.name}, {"mimeType", f.mimeType}, {"parents", f.parents}, {"modifiedTime", f.modifiedTime}};
     }
@@ -53,6 +46,12 @@ size_t writefunc(void *ptr, size_t size, size_t nmemb, std::string *s)
 {
   s->append(static_cast<char *>(ptr), size*nmemb);
   return size*nmemb;
+}
+
+static size_t writeFileData(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+  size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
+  return written;
 }
 
 GoogleSyncManager::GoogleSyncManager() {
@@ -302,6 +301,30 @@ void GoogleSyncManager::deleteFile(std::string fileId) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
     CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+}
+
+void GoogleSyncManager::downloadFile(std::string fileId, std::string path) {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return;
+    }
+
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, ("https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media").c_str());
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFileData);
+
+    FILE *file = fopen(path.c_str(), "wb");
+    if(file) {
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+        CURLcode res = curl_easy_perform(curl);
+    }
+
     curl_easy_cleanup(curl);
 }
 

@@ -42,6 +42,7 @@ public:
     std::vector<GoogleAPITypes::RemoteFile> fetchFileList(std::string pageToken = "");
 
     std::string uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents);
+    void downloadFile(std::string fileId, std::string path);
     void deleteFile(std::string fileId);
 
 private:
