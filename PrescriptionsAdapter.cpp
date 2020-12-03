@@ -50,6 +50,7 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
 
     // Check if patient has already a directory, TODO: if not create one
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
 
     if (wxDir::Exists(patientDir.GetFullPath())) {
@@ -81,6 +82,7 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
     
     // 92
     // Check if patient has already a directory, if not create one
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
     
     if (wxDir::Exists(patientDir.GetFullPath())) {
@@ -106,6 +108,7 @@ void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, 
     
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
     
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
     patientDir.SetName(name);
     patientDir.SetExt("amk");
@@ -145,6 +148,10 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     // Check if patient has already a directory, if not create one
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString);
 
+    patientDir.AppendDir("amk");
+    if (!wxDirExists(patientDir.GetFullPath()))
+        wxMkdir(patientDir.GetFullPath());
+    
     patientDir.AppendDir(p->uniqueId);
     if (!wxDirExists(patientDir.GetFullPath()))
         wxMkdir(patientDir.GetFullPath());
