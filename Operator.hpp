@@ -11,16 +11,15 @@
 
 #include <wx/wx.h>
 
-// 26
-#define DEFAULTS_DOC_TITLE      "doc/title"
-#define DEFAULTS_DOC_NAME       "doc/givenname"
-#define DEFAULTS_DOC_SURNAME    "doc/familyname"
-#define DEFAULTS_DOC_ADDRESS    "doc/postaladdress"
-#define DEFAULTS_DOC_CITY       "doc/city"
-#define DEFAULTS_DOC_ZIP        "doc/zipcode"
-#define DEFAULTS_DOC_PHONE      "doc/phonenumber"
-#define DEFAULTS_DOC_EMAIL      "doc/emailaddress"
-#define DEFAULTS_DOC_COUNTRY    "doc/country"
+#define DOC_JSON_TITLE      "title"
+#define DOC_JSON_NAME       "name"
+#define DOC_JSON_SURNAME    "surname"
+#define DOC_JSON_ADDRESS    "street"
+#define DOC_JSON_CITY       "city"
+#define DOC_JSON_ZIP        "zip"
+#define DOC_JSON_PHONE      "phone"
+#define DOC_JSON_EMAIL      "email"
+#define DOC_JSON_COUNTRY    "country"
 
 // 36
 #define KEY_AMK_DOC_TITLE       "title"
@@ -34,6 +33,7 @@
 
 // 45
 #define KEY_AMK_DOC_SIGNATURE   "signature"
+#define DOC_JSON_FILENAME       "doctor.json"
 #define DOC_SIGNATURE_FILENAME  "op_signature.png"
 
 #define OPER_DICT            std::map<std::string, std::string>
