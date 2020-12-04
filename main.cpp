@@ -41,9 +41,9 @@ bool MyApp::OnInit()
     wxLanguage initialLanguage;
 
     if (wxString(APP_NAME) == "CoMed")
-        initialLanguage = wxLANGUAGE_FRENCH;
+        initialLanguage = wxLANGUAGE_FRENCH_SWISS;
     else
-        initialLanguage = wxLANGUAGE_GERMAN;
+        initialLanguage = wxLANGUAGE_GERMAN_SWISS;
 
     DefaultsController* defaults = DefaultsController::Instance();
     m_lang = (wxLanguage)defaults->getInt("language", initialLanguage);

@@ -129,9 +129,10 @@ MainWindow::MainWindow( wxWindow* parent )
 , healthCard(nullptr)
 {
 #ifndef NDEBUG
-    std::cerr << "PROJECT: "<< PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
+    std::cerr << "PROJECT: " << PROJECT_NAME << "\nAPP: " << APP_NAME << std::endl;
     wxASSERT_MSG((wxID_BTN_PREPARATION+6-1) == wxID_BTN_FULL_TEXT,
                  wxT("defines must be consecutive"));
+    std::cerr << "UTF8 locale: "<< wxLocaleIsUtf8 << std::endl;
 #endif
     if (wxString(APP_NAME) == "CoMed") {
         m_toolAbout->SetLabel("CoMed Desitin");
