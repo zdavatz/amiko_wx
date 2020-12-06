@@ -7,6 +7,7 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <chrono>
 
 namespace UTI
 {
@@ -18,5 +19,6 @@ wxString currentTime();
 wxString prettyTime();
 wxString getColorCss();
 wxString sha256(const wxString str);
-
+std::string timeToString(std::chrono::time_point<std::chrono::system_clock> timePoint);
+std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inputStr);
 }

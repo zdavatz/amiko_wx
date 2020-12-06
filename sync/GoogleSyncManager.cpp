@@ -13,6 +13,10 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
+#include <wx/filename.h>
+#include <wx/dir.h>
+#include "../Operator.hpp"
 
 #define FILE_FIELDS "id,name,version,parents,mimeType,modifiedTime,size,properties"
 
@@ -52,6 +56,31 @@ static size_t writeFileData(void *ptr, size_t size, size_t nmemb, void *stream)
 {
   size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
   return written;
+}
+
+void debugLogRemoteMap(std::map<std::string, GoogleAPITypes::RemoteFile> map) {
+    for (auto const& x : map)
+    {
+        std::clog << x.first  // string (key)
+                  << ": RemoteFile("
+                  << x.second.name // string's value 
+                  << ")"
+                  << std::endl ;
+    }
+}
+
+void debugLogStringSet(std::set<std::string> stringSet) {
+    for (auto const& x : stringSet)
+    {
+        std::clog << x << std::endl;
+    }
+}
+
+void debugLogStringMap(std::map<std::string, std::string> stringMap) {
+    for (auto const& x : stringMap)
+    {
+        std::clog << x.first << ": " << x.second << std::endl;
+    }
 }
 
 GoogleSyncManager::GoogleSyncManager() {
@@ -110,11 +139,7 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
 
     auto now = std::chrono::system_clock::now();
     auto expire = now + std::chrono::seconds(expires);
-    std::time_t expireT = std::chrono::system_clock::to_time_t(expire);
-
-    std::ostringstream ss;
-    ss << std::put_time(gmtime(&expireT), "%FT%TZ");
-    std::string expireIsoString = ss.str();
+    auto expireIsoString = UTI::timeToString(expire);
 
 #ifndef NDEBUG
     std::clog << "Access token: " << accessToken << std::endl;
@@ -143,30 +168,8 @@ std::string GoogleSyncManager::getAccessToken() {
     if (expireStr.IsEmpty()) {
         return "";
     }
-    std::string expireStdStr = expireStr.ToStdString();
-    std::tm tm = {};
-    std::stringstream ss(expireStdStr);
-    ss >> std::get_time(&tm, "%FT%TZ");
-
-    const time_t expiredInUTC =
-    #if defined(_WIN32)
-        _mkgmtime(&tm);
-    #else // Assume POSIX
-        timegm(&tm);
-    #endif
-    auto expire = std::chrono::system_clock::from_time_t(expiredInUTC);
+    auto expire = UTI::stringToTime(expireStr.ToStdString());
     auto now = std::chrono::system_clock::now();
-
-    std::time_t tempExpireT = std::chrono::system_clock::to_time_t(expire);
-    std::ostringstream ssEx;
-    ssEx << std::put_time(gmtime(&tempExpireT), "%FT%TZ");
-    std::cout << "expire: " << ssEx.str() << std::endl;
-
-    std::time_t nowT = std::chrono::system_clock::to_time_t(now);
-    std::ostringstream ssNow;
-    ssNow << std::put_time(gmtime(&nowT), "%FT%TZ");
-    std::cout << "now: " << ssNow.str() << std::endl;
-    
 
     if (now < expire) {
         wxString at = defaults->getString("google-access-token", "");
@@ -328,7 +331,7 @@ void GoogleSyncManager::downloadFile(std::string fileId, std::string path) {
     curl_easy_cleanup(curl);
 }
 
-std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::fetchFileList(std::string pageToken) {
+std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::listRemoteFilesAndFolders(std::string pageToken) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
         return {};
@@ -342,7 +345,6 @@ std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::fetchFileList(std::st
     if (!pageToken.empty()) {
         queryString += "&pageToken=" + pageToken;
     }
-
 
     CURL *curl = curl_easy_init();
     std::string s;
@@ -360,15 +362,6 @@ std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::fetchFileList(std::st
     std::clog << s << std::endl;
     auto json = nlohmann::json::parse(s);
     // Example response
-    auto remoteFiles = json["files"].get<std::vector<GoogleAPITypes::RemoteFile>>();
-    nlohmann::json j = remoteFiles;
-    std::cout << "json: " << j << std::endl;
-
-    if (json.contains("nextPageToken")) {
-        auto rest = fetchFileList(json["nextPageToken"].get<std::string>());
-        remoteFiles.insert(remoteFiles.end(), rest.begin(), rest.end());
-    }
-    return remoteFiles;
     // {
     //  "kind": "drive#fileList",
     //  "incompleteSearch": false,
@@ -381,4 +374,220 @@ std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::fetchFileList(std::st
     //   }
     //  ]
     // }
+    auto remoteFiles = json["files"].get<std::vector<GoogleAPITypes::RemoteFile>>();
+    nlohmann::json j = remoteFiles;
+    std::cout << "json: " << j << std::endl;
+
+    if (json.contains("nextPageToken")) {
+        auto rest = listRemoteFilesAndFolders(json["nextPageToken"].get<std::string>());
+        remoteFiles.insert(remoteFiles.end(), rest.begin(), rest.end());
+    }
+    return remoteFiles;
+}
+
+std::map<std::string, GoogleAPITypes::RemoteFile> remoteFilesToMap(std::vector<GoogleAPITypes::RemoteFile> remoteFiles) {
+    std::map<std::string, GoogleAPITypes::RemoteFile> idMap;
+    for (auto remoteFile : remoteFiles) {
+        idMap[remoteFile.id] = remoteFile;
+    }
+
+    std::map<std::string, GoogleAPITypes::RemoteFile> fileMap;
+    for (auto remoteFile : remoteFiles) {
+        wxFileName filename;
+        filename.SetFullName(remoteFile.name);
+        if (!remoteFile.parents.empty()) {
+            std::string fileId = remoteFile.parents[0];
+            do {
+                if (idMap.find(fileId) != idMap.end()) {
+                    GoogleAPITypes::RemoteFile parent = idMap[fileId];
+                    filename.PrependDir(wxString(parent.name));
+                    if (!parent.parents.empty()) {
+                        fileId = parent.parents[0];
+                    } else {
+                        break;
+                    }
+                } else {
+                    fileId = "";
+                }
+            } while (!fileId.empty());
+        }
+
+        fileMap[filename.GetFullPath().ToStdString()] = remoteFile;
+    }
+    return fileMap;
+}
+
+std::set<std::string> GoogleSyncManager::listLocalFilesAndFolders(wxString path) {
+    wxArrayString filenameStrs;
+    std::set<std::string> localFiles;
+    wxDir::GetAllFiles(path, &filenameStrs);
+    for (auto filenameStr : filenameStrs) {
+        wxFileName filename(filenameStr);
+        filename.MakeRelativeTo(path);
+        if (shouldSyncLocalFile(filename)) {
+            localFiles.insert(filename.GetFullPath().ToStdString());
+        }
+    }
+    return localFiles;
+}
+
+// Remove patient files from remote file map
+// Return a <patient-id : remote file> map
+std::map<std::string, GoogleAPITypes::RemoteFile> extractPatientsFromRemoteFiles(std::map<std::string, GoogleAPITypes::RemoteFile> *filesPtr) {
+    std::map<std::string, GoogleAPITypes::RemoteFile> patients;
+    auto files = *filesPtr;
+    for (auto entry : files) {
+        auto filename = wxFileName(wxString(entry.first));
+        auto dirs = filename.GetDirs();
+        if (!dirs.IsEmpty() && dirs[0].ToStdString() == "patients") {
+            patients[filename.GetFullName().ToStdString()] = entry.second;
+        }
+    }
+    for (auto entry : patients) {
+        std::string filename = "patients" + wxString(wxFILE_SEP_PATH).ToStdString() + entry.first;
+        size_t deleted = files.erase(filename);
+    }
+    *filesPtr = files;
+    return patients;
+}
+
+std::map<std::string, long> localFileVersionMap() {
+    std::map<std::string, long> map;
+    try {
+        std::string path = (UTI::documentsDirectory() + wxFILE_SEP_PATH + "googleSync" + wxFILE_SEP_PATH + "versions.json").ToStdString();
+        std::ifstream i(path);
+        nlohmann::json json;
+        i >> json;
+
+        for (auto& el : json.items()) {
+            map[el.key()] = el.value().get<long>();
+        }
+    } catch (...) {}
+    return map;
+}
+
+bool GoogleSyncManager::shouldSyncLocalFile(wxFileName path) {
+    wxString fullPath = path.GetFullPath();
+    if (path.GetFullName() == ".DS_Store") {
+        return false;
+    }
+    if (fullPath.ToStdString() == DOC_JSON_FILENAME || fullPath.ToStdString() == DOC_SIGNATURE_FILENAME) {
+        return true;
+    }
+    auto dirs = path.GetDirs();
+    if (!dirs.IsEmpty() && dirs[0].ToStdString() == "amk") {
+        return true;
+    }
+    return false;
+}
+
+void GoogleSyncManager::sync() {
+    std::cout << "Start syncing" << std::endl;
+
+    if (!this->isGoogleLoggedIn()) {
+        return;
+    }
+
+    std::vector<GoogleAPITypes::RemoteFile> remoteFiles = this->listRemoteFilesAndFolders();
+    auto remoteFilesMap = remoteFilesToMap(remoteFiles);
+    std::map<std::string, GoogleAPITypes::RemoteFile> remotePatientFilesMap = extractPatientsFromRemoteFiles(&remoteFilesMap);
+    std::map<std::string, long> localVersionMap = localFileVersionMap();
+
+    std::clog << "remote files:" << std::endl;
+    debugLogRemoteMap(remoteFilesMap);
+    std::clog << "remote patient:" << std::endl;
+    debugLogRemoteMap(remotePatientFilesMap);
+
+    std::set<std::string> localFiles = this->listLocalFilesAndFolders();
+    std::clog << "local files:" << std::endl;
+    debugLogStringSet(localFiles);
+
+    std::set<std::string> pathsToCreate;
+    std::map<std::string, std::string> pathsToUpdate; // { path: remote file id }
+    std::map<std::string, std::string> pathsToDownload; // { path: remote file id }
+    std::set<std::string> localFilesToDelete;
+    std::set<std::string> remoteFilesToDelete;
+
+    {
+        pathsToCreate.insert(localFiles.begin(), localFiles.end());
+        for (auto const& entry : localVersionMap) {
+            pathsToCreate.erase(entry.first);
+        }
+        for (auto const& entry : remoteFilesMap) {
+            pathsToCreate.erase(entry.first);
+        }
+    }
+    for (auto const& entry : localVersionMap) {
+        auto path = entry.first;
+        bool localHasFile = localFiles.find(path) != localFiles.end();
+        bool remoteHasFile = remoteFilesMap.find(path) != remoteFilesMap.end();
+
+        if (localHasFile && remoteHasFile) {
+            long localVersion = localVersionMap[path];
+            wxFileName filename = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + path);
+            GoogleAPITypes::RemoteFile remoteFile = remoteFilesMap[path];
+
+            long remoteVersion = std::stol(remoteFile.version);
+
+            if (filename.IsDir() || remoteFile.mimeType == "application/vnd.google-apps.folder") {
+                continue;
+            }
+            if (remoteVersion == localVersion) {
+                wxDateTime localModified = filename.GetModificationTime();
+                wxDateTime remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
+                if (localModified.IsLaterThan(remoteModified)) {
+                    pathsToUpdate[path] = remoteFile.id;
+                }
+            } else if (remoteVersion > localVersion) {
+                pathsToDownload[path] = remoteFile.id;
+            }
+        }
+        if (!localHasFile && remoteHasFile) {
+            GoogleAPITypes::RemoteFile remoteFile = remoteFilesMap[path];
+            if (remoteFile.mimeType != "application/vnd.google-apps.folder") {
+                remoteFilesToDelete.insert(path);
+            }
+        }
+        if (localHasFile && !remoteHasFile) {
+            localFilesToDelete.insert(path);
+        }
+    }
+
+    for (const auto entry : remoteFilesMap) {
+        std::string path = entry.first;
+        GoogleAPITypes::RemoteFile remoteFile = remoteFilesMap[path];
+        if (remoteFile.mimeType == "application/vnd.google-apps.folder") {
+            continue;
+        }
+        if (localVersionMap.find(path) != localVersionMap.end()) {
+            // We already handled this in the above loop
+            continue;
+        }
+        if (localFiles.find(path) != localFiles.end()) {
+            // File exist both on server and local, but has no local version
+            wxFileName filename = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + path);
+            wxDateTime localModified = filename.GetModificationTime();
+            auto remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
+            if (localModified.IsLaterThan(remoteModified)) {
+                pathsToUpdate[path] = remoteFile.id;
+            } else if (localModified.IsEarlierThan(remoteModified)) {
+                pathsToDownload[path] = remoteFile.id;
+            }
+        } else {
+            pathsToDownload[path] = remoteFile.id;
+        }
+    }
+
+    std::clog << "pathsToCreate: " << std::endl;
+    debugLogStringSet(pathsToCreate);
+    std::clog << "pathsToUpdate: " << std::endl;
+    debugLogStringMap(pathsToUpdate);
+    std::clog << "pathsToDownload: " << std::endl;
+    debugLogStringMap(pathsToDownload);
+    std::clog << "localFilesToDelete: " << std::endl;
+    debugLogStringSet(localFilesToDelete);
+    std::clog << "remoteFilesToDelete: " << std::endl;
+    debugLogStringSet(remoteFilesToDelete);
+    std::clog << "pathsToCreate: " << std::endl;
+    debugLogStringSet(pathsToCreate);
 }

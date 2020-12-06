@@ -130,4 +130,27 @@ wxString sha256(const wxString str)
     return ss.str();
 }
 
+std::string timeToString(std::chrono::time_point<std::chrono::system_clock> timePoint)
+{
+    std::time_t timePointT = std::chrono::system_clock::to_time_t(timePoint);
+    std::ostringstream ss;
+    ss << std::put_time(gmtime(&timePointT), "%FT%TZ");
+    return ss.str();
+}
+
+std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inputStr)
+{
+    std::tm tm = {};
+    std::stringstream ss(inputStr);
+    ss >> std::get_time(&tm, "%FT%TZ");
+
+    const time_t timeInUTC =
+    #if defined(_WIN32)
+        _mkgmtime(&tm);
+    #else // Assume POSIX
+        timegm(&tm);
+    #endif
+    return std::chrono::system_clock::from_time_t(timeInUTC);
+}
+
 }
