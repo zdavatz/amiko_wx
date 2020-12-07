@@ -22,6 +22,7 @@ namespace GoogleAPITypes {
         std::vector<std::string> parents;
         std::string modifiedTime;
         std::string version;
+        std::string size;
     };
     void to_json(nlohmann::json& j, const RemoteFile& f);
 
@@ -45,6 +46,11 @@ public:
     void logout();
     
     void sync();
+    
+    void deleteFile(std::string fileId);
+    GoogleAPITypes::RemoteFile createFolder(std::string name, std::vector<std::string> parents);
+    GoogleAPITypes::RemoteFile uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents);
+    GoogleAPITypes::RemoteFile updateFile(std::string fileId, std::string filePath);
 
 private:
     static GoogleSyncManager* m_pInstance;
@@ -52,8 +58,7 @@ private:
     std::vector<GoogleAPITypes::RemoteFile> listRemoteFilesAndFolders(std::string pageToken = "");
     std::set<std::string> listLocalFilesAndFolders(wxString path = UTI::documentsDirectory());
 
-    std::string uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents);
     void downloadFile(std::string fileId, std::string path);
-    void deleteFile(std::string fileId);
+    
     bool shouldSyncLocalFile(wxFileName path);
 };

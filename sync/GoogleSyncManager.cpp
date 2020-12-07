@@ -12,6 +12,7 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <wx/filename.h>
@@ -238,15 +239,59 @@ std::string GoogleSyncManager::getAccessToken() {
     return accessToken;
 }
 
-std::string GoogleSyncManager::uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents) {
+GoogleAPITypes::RemoteFile GoogleSyncManager::createFolder(std::string name, std::vector<std::string> parents) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
-        return "";
+        return {};
     }
 
     CURL *curl = curl_easy_init();
     std::string s;
-    curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+    curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/drive/v3/files?fields=" FILE_FIELDS);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    chunk = curl_slist_append(chunk, "Content-Type: application/json; charset: utf-8");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    nlohmann::json metadata;
+    metadata["name"] = name;
+    metadata["mimeType"] = "application/vnd.google-apps.folder";
+    if (!parents.empty()) {
+        metadata["parents"] = parents;
+    } else {
+        metadata["parents"] = {"appDataFolder"};
+    }
+    auto postData = metadata.dump();
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    std::clog << s << std::endl;
+    // Example response
+    // {
+    //  "kind": "drive#file",
+    //  "id": "1NvrC5PUAH_-AUmE6R_YrkS_M8KFNWLofWaFOeqIznFOq6iyFDA",
+    //  "name": "testFolder",
+    //  "mimeType": "application/vnd.google-apps.folder"
+    // }
+    auto json = nlohmann::json::parse(s);
+    GoogleAPITypes::RemoteFile file = json;
+    return file;
+}
+
+GoogleAPITypes::RemoteFile GoogleSyncManager::uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents) {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return {};
+    }
+
+    CURL *curl = curl_easy_init();
+    std::string s;
+    curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=" FILE_FIELDS);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
 
@@ -277,7 +322,6 @@ std::string GoogleSyncManager::uploadFile(std::string name, std::string filePath
     curl_easy_cleanup(curl);
 
     std::clog << s << std::endl;
-    // auto json = nlohmann::json::parse(s);
     // Example response
     // {
     //  "kind": "drive#file",
@@ -286,7 +330,59 @@ std::string GoogleSyncManager::uploadFile(std::string name, std::string filePath
     //  "mimeType": "image/png"
     // }
     auto json = nlohmann::json::parse(s);
-    return json["id"].get<std::string>();
+    GoogleAPITypes::RemoteFile file = json;
+    return file;
+}
+
+GoogleAPITypes::RemoteFile GoogleSyncManager::updateFile(std::string fileId, std::string filePath) {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return {};
+    }
+
+    CURL *curl = curl_easy_init();
+    std::string s;
+    curl_easy_setopt(curl, CURLOPT_URL, ("https://www.googleapis.com/upload/drive/v3/files/" + fileId + "?uploadType=multipart&fields=" + FILE_FIELDS).c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    curl_mime *form = curl_mime_init(curl);
+    curl_mimepart *field = NULL;
+
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "metadata");
+    nlohmann::json metadata;
+    curl_mime_data(field, metadata.dump().c_str(), CURL_ZERO_TERMINATED);
+    curl_mime_type(field, "application/json; charset=UTF-8");
+
+    /* Fill in the file upload field */ 
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "file");
+    curl_mime_filedata(field, filePath.c_str());
+    // curl_mime_type(field, mimeType.c_str());
+    curl_mime_type(field, "application/octet-stream");
+
+    curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    std::clog << s << std::endl;
+    // Example response
+    // {
+    //  "kind": "drive#file",
+    //  "id": "1NvrC5PUAH_-AUmE6R_YrkS_M8KFNWLofWaFOeqIznFOq6iyFDA",
+    //  "name": "hk.png",
+    //  "mimeType": "image/png"
+    // }
+    auto json = nlohmann::json::parse(s);
+    GoogleAPITypes::RemoteFile file = json;
+    return file;
 }
 
 void GoogleSyncManager::deleteFile(std::string fileId) {
@@ -588,6 +684,151 @@ void GoogleSyncManager::sync() {
     debugLogStringSet(localFilesToDelete);
     std::clog << "remoteFilesToDelete: " << std::endl;
     debugLogStringSet(remoteFilesToDelete);
-    std::clog << "pathsToCreate: " << std::endl;
-    debugLogStringSet(pathsToCreate);
+
+    // Create folders on Google drive
+    {
+        std::set<std::string> allFoldersToCreate;
+        for (const auto& path : localFiles) {
+            wxFileName filename = wxFileName(path);
+            std::string parentPath = filename.GetPath().ToStdString();
+            if (!parentPath.empty()) {
+                if (remoteFilesMap.find(parentPath) == remoteFilesMap.end()) {
+                    // not exist in remote
+                    allFoldersToCreate.insert(parentPath);
+                }
+            }
+        }
+        while (true) {
+            if (allFoldersToCreate.empty()) {
+                break;
+            }
+            std::set<std::string> foldersCreated;
+            for (std::string folderToCreate : allFoldersToCreate) {
+                wxFileName folderName = wxFileName(folderToCreate);
+                wxFileName absolutePath = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + folderToCreate);
+
+                bool atRoot = folderName.GetPath().ToStdString() == UTI::documentsDirectory().ToStdString();
+                std::string parentRelativeToFilesDir = wxFileName(folderToCreate).GetPath().ToStdString(); // Parent of this folder
+                if (!atRoot && remoteFilesMap.find(parentRelativeToFilesDir) == remoteFilesMap.end()) {
+                    // parent is not created yet, skip this
+                    continue;
+                }
+                GoogleAPITypes::RemoteFile remoteParent = remoteFilesMap[parentRelativeToFilesDir];
+                GoogleAPITypes::RemoteFile createdFolder;
+                if (atRoot) {
+                    createdFolder = createFolder(folderName.GetFullName().ToStdString(), {"appDataFolder"});
+                } else {
+                    createdFolder = createFolder(folderName.GetFullName().ToStdString(), {remoteParent.id});
+                }
+                remoteFilesMap[folderToCreate] = createdFolder;
+                foldersCreated.insert(folderToCreate);
+            }
+            allFoldersToCreate.erase(foldersCreated.begin(), foldersCreated.end());
+        }
+    }
+
+    // create files
+    {
+        std::set<std::string> toRemove;
+        for (std::string pathToCreate : pathsToCreate) {
+            wxFileName filename = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + pathToCreate);
+            wxString parentFilename = filename.GetPath();
+            bool atRoot = parentFilename.IsSameAs(UTI::documentsDirectory());
+            std::string parentRelativeToFilesDir = wxFileName(pathToCreate).GetPath().ToStdString();
+            if (remoteFilesMap.find(parentRelativeToFilesDir) == remoteFilesMap.end()) {
+                std::cerr << "Cannot find remote parent for: " << parentRelativeToFilesDir << std::endl;
+                continue;
+            }
+            GoogleAPITypes::RemoteFile remoteParent = remoteFilesMap[parentRelativeToFilesDir];
+
+            if (!atRoot && remoteParent.mimeType != "application/vnd.google-apps.folder") {
+                std::cerr << "remoteParent is not a folder? " << remoteParent.mimeType << std::endl;
+            }
+
+            std::clog << "Uploading new files: " << pathToCreate << std::endl;
+
+            // try {
+                auto uploadedFile = uploadFile(
+                    filename.GetFullName().ToStdString(), // file name
+                    filename.GetFullPath().ToStdString(), // path of the file content
+                    "application/octet-stream",
+                    {atRoot ? "appDataFolder" : remoteParent.id} // parent folder
+                );
+
+                std::clog << "Uploaded: " << uploadedFile.id << std::endl;
+
+                toRemove.insert(pathToCreate);
+                remoteFilesMap[pathToCreate] = uploadedFile;
+            // } catch (...) {}
+        }
+        for (auto r : toRemove) {
+            pathsToCreate.erase(r);
+        }
+    }
+
+    // update files
+    {
+        std::set<std::string> toRemove;
+        for (const auto& entry : pathsToUpdate) {
+            std::string path = entry.first;
+            std::string fileId = pathsToUpdate[path];
+            // try {
+                std::clog << "Updating: " << path << std::endl;
+                GoogleAPITypes::RemoteFile remoteFile = updateFile(fileId, path);
+                toRemove.insert(path);
+                remoteFilesMap[path] = remoteFile;
+                std::clog << "Updated: " << remoteFile.id << std::endl;
+            // } catch (...) {}
+        }
+        for (auto r : toRemove) {
+            pathsToUpdate.erase(r);
+        }
+    }
+
+    // delete files
+    {
+        std::set<std::string> toRemove;
+        for (std::string path : remoteFilesToDelete) {
+            GoogleAPITypes::RemoteFile remoteFile = remoteFilesMap[path];
+            deleteFile(remoteFile.id);
+
+            std::clog << "Deleting: " << remoteFile.id << " " << path << std::endl;
+            toRemove.insert(path);
+            remoteFilesMap.erase(path);
+            std::clog << "Deleted" << std::endl;
+        }
+        remoteFilesToDelete.erase(toRemove.begin(), toRemove.end());
+    }
+
+    // download remote files
+    {
+        for (const auto& entry : pathsToDownload) {
+            std::string path = entry.first;
+            wxFileName filename = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + path);
+            wxFileName parent = wxFileName(filename.GetPath());
+            std::string fileId = entry.second;
+            GoogleAPITypes::RemoteFile remoteFile = remoteFilesMap[path];
+            UTI::ensureDirectory(parent);
+
+            if (remoteFile.size == "0") {
+                continue;
+            }
+            std::clog << "Downloading " << fileId << " " << path << std::endl;
+            downloadFile(fileId, path);
+            std::clog << "Downloaded" << std::endl;
+        }
+    }
+
+    // delete local files
+    {
+        for (std::string path : localFilesToDelete) {
+            std::clog << "Deleting " << path << std::endl;
+            wxFileName filename = wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + path);
+            if (filename.IsDir()) {
+                filename.Rmdir();
+            } else {
+                remove(filename.GetFullPath().ToStdString().c_str());
+            }
+        }
+    }
 }

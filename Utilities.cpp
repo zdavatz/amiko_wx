@@ -153,4 +153,12 @@ std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inp
     return std::chrono::system_clock::from_time_t(timeInUTC);
 }
 
+void ensureDirectory(wxFileName filename) {
+    wxFileName parent = wxFileName(filename.GetPath());
+    if (!parent.IsDir()) {
+        ensureDirectory(parent);
+    }
+    filename.Mkdir();
+}
+
 }
