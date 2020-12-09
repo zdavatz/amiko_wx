@@ -23,7 +23,15 @@
 
 namespace GoogleAPITypes {
     void to_json(nlohmann::json& j, const RemoteFile& f) {
-        j = nlohmann::json{{"id", f.id}, {"name", f.name}, {"mimeType", f.mimeType}, {"parents", f.parents}, {"modifiedTime", f.modifiedTime}};
+        j = nlohmann::json{
+            {"id", f.id}, 
+            {"name", f.name}, 
+            {"mimeType", f.mimeType}, 
+            {"parents", f.parents}, 
+            {"modifiedTime", f.modifiedTime},
+            {"version", f.version},
+            {"size", f.size}
+        };
     }
 
     void from_json(const nlohmann::json& j, RemoteFile& f) {
@@ -32,6 +40,10 @@ namespace GoogleAPITypes {
         j.at("mimeType").get_to(f.mimeType);
         j.at("parents").get_to(f.parents);
         j.at("modifiedTime").get_to(f.modifiedTime);
+        j.at("version").get_to(f.version);
+        if (j.contains("size")) {
+            j.at("size").get_to(f.size);
+        }
     }
 }
 
@@ -64,7 +76,9 @@ void debugLogRemoteMap(std::map<std::string, GoogleAPITypes::RemoteFile> map) {
     {
         std::clog << x.first  // string (key)
                   << ": RemoteFile("
-                  << x.second.name // string's value 
+                  << x.second.name
+                  << ","
+                  << x.second.version
                   << ")"
                   << std::endl ;
     }
@@ -289,6 +303,10 @@ GoogleAPITypes::RemoteFile GoogleSyncManager::uploadFile(std::string name, std::
         return {};
     }
 
+    if (parents.empty()) {
+        parents = {"appDataFolder"};
+    }
+
     CURL *curl = curl_easy_init();
     std::string s;
     curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=" FILE_FIELDS);
@@ -307,6 +325,7 @@ GoogleAPITypes::RemoteFile GoogleSyncManager::uploadFile(std::string name, std::
     nlohmann::json metadata;
     metadata["name"] = name;
     metadata["parents"] = parents;
+    metadata["modifiedTime"] = UTI::timeToString(std::chrono::system_clock::from_time_t(wxFileName(filePath).GetModificationTime().GetTicks()));
     curl_mime_data(field, metadata.dump().c_str(), CURL_ZERO_TERMINATED);
     curl_mime_type(field, "application/json; charset=UTF-8");
 
@@ -422,6 +441,7 @@ void GoogleSyncManager::downloadFile(std::string fileId, std::string path) {
     if(file) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
         CURLcode res = curl_easy_perform(curl);
+        fclose(file);
     }
 
     curl_easy_cleanup(curl);
@@ -481,6 +501,7 @@ std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::listRemoteFilesAndFol
     return remoteFiles;
 }
 
+// {Path : RemoteFile}
 std::map<std::string, GoogleAPITypes::RemoteFile> remoteFilesToMap(std::vector<GoogleAPITypes::RemoteFile> remoteFiles) {
     std::map<std::string, GoogleAPITypes::RemoteFile> idMap;
     for (auto remoteFile : remoteFiles) {
@@ -558,8 +579,23 @@ std::map<std::string, long> localFileVersionMap() {
         for (auto& el : json.items()) {
             map[el.key()] = el.value().get<long>();
         }
-    } catch (...) {}
+    } catch (std::exception& e) {
+        std::clog << "file version: " << e.what() << std::endl;
+    }
     return map;
+}
+
+void saveLocalFileVersionMap(std::map<std::string, long> map) {
+    try {
+        wxString syncDir = UTI::documentsDirectory() + wxFILE_SEP_PATH + "googleSync";
+        std::string path = (syncDir + wxFILE_SEP_PATH + "versions.json").ToStdString();
+        UTI::ensureDirectory(wxFileName(syncDir.ToStdString()));
+        std::ofstream o(path);
+        nlohmann::json json = map;
+        o << json;
+    } catch (std::exception &e) {
+        std::clog << "save file version: " << e.what() << std::endl;
+    }
 }
 
 bool GoogleSyncManager::shouldSyncLocalFile(wxFileName path) {
@@ -575,6 +611,19 @@ bool GoogleSyncManager::shouldSyncLocalFile(wxFileName path) {
         return true;
     }
     return false;
+}
+
+std::map<std::string, long> remoteFilesToVersionMap(std::map<std::string, GoogleAPITypes::RemoteFile> remoteFilesMap) {
+    std::map<std::string, long> versionMap;
+    for (const auto& remoteFile : remoteFilesMap) {
+        std::clog << remoteFile.first << ":" << remoteFile.second.version << std::endl;
+        try {
+            versionMap[remoteFile.first] = std::stol(remoteFile.second.version);
+        } catch (std::exception & e) {
+            std::clog << e.what() << std::endl;
+        }
+    }
+    return versionMap;
 }
 
 void GoogleSyncManager::sync() {
@@ -632,6 +681,7 @@ void GoogleSyncManager::sync() {
                 wxDateTime localModified = filename.GetModificationTime();
                 wxDateTime remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
                 if (localModified.IsLaterThan(remoteModified)) {
+                    std::clog << "want to update1: " << path << std::endl;
                     pathsToUpdate[path] = remoteFile.id;
                 }
             } else if (remoteVersion > localVersion) {
@@ -665,6 +715,7 @@ void GoogleSyncManager::sync() {
             wxDateTime localModified = filename.GetModificationTime();
             auto remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
             if (localModified.IsLaterThan(remoteModified)) {
+                std::clog << "want to update2: " << path << std::endl;
                 pathsToUpdate[path] = remoteFile.id;
             } else if (localModified.IsEarlierThan(remoteModified)) {
                 pathsToDownload[path] = remoteFile.id;
@@ -723,7 +774,9 @@ void GoogleSyncManager::sync() {
                 remoteFilesMap[folderToCreate] = createdFolder;
                 foldersCreated.insert(folderToCreate);
             }
-            allFoldersToCreate.erase(foldersCreated.begin(), foldersCreated.end());
+            for (auto a : foldersCreated) {
+                allFoldersToCreate.erase(a);
+            }
         }
     }
 
@@ -772,13 +825,15 @@ void GoogleSyncManager::sync() {
         for (const auto& entry : pathsToUpdate) {
             std::string path = entry.first;
             std::string fileId = pathsToUpdate[path];
-            // try {
+            try {
                 std::clog << "Updating: " << path << std::endl;
-                GoogleAPITypes::RemoteFile remoteFile = updateFile(fileId, path);
+                GoogleAPITypes::RemoteFile remoteFile = updateFile(fileId, wxFileName(UTI::documentsDirectory() + wxFILE_SEP_PATH + path).GetFullPath().ToStdString());
                 toRemove.insert(path);
                 remoteFilesMap[path] = remoteFile;
                 std::clog << "Updated: " << remoteFile.id << std::endl;
-            // } catch (...) {}
+            } catch (const std::exception& e) {
+                std::clog << e.what() << std::endl;
+            }
         }
         for (auto r : toRemove) {
             pathsToUpdate.erase(r);
@@ -797,7 +852,9 @@ void GoogleSyncManager::sync() {
             remoteFilesMap.erase(path);
             std::clog << "Deleted" << std::endl;
         }
-        remoteFilesToDelete.erase(toRemove.begin(), toRemove.end());
+        for (auto a : toRemove) {
+            remoteFilesToDelete.erase(a);
+        }
     }
 
     // download remote files
@@ -813,9 +870,10 @@ void GoogleSyncManager::sync() {
             if (remoteFile.size == "0") {
                 continue;
             }
-            std::clog << "Downloading " << fileId << " " << path << std::endl;
-            downloadFile(fileId, path);
+            std::clog << "Downloading " << fileId << " " << filename.GetFullPath().ToStdString() << std::endl;
+            downloadFile(fileId, filename.GetFullPath().ToStdString());
             std::clog << "Downloaded" << std::endl;
+            UTI::setFileModifiedTime(filename.GetFullPath().ToStdString(), UTI::stringToTime(remoteFile.modifiedTime));
         }
     }
 
@@ -830,5 +888,13 @@ void GoogleSyncManager::sync() {
                 remove(filename.GetFullPath().ToStdString().c_str());
             }
         }
+    }
+
+    try {
+        std::clog << "Saving versions" << std::endl;
+        saveLocalFileVersionMap(remoteFilesToVersionMap(remoteFilesMap));
+        std::clog << "Saved versions, sync complete" << std::endl;
+    } catch (const std::exception& e) {
+        std::clog << "Error: " << e.what() << std::endl;
     }
 }
