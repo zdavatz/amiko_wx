@@ -23,4 +23,5 @@ wxString sha256(const wxString str);
 std::string timeToString(std::chrono::time_point<std::chrono::system_clock> timePoint);
 std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inputStr);
 void ensureDirectory(wxFileName filename);
+void setFileModifiedTime(std::string filepath, std::chrono::time_point<std::chrono::system_clock> timePoint);
 }

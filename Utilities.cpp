@@ -8,6 +8,9 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <time.h>
+#include <utime.h>
+#include <sys/stat.h>
 
 #include <wx/wx.h>
 #include <wx/wfstream.h>
@@ -138,7 +141,7 @@ std::string timeToString(std::chrono::time_point<std::chrono::system_clock> time
     return ss.str();
 }
 
-std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inputStr)
+std::chrono::time_point<std::chrono::system_clock> stringToTime(std::string inputStr)
 {
     std::tm tm = {};
     std::stringstream ss(inputStr);
@@ -154,11 +157,25 @@ std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inp
 }
 
 void ensureDirectory(wxFileName filename) {
-    wxFileName parent = wxFileName(filename.GetPath());
-    if (!parent.IsDir()) {
-        ensureDirectory(parent);
+    if (wxDirExists(filename.GetFullPath())) {
+        return;
     }
-    filename.Mkdir();
+    wxFileName parent = wxFileName(filename.GetPath());
+    if (!wxDirExists(parent.GetPath())) {
+        ensureDirectory(parent);
+    } else {
+    }
+    wxMkdir(filename.GetFullPath());
+}
+
+void setFileModifiedTime(std::string filepath, std::chrono::time_point<std::chrono::system_clock> timePoint) {
+    struct stat foo;
+    struct utimbuf new_times;
+
+    stat(filepath.c_str(), &foo);
+    new_times.actime = foo.st_atime; /* keep atime unchanged */
+    new_times.modtime = std::chrono::system_clock::to_time_t(timePoint);    /* set mtime to current time */
+    utime(filepath.c_str(), &new_times);
 }
 
 }

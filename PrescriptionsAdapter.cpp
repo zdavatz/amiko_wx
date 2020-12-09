@@ -149,12 +149,14 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString);
 
     patientDir.AppendDir("amk");
-    if (!wxDirExists(patientDir.GetFullPath()))
+    if (!wxDirExists(patientDir.GetFullPath())) {
         wxMkdir(patientDir.GetFullPath());
+    }
     
     patientDir.AppendDir(p->uniqueId);
-    if (!wxDirExists(patientDir.GetFullPath()))
+    if (!wxDirExists(patientDir.GetFullPath())) {
         wxMkdir(patientDir.GetFullPath());
+    }
 
     if (overwrite) {
         // Delete old file
