@@ -161,9 +161,8 @@ void ensureDirectory(wxFileName filename) {
         return;
     }
     wxFileName parent = wxFileName(filename.GetPath());
-    if (!wxDirExists(parent.GetPath())) {
+    if (!wxDirExists(parent.GetFullPath())) {
         ensureDirectory(parent);
-    } else {
     }
     wxMkdir(filename.GetFullPath());
 }
