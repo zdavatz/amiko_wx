@@ -8,6 +8,9 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <time.h>
+#include <utime.h>
+#include <sys/stat.h>
 
 #include <wx/wx.h>
 #include <wx/wfstream.h>
@@ -128,6 +131,51 @@ wxString sha256(const wxString str)
         ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
     }
     return ss.str();
+}
+
+std::string timeToString(std::chrono::time_point<std::chrono::system_clock> timePoint)
+{
+    std::time_t timePointT = std::chrono::system_clock::to_time_t(timePoint);
+    std::ostringstream ss;
+    ss << std::put_time(gmtime(&timePointT), "%FT%TZ");
+    return ss.str();
+}
+
+std::chrono::time_point<std::chrono::system_clock> stringToTime(std::string inputStr)
+{
+    std::tm tm = {};
+    std::stringstream ss(inputStr);
+    ss >> std::get_time(&tm, "%FT%TZ");
+
+    const time_t timeInUTC =
+    #if defined(_WIN32)
+        _mkgmtime(&tm);
+    #else // Assume POSIX
+        timegm(&tm);
+    #endif
+    return std::chrono::system_clock::from_time_t(timeInUTC);
+}
+
+void ensureDirectory(wxFileName filename) {
+    if (wxDirExists(filename.GetFullPath())) {
+        return;
+    }
+    wxFileName parent = wxFileName(filename.GetPath());
+    if (!wxDirExists(parent.GetPath())) {
+        ensureDirectory(parent);
+    } else {
+    }
+    wxMkdir(filename.GetFullPath());
+}
+
+void setFileModifiedTime(std::string filepath, std::chrono::time_point<std::chrono::system_clock> timePoint) {
+    struct stat foo;
+    struct utimbuf new_times;
+
+    stat(filepath.c_str(), &foo);
+    new_times.actime = foo.st_atime; /* keep atime unchanged */
+    new_times.modtime = std::chrono::system_clock::to_time_t(timePoint);    /* set mtime to current time */
+    utime(filepath.c_str(), &new_times);
 }
 
 }

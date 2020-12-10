@@ -4,6 +4,8 @@
 #include "DefaultsController.hpp"
 #include "Utilities.hpp"
 #include "SignatureView.hpp"
+#include <nlohmann/json.hpp>
+#include <fstream>
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
@@ -36,19 +38,20 @@ void OperatorIDSheet::saveSettings()
     wxImage png = mSignView->getSignaturePNG();
     png.SaveFile(filePath, wxBITMAP_TYPE_PNG);
 
-    // All other settings are saved using NSUserDefaults
-    DefaultsController* defaults = DefaultsController::Instance();
-
-    defaults->setString(mTitle->GetValue(), DEFAULTS_DOC_TITLE);
-    defaults->setString(mFamilyName->GetValue(), DEFAULTS_DOC_SURNAME);
-    defaults->setString(mGivenName->GetValue(), DEFAULTS_DOC_NAME);
-    defaults->setString(mPostalAddress->GetValue(), DEFAULTS_DOC_ADDRESS);
-    defaults->setString(mZipCode->GetValue(), DEFAULTS_DOC_ZIP);
-    defaults->setString(mCity->GetValue(), DEFAULTS_DOC_CITY);
-    //defaults->setString(mCountry->GetValue(), DEFAULTS_DOC_COUNTRY);
-    defaults->setString(mPhoneNumber->GetValue(), DEFAULTS_DOC_PHONE);
-    defaults->setString(mEmailAddress->GetValue(), DEFAULTS_DOC_EMAIL);
-    defaults->Flush();
+    nlohmann::json json;
+    json[DOC_JSON_TITLE] = mTitle->GetValue().ToStdString();
+    json[DOC_JSON_SURNAME] = mFamilyName->GetValue().ToStdString();
+    json[DOC_JSON_NAME] = mGivenName->GetValue().ToStdString();
+    json[DOC_JSON_ADDRESS] = mPostalAddress->GetValue().ToStdString();
+    json[DOC_JSON_ZIP] = mZipCode->GetValue().ToStdString();
+    json[DOC_JSON_CITY] = mCity->GetValue().ToStdString();
+    json[DOC_JSON_PHONE] = mPhoneNumber->GetValue().ToStdString();
+    json[DOC_JSON_EMAIL] = mEmailAddress->GetValue().ToStdString();
+    // json[DOC_JSON_COUNTRY] = mCountry->GetValue().ToStdString();
+    wxString doctorFilePath = documentsDirectory + wxFILE_SEP_PATH + DOC_JSON_FILENAME;
+    wxFile *file = new wxFile(doctorFilePath, wxFile::write);
+    file->Write(json.dump());
+    file->Close();
 }
 
 // 199
@@ -138,17 +141,23 @@ Operator * OperatorIDSheet::loadOperator()
     // Load from user defaults
     Operator *oper = new Operator;
 
-    DefaultsController* defaults = DefaultsController::Instance();
+    try {
+        std::ifstream i((UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_JSON_FILENAME).ToStdString());
+        nlohmann::json json;
+        i >> json;
 
-    oper->title = defaults->getString(DEFAULTS_DOC_TITLE, "");
-    oper->familyName = defaults->getString(DEFAULTS_DOC_SURNAME, "");
-    oper->givenName = defaults->getString(DEFAULTS_DOC_NAME, "");
-    oper->postalAddress = defaults->getString(DEFAULTS_DOC_ADDRESS, "");
-    oper->zipCode = defaults->getString(DEFAULTS_DOC_ZIP, "");
-    oper->city = defaults->getString(DEFAULTS_DOC_CITY, "");
-    oper->country = defaults->getString(DEFAULTS_DOC_COUNTRY, "");
-    oper->phoneNumber = defaults->getString(DEFAULTS_DOC_PHONE, "");
-    oper->emailAddress = defaults->getString(DEFAULTS_DOC_EMAIL, "");
+        oper->title = wxString(json[DOC_JSON_TITLE].get<std::string>());
+        oper->familyName = wxString(json[DOC_JSON_SURNAME].get<std::string>());
+        oper->givenName = wxString(json[DOC_JSON_NAME].get<std::string>());
+        oper->postalAddress = wxString(json[DOC_JSON_ADDRESS].get<std::string>());
+        oper->zipCode = wxString(json[DOC_JSON_ZIP].get<std::string>());
+        oper->city = wxString(json[DOC_JSON_CITY].get<std::string>());
+        oper->country = wxString(json[DOC_JSON_COUNTRY].get<std::string>());
+        oper->phoneNumber = wxString(json[DOC_JSON_PHONE].get<std::string>());
+        oper->emailAddress = wxString(json[DOC_JSON_EMAIL].get<std::string>());
+    } catch (const std::exception& e) {
+        // Just in case the file is not initialized
+    }
     
     return oper;
 }
@@ -168,7 +177,15 @@ wxString OperatorIDSheet::retrieveIDAsString()
 // 248
 wxString OperatorIDSheet::retrieveCity()
 {
-    DefaultsController* defaults = DefaultsController::Instance();
-    return defaults->getString(DEFAULTS_DOC_CITY, "");
+    wxString cityString;
+    try {
+        std::ifstream i((UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_JSON_FILENAME).ToStdString());
+        nlohmann::json json;
+        i >> json;
+        cityString = json[DOC_JSON_CITY].get<std::string>();
+    } catch (const std::exception& e) {
+        // Just in case the file is not initialized
+    }
+    return cityString;
 }
 

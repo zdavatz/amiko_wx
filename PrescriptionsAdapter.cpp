@@ -50,6 +50,7 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionsForPatient(Patient *p)
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
 
     // Check if patient has already a directory, TODO: if not create one
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
 
     if (wxDir::Exists(patientDir.GetFullPath())) {
@@ -81,6 +82,7 @@ wxArrayString PrescriptionsAdapter::listOfPrescriptionURLsForPatient(Patient *p)
     
     // 92
     // Check if patient has already a directory, if not create one
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
     
     if (wxDir::Exists(patientDir.GetFullPath())) {
@@ -106,6 +108,7 @@ void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, 
     
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString); // important for directory names: specify empty filename
     
+    patientDir.AppendDir("amk");
     patientDir.AppendDir(p->uniqueId);
     patientDir.SetName(name);
     patientDir.SetExt("amk");
@@ -145,9 +148,15 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     // Check if patient has already a directory, if not create one
     wxFileName patientDir( UTI::documentsDirectory(), wxEmptyString);
 
-    patientDir.AppendDir(p->uniqueId);
-    if (!wxDirExists(patientDir.GetFullPath()))
+    patientDir.AppendDir("amk");
+    if (!wxDirExists(patientDir.GetFullPath())) {
         wxMkdir(patientDir.GetFullPath());
+    }
+    
+    patientDir.AppendDir(p->uniqueId);
+    if (!wxDirExists(patientDir.GetFullPath())) {
+        wxMkdir(patientDir.GetFullPath());
+    }
 
     if (overwrite) {
         // Delete old file
@@ -199,17 +208,28 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     DefaultsController* defaults = DefaultsController::Instance();
 
     nlohmann::json operatorDict;
-    operatorDict[KEY_AMK_DOC_TITLE] = defaults->getString(DEFAULTS_DOC_TITLE, "");
-    operatorDict[KEY_AMK_DOC_SURNAME] = defaults->getString(DEFAULTS_DOC_SURNAME, "");
-    operatorDict[KEY_AMK_DOC_NAME] = defaults->getString(DEFAULTS_DOC_NAME, "");
-    operatorDict[KEY_AMK_DOC_ADDRESS] = defaults->getString(DEFAULTS_DOC_ADDRESS, "");
-    operatorDict[KEY_AMK_DOC_ZIP] = defaults->getString(DEFAULTS_DOC_ZIP, "");
-    operatorDict[KEY_AMK_DOC_CITY] = defaults->getString(DEFAULTS_DOC_CITY, "");
-    operatorDict[KEY_AMK_DOC_PHONE] = defaults->getString(DEFAULTS_DOC_PHONE, "");
-    operatorDict[KEY_AMK_DOC_EMAIL] = defaults->getString(DEFAULTS_DOC_EMAIL, "");
+
+    wxString cityString;
+    try {
+        std::ifstream i((UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_JSON_FILENAME).ToStdString());
+        nlohmann::json json;
+        i >> json;
+
+        operatorDict[KEY_AMK_DOC_TITLE] = json[DOC_JSON_TITLE].get<std::string>();
+        operatorDict[KEY_AMK_DOC_SURNAME] = json[DOC_JSON_SURNAME].get<std::string>();
+        operatorDict[KEY_AMK_DOC_NAME] = json[DOC_JSON_NAME].get<std::string>();
+        operatorDict[KEY_AMK_DOC_ADDRESS] = json[DOC_JSON_ADDRESS].get<std::string>();
+        operatorDict[KEY_AMK_DOC_ZIP] = json[DOC_JSON_ZIP].get<std::string>();
+        operatorDict[KEY_AMK_DOC_CITY] = json[DOC_JSON_CITY].get<std::string>();
+        operatorDict[KEY_AMK_DOC_PHONE] = json[DOC_JSON_PHONE].get<std::string>();
+        operatorDict[KEY_AMK_DOC_EMAIL] = json[DOC_JSON_EMAIL].get<std::string>();
+        cityString = json[DOC_JSON_CITY].get<std::string>();
+    } catch (const std::exception& e) {
+        // Just in case the file is not initialized
+    }
     
     placeDate = wxString::Format("%s, %s",
-                 defaults->getString(DEFAULTS_DOC_CITY, ""),
+                 cityString,
                  UTI::prettyTime());
     
     wxString encodedImgStr;

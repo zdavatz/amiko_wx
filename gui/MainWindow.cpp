@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
@@ -50,6 +51,7 @@
 #include "PatientDBAdapter.hpp"
 
 #include "../res/xpm/CoMed.xpm"
+#include "../sync/GoogleSyncManager.hpp"
 
 #define CSV_SEPARATOR       wxT(";")
 
@@ -295,6 +297,11 @@ MainWindow::MainWindow( wxWindow* parent )
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
 
+    std::thread testSyncThread([] {
+        GoogleSyncManager *g = GoogleSyncManager::Instance();
+        g->sync();
+    });
+    testSyncThread.detach();
 #ifndef __APPLE__
     // Issue #36
     m_menuFile->AppendSeparator();
