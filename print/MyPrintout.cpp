@@ -49,9 +49,9 @@ bool MyPrintout::OnBeginDocument(int startPage, int endPage)
 void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
 {
     *minPage = 1;
-    *maxPage = 2;
+    *maxPage = 1;
     *selPageFrom = 1;
-    *selPageTo = 2;
+    *selPageTo = 1;
 }
 
 bool MyPrintout::HasPage(int pageNum)

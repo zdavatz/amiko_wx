@@ -702,7 +702,7 @@ void MainWindow::printTechInfo()
 // Reference wxWidgets sample printing.app printing.cpp:384
 void MainWindow::printPrescription()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO: layout prescription for printing\n";
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
     wxPrintDialogData printDialogData(* g_printData);
     wxPrintPreview *preview =
     new wxPrintPreview(new MyPrintout(this), new MyPrintout(this), &printDialogData);
@@ -744,23 +744,25 @@ void MainWindow::Draw(wxDC&dc)
     dc.DrawText("Doc Name Surname\nAddress\nZIP city\nPhone\nemail", xPos+xOffset, yPos);
     yPos += 50;
 
-    dc.SetBrush(*wxLIGHT_GREY_BRUSH);
-    dc.SetPen(*wxRED_PEN);
-    dc.DrawRoundedRectangle(xPos+xOffset, yPos, 90, 40, 5);
-    dc.DrawText("Doc signature", xPos+xOffset, yPos);
+    wxSize sz(90,40);
+    wxImage img = mySignView->getSignaturePNG();
+    //img.Resize(sz, wxPoint(0,0)); // add border or crop
+    //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+    img.Rescale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+    wxBitmap m_bitmap = wxBitmap(img);
+    if (m_bitmap.IsOk())
+        dc.DrawBitmap( m_bitmap, xPos+xOffset, yPos );
+#if 1
+    sz.IncBy(3);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    dc.SetPen(*wxBLACK_PEN);
+    dc.DrawRectangle(xPos+xOffset, yPos, sz.x, sz.y);
+#endif
+
 
     dc.DrawText("Timestamp", xPos, yPos);
 
     yPos += 50;
-
-#if 0
-    wxIcon my_icon = wxICON(sample);
-
-    dc.DrawIcon( my_icon, 100, 100);
-
-    if (m_bitmap.IsOk())
-        dc.DrawBitmap( m_bitmap, 10, 10 );
-#endif
 
     dc.SetPen(*wxBLACK_PEN);
     dc.SetBrush(*wxLIGHT_GREY_BRUSH);
