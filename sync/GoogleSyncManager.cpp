@@ -603,7 +603,11 @@ bool GoogleSyncManager::shouldSyncLocalFile(wxFileName path) {
     if (path.GetFullName() == ".DS_Store") {
         return false;
     }
-    if (fullPath.ToStdString() == DOC_JSON_FILENAME || fullPath.ToStdString() == DOC_SIGNATURE_FILENAME) {
+    if (fullPath.ToStdString() == DOC_JSON_FILENAME 
+        || fullPath.ToStdString() == DOC_SIGNATURE_FILENAME
+        || fullPath.ToStdString() == "favorites.json"
+        || fullPath.ToStdString() == "favorites-full-text.json"
+    ) {
         return true;
     }
     auto dirs = path.GetDirs();
@@ -788,7 +792,7 @@ void GoogleSyncManager::sync() {
             wxString parentFilename = filename.GetPath();
             bool atRoot = parentFilename.IsSameAs(UTI::documentsDirectory());
             std::string parentRelativeToFilesDir = wxFileName(pathToCreate).GetPath().ToStdString();
-            if (remoteFilesMap.find(parentRelativeToFilesDir) == remoteFilesMap.end()) {
+            if (!atRoot && remoteFilesMap.find(parentRelativeToFilesDir) == remoteFilesMap.end()) {
                 std::cerr << "Cannot find remote parent for: " << parentRelativeToFilesDir << std::endl;
                 continue;
             }
