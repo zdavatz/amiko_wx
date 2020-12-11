@@ -248,7 +248,7 @@ void MyPrintout::DrawPageTwo()
 bool MyPrintout::WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString&text, float mmToLogical)
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << " text:" << text << std::endl;
 #endif
 
     int pageWidthMM, pageHeightMM;

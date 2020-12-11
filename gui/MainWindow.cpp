@@ -92,6 +92,20 @@ static int mCurrentSearchState = kss_Title;
 static int mCurrentWebView = kExpertInfoView;
 static wxString mCurrentSearchKey;
 
+static int myTextWrapper(wxString &s, const int newlinePos)
+{
+    //const int newlinePos = 60;
+    int n = s.length();
+    int countNewline = 0;
+    for (int i = newlinePos; i<n; i+=newlinePos) {
+        s.insert(i, "\n");
+        countNewline++;
+        //yPos += 10;
+    }
+
+    return countNewline;
+}
+
 // 212
 #define NUM_ACTIVE_PRESCRIPTIONS   3
 static PrescriptionsCart mPrescriptionsCart[NUM_ACTIVE_PRESCRIPTIONS];
@@ -726,23 +740,28 @@ void MainWindow::Draw(wxDC&dc)
     std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
 #endif
 
-    wxCoord xPos = 10;
-    wxCoord xOffset = 120;
+    const wxCoord xPos = 10;
+    const wxCoord xOffset = 127;
     wxCoord yPos = 30;
+    const wxCoord lineHeight = 9;
+    const wxCoord wrapAt = 65;
+
     dc.SetBackground(*wxWHITE_BRUSH);
     // dc.Clear();
-    wxFont m_testFont = wxFontInfo(8).Family(wxFONTFAMILY_SWISS);
+    wxFont m_testFont = wxFontInfo(6).Family(wxFONTFAMILY_DEFAULT);
+    //std::clog << "font size: " << m_testFont.GetFractionalPointSize() << std::endl;
     dc.SetFont(m_testFont);
 
     // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
-    dc.DrawText("RZ_2020-12-10T153736", xPos, yPos);
+    int row = mySectionTitles->GetSelectedRow();
+    dc.DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
     dc.DrawText("Page 1 of 1", xPos+xOffset, yPos);
-    yPos += 20;
+    yPos += 2*lineHeight;
 
-    dc.DrawText("Pat Name Surname\nAddress\nCH-ZIP City\nPhone\nemail", xPos, yPos);
-    dc.DrawText("Doc Name Surname\nAddress\nZIP city\nPhone\nemail", xPos+xOffset, yPos);
-    yPos += 50;
+    dc.DrawText(myPatientAddressTextField->GetValue(), xPos, yPos);
+    dc.DrawText(myOperatorIDTextField->GetValue(), xPos+xOffset, yPos);
+    yPos += 5*lineHeight;
 
     wxSize sz(90,40);
     wxImage img = mySignView->getSignaturePNG();
@@ -759,31 +778,48 @@ void MainWindow::Draw(wxDC&dc)
     dc.DrawRectangle(xPos+xOffset, yPos, sz.x, sz.y);
 #endif
 
+    dc.DrawText(myPlaceDateField->GetLabelText(), xPos, yPos);
 
-    dc.DrawText("Timestamp", xPos, yPos);
-
-    yPos += 50;
+    yPos += 5*lineHeight;
 
     dc.SetPen(*wxBLACK_PEN);
     dc.SetBrush(*wxLIGHT_GREY_BRUSH);
     dc.DrawRectangle(0, yPos, 230, 350-yPos);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    yPos += 10;
+    yPos += lineHeight;
 
-    for (int i=1; i<=5; i++) {
+    wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
+    if (!rootItem.IsOk())
+        return;
+
+    int numRows = myPrescriptionsTableView->GetChildrenCount(rootItem, false);
+    std::clog << "numRows: " << numRows << std::endl;
+
+    const int cartNo = 0;
+    int cartSize = mPrescriptionsCart[ cartNo].cart.size();
+    std::clog << "cartSize: " << cartSize << std::endl;
+
+    for (int i=0; i<cartSize; i++) {
+        PrescriptionItem *item = mPrescriptionsCart[ cartNo].getItemAtIndex(i);
         wxString str;
 
-        str.Printf( "Package %d", i );
+        str.Printf("%s", item->fullPackageInfo);
+        int n = myTextWrapper(str, wrapAt);
         dc.DrawText(str, xPos, yPos);
-        yPos += 10;
+        yPos += lineHeight*(1+n);
 
-        str.Printf("Code %d", i );
-        dc.DrawText(str, xPos, yPos);
-        yPos += 10;
+//        str.Printf( "%s", item->eanCode );
+//        dc.DrawText(str, xPos, yPos);
+//        yPos += lineHeight;
 
-        str.Printf( "Comment %d", i );
-        dc.DrawText(str, xPos, yPos);
-        yPos += 20;
+        if (item->comment.length() > 0) {
+            str.Printf("%s", item->comment);
+            int n = myTextWrapper(str, wrapAt);
+            dc.DrawText(str, xPos, yPos);
+            yPos += lineHeight*(1+n);
+        }
+
+        yPos += lineHeight;
     }
 }
 
