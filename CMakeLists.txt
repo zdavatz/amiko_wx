@@ -167,6 +167,11 @@ set( SRCS_CARD
     card/SmartCard.cpp card/SmartCard.hpp
     )
 
+set( SRCS_PRINT
+    print/MyPrintout.cpp print/MyPrintout.hpp
+    print/MainWindowPrint.cpp
+    )
+
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
@@ -177,6 +182,7 @@ source_group(doctor FILES ${SRCS_DOCTOR})
 source_group(javascript FILES ${SRCS_JS})
 source_group(lang FILES ${SRCS_LANG})
 source_group(card FILES ${SRCS_CARD})
+source_group(print FILES ${SRCS_PRINT})
 
 foreach(APP_NAME CoMed AmiKo)    
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
@@ -190,7 +196,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
-    print/MyPrintout.cpp print/MyPrintout.hpp
+    ${SRCS_PRINT}
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_JS} ${SRCS_CARD}
