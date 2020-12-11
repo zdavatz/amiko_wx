@@ -118,6 +118,7 @@ public:
 #ifndef __APPLE_
     void OnQuit( wxCommandEvent& event);
 #endif
+    void Draw(wxDC&dc);
 
 private:
     void setOperatorID();

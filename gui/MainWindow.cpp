@@ -49,6 +49,7 @@
 
 #include "HealthCard.hpp"
 #include "PatientDBAdapter.hpp"
+#include "MyPrintout.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 #include "../sync/GoogleSyncManager.hpp"
@@ -57,6 +58,12 @@
 
 // Alternatively implement its own tabview to show the results
 #define CSV_EXPORT_RESTORES_PREVIOUS_STATE
+
+// Global print data, to remember settings during the session
+wxPrintData *g_printData = NULL;
+
+// Global page setup data
+wxPageSetupDialogData* g_pageSetupData = NULL;
 
 /// 84
 // Database types
@@ -308,6 +315,17 @@ MainWindow::MainWindow( wxWindow* parent )
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
+    
+    g_printData = new wxPrintData;
+    g_printData->SetPaperId(wxPAPER_A4);    // for everyone else
+
+    g_pageSetupData = new wxPageSetupDialogData;
+    // copy over initial paper size from print record
+    (*g_pageSetupData) = *g_printData;
+
+    // Set some initial page margins in mm.
+    g_pageSetupData->SetMarginTopLeft(wxPoint(15, 15));
+    g_pageSetupData->SetMarginBottomRight(wxPoint(15, 15));
 }
 
 MainWindow::~MainWindow()
@@ -319,6 +337,9 @@ MainWindow::~MainWindow()
     m_mimeDatabase->Unassociate(filetype);
 #endif
 #endif
+    
+    delete g_printData;
+    delete g_pageSetupData;
 }
 
 #ifndef __APPLE_
@@ -685,10 +706,92 @@ void MainWindow::printTechInfo()
 }
 
 // 1071
-// TODO: reference sample app printing.app
+// Reference wxWidgets sample printing.app printing.cpp:384
 void MainWindow::printPrescription()
 {
-    std::clog << __PRETTY_FUNCTION__ << " TODO: layout prescription for printing\n";
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    wxPrintDialogData printDialogData(* g_printData);
+    wxPrintPreview *preview =
+    new wxPrintPreview(new MyPrintout(this), new MyPrintout(this), &printDialogData);
+    if (!preview->IsOk())
+    {
+        delete preview;
+        wxLogError("There was a problem previewing.\nPerhaps your current printer is not set correctly?");
+        return;
+    }
+
+    wxPreviewFrame *frame =
+        new wxPreviewFrame(preview, this, "Print Preview", wxPoint(100, 100), wxSize(600, 650));
+    frame->Centre(wxBOTH);
+    frame->InitializeWithModality(wxPreviewFrame_AppModal);
+    frame->Show();
+}
+
+void MainWindow::Draw(wxDC&dc)
+{
+#ifndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+#endif
+
+    wxCoord xPos = 10;
+    wxCoord xOffset = 120;
+    wxCoord yPos = 30;
+    dc.SetBackground(*wxWHITE_BRUSH);
+    // dc.Clear();
+    wxFont m_testFont = wxFontInfo(8).Family(wxFONTFAMILY_SWISS);
+    dc.SetFont(m_testFont);
+
+    // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
+
+    dc.DrawText("RZ_2020-12-10T153736", xPos, yPos);
+    dc.DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    yPos += 20;
+
+    dc.DrawText("Pat Name Surname\nAddress\nCH-ZIP City\nPhone\nemail", xPos, yPos);
+    dc.DrawText("Doc Name Surname\nAddress\nZIP city\nPhone\nemail", xPos+xOffset, yPos);
+    yPos += 50;
+
+    wxSize sz(90,40);
+    wxImage img = mySignView->getSignaturePNG();
+    //img.Resize(sz, wxPoint(0,0)); // add border or crop
+    //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+    img.Rescale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+    wxBitmap m_bitmap = wxBitmap(img);
+    if (m_bitmap.IsOk())
+        dc.DrawBitmap( m_bitmap, xPos+xOffset, yPos );
+#if 1
+    sz.IncBy(3);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    dc.SetPen(*wxBLACK_PEN);
+    dc.DrawRectangle(xPos+xOffset, yPos, sz.x, sz.y);
+#endif
+
+
+    dc.DrawText("Timestamp", xPos, yPos);
+
+    yPos += 50;
+
+    dc.SetPen(*wxBLACK_PEN);
+    dc.SetBrush(*wxLIGHT_GREY_BRUSH);
+    dc.DrawRectangle(0, yPos, 230, 350-yPos);
+    dc.SetBrush(*wxTRANSPARENT_BRUSH);
+    yPos += 10;
+
+    for (int i=1; i<=5; i++) {
+        wxString str;
+
+        str.Printf( "Package %d", i );
+        dc.DrawText(str, xPos, yPos);
+        yPos += 10;
+
+        str.Printf("Code %d", i );
+        dc.DrawText(str, xPos, yPos);
+        yPos += 10;
+
+        str.Printf( "Comment %d", i );
+        dc.DrawText(str, xPos, yPos);
+        yPos += 20;
+    }
 }
 
 // 1249

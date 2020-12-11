@@ -218,6 +218,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     FullTextSearch.cpp FullTextSearch.hpp
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
+    print/MyPrintout.cpp print/MyPrintout.hpp
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_JS} ${SRCS_CARD}
@@ -231,6 +232,7 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/card
     ${CMAKE_SOURCE_DIR}/gui
+    ${CMAKE_SOURCE_DIR}/print
     ${CMAKE_SOURCE_DIR}/sqlite
     ${wxWidgets_INCLUDE_DIRS}
     ${CURL_INCLUDE_DIRS}
