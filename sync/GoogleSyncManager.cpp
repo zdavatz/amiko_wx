@@ -6,6 +6,7 @@
 
 #include "GoogleSyncManager.hpp"
 #include "GoogleConfig.h"
+#include "PatientDBAdapter.hpp"
 #include "../DefaultsController.hpp"
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
@@ -30,7 +31,8 @@ namespace GoogleAPITypes {
             {"parents", f.parents}, 
             {"modifiedTime", f.modifiedTime},
             {"version", f.version},
-            {"size", f.size}
+            {"size", f.size},
+            {"properties", f.properties}
         };
     }
 
@@ -43,6 +45,9 @@ namespace GoogleAPITypes {
         j.at("version").get_to(f.version);
         if (j.contains("size")) {
             j.at("size").get_to(f.size);
+        }
+        if (j.contains("properties")) {
+            j.at("properties").get_to(f.properties);
         }
     }
 }
@@ -353,6 +358,58 @@ GoogleAPITypes::RemoteFile GoogleSyncManager::uploadFile(std::string name, std::
     return file;
 }
 
+GoogleAPITypes::RemoteFile GoogleSyncManager::createFileWithMetadata(
+    std::string name, 
+    std::map<std::string, std::string> properties,
+    std::chrono::time_point<std::chrono::system_clock> modifiedTime,
+    std::vector<std::string> parents
+) {
+    auto accessToken = this->getAccessToken();
+    if (accessToken.empty()) {
+        return {};
+    }
+
+    if (parents.empty()) {
+        parents = {"appDataFolder"};
+    }
+
+    CURL *curl = curl_easy_init();
+    std::string s;
+    curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/drive/v3/files?fields=" FILE_FIELDS);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, ("Authorization: Bearer " + accessToken).c_str());
+    chunk = curl_slist_append(chunk, "Content-Type: application/json; charset: utf-8");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+    nlohmann::json metadata;
+    metadata["name"] = name;
+    metadata["parents"] = parents;
+    metadata["modifiedTime"] = UTI::timeToString(modifiedTime);
+    metadata["mimeType"] = "application/octet-stream";
+    metadata["properties"] = properties;
+
+    auto postData = metadata.dump();
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+
+    CURLcode res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+
+    std::clog << s << std::endl;
+    // Example response
+    // {
+    //  "kind": "drive#file",
+    //  "id": "1NvrC5PUAH_-AUmE6R_YrkS_M8KFNWLofWaFOeqIznFOq6iyFDA",
+    //  "name": "hk.png",
+    //  "mimeType": "image/png"
+    // }
+    auto json = nlohmann::json::parse(s);
+    GoogleAPITypes::RemoteFile file = json;
+    return file;
+}
+
 GoogleAPITypes::RemoteFile GoogleSyncManager::updateFile(std::string fileId, std::string filePath) {
     auto accessToken = this->getAccessToken();
     if (accessToken.empty()) {
@@ -550,8 +607,9 @@ std::set<std::string> GoogleSyncManager::listLocalFilesAndFolders(wxString path)
 
 // Remove patient files from remote file map
 // Return a <patient-id : remote file> map
-std::map<std::string, GoogleAPITypes::RemoteFile> extractPatientsFromRemoteFiles(std::map<std::string, GoogleAPITypes::RemoteFile> *filesPtr) {
-    std::map<std::string, GoogleAPITypes::RemoteFile> patients;
+template <typename T>
+std::map<std::string, T> extractPatientsFromFilesMap(std::map<std::string, T> *filesPtr) {
+    std::map<std::string, T> patients;
     auto files = *filesPtr;
     for (auto entry : files) {
         auto filename = wxFileName(wxString(entry.first));
@@ -639,13 +697,14 @@ void GoogleSyncManager::sync() {
 
     std::vector<GoogleAPITypes::RemoteFile> remoteFiles = this->listRemoteFilesAndFolders();
     auto remoteFilesMap = remoteFilesToMap(remoteFiles);
-    std::map<std::string, GoogleAPITypes::RemoteFile> remotePatientFilesMap = extractPatientsFromRemoteFiles(&remoteFilesMap);
+    std::map<std::string, GoogleAPITypes::RemoteFile> remotePatientsMap = extractPatientsFromFilesMap(&remoteFilesMap);
     std::map<std::string, long> localVersionMap = localFileVersionMap();
+    std::map<std::string, long> patientVersions = extractPatientsFromFilesMap(&localVersionMap);
 
     std::clog << "remote files:" << std::endl;
     debugLogRemoteMap(remoteFilesMap);
     std::clog << "remote patient:" << std::endl;
-    debugLogRemoteMap(remotePatientFilesMap);
+    debugLogRemoteMap(remotePatientsMap);
 
     std::set<std::string> localFiles = this->listLocalFilesAndFolders();
     std::clog << "local files:" << std::endl;
@@ -900,5 +959,88 @@ void GoogleSyncManager::sync() {
         std::clog << "Saved versions, sync complete" << std::endl;
     } catch (const std::exception& e) {
         std::clog << "Error: " << e.what() << std::endl;
+    }
+
+    // Sync patients
+    std::set<std::string> patientsToCreate; // uid
+    std::map<std::string, GoogleAPITypes::RemoteFile> patientsToUpdate; // uid : remote file
+    std::map<std::string, GoogleAPITypes::RemoteFile> patientsToDownload; // uid : remote file
+    std::set<std::string> localPatientsToDelete; // uid
+    std::map<std::string, GoogleAPITypes::RemoteFile> remotePatientsToDelete; // uid : remote
+
+    std::map<std::string, time_t> localPatientTimestamps = getLocalPatientTimestamps();
+    {
+        for (const auto entry : localPatientTimestamps) {
+            patientsToCreate.insert(entry.first);
+        }
+        for (auto const& entry : patientVersions) {
+            patientsToCreate.erase(entry.first);
+        }
+        for (auto const& entry : remotePatientsMap) {
+            patientsToCreate.erase(entry.first);
+        }
+    }
+
+    for (const auto& entry : patientVersions) {
+        std::string uid = entry.first;
+        bool localHasPatient = localPatientTimestamps.find(uid) != localPatientTimestamps.end();
+        bool remoteHasPatient = remotePatientsMap.find(uid) != remotePatientsMap.end();
+
+        if (localHasPatient && remoteHasPatient) {
+            long localVersion = patientVersions[uid];
+            time_t localTimestamp = localPatientTimestamps[uid];
+            GoogleAPITypes::RemoteFile remoteFile = remotePatientsMap[uid];
+            long remoteVersion = 0;
+            try {
+                remoteVersion = std::stol(remoteFile.version);
+            } catch(...){}
+
+            if (remoteVersion == localVersion) {
+                auto localModified = std::chrono::system_clock::from_time_t(localTimestamp);
+                auto remoteModified = UTI::stringToTime(remoteFile.modifiedTime);
+
+                if (localModified > remoteModified) {
+                    patientsToUpdate[uid] = remoteFile;
+                }
+            } else if (remoteVersion > localVersion) {
+                patientsToDownload[uid] = remoteFile;
+            }
+        }
+        if (!localHasPatient && remoteHasPatient) {
+            remotePatientsToDelete[uid] = remotePatientsMap[uid];
+        }
+        if (localHasPatient && !remoteHasPatient) {
+            localPatientsToDelete.insert(uid);
+        }
+    }
+
+    for (const auto entry : remotePatientsMap) {
+        std::string uid = entry.first;
+        if (patientVersions.find(uid) != patientVersions.end()) {
+            // We already handled this in the above loop
+            continue;
+        }
+        if (localPatientTimestamps.find(uid) != localPatientTimestamps.end()) {
+            // File exist both on server and local, but has no local version
+            time_t timestamp = localPatientTimestamps[uid];
+            GoogleAPITypes::RemoteFile remoteFile = remotePatientsMap[uid];
+            auto localModified =  std::chrono::system_clock::from_time_t(timestamp);
+            auto remoteModified = UTI::stringToTime(remoteFile.modifiedTime);
+            if (localModified > remoteModified) {
+                patientsToUpdate[uid] = remoteFile;
+            } else if (remoteModified > localModified) {
+                patientsToDownload[uid] = remoteFile;
+            }
+        } else {
+            GoogleAPITypes::RemoteFile remoteFile = remotePatientsMap[uid];
+            patientsToDownload[uid] = remoteFile;
+        }
+    }
+    // createPatientFolder
+    {
+        if (remoteFilesMap.find("patients") != remoteFilesMap.end()) {
+            auto remoteFile = createFolder("patients", {});
+            remoteFilesMap["patients"] = remoteFile;
+        }
     }
 }

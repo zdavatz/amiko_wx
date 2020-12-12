@@ -7,6 +7,7 @@
 #pragma once
 
 #include <set>
+#include <chrono>
 #include <wx/wx.h>
 #include <wx/string.h>
 #include "wx/preferences.h"
@@ -23,6 +24,7 @@ namespace GoogleAPITypes {
         std::string modifiedTime;
         std::string version;
         std::string size;
+        std::map<std::string, std::string> properties;
     };
     void to_json(nlohmann::json& j, const RemoteFile& f);
 
@@ -49,16 +51,24 @@ public:
     
     void deleteFile(std::string fileId);
     GoogleAPITypes::RemoteFile createFolder(std::string name, std::vector<std::string> parents);
+
     GoogleAPITypes::RemoteFile uploadFile(std::string name, std::string filePath, std::string mimeType, std::vector<std::string> parents);
     GoogleAPITypes::RemoteFile updateFile(std::string fileId, std::string filePath);
+    void downloadFile(std::string fileId, std::string path);
+
+    std::vector<GoogleAPITypes::RemoteFile> listRemoteFilesAndFolders(std::string pageToken = "");
+    GoogleAPITypes::RemoteFile createFileWithMetadata(
+        std::string name,
+        std::map<std::string, std::string> appProperties,
+        std::chrono::time_point<std::chrono::system_clock> modifiedTime,
+        std::vector<std::string> parents
+    );
 
 private:
     static GoogleSyncManager* m_pInstance;
     std::string getAccessToken();
-    std::vector<GoogleAPITypes::RemoteFile> listRemoteFilesAndFolders(std::string pageToken = "");
+    
     std::set<std::string> listLocalFilesAndFolders(wxString path = UTI::documentsDirectory());
 
-    void downloadFile(std::string fileId, std::string path);
-    
     bool shouldSyncLocalFile(wxFileName path);
 };
