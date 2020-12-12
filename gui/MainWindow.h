@@ -32,6 +32,7 @@ class PatientSheet;
 class OperatorIDSheet;
 class FullTextSearch;
 class DataStore;
+#include "PrescriptionsCart.hpp"
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -119,6 +120,12 @@ public:
     void OnQuit( wxCommandEvent& event);
 #endif
     void Draw(wxDC&dc);
+    void initPrint();
+    void terminatePrint();
+
+    // .mm 212
+    #define NUM_ACTIVE_PRESCRIPTIONS   3
+    static PrescriptionsCart mPrescriptionsCart[NUM_ACTIVE_PRESCRIPTIONS];
 
 private:
     void setOperatorID();
