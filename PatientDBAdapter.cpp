@@ -238,6 +238,37 @@ Patient * PatientDBAdapter::getPatientWithUniqueID(wxString uniqueID)
     return nullptr;
 }
 
+std::vector<Patient*> PatientDBAdapter::getPatientsWithUniqueIDs(std::set<std::string> uniqueIDs)
+{
+    std::vector<Patient*> patients;
+    if (!uniqueIDs.empty())
+    {
+        std::string patientIDs;
+        for (const auto& uniqueID : uniqueIDs) {
+            if (!patientIDs.empty()) {
+                patientIDs += ",";
+            }
+            patientIDs += "'" + uniqueID + "'";
+        }
+        wxString query = wxString::Format("select %s from %s where %s IN (%s)", ALL_COLUMNS, DATABASE_TABLE, KEY_UID, patientIDs);
+        ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+        for (auto row : results) {
+            patients.push_back(cursorToPatient(row));
+        }
+    }
+    return patients;
+}
+
+std::map<std::string, std::string> PatientDBAdapter::getAllTimestamps() {
+    wxString query = wxString::Format("select %s, %s from %s", KEY_UID, KEY_TIMESTAMP, DATABASE_TABLE);
+    ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+    std::map<std::string, std::string> map;
+    for (auto cursor : results) {
+        map[cursor[0].u.c] = cursor[1].u.c;
+    }
+    return map;
+}
+
 Patient * PatientDBAdapter::cursorToPatient(ONE_SQL_RESULT &cursor)
 {
     Patient *patient = new Patient;

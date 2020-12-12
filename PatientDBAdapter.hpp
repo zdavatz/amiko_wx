@@ -7,6 +7,8 @@
 #pragma once
 
 #include "SQLiteDatabase.hpp"
+#include <map>
+#include <set>
 
 class SQLiteDatabase;
 class Patient;
@@ -26,6 +28,9 @@ public:
     Patient * cursorToPatient(ONE_SQL_RESULT &cursor);
     std::vector<Patient *> getAllPatients();
     
+    std::map<std::string, std::string> getAllTimestamps();
+    std::vector<Patient*> getPatientsWithUniqueIDs(std::set<std::string> uniqueIDs);
+
 private:
     // private constructor so that it can not be called
     PatientDBAdapter();
