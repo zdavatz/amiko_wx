@@ -33,6 +33,7 @@ class OperatorIDSheet;
 class FullTextSearch;
 class DataStore;
 #include "PrescriptionsCart.hpp"
+class wxPrintout;
 
 /** Implementing MainWindowBase */
 class MainWindow : public MainWindowBase
@@ -120,6 +121,7 @@ public:
     void OnQuit( wxCommandEvent& event);
 #endif
     void Draw(wxDC&dc);
+    void Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical);
     void initPrint();
     void terminatePrint();
 

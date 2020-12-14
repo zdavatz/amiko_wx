@@ -16,26 +16,29 @@ extern wxPageSetupDialogData* g_pageSetupData;
 bool MyPrintout::OnPrintPage(int page)
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
+
     wxDC *dc = GetDC();
-    if (dc)
-    {
-        if (page == 1)
-            DrawPageOne();
-        else if (page == 2)
-            DrawPageTwo();
+    if (!dc || !dc->IsOk())
+        return false;
 
-        // Draw page numbers at top left corner of printable area, sized so that
-        // screen size of text matches paper size.
-        MapScreenSizeToPage();
+#if 0 //ndef NDEBUG
+    if (page == 1)
+        DrawPageOne();
+    else if (page == 2)
+#endif
+        DrawPageTwo();
 
-        dc->DrawText(wxString::Format("PAGE %d", page), 0, 0);
+#ifndef NDEBUG
+    // Draw page numbers at top left corner of printable area, sized so that
+    // screen size of text matches paper size.
+    MapScreenSizeToPage();
 
-        return true;
-    }
+    dc->DrawText(wxString::Format("PAGE %d of %d", page, numPages), 0, 0);
+#endif
 
-    return false;
+    return true;
 }
 
 bool MyPrintout::OnBeginDocument(int startPage, int endPage)
@@ -49,21 +52,22 @@ bool MyPrintout::OnBeginDocument(int startPage, int endPage)
 void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
 {
     *minPage = 1;
-    *maxPage = 1;
+    *maxPage = numPages;
     *selPageFrom = 1;
-    *selPageTo = 1;
+    *selPageTo = numPages;
 }
 
 bool MyPrintout::HasPage(int pageNum)
 {
+    return (pageNum <= numPages);
     //return (pageNum == 1 || pageNum == 2);
-    return (pageNum == 1);
+    //return (pageNum == 1);
 }
 
 void MyPrintout::DrawPageOne()
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
 
     // You might use THIS code if you were scaling graphics of known size to fit
@@ -94,9 +98,10 @@ void MyPrintout::DrawPageOne()
     // on Mac, the native Page Setup dialog doesn't let you change the margins
     // of a wxPageSetupDialogData object, so you'll have to write your own dialog or
     // use the Mac-only wxMacPageMarginsDialog, as we do in this program.
+#if 1 //ndef __linux__
     FitThisSizeToPageMargins(wxSize(maxX, maxY), *g_pageSetupData);
     wxRect fitRect = GetLogicalPageMarginsRect(*g_pageSetupData);
-
+#endif
     // This sets the user scale and origin of the DC so that the image appears
     // on the paper at the same size that it appears on screen (i.e., 10-point
     // type on screen is 10-point on the printed page) and is positioned in the
@@ -114,9 +119,10 @@ void MyPrintout::DrawPageOne()
     // full native device resolution. In this case, you should do the following.
     // Note that you can use the GetLogicalXXXRect() commands to obtain the
     // appropriate rect to scale to.
-//    MapScreenSizeToDevice();
-//    wxRect fitRect = GetLogicalPageRect();
-
+#if 0 //def __linux__
+    MapScreenSizeToDevice();
+    wxRect fitRect = GetLogicalPageRect();
+#endif
     // Each of the preceding Fit or Map routines positions the origin so that
     // the drawn image is positioned at the top left corner of the reference
     // rectangle. You can easily center or right- or bottom-justify the image as
@@ -135,13 +141,18 @@ void MyPrintout::DrawPageOne()
 //    OffsetLogicalOrigin(xoff, yoff);
 
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+#if 1
     vc->Draw(*GetDC());
+#else
+    wxDC *dc = GetDC();
+    vc->Draw(*dc);
+#endif
 }
 
 void MyPrintout::DrawPageTwo()
 {
 #ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " TODO:" << std::endl;
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
 
     // You might use THIS code to set the printer DC to ROUGHLY reflect
@@ -185,8 +196,23 @@ void MyPrintout::DrawPageTwo()
     // divide by the screen-to-printer scaling factor, because we need to
     // unscale to pass logical units to DrawLine.
 
-    // Draw 50 mm by 50 mm L shape
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
+
+#if 1
+    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+    vc->Draw2(this, dc, logUnitsFactor);
+#else
+    static bool alternate = false;
+    alternate = !alternate;
+    if (alternate)
+    {
+        MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
+        vc->Draw2(this, dc, logUnitsFactor);
+        return;
+    }
+
+    // Alternate drawing foir debugging
+    // Draw 50 mm by 50 mm L shape
     float logUnits = (float)(50*logUnitsFactor);
     dc->SetPen(* wxBLACK_PEN);
     dc->DrawLine(50, 250, (long)(50.0 + logUnits), 250);
@@ -242,6 +268,7 @@ void MyPrintout::DrawPageTwo()
         (long)rightMarginLogical,  (long)bottomMarginLogical);
 
     WritePageHeader(this, dc, "A header", logUnitsFactor);
+#endif
 }
 
 // Writes a header on a page. Margin units are in millimetres.
