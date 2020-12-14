@@ -48,7 +48,7 @@
 
 #include "HealthCard.hpp"
 #include "PatientDBAdapter.hpp"
-#include "MyPrintout.hpp"
+//#include "MyPrintout.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 #include "../sync/GoogleSyncManager.hpp"
