@@ -27,5 +27,9 @@ SignatureView::SignatureView(wxWindow *parent,
 wxImage SignatureView::getSignaturePNG()
 {
     std::clog << __PRETTY_FUNCTION__ << " Line:" << __LINE__ << " TODO" << std::endl;
-    return GetBitmap().ConvertToImage();
+
+    if (GetBitmap().IsOk())
+        return GetBitmap().ConvertToImage();
+
+    return wxNullImage;
 }

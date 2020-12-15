@@ -152,7 +152,8 @@ MainWindow::MainWindow( wxWindow* parent )
     //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
 
     // 256
-    // TODO: Register applications defaults if necessary 'DBLastUpdate'
+    // Register applications defaults
+    // TODO: if necessary 'DBLastUpdate'
     DefaultsController* defaults = DefaultsController::Instance();
     std::clog << "Defaults local path: <" << defaults->GetLocalFileName(APP_NAME) << ">" << std::endl;
 

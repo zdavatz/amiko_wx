@@ -19,6 +19,28 @@ DefaultsController* DefaultsController::Instance()
 {
     if (!m_pInstance) {
         m_pInstance = new DefaultsController;
+#ifndef NDEBUG
+        std::cout
+
+        // system-wide
+        //  macos: "/Library/Preferences/AmiKo Preferences"
+        << "GetGlobalFileName " << GetGlobalFileName(m_pInstance->GetAppName())
+        
+        // user-specific
+        //  macos: "~/Library/Preferences/AmiKo Preferences"
+        << "\nGetLocalFileName  " << GetLocalFileName(m_pInstance->GetAppName())
+
+        << "\n\t PROJECT_NAME:      " << PROJECT_NAME
+
+        << "\n\t PROJECT_BUNDLE_ID: " << PROJECT_BUNDLE_ID
+        << "\n\t GetVendorName:     " << m_pInstance->GetVendorName()
+
+        << "\n\t APP_NAME:          " << APP_NAME
+        << "\n\t GetAppName:        " << m_pInstance->GetAppName()
+
+        << "\n\t GetPath:           <" << m_pInstance->GetPath() << ">"
+        << std::endl;
+#endif
     }
 
     return m_pInstance;
