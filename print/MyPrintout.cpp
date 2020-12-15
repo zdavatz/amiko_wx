@@ -98,10 +98,9 @@ void MyPrintout::DrawPageOne()
     // on Mac, the native Page Setup dialog doesn't let you change the margins
     // of a wxPageSetupDialogData object, so you'll have to write your own dialog or
     // use the Mac-only wxMacPageMarginsDialog, as we do in this program.
-#if 1 //ndef __linux__
     FitThisSizeToPageMargins(wxSize(maxX, maxY), *g_pageSetupData);
     wxRect fitRect = GetLogicalPageMarginsRect(*g_pageSetupData);
-#endif
+
     // This sets the user scale and origin of the DC so that the image appears
     // on the paper at the same size that it appears on screen (i.e., 10-point
     // type on screen is 10-point on the printed page) and is positioned in the
@@ -119,10 +118,9 @@ void MyPrintout::DrawPageOne()
     // full native device resolution. In this case, you should do the following.
     // Note that you can use the GetLogicalXXXRect() commands to obtain the
     // appropriate rect to scale to.
-#if 0 //def __linux__
-    MapScreenSizeToDevice();
-    wxRect fitRect = GetLogicalPageRect();
-#endif
+//    MapScreenSizeToDevice();
+//    wxRect fitRect = GetLogicalPageRect();
+
     // Each of the preceding Fit or Map routines positions the origin so that
     // the drawn image is positioned at the top left corner of the reference
     // rectangle. You can easily center or right- or bottom-justify the image as
@@ -141,12 +139,7 @@ void MyPrintout::DrawPageOne()
 //    OffsetLogicalOrigin(xoff, yoff);
 
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-#if 1
     vc->Draw(*GetDC());
-#else
-    wxDC *dc = GetDC();
-    vc->Draw(*dc);
-#endif
 }
 
 void MyPrintout::DrawPageTwo()
