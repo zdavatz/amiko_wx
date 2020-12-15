@@ -63,6 +63,12 @@ public:
         std::chrono::time_point<std::chrono::system_clock> modifiedTime,
         std::vector<std::string> parents
     );
+    GoogleAPITypes::RemoteFile updateFileWithMetadata(
+        std::string fileId, 
+        std::map<std::string, std::string> properties,
+        std::chrono::time_point<std::chrono::system_clock> modifiedTime,
+        std::vector<std::string> parents
+    );
 
 private:
     static GoogleSyncManager* m_pInstance;
