@@ -9,6 +9,12 @@
 #include <wx/config.h>
 #include "config.h"
 
+#ifdef __linux__
+#define PROJECT_BUNDLE_ID   "com.ywesee." APP_NAME "linux"
+#else
+#define PROJECT_BUNDLE_ID   "com.ywesee." APP_NAME "osx"
+#endif
+
 class DefaultsController : public wxConfig {
 public:
     static DefaultsController * Instance();
@@ -26,10 +32,7 @@ public:
 private:
     // private constructor so that it can not be called
 
-    // INI file is called:
-    //  macos: "~/Library/Preferences/$APP_NAME"
-    //  linux: "~/.$APP_NAME"
-    DefaultsController() : wxConfig(PROJECT_NAME, "ywesee", APP_NAME) {}
+    DefaultsController() : wxConfig(APP_NAME, PROJECT_BUNDLE_ID) {}
 
     static DefaultsController* m_pInstance;
 };

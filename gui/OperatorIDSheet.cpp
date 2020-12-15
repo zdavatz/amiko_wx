@@ -34,7 +34,8 @@ void OperatorIDSheet::saveSettings()
     wxString documentsDirectory = UTI::documentsDirectory();
     wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
     wxImage png = mSignView->getSignaturePNG();
-    png.SaveFile(filePath, wxBITMAP_TYPE_PNG);
+    if (png.IsOk())
+        png.SaveFile(filePath, wxBITMAP_TYPE_PNG);
 
     // All other settings are saved using NSUserDefaults
     DefaultsController* defaults = DefaultsController::Instance();

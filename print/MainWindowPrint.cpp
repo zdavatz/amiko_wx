@@ -114,12 +114,14 @@ void MainWindow::Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical)
     wxSize szSignature(rightMarginLogical - (xPos+xOffset), 40*mmToLogical);
     wxPoint ptSignature(xPos+xOffset, yPos);
     wxImage img = mySignView->getSignaturePNG();
-    //img.Resize(sz, wxPoint(0,0)); // add border or crop
-    //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-    img.Rescale(szSignature.x, szSignature.y, wxIMAGE_QUALITY_HIGH);
-    wxBitmap m_bitmap = wxBitmap(img);
-    if (m_bitmap.IsOk())
-        dc->DrawBitmap( m_bitmap, ptSignature.x, ptSignature.y );
+    if (img.IsOk()) {
+        //img.Resize(sz, wxPoint(0,0)); // add border or crop
+        //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+        img.Rescale(szSignature.x, szSignature.y, wxIMAGE_QUALITY_HIGH);
+        wxBitmap m_bitmap = wxBitmap(img);
+        if (m_bitmap.IsOk())
+            dc->DrawBitmap( m_bitmap, ptSignature.x, ptSignature.y );
+    }
 #if 1
     szSignature.IncBy(3);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
@@ -228,12 +230,14 @@ void MainWindow::Draw(wxDC&dc)
 
     wxSize sz(90,40);
     wxImage img = mySignView->getSignaturePNG();
-    //img.Resize(sz, wxPoint(0,0)); // add border or crop
-    //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-    img.Rescale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-    wxBitmap m_bitmap = wxBitmap(img);
-    if (m_bitmap.IsOk())
-        dc.DrawBitmap( m_bitmap, xPos+xOffset, yPos );
+    if (img.IsOk()) {
+        //img.Resize(sz, wxPoint(0,0)); // add border or crop
+        //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+        img.Rescale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
+        wxBitmap m_bitmap = wxBitmap(img);
+        if (m_bitmap.IsOk())
+            dc.DrawBitmap( m_bitmap, xPos+xOffset, yPos );
+    }
 #if 1
     sz.IncBy(3);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
