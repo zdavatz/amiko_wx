@@ -138,7 +138,8 @@ wxString PatientDBAdapter::insertEntry(Patient *patient)
     // If UUID exists re-use it!
     if (patient->uniqueId.length() > 0)
     {
-        wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"",
+        wxString timeStr = UTI::currentTime();
+        wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"",
                                                 KEY_WEIGHT_KG, patient->weightKg,
                                                 KEY_HEIGHT_CM, patient->heightCm,
                                                 KEY_ZIPCODE, patient->zipCode,
@@ -147,7 +148,8 @@ wxString PatientDBAdapter::insertEntry(Patient *patient)
                                                 KEY_ADDRESS, patient->postalAddress,
                                                 KEY_PHONE, patient->phoneNumber,
                                                 KEY_EMAIL, patient->emailAddress,
-                                                KEY_GENDER, patient->gender);
+                                                KEY_GENDER, patient->gender,
+                                                KEY_TIMESTAMP, timeStr);
         wxString conditions = wxString::Format("%s=\"%s\"", KEY_UID, patient->uniqueId);
 
         // Update existing entry
@@ -238,11 +240,101 @@ Patient * PatientDBAdapter::getPatientWithUniqueID(wxString uniqueID)
     return nullptr;
 }
 
+std::vector<Patient*> PatientDBAdapter::getPatientsWithUniqueIDs(std::set<std::string> uniqueIDs)
+{
+    std::vector<Patient*> patients;
+    if (!uniqueIDs.empty())
+    {
+        std::string patientIDs;
+        for (const auto& uniqueID : uniqueIDs) {
+            if (!patientIDs.empty()) {
+                patientIDs += ",";
+            }
+            patientIDs += "'" + uniqueID + "'";
+        }
+        wxString query = wxString::Format("select %s from %s where %s IN (%s)", ALL_COLUMNS, DATABASE_TABLE, KEY_UID, patientIDs);
+        ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+        for (auto row : results) {
+            patients.push_back(cursorToPatient(row));
+        }
+    }
+    return patients;
+}
+
+std::map<std::string, std::string> PatientDBAdapter::getAllTimestamps() {
+    wxString query = wxString::Format("select %s, %s from %s", KEY_UID, KEY_TIMESTAMP, DATABASE_TABLE);
+    ALL_SQL_RESULTS results = myPatientDb->performQuery(query);
+    std::map<std::string, std::string> map;
+    for (auto cursor : results) {
+        map[cursor[0].u.c] = cursor[1].u.c;
+    }
+    return map;
+}
+
+void PatientDBAdapter::upsertEntry(Patient *patient)
+{
+    if (!myPatientDb)
+        return;
+
+    Patient *existing = nullptr;
+
+    if (patient->uniqueId.length() > 0)
+    {
+        existing = PatientDBAdapter::sharedInstance()->getPatientWithUniqueID(patient->uniqueId);
+    }
+
+    if (existing == nullptr) {
+
+        // TODO: use SQLite auto increment
+        long rowId = this->getLargestRowId() + 1;
+
+        wxString columnStr = wxString::Format("(%s)", ALL_COLUMNS);
+        wxString valueStr = wxString::Format(
+            "(%ld, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")", 
+            patient->rowId, 
+            patient->timestamp, 
+            patient->uniqueId, 
+            patient->familyName, 
+            patient->givenName, 
+            patient->birthDate, 
+            patient->gender, 
+            patient->weightKg, 
+            patient->heightCm, 
+            patient->zipCode, 
+            patient->city, 
+            patient->country, 
+            patient->postalAddress, 
+            patient->phoneNumber, 
+            patient->emailAddress
+        );
+
+        // Insert new entry into DB
+        myPatientDb->insertRowIntoTable_forColumns_andValues(DATABASE_TABLE, columnStr, valueStr);
+    } else {
+        wxString expressions = wxString::Format("%s=%d, %s=%d, %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\", %s=\"%s\"",
+                                                KEY_WEIGHT_KG, patient->weightKg,
+                                                KEY_HEIGHT_CM, patient->heightCm,
+                                                KEY_ZIPCODE, patient->zipCode,
+                                                KEY_CITY, patient->city,
+                                                KEY_COUNTRY, patient->country,
+                                                KEY_ADDRESS, patient->postalAddress,
+                                                KEY_PHONE, patient->phoneNumber,
+                                                KEY_EMAIL, patient->emailAddress,
+                                                KEY_GENDER, patient->gender,
+                                                KEY_TIMESTAMP, patient->timestamp);
+        wxString conditions = wxString::Format("%s=\"%s\"", KEY_UID, patient->uniqueId);
+
+        // Update existing entry
+        myPatientDb->updateRowIntoTable_forExpressions_andConditions(DATABASE_TABLE, expressions, conditions);
+    }
+}
+
 Patient * PatientDBAdapter::cursorToPatient(ONE_SQL_RESULT &cursor)
 {
     Patient *patient = new Patient;
     
     patient->rowId = cursor[0].u.i;
+    patient->timestamp = cursor[1].u.c;
     patient->uniqueId = cursor [2].u.c;
     patient->familyName = cursor[3].u.c;
     patient->givenName = cursor[4].u.c;

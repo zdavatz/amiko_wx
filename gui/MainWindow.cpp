@@ -1118,16 +1118,16 @@ FULLTEXT_RESULTS MainWindow::retrieveAllFTFavorites()
 }
 
 // In Amiko-osx it's "~/Library/Preferences/"
-#define FAVORITES_DIR       GetUserDataDir
+#define FAVORITES_DIR       UTI::documentsDirectory()
 
 // In Amiko-osx it's "data" for both
-#define FAV_MED_FILE        "FavMed.txt"
-#define FAV_FT_ENTRY_FILE   "FavFTEntry.txt"
+#define FAV_MED_FILE        "favorites.json"
+#define FAV_FT_ENTRY_FILE   "favorites-full-text.json"
 
 // 1933
 void MainWindow::saveFavorites()
 {
-    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    wxString path = FAVORITES_DIR;
     
 #ifndef NDEBUG
     std::clog << __FUNCTION__ << " to dir " << path
@@ -1136,52 +1136,65 @@ void MainWindow::saveFavorites()
     << std::endl;
 #endif
 
-    FAVORITES_SET::iterator it;
-
     {
-        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
-        std::ofstream myfile(path1);
-        for (it = favoriteMedsSet.begin(); it != favoriteMedsSet.end(); ++it)
-            myfile << *it << "\n";
+        std::vector<std::string> favorites;
+        wxString filePath = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        for (const auto fav : favoriteMedsSet) {
+            favorites.push_back(fav.ToStdString());
+        }
 
-        myfile.close();
+        std::ofstream file(filePath);
+        nlohmann::json json = favorites;
+        file << json;
     }
 
     {
-        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
-        std::ofstream myfile(path2);
-        for (it = favoriteFTEntrySet.begin(); it != favoriteFTEntrySet.end(); ++it)
-            myfile << *it << "\n";
+        std::vector<std::string> favorites;
+        wxString filePath = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        for (const auto fav : favoriteFTEntrySet) {
+            favorites.push_back(fav.ToStdString());
+        }
 
-        myfile.close();
+        std::ofstream file(filePath);
+        nlohmann::json json = favorites;
+        file << json;
     }
 }
 
 // 1950
 void MainWindow::loadFavorites(DataStore *favorites)
 {
-    wxString path = wxStandardPaths::Get().FAVORITES_DIR();
+    wxString path = FAVORITES_DIR;
     std::clog << __FUNCTION__ << " from dir " << path << std::endl;
-    std::string line;
 
     {
-        wxString path1 = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
-        std::ifstream myfile(path1);
-        while ( getline (myfile, line) )
-            if (line.length() > 0)
-                favorites->favMedsSet.insert(line);
+        wxString filePath = path + wxFILE_SEP_PATH + wxString(FAV_MED_FILE);
+        wxFileName filename = wxFileName(filePath);
+        if (filename.FileExists()) {
+            std::ifstream file(filePath);
+            nlohmann::json json;
+            file >> json;
 
-        myfile.close();
+            for (nlohmann::json::iterator it = json.begin(); it != json.end(); ++it) {
+                std::string str = *it;
+                favorites->favMedsSet.insert(wxString(str));
+            }
+        }
     }
 
     {
-        wxString path2 = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
-        std::ifstream myfile(path2);
-        while ( getline (myfile, line) )
-            if (line.length() > 0)
-                favorites->favFTEntrySet.insert(line);
+        wxString filePath = path + wxFILE_SEP_PATH + wxString(FAV_FT_ENTRY_FILE);
+        wxFileName filename = wxFileName(filePath);
+        if (filename.FileExists()) {
+            std::ifstream file(filePath);
+            nlohmann::json json;
+            file >> json;
 
-        myfile.close();
+            for (nlohmann::json::iterator it = json.begin(); it != json.end(); ++it) {
+                std::string str = *it;
+                favorites->favFTEntrySet.insert(wxString(str));
+            }
+        }
     }
 }
 

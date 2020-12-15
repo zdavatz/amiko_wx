@@ -46,6 +46,7 @@ public:
     // 46
     long rowId;
     wxString uniqueId;
+    wxString timestamp;
     wxString familyName;
     wxString givenName;
     wxString birthDate;
