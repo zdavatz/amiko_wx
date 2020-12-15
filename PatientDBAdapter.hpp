@@ -30,6 +30,7 @@ public:
     
     std::map<std::string, std::string> getAllTimestamps();
     std::vector<Patient*> getPatientsWithUniqueIDs(std::set<std::string> uniqueIDs);
+    void upsertEntry(Patient *patient);
 
 private:
     // private constructor so that it can not be called
