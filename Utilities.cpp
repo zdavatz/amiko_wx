@@ -156,6 +156,21 @@ std::chrono::time_point<std::chrono::system_clock> stringToTime(std::string inpu
     return std::chrono::system_clock::from_time_t(timeInUTC);
 }
 
+std::chrono::time_point<std::chrono::system_clock> patientStringToTime(std::string inputStr)
+{
+    std::tm tm = {};
+    std::stringstream ss(inputStr);
+    ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M.%S");
+
+    const time_t timeInUTC =
+    #if defined(_WIN32)
+        _mkgmtime(&tm);
+    #else // Assume POSIX
+        timegm(&tm);
+    #endif
+    return std::chrono::system_clock::from_time_t(timeInUTC);
+}
+
 void ensureDirectory(wxFileName filename) {
     if (wxDirExists(filename.GetFullPath())) {
         return;
