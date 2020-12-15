@@ -22,13 +22,11 @@ wxPageSetupDialogData* g_pageSetupData = NULL;
 
 static int myTextWrapper(wxString &s, const int newlinePos)
 {
-    //const int newlinePos = 60;
     int n = s.length();
     int countNewline = 0;
     for (int i = newlinePos; i<n; i+=newlinePos) {
         s.insert(i, "\n");
         countNewline++;
-        //yPos += 10;
     }
 
     return countNewline;
@@ -74,15 +72,16 @@ void MainWindow::Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical)
     float rightMarginLogical = (float)(mmToLogical*(pageWidthMM - rightMarginMM));
     float bottomMarginLogical = (float)(mmToLogical*(pageHeightMM - bottomMarginMM));
 
-    wxCoord xExtent, yExtent;
+    wxCoord xExtent, yExtent; // mm
     dc->GetTextExtent("Test", &xExtent, &yExtent);
-    //float xPos = (float)(((((pageWidthMM - leftMargin - rightMargin)/2.0)+leftMargin)*mmToLogical) - (xExtent/2.0));
 
+#ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ 
-            << "\n\t mmToLogical:" << mmToLogical 
-            << "\n\t yExtent:" << yExtent 
-            << "\n\t pageMM:" << pageWidthMM << "," << pageHeightMM
+            << "\n\t mmToLogical:" << mmToLogical // 3.7
+            << "\n\t yExtent:" << yExtent // 15
+            << "\n\t pageMM:" << pageWidthMM << "," << pageHeightMM // 197, 276
             << std::endl;
+#endif
     
     const wxCoord xPos = (leftMarginMM+10)*mmToLogical;
     const wxCoord xOffset = 92*mmToLogical;
@@ -93,7 +92,7 @@ void MainWindow::Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical)
 #else
     const wxCoord lineHeight = yExtent; // 15
 #endif
-    const wxCoord wrapAtChar = 65;
+    const wxCoord wrapAtChar = 70;
 
     wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
     dc->SetFont(m_testFont);
@@ -145,11 +144,14 @@ void MainWindow::Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical)
         return;
 
     int numRows = myPrescriptionsTableView->GetChildrenCount(rootItem, false);
-    std::clog << "numRows: " << numRows << std::endl;
 
     const int cartNo = 0;
     int cartSize = mPrescriptionsCart[ cartNo].cart.size();
-    std::clog << "cartSize: " << cartSize << std::endl;
+#ifndef NDEBUG
+    std::clog
+    << "numRows: " << numRows
+    << "cartSize: " << cartSize << std::endl;
+#endif
 
     for (int i=0; i<cartSize; i++) {
         PrescriptionItem *item = mPrescriptionsCart[ cartNo].getItemAtIndex(i);
@@ -185,14 +187,14 @@ void MainWindow::Draw(wxDC&dc)
         return;
 
     int w,h;
-        dc.GetSize(&w, &h);
-        double scaleW,scaleH;
-        dc.GetUserScale(&scaleW, &scaleH);
-        std::cerr << __FUNCTION__ << " " << __LINE__
-                << "\n\t DC size:" << w << "," << h 
-                << "\n\t DC scale:" << scaleW << "," << scaleH
-                << std::endl;        
-#endif
+    dc.GetSize(&w, &h);
+    double scaleW,scaleH;
+    dc.GetUserScale(&scaleW, &scaleH);
+    std::cerr << __FUNCTION__ << " " << __LINE__
+    << "\n\t DC size:" << w << "," << h  // 510,715
+    << "\n\t DC scale:" << scaleW << "," << scaleH // 1.97, 1.97
+    << std::endl;
+
     const wxCoord xPos = 10;
     const wxCoord xOffset = w/2;
     wxCoord yPos = 30;
@@ -202,7 +204,7 @@ void MainWindow::Draw(wxDC&dc)
 
     dc.SetBackground(*wxWHITE_BRUSH);
     // dc.Clear();
-    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_DEFAULT);
+    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
 #if 1 //ndef NDEBUG
     wxSize szPPI = dc.GetPPI();
     
@@ -282,6 +284,7 @@ void MainWindow::Draw(wxDC&dc)
 
         yPos += lineHeight;
     }
+#endif
 }
 
 // 1071
@@ -313,18 +316,6 @@ void MainWindow::printPrescription()
             << "\n\t PPI screen:" << ppiScreenX << "," << ppiScreenY // macOS 94,94  linux 300,300
             << "\n\t PPI printer:" << ppiPrinterX << "," << ppiPrinterY // macOS 300,300  linux 1200,1200
             << std::endl;
-
-//    wxDC *dc2 = preview->GetPrintout()->GetDC();
-//    if (dc2) {
-//        int w,h;
-//        dc2->GetSize(&w, &h);
-//        double scaleW,scaleH;
-//        dc2->GetUserScale(&scaleW, &scaleH);
-//        std::cerr << __FUNCTION__ << " " << __LINE__
-//                << "\n\t DC size:" << w << "," << h 
-//                << "\n\t DC scale:" << scaleW << "," << scaleH
-//                << std::endl;        
-//    }
 #endif
 
     frame->Show();
