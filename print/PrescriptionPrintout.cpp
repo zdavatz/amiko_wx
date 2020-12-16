@@ -6,14 +6,14 @@
 
 #include <wx/font.h>
 
-#include "MyPrintout.hpp"
+#include "PrescriptionPrintout.hpp"
 #include "MainWindow.h"
 
 
 // Global page setup data
 extern wxPageSetupDialogData* g_pageSetupData;
 
-bool MyPrintout::OnPrintPage(int page)
+bool PrescriptionPrintout::OnPrintPage(int page)
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
@@ -41,7 +41,7 @@ bool MyPrintout::OnPrintPage(int page)
     return true;
 }
 
-bool MyPrintout::OnBeginDocument(int startPage, int endPage)
+bool PrescriptionPrintout::OnBeginDocument(int startPage, int endPage)
 {
     if (!wxPrintout::OnBeginDocument(startPage, endPage))
         return false;
@@ -49,7 +49,7 @@ bool MyPrintout::OnBeginDocument(int startPage, int endPage)
     return true;
 }
 
-void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
+void PrescriptionPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
 {
     *minPage = 1;
     *maxPage = numPages;
@@ -57,14 +57,17 @@ void MyPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *
     *selPageTo = numPages;
 }
 
-bool MyPrintout::HasPage(int pageNum)
+bool PrescriptionPrintout::HasPage(int pageNum)
 {
+#ifndef NDEBUG
+    //std::clog << __FUNCTION__ << " page:" << pageNum << std::endl;
+#endif
     return (pageNum <= numPages);
     //return (pageNum == 1 || pageNum == 2);
     //return (pageNum == 1);
 }
 
-void MyPrintout::DrawPageOne()
+void PrescriptionPrintout::DrawPageOne()
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
@@ -142,7 +145,7 @@ void MyPrintout::DrawPageOne()
     vc->Draw(*GetDC());
 }
 
-void MyPrintout::DrawPageTwo()
+void PrescriptionPrintout::DrawPageTwo()
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
@@ -193,7 +196,7 @@ void MyPrintout::DrawPageTwo()
 
 #if 1
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->Draw2(this, dc, logUnitsFactor);
+    vc->DrawPrescription(this, dc, logUnitsFactor);
 #else
     static bool alternate = false;
     alternate = !alternate;
@@ -265,7 +268,7 @@ void MyPrintout::DrawPageTwo()
 }
 
 // Writes a header on a page. Margin units are in millimetres.
-bool MyPrintout::WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString&text, float mmToLogical)
+bool PrescriptionPrintout::WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString&text, float mmToLogical)
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << " text:" << text << std::endl;
