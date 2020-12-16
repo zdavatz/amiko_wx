@@ -120,9 +120,11 @@ public:
 #ifndef __APPLE_
     void OnQuit( wxCommandEvent& event);
 #endif
-    void Draw(wxDC&dc);
-    void Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical);
-    void initPrint();
+    void Draw(wxDC&dc); // __deprecated
+    void DrawLabel1(wxDC&dc);
+    void DrawLabel2(wxPrintout *printout, wxDC *dc, float mmToLogical);
+    void DrawPrescription(wxPrintout *printout, wxDC *dc, float mmToLogical);
+    void initPrint(const wxString &printerName);
     void terminatePrint();
 
     // .mm 212
