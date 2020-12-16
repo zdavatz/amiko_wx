@@ -8,11 +8,15 @@
 
 #include <wx/wx.h>
 #include <wx/print.h>
+#include <wx/math.h>
 
 #include "MainWindow.h"
 #include "SignatureView.hpp"
 #include "PrescriptionItem.hpp"
-#include "MyPrintout.hpp"
+#include "PrescriptionPrintout.hpp"
+#include "LabelPrintout.hpp"
+#include "Label.h"
+#include "PatientSheet.h"
 
 // Global print data, to remember settings during the session
 wxPrintData *g_printData = NULL;
@@ -32,22 +36,46 @@ static int myTextWrapper(wxString &s, const int newlinePos)
     return countNewline;
 }
 
-void MainWindow::initPrint()
+#define mm2pix(x)   (x * 842.0 / 297.0)
+
+void MainWindow::initPrint(const wxString &printerName)
 {
     g_printData = new wxPrintData;
-    g_printData->SetPaperId(wxPAPER_A4);
+
+    if (printerName.IsEmpty())
+        g_printData->SetPaperId(wxPAPER_A4);
+    else {
+        // 1301 printMedicineLabel
+        g_printData->SetPaperId(wxPAPER_NONE);
+        //g_printData->SetPaperSize(wxSize(mm2pt*36, mm2pt*89));
+        g_printData->SetPaperSize(wxSize(220, 180));
+        g_printData->SetPrinterName(printerName);
+        g_printData->SetOrientation(wxLANDSCAPE);
+    }
+
 #ifndef NDEBUG
-    wxSize sz = g_printData->GetPaperSize();;
-    std::clog << __PRETTY_FUNCTION__ << " paper size:" << sz.x << "," << sz.y << std::endl;
+    wxSize sz = g_printData->GetPaperSize();
+    wxString oldPrinterName = g_printData->GetPrinterName();
+    std::clog << __PRETTY_FUNCTION__
+    << ", old printer name:<" << oldPrinterName << ">"
+    << ", printer name:<" << printerName << ">"
+    << ", paper size:" << sz.x << "," << sz.y
+    << std::endl;
 #endif
 
     g_pageSetupData = new wxPageSetupDialogData;
     // copy over initial paper size from print record
     (*g_pageSetupData) = *g_printData;
 
-    // Set some initial page margins in mm.
-    g_pageSetupData->SetMarginTopLeft(wxPoint(15, 15));
-    g_pageSetupData->SetMarginBottomRight(wxPoint(15, 15));
+    if (printerName.IsEmpty()) {
+        // Set some initial page margins in mm.
+        g_pageSetupData->SetMarginTopLeft(wxPoint(15, 15));
+        g_pageSetupData->SetMarginBottomRight(wxPoint(15, 15));
+    }
+    else {
+        g_pageSetupData->SetMarginTopLeft(wxPoint(0, 0));
+        g_pageSetupData->SetMarginBottomRight(wxPoint(150, 150));
+    }
 }
 
 void MainWindow::terminatePrint()
@@ -56,7 +84,93 @@ void MainWindow::terminatePrint()
     delete g_pageSetupData;
 }
 
-void MainWindow::Draw2(wxPrintout *printout, wxDC *dc, float mmToLogical)
+#include "Operator.hpp"
+#include "OperatorIDSheet.h"
+
+void MainWindow::DrawLabel1(wxDC&dc)
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+//    myLabelPanel * medicineLabelView = new myLabelPanel(this);
+    
+    Operator *d = mOperatorIDSheet->loadOperator();
+    
+    wxCoord yPos = 10;
+    const wxCoord dy = 10;
+    const wxCoord fontSize = 14;
+    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
+
+    wxString placeDate = myPlaceDateField->GetLabelText();
+    // TODO: discard time
+    wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
+    dc.DrawText(firstLine, 0, yPos);
+    yPos += 2*dy;
+
+    wxPen pen = dc.GetPen();
+    pen.SetWidth(4);
+    dc.SetPen(pen);
+    dc.DrawLine(0, yPos, 200, yPos);
+    yPos += dy;
+        
+    wxString patient = myPatientAddressTextField->GetLabelText();
+    Patient *p = mPatientSheet->getAllFields();
+    wxString secondLine = wxString::Format("%s, %s %s", patient, _("born"), p->birthDate);
+    dc.DrawText(secondLine, 0, yPos); yPos += dy;
+
+    dc.DrawText("Medicine", 0, yPos); yPos += dy;
+    dc.DrawText("Comment", 0, yPos); yPos += dy;
+    dc.DrawText("Swissmed", 0, yPos);
+    dc.DrawText("Price 1", 200, yPos);
+
+    //medicineLabelView->render(dc);
+    delete d;
+}
+
+void MainWindow::DrawLabel2(wxPrintout *printout, wxDC *dc, float mmToLogical)
+{
+    //printout->SetPageSizeMM(120, 90);
+#ifndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__
+            << "\n\t mmToLogical: " << mmToLogical // 3.7
+//            << "\n\t yExtent:" << yExtent // 15
+//            << "\n\t pageMM:" << pageWidthMM << "," << pageHeightMM // 197, 276
+            << std::endl;
+#endif
+    
+    // 1320
+    Operator *d = mOperatorIDSheet->loadOperator();
+
+    wxCoord yPos = 10*mmToLogical;
+    const wxCoord dy = 10*mmToLogical;
+    const wxCoord fontSize = 14;
+    
+    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
+    dc->SetFont(m_testFont);
+
+    wxString placeDate = myPlaceDateField->GetLabelText();
+    // TODO: discard time
+    wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
+
+    dc->DrawText(firstLine, 0, yPos);
+    yPos += 2*dy;
+
+    dc->SetPen(* wxGREEN_PEN);
+    wxPen pen = dc->GetPen();
+    pen.SetWidth(4);
+    dc->SetPen(pen);
+    dc->DrawLine(0, yPos, 200, yPos);
+    yPos += dy;
+
+
+    dc->DrawText("Patient", 0, yPos); yPos += dy;
+    dc->DrawText("Medicine", 0, yPos); yPos += dy;
+    dc->DrawText("Comment", 0, yPos); yPos += dy;
+    dc->DrawText("Swissmed", 0, yPos);
+    dc->DrawText("Price 2", 50*mmToLogical, yPos);
+    
+    delete d;
+}
+
+void MainWindow::DrawPrescription(wxPrintout *printout, wxDC *dc, float mmToLogical)
 {
     int pageWidthMM, pageHeightMM;
     printout->GetPageSizeMM(&pageWidthMM, &pageHeightMM);
@@ -183,7 +297,7 @@ void MainWindow::Draw(wxDC&dc)
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
-    dc.DrawText("Test1", 0, 10);
+    dc.DrawText("Draw", 0, 10);
 
     if (!dc.IsOk())
         return;
@@ -296,9 +410,11 @@ void MainWindow::Draw(wxDC&dc)
 void MainWindow::printPrescription()
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+    initPrint(wxEmptyString);
+
     wxPrintDialogData printDialogData(* g_printData);
     wxPrintPreview *preview =
-    new wxPrintPreview(new MyPrintout(this), new MyPrintout(this), &printDialogData);
+    new wxPrintPreview(new PrescriptionPrintout(this), new PrescriptionPrintout(this), &printDialogData);
     if (!preview->IsOk())
     {
         delete preview;
@@ -311,7 +427,7 @@ void MainWindow::printPrescription()
     frame->Centre(wxBOTH);
     frame->InitializeWithModality(wxPreviewFrame_AppModal);
     
- #if 1
+#ifndef NDEBUG
     int ppiScreenX, ppiScreenY;
     preview->GetPrintout()->GetPPIScreen(&ppiScreenX,&ppiScreenY);
     int ppiPrinterX, ppiPrinterY;
@@ -323,4 +439,36 @@ void MainWindow::printPrescription()
 #endif
 
     frame->Show();
+    terminatePrint();
+}
+
+// 1381
+void MainWindow::printMedicineLabel()
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    initPrint("DYMO LabelWriter 450");
+    
+    wxPrintDialogData printDialogData(* g_printData);
+    myLabelPanel * medicineLabelView = new myLabelPanel(this);
+    wxPrintout *printout = new LabelPrintout(medicineLabelView);
+    printout->SetPageSizeMM(120, 90);
+
+    wxPrintout *printoutForPrinting = new LabelPrintout(medicineLabelView);
+    printoutForPrinting->SetPageSizeMM(120, 90);
+
+    wxPrintPreview *preview = new wxPrintPreview(printout, printoutForPrinting, &printDialogData);
+    if (!preview->IsOk())
+    {
+        delete preview;
+        wxLogError(_("There was a problem previewing.\nPerhaps your current printer is not set correctly?"));
+        return;
+    }
+
+    wxPreviewFrame *frame =
+        new wxPreviewFrame(preview, this, _("Print Preview"), wxPoint(100, 100), wxSize(600, 650));
+    frame->Centre(wxBOTH);
+    frame->InitializeWithModality(wxPreviewFrame_AppModal);
+    
+    frame->Show();
+    terminatePrint();
 }

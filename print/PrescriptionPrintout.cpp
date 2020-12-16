@@ -1,4 +1,4 @@
-//  MyPrintout.cpp
+//  PrescriptionPrintout.cpp
 //  AmiKo-wx
 //
 //  Created by Alex Bettarini on 10 Dec 2020

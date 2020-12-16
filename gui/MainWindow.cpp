@@ -48,7 +48,6 @@
 
 #include "HealthCard.hpp"
 #include "PatientDBAdapter.hpp"
-//#include "MyPrintout.hpp"
 
 #include "../res/xpm/CoMed.xpm"
 #include "../sync/GoogleSyncManager.hpp"
@@ -308,8 +307,6 @@ MainWindow::MainWindow( wxWindow* parent )
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
-    
-    initPrint();
 }
 
 MainWindow::~MainWindow()
@@ -321,8 +318,6 @@ MainWindow::~MainWindow()
     m_mimeDatabase->Unassociate(filetype);
 #endif
 #endif
-    
-    terminatePrint();
 }
 
 #ifndef __APPLE_
@@ -763,13 +758,6 @@ void MainWindow::removeItemFromPrescription()
         myPrescriptionsTableView_reloadData( cartNo);
         // updateButtons(); __deprecated
     }
-}
-
-// 1381
-// TODO: reference sample app printing.app
-void MainWindow::printMedicineLabel()
-{
-    std::clog << __PRETTY_FUNCTION__ << " TODO: layout label for printing\n";
 }
 
 // 1558
