@@ -32,7 +32,11 @@ public:
 private:
     // private constructor so that it can not be called
 
+#ifdef __linux__
+    DefaultsController() : wxConfig(APP_NAME, PROJECT_BUNDLE_ID, "." APP_NAME "/" APP_NAME ".conf") {}
+#else
     DefaultsController() : wxConfig(APP_NAME, PROJECT_BUNDLE_ID) {}
+#endif
 
     static DefaultsController* m_pInstance;
 };

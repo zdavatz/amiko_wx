@@ -24,10 +24,12 @@ DefaultsController* DefaultsController::Instance()
 
         // system-wide
         //  macos: "/Library/Preferences/AmiKo Preferences"
+        //  linux: /etc/AmiKo.conf
         << "GetGlobalFileName " << GetGlobalFileName(m_pInstance->GetAppName())
         
         // user-specific
         //  macos: "~/Library/Preferences/AmiKo Preferences"
+        //  linux: ~/.Amiko
         << "\nGetLocalFileName  " << GetLocalFileName(m_pInstance->GetAppName())
 
         << "\n\t PROJECT_NAME:      " << PROJECT_NAME

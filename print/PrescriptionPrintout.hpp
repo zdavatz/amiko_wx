@@ -17,10 +17,10 @@
 
 class MainWindow;
 
-class MyPrintout: public wxPrintout
+class PrescriptionPrintout: public wxPrintout
 {
 public:
-    MyPrintout(MainWindow* frame, const wxString &title = "My printout")
+    PrescriptionPrintout(MainWindow* frame, const wxString &title = "My printout")
         : wxPrintout(title) { m_frame=frame; numPages=NUM_PRINT_PAGES; }
 
     virtual bool OnPrintPage(int page) wxOVERRIDE;
