@@ -64,7 +64,7 @@ class myLabelPanel : public wxFrame
 
 	public:
 
-		myLabelPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 252,200 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		myLabelPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 89,36 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~myLabelPanel();
 
