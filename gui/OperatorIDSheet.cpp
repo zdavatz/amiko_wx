@@ -14,6 +14,22 @@ OperatorIDSheetBase( parent )
 {
     loadSettings();
     Fit();
+
+    fsWatcher = new wxFileSystemWatcher();
+    wxFileName jsonFilePath = wxFileName(UTI::documentsDirectory(), DOC_JSON_FILENAME);
+    wxFileName signatureFilePath = wxFileName(UTI::documentsDirectory(), DOC_SIGNATURE_FILENAME);
+    fsWatcher->Add(jsonFilePath);
+    fsWatcher->Add(signatureFilePath);
+    fsWatcher->SetOwner(this);
+}
+
+BEGIN_EVENT_TABLE(OperatorIDSheet, OperatorIDSheetBase)
+    EVT_FSWATCHER(wxID_ANY, OperatorIDSheet::OnFileUpdated)
+END_EVENT_TABLE()
+
+
+void OperatorIDSheet::OnFileUpdated( wxFileSystemWatcherEvent& event ) {
+    loadSettings();
 }
 
 // 105
