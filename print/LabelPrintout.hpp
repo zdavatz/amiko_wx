@@ -9,13 +9,12 @@
 #include "wx/wx.h"
 #include "wx/print.h"
 
-//class MainWindow;
-class myLabelPanel;
+class MainWindow;
 
 class LabelPrintout: public wxPrintout
 {
 public:
-    LabelPrintout(myLabelPanel* frame, const wxString &title = "My printout")
+    LabelPrintout(MainWindow* frame, const wxString &title = "My printout")
         : wxPrintout(title) { m_frame=frame; }
 
     virtual bool OnPrintPage(int page) wxOVERRIDE;
@@ -30,5 +29,5 @@ public:
     bool WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString& text, float mmToLogical);
 
 private:
-    myLabelPanel *m_frame;
+    MainWindow *m_frame;
 };

@@ -18,22 +18,25 @@ bool LabelPrintout::OnPrintPage(int page)
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    
-    SetPageSizeMM(130, 90);
+
+    //SetPageSizeMM(89, 36);
 
     wxDC *dc = GetDC();
     if (!dc || !dc->IsOk())
         return false;
 
+#ifndef NDEBUG
     static bool alternate = false;
     alternate = !alternate;
     if (alternate)
         DrawPageOne();
-    else {
+    else
+#endif
+    {
         DrawPageTwo();
     }
 
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     // Draw page numbers at top left corner of printable area, sized so that
     // screen size of text matches paper size.
     MapScreenSizeToPage();
@@ -141,11 +144,11 @@ void LabelPrintout::DrawPageOne()
 //    wxCoord yoff = (fitRect.height - maxY);
 //    OffsetLogicalOrigin(xoff, yoff);
 
-#if 1
+#if 0
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->DrawLabel1(*GetDC());
+    vc->OnDraw_Label1(*GetDC());
 #else
-    m_frame->Draw(*GetDC());
+    m_frame->OnDraw_Label1(*GetDC());
 #endif
     //m_frame->Show();
 }
@@ -199,8 +202,12 @@ void LabelPrintout::DrawPageTwo()
 
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
 
+#if 0
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->DrawLabel2(this, dc, logUnitsFactor);
+    vc->OnDraw_Label2(this, dc, logUnitsFactor);
+#else
+    m_frame->OnDraw_Label2(this, dc, logUnitsFactor);
+#endif
 }
 
 // Writes a header on a page. Margin units are in millimetres.

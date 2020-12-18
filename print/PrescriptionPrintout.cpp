@@ -28,9 +28,11 @@ bool PrescriptionPrintout::OnPrintPage(int page)
         DrawPageOne();
     else if (page == 2)
 #endif
+    {
         DrawPageTwo();
+    }
 
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     // Draw page numbers at top left corner of printable area, sized so that
     // screen size of text matches paper size.
     MapScreenSizeToPage();
@@ -59,12 +61,7 @@ void PrescriptionPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageF
 
 bool PrescriptionPrintout::HasPage(int pageNum)
 {
-#ifndef NDEBUG
-    //std::clog << __FUNCTION__ << " page:" << pageNum << std::endl;
-#endif
     return (pageNum <= numPages);
-    //return (pageNum == 1 || pageNum == 2);
-    //return (pageNum == 1);
 }
 
 void PrescriptionPrintout::DrawPageOne()
@@ -141,8 +138,7 @@ void PrescriptionPrintout::DrawPageOne()
 //    wxCoord yoff = (fitRect.height - maxY);
 //    OffsetLogicalOrigin(xoff, yoff);
 
-    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->Draw(*GetDC());
+    m_frame->OnDraw_Prescription1(*GetDC());
 }
 
 void PrescriptionPrintout::DrawPageTwo()
@@ -194,77 +190,7 @@ void PrescriptionPrintout::DrawPageTwo()
 
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
 
-#if 1
-    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->DrawPrescription(this, dc, logUnitsFactor);
-#else
-    static bool alternate = false;
-    alternate = !alternate;
-    if (alternate)
-    {
-        MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-        vc->Draw2(this, dc, logUnitsFactor);
-        return;
-    }
-
-    // Alternate drawing foir debugging
-    // Draw 50 mm by 50 mm L shape
-    float logUnits = (float)(50*logUnitsFactor);
-    dc->SetPen(* wxBLACK_PEN);
-    dc->DrawLine(50, 250, (long)(50.0 + logUnits), 250);
-    dc->DrawLine(50, 250, 50, (long)(250.0 + logUnits));
-
-    dc->SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
-    dc->SetBrush(*wxTRANSPARENT_BRUSH);
-
-    { // GetTextExtent demo:
-        wxString words[7] = { "This ", "is ", "GetTextExtent ",
-                             "testing ", "string. ", "Enjoy ", "it!" };
-        long x = 200, y= 250;
-
-        dc->SetFont(wxFontInfo(15).Family(wxFONTFAMILY_SWISS));
-
-        for (int i = 0; i < 7; i++)
-        {
-            wxCoord wordWidth, wordHeight;
-            wxString word = words[i];
-            word.Remove( word.Len()-1, 1 );
-            dc->GetTextExtent(word, &wordWidth, &wordHeight);
-            dc->DrawRectangle(x, y, wordWidth, wordHeight);
-            dc->GetTextExtent(words[i], &wordWidth, &wordHeight);
-            dc->DrawText(words[i], x, y);
-            x += wordWidth;
-        }
-    }
-
-    wxFont m_testFont = wxFontInfo(10).Family(wxFONTFAMILY_SWISS);
-    dc->SetFont(m_testFont);
-
-    dc->DrawText("Some test text", 200, 300 );
-
-    // TESTING
-
-    int leftMargin = 20;
-    int rightMargin = 20;
-    int topMargin = 20;
-    int bottomMargin = 20;
-
-    int pageWidthMM, pageHeightMM;
-    GetPageSizeMM(&pageWidthMM, &pageHeightMM);
-
-    float leftMarginLogical = (float)(logUnitsFactor*leftMargin);
-    float topMarginLogical = (float)(logUnitsFactor*topMargin);
-    float bottomMarginLogical = (float)(logUnitsFactor*(pageHeightMM - bottomMargin));
-    float rightMarginLogical = (float)(logUnitsFactor*(pageWidthMM - rightMargin));
-
-    dc->SetPen(* wxRED_PEN);
-    dc->DrawLine( (long)leftMarginLogical, (long)topMarginLogical,
-        (long)rightMarginLogical, (long)topMarginLogical);
-    dc->DrawLine( (long)leftMarginLogical, (long)bottomMarginLogical,
-        (long)rightMarginLogical,  (long)bottomMarginLogical);
-
-    WritePageHeader(this, dc, "A header", logUnitsFactor);
-#endif
+    m_frame->OnDraw_Prescription2(this, dc, logUnitsFactor);
 }
 
 // Writes a header on a page. Margin units are in millimetres.
