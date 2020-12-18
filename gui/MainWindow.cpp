@@ -103,6 +103,7 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
 
     EVT_DROP_FILES(MainWindow::OnDropFiles)
+    EVT_FSWATCHER(wxID_ANY, MainWindow::OnFileWatcherUpdated)
 END_EVENT_TABLE()
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -301,12 +302,19 @@ MainWindow::MainWindow( wxWindow* parent )
         g->sync();
     });
     testSyncThread.detach();
+
 #ifndef __APPLE__
     // Issue #36
     m_menuFile->AppendSeparator();
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
+
+    fsWatcher = new wxFileSystemWatcher();
+    wxFileName amkFolderPath = wxFileName(UTI::documentsDirectory(), "");
+    amkFolderPath.AppendDir("amk");
+    fsWatcher->AddTree(amkFolderPath);
+    fsWatcher->SetOwner(this);
 }
 
 MainWindow::~MainWindow()
@@ -3555,4 +3563,7 @@ void MainWindow::OnDropFiles(wxDropFilesEvent& event)
     // 2900
     loadPrescription_andRefreshHistory(event.GetFiles()[0], true);
 }
-    
+
+void MainWindow::OnFileWatcherUpdated(wxFileSystemWatcherEvent& event) {
+    updatePrescriptionHistory();
+}
