@@ -170,7 +170,6 @@ set( SRCS_CARD
 set( SRCS_PRINT
     print/LabelPrintout.cpp print/LabelPrintout.hpp
     print/PrescriptionPrintout.cpp print/PrescriptionPrintout.hpp
-    print/Label.cpp print/Label.h
     print/MainWindowPrint.cpp
     )
 

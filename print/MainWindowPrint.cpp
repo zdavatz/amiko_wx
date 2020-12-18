@@ -127,7 +127,7 @@ void MainWindow::terminatePrint()
 #include "Operator.hpp"
 #include "OperatorIDSheet.h"
 
-void MainWindow::DrawLabel1(wxDC&dc)
+void MainWindow::OnDraw_Label1(wxDC&dc)
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 //    myLabelPanel * medicineLabelView = new myLabelPanel(this);
@@ -168,7 +168,7 @@ void MainWindow::DrawLabel1(wxDC&dc)
     delete d;
 }
 
-void MainWindow::DrawLabel2(wxPrintout *printout, wxDC *dc, float mmToLogical)
+void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical)
 {
     int row = myPrescriptionsTableView_rowForView();
     if (row == -1)
@@ -232,7 +232,7 @@ void MainWindow::DrawLabel2(wxPrintout *printout, wxDC *dc, float mmToLogical)
     // 1359 Fourth line
     {
         wxString comment = prescriptionBasket[row]->comment;
-        int n = myTextWrapper(comment, 25);
+        int n = myTextWrapper(comment, 40);
         dc->DrawText(comment, 0, yPos);
         yPos += (1+n)*dy;
     }
@@ -262,7 +262,7 @@ void MainWindow::DrawLabel2(wxPrintout *printout, wxDC *dc, float mmToLogical)
     delete d;
 }
 
-void MainWindow::DrawPrescription(wxPrintout *printout, wxDC *dc, float mmToLogical)
+void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmToLogical)
 {
     int pageWidthMM, pageHeightMM;
     printout->GetPageSizeMM(&pageWidthMM, &pageHeightMM);
@@ -385,7 +385,7 @@ void MainWindow::DrawPrescription(wxPrintout *printout, wxDC *dc, float mmToLogi
     }
 }
 
-void MainWindow::Draw(wxDC&dc)
+void MainWindow::OnDraw_Prescription1(wxDC&dc)
 {
 #ifndef NDEBUG
     std::clog << __PRETTY_FUNCTION__ << std::endl;
@@ -541,7 +541,7 @@ void MainWindow::printMedicineLabel()
     initPrint("DYMO LabelWriter 450");
     
     wxPrintDialogData printDialogData(* g_printData);
-    myLabelPanel * medicineLabelView = new myLabelPanel(this);
+//    myLabelPanel * medicineLabelView = new myLabelPanel(this);
 //    wxView *myView = new wxView; // abstract because of OnDraw()
 //    myView->SetFrame(medicineLabelView);
     
@@ -566,4 +566,5 @@ void MainWindow::printMedicineLabel()
     
     frame->Show();
     terminatePrint();
+    //delete preview; // Don't do this !
 }

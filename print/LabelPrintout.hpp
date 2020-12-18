@@ -10,7 +10,6 @@
 #include "wx/print.h"
 
 class MainWindow;
-//class myLabelPanel;
 
 class LabelPrintout: public wxPrintout
 {

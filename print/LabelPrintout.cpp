@@ -19,17 +19,20 @@ bool LabelPrintout::OnPrintPage(int page)
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
 
-    SetPageSizeMM(89, 36);
+    //SetPageSizeMM(89, 36);
 
     wxDC *dc = GetDC();
     if (!dc || !dc->IsOk())
         return false;
 
+#ifndef NDEBUG
     static bool alternate = false;
     alternate = !alternate;
     if (alternate)
         DrawPageOne();
-    else {
+    else
+#endif
+    {
         DrawPageTwo();
     }
 
@@ -143,9 +146,9 @@ void LabelPrintout::DrawPageOne()
 
 #if 0
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->DrawLabel1(*GetDC());
+    vc->OnDraw_Label1(*GetDC());
 #else
-    m_frame->DrawLabel1(*GetDC());
+    m_frame->OnDraw_Label1(*GetDC());
 #endif
     //m_frame->Show();
 }
@@ -201,9 +204,9 @@ void LabelPrintout::DrawPageTwo()
 
 #if 0
     MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->DrawLabel2(this, dc, logUnitsFactor);
+    vc->OnDraw_Label2(this, dc, logUnitsFactor);
 #else
-    m_frame->DrawLabel2(this, dc, logUnitsFactor);
+    m_frame->OnDraw_Label2(this, dc, logUnitsFactor);
 #endif
 }
 
