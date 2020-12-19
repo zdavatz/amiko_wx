@@ -70,6 +70,8 @@ namespace GoogleAPITypes {
 
 GoogleSyncManager* GoogleSyncManager::m_pInstance;
 
+wxDEFINE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
+
 // Singleton
 GoogleSyncManager* GoogleSyncManager::Instance()
 {
@@ -1251,6 +1253,11 @@ void GoogleSyncManager::sync() {
         long version = entry.second;
         std::string key = wxFileName("patient", patientUid).GetFullPath().ToStdString();
         versionMap[key] = version;
+    }
+
+    wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_PATIENT);
+    if (patientUpdatedHandler != nullptr) {
+        patientUpdatedHandler->QueueEvent(event);
     }
 
     try {

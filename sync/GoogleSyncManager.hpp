@@ -31,6 +31,8 @@ namespace GoogleAPITypes {
     void from_json(const nlohmann::json& j, RemoteFile& f);
 };
 
+wxDECLARE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
+
 class GoogleSyncManager
 {
 public:
@@ -69,6 +71,8 @@ public:
         std::chrono::time_point<std::chrono::system_clock> modifiedTime,
         std::vector<std::string> parents
     );
+
+    wxEvtHandler *patientUpdatedHandler = nullptr;
 
 private:
     static GoogleSyncManager* m_pInstance;

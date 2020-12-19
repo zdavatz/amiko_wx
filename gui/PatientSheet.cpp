@@ -2,6 +2,7 @@
 
 #include <wx/filefn.h>
 
+#include "sync/GoogleSyncManager.hpp"
 #include "PatientSheet.h"
 #include "PatientDBAdapter.hpp"
 #include "Contacts.hpp"
@@ -42,7 +43,17 @@ PatientSheet::PatientSheet( wxWindow* parent )
     // Retrieves contacts from local patient database
     updateAmiKoAddressBookTableView();
     mNotification->SetLabel(wxEmptyString);
+
+    GoogleSyncManager::Instance()->patientUpdatedHandler = this;
 }
+
+PatientSheet::~PatientSheet() {
+    GoogleSyncManager::Instance()->patientUpdatedHandler = nullptr;
+}
+
+BEGIN_EVENT_TABLE(PatientSheet, PatientSheetBase)
+    EVT_COMMAND(wxID_ANY, SYNC_MANAGER_UPDATED_PATIENT, PatientSheet::OnPatientUpdatedFromSync)
+END_EVENT_TABLE()
 
 // category smartCard 16
 void PatientSheet::newHealthCardData(PAT_DICT &dict) //NSNotification *)notification
@@ -658,5 +669,13 @@ void PatientSheet::OnShowContacts( wxCommandEvent& event )
     else {
         // Retrieves contacts from local patient database
         updateAmiKoAddressBookTableView();
+    }
+}
+
+void PatientSheet::OnPatientUpdatedFromSync( wxCommandEvent& event ) {
+    updateAmiKoAddressBookTableView();
+    if (mPatientUUID.length() > 0) {
+        Patient *reloadedPatient = mPatientDb->getPatientWithUniqueID(mPatientUUID);
+        setAllFields(reloadedPatient);
     }
 }
