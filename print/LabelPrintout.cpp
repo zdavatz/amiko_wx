@@ -7,7 +7,6 @@
 #include <wx/font.h>
 
 #include "LabelPrintout.hpp"
-#include "Label.h"
 #include "MainWindow.h"
 
 // Global page setup data
