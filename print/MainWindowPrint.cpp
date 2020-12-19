@@ -25,7 +25,6 @@
 #include "PrescriptionItem.hpp"
 #include "PrescriptionPrintout.hpp"
 #include "LabelPrintout.hpp"
-#include "Label.h"
 #include "PatientSheet.h"
 
 // Global print data, to remember settings during the session
