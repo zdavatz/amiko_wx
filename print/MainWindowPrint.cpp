@@ -172,8 +172,8 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     int row = myPrescriptionsTableView_rowForView();
     if (row == -1)
         return;
-    //printout->SetPageSizeMM(120, 90);
 
+    //printout->SetPageSizeMM(120, 90);
     
     // 1320
     Operator *d = mOperatorIDSheet->loadOperator();
@@ -187,8 +187,6 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     std::clog << __PRETTY_FUNCTION__
             << "\n\t mmToLogical: " << mmToLogical // 3.7
             << "\n\t dy: " << dy // 15
-//            << "\n\t yExtent:" << yExtent // 15
-//            << "\n\t pageMM:" << pageWidthMM << "," << pageHeightMM // 197, 276
             << std::endl;
 #endif
     wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
@@ -200,7 +198,6 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
         placeDate.Trim();
         wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
 #ifndef NDEBUG
-        std::clog << "placeDate:" << placeDate << std::endl;
         std::clog << "doc:" << xPos << "," << yPos << std::endl; // 0
 #endif
         dc->DrawText(firstLine, xPos, yPos);
@@ -210,7 +207,7 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
 #ifndef __linux__
         //dc->SetPen(* wxGREEN_PEN);
         wxPen pen = dc->GetPen();
-        pen.SetWidth(4);
+        pen.SetWidth(3);
         dc->SetPen(pen); // FIXME: on Linux
 #endif
 #ifndef NDEBUG
@@ -583,10 +580,10 @@ void MainWindow::printMedicineLabel()
 //    myView->SetFrame(medicineLabelView);
     
     wxPrintout *printout = new LabelPrintout(this);
-    printout->SetPageSizeMM(36, 89);
+    //printout->SetPageSizeMM(36, 89);
 
     wxPrintout *printoutForPrinting = new LabelPrintout(this);
-    printoutForPrinting->SetPageSizeMM(36, 89);
+    //printoutForPrinting->SetPageSizeMM(36, 89);
 
     wxPrintPreview *preview = new wxPrintPreview(printout, printoutForPrinting, &printDialogData);
     if (!preview->IsOk())
