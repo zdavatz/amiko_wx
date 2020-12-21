@@ -1,4 +1,5 @@
 
+#include <chrono>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -297,11 +298,7 @@ MainWindow::MainWindow( wxWindow* parent )
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
 
-    std::thread testSyncThread([] {
-        GoogleSyncManager *g = GoogleSyncManager::Instance();
-        g->sync();
-    });
-    testSyncThread.detach();
+    GoogleSyncManager::Instance()->startBackgroundSync();
 
 #ifndef __APPLE__
     // Issue #36
