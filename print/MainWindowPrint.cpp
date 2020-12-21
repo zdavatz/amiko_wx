@@ -62,9 +62,9 @@ void MainWindow::initPrint(const wxString &printerName)
     else {
         // 1301 printMedicineLabel
         g_printData->SetPrinterName(printerName);
-        g_printData->SetOrientation(wxPORTRAIT); // wxLANDSCAPE would swap X and Y
+        g_printData->SetOrientation(wxLANDSCAPE); // wxLANDSCAPE swaps X and Y
         //g_printData->SetPaperSize(wxSize(mm2pt*36, mm2pt*89));
-        g_printData->SetPaperSize(wxSize(89, 36));
+        g_printData->SetPaperSize(wxSize(36, 89));
         g_printData->SetPaperId(wxPAPER_NONE);
 #if 1
         // OnPageSetup
@@ -172,41 +172,49 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     int row = myPrescriptionsTableView_rowForView();
     if (row == -1)
         return;
+
     //printout->SetPageSizeMM(120, 90);
-#ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__
-            << "\n\t mmToLogical: " << mmToLogical // 3.7
-//            << "\n\t yExtent:" << yExtent // 15
-//            << "\n\t pageMM:" << pageWidthMM << "," << pageHeightMM // 197, 276
-            << std::endl;
-#endif
     
     // 1320
     Operator *d = mOperatorIDSheet->loadOperator();
 
+    wxCoord xPos = 5*mmToLogical;
     wxCoord yPos = 0*mmToLogical;
-    const wxCoord dy = 3*mmToLogical;
+    const wxCoord dy = 4*mmToLogical;
     const wxCoord fontSize = 10;
-    
+
+#ifndef NDEBUG
+    std::clog << __PRETTY_FUNCTION__
+            << "\n\t mmToLogical: " << mmToLogical // 3.7
+            << "\n\t dy: " << dy // 15
+            << std::endl;
+#endif
     wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
     dc->SetFont(m_testFont);
 
     {
         wxString placeDate = myPlaceDateField->GetLabelText();
-        // TODO: discard time
+        placeDate = placeDate.BeforeLast('('); // discard time
+        placeDate.Trim();
         wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
-
-        dc->DrawText(firstLine, 0, yPos);
-        yPos += 2*dy;
-    }
-
-    {
-        dc->SetPen(* wxGREEN_PEN);
-        wxPen pen = dc->GetPen();
-        pen.SetWidth(4);
-        dc->SetPen(pen);
-        dc->DrawLine(0, yPos, 70*mmToLogical, yPos);
+#ifndef NDEBUG
+        std::clog << "doc:" << xPos << "," << yPos << std::endl; // 0
+#endif
+        dc->DrawText(firstLine, xPos, yPos);
         yPos += dy;
+        yPos += 4;
+
+#ifndef __linux__
+        //dc->SetPen(* wxGREEN_PEN);
+        wxPen pen = dc->GetPen();
+        pen.SetWidth(3);
+        dc->SetPen(pen); // FIXME: on Linux
+#endif
+#ifndef NDEBUG
+        std::clog << "lin:" << xPos << "," << yPos << std::endl; // 19
+#endif
+        dc->DrawLine(xPos, yPos, 85*mmToLogical, yPos);
+        yPos += 2;
     }
 
     // 1341 - Second line
@@ -215,7 +223,10 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
         wxArrayString patientArray = wxSplit(patient, '\n');
         Patient *p = mPatientSheet->getAllFields();
         wxString secondLine = wxString::Format("%s, %s %s", patientArray[0], _("born"), p->birthDate);
-        dc->DrawText(secondLine, 0, yPos);
+#ifndef NDEBUG
+        std::clog << "pat:" << xPos << "," << yPos << std::endl; // 21
+#endif
+        dc->DrawText(secondLine, xPos, yPos);
         yPos += dy;
     }
 
@@ -224,7 +235,14 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     wxString package = prescriptionBasket[row]->fullPackageInfo;
     wxArrayString packageArray = wxSplit(package, ','); // TODO: ", "
     {
-        dc->DrawText(packageArray[0], 0, yPos);
+#ifndef NDEBUG
+        std::clog << "pkg:" << xPos << "," << yPos << std::endl; // 36
+#endif
+        m_testFont.SetWeight(wxFONTWEIGHT_BOLD);
+        dc->SetFont(m_testFont);
+        dc->DrawText(packageArray[0], xPos, yPos);
+        m_testFont.SetWeight(wxFONTWEIGHT_NORMAL);
+        dc->SetFont(m_testFont);
         yPos += dy;
     }
 
@@ -232,21 +250,30 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     {
         wxString comment = prescriptionBasket[row]->comment;
         int n = myTextWrapper(comment, 40);
-        dc->DrawText(comment, 0, yPos);
+#ifndef NDEBUG
+        std::clog << "cmt:" << xPos << "," << yPos << std::endl; // 51
+#endif
+        dc->DrawText(comment, xPos, yPos);
         yPos += (1+n)*dy;
     }
 
-    // 1361
+    // Fixed position for bottom line
+    yPos = 7.5*dy;
+
+    // 1361 bottom line left
     {
         wxString labelSwissmed;
         wxArrayString swissmedArray = wxSplit(package, '['); // TODO: " ["
         if (swissmedArray.size() >= 2)
             labelSwissmed = wxString::Format("[%s", swissmedArray[1]);
 
-        dc->DrawText(labelSwissmed, 0, yPos);
+#ifndef NDEBUG
+        std::clog << "swm:" << xPos << "," << yPos << std::endl; // 113
+#endif
+        dc->DrawText(labelSwissmed, xPos, yPos);
     }
     
-    // 1367
+    // 1367 bottom line right
     {
         wxString labelPrice;
         if (packageArray.size() >= 2) {
@@ -254,6 +281,9 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
             if (priceArray[0] == "PP")
                 labelPrice = wxString::Format("CHF\t%@", priceArray[1]);
 
+#ifndef NDEBUG
+            std::clog << "chf:" << xPos << "," << yPos << std::endl;
+#endif
             dc->DrawText(labelPrice, 50*mmToLogical, yPos);
         }
     }
@@ -537,7 +567,12 @@ void MainWindow::printPrescription()
 void MainWindow::printMedicineLabel()
 {
     std::clog << __PRETTY_FUNCTION__ << std::endl;
+    // TODO: get actual name programmatically
+#ifdef __linux__
+    initPrint("DYMO-LabelWriter-450");
+#else
     initPrint("DYMO LabelWriter 450");
+#endif
     
     wxPrintDialogData printDialogData(* g_printData);
 //    myLabelPanel * medicineLabelView = new myLabelPanel(this);
@@ -545,10 +580,10 @@ void MainWindow::printMedicineLabel()
 //    myView->SetFrame(medicineLabelView);
     
     wxPrintout *printout = new LabelPrintout(this);
-    printout->SetPageSizeMM(89, 36);
+    //printout->SetPageSizeMM(36, 89);
 
     wxPrintout *printoutForPrinting = new LabelPrintout(this);
-    printoutForPrinting->SetPageSizeMM(89, 36);
+    //printoutForPrinting->SetPageSizeMM(36, 89);
 
     wxPrintPreview *preview = new wxPrintPreview(printout, printoutForPrinting, &printDialogData);
     if (!preview->IsOk())

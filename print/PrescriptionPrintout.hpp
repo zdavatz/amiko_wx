@@ -20,7 +20,7 @@ class MainWindow;
 class PrescriptionPrintout: public wxPrintout
 {
 public:
-    PrescriptionPrintout(MainWindow* frame, const wxString &title = "My printout")
+    PrescriptionPrintout(MainWindow* frame, const wxString &title = _("Prescription"))
         : wxPrintout(title) { m_frame=frame; numPages=NUM_PRINT_PAGES; }
 
     virtual bool OnPrintPage(int page) wxOVERRIDE;
