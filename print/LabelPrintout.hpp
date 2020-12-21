@@ -14,7 +14,7 @@ class MainWindow;
 class LabelPrintout: public wxPrintout
 {
 public:
-    LabelPrintout(MainWindow* frame, const wxString &title = "My printout")
+    LabelPrintout(MainWindow* frame, const wxString &title = _("Label"))
         : wxPrintout(title) { m_frame=frame; }
 
     virtual bool OnPrintPage(int page) wxOVERRIDE;
@@ -24,9 +24,6 @@ public:
 
     void DrawPageOne();
     void DrawPageTwo();
-
-    // Writes a header on a page. Margin units are in millimetres.
-    bool WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString& text, float mmToLogical);
 
 private:
     MainWindow *m_frame;

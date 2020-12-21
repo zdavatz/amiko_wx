@@ -18,13 +18,13 @@ bool LabelPrintout::OnPrintPage(int page)
     std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
 
-    //SetPageSizeMM(89, 36);
+    //SetPageSizeMM(36, 89);
 
     wxDC *dc = GetDC();
     if (!dc || !dc->IsOk())
         return false;
 
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     static bool alternate = false;
     alternate = !alternate;
     if (alternate)
@@ -143,13 +143,7 @@ void LabelPrintout::DrawPageOne()
 //    wxCoord yoff = (fitRect.height - maxY);
 //    OffsetLogicalOrigin(xoff, yoff);
 
-#if 0
-    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->OnDraw_Label1(*GetDC());
-#else
     m_frame->OnDraw_Label1(*GetDC());
-#endif
-    //m_frame->Show();
 }
 
 void LabelPrintout::DrawPageTwo()
@@ -201,43 +195,5 @@ void LabelPrintout::DrawPageTwo()
 
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
 
-#if 0
-    MainWindow* vc = (MainWindow *)wxTheApp->GetTopWindow();
-    vc->OnDraw_Label2(this, dc, logUnitsFactor);
-#else
     m_frame->OnDraw_Label2(this, dc, logUnitsFactor);
-#endif
-}
-
-// Writes a header on a page. Margin units are in millimetres.
-bool LabelPrintout::WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString&text, float mmToLogical)
-{
-#ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << " text:" << text << std::endl;
-#endif
-
-    int pageWidthMM, pageHeightMM;
-
-    printout->GetPageSizeMM(&pageWidthMM, &pageHeightMM);
-    wxUnusedVar(pageHeightMM);
-
-    int leftMargin = 10;
-    int topMargin = 10;
-    int rightMargin = 10;
-
-    float leftMarginLogical = (float)(mmToLogical*leftMargin);
-    float topMarginLogical = (float)(mmToLogical*topMargin);
-    float rightMarginLogical = (float)(mmToLogical*(pageWidthMM - rightMargin));
-
-    wxCoord xExtent, yExtent;
-    dc->GetTextExtent(text, &xExtent, &yExtent);
-
-    float xPos = (float)(((((pageWidthMM - leftMargin - rightMargin)/2.0)+leftMargin)*mmToLogical) - (xExtent/2.0));
-    dc->DrawText(text, (long)xPos, (long)topMarginLogical);
-
-    dc->SetPen(* wxBLACK_PEN);
-    dc->DrawLine( (long)leftMarginLogical, (long)(topMarginLogical+yExtent),
-                  (long)rightMarginLogical, (long)topMarginLogical+yExtent );
-
-    return true;
 }
