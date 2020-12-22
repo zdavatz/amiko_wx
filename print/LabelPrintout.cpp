@@ -39,7 +39,7 @@ bool LabelPrintout::OnPrintPage(int page)
 
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
 
-    m_frame->OnDraw_Label2(this, dc, logUnitsFactor);
+    m_frame->OnDraw_Label(dc, logUnitsFactor);
 
     return true;
 }

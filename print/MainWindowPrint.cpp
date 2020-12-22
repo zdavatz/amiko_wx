@@ -18,7 +18,7 @@
 #endif
 #include "wx/generic/prntdlgg.h"
 #include <wx/math.h>
-#include <wx/docview.h>
+#include <wx/tokenzr.h>
 
 #include "MainWindow.h"
 #include "SignatureView.hpp"
@@ -126,55 +126,12 @@ void MainWindow::terminatePrint()
 #include "Operator.hpp"
 #include "OperatorIDSheet.h"
 
-void MainWindow::OnDraw_Label1(wxDC&dc)
-{
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-//    myLabelPanel * medicineLabelView = new myLabelPanel(this);
-    
-    // 1320
-    Operator *d = mOperatorIDSheet->loadOperator();
-    
-    wxCoord yPos = 5;
-    const wxCoord dy = 10;
-    const wxCoord fontSize = 10;
-    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
-
-    wxString placeDate = myPlaceDateField->GetLabelText();
-    // TODO: discard time
-    wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
-    dc.DrawText(firstLine, 0, yPos);
-    yPos += 2*dy;
-
-    wxPen pen = dc.GetPen();
-    pen.SetWidth(4);
-    dc.SetPen(pen);
-    dc.DrawLine(0, yPos, 200, yPos);
-    yPos += dy;
-        
-    // 1340
-    wxString patient = myPatientAddressTextField->GetValue();
-    wxArrayString patientArray = wxSplit(patient, '\n');
-    Patient *p = mPatientSheet->getAllFields();
-    wxString secondLine = wxString::Format("%s, %s %s", patientArray[0], _("born"), p->birthDate);
-    dc.DrawText(secondLine, 0, yPos); yPos += dy;
-
-    dc.DrawText("Medicine", 0, yPos); yPos += dy;
-    dc.DrawText("Comment", 0, yPos); yPos += dy;
-    dc.DrawText("Swissmed", 0, yPos);
-    dc.DrawText("Price 1", 200, yPos);
-
-    //medicineLabelView->render(dc);
-    delete d;
-}
-
-void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical)
+void MainWindow::OnDraw_Label(wxDC *dc, float mmToLogical)
 {
     int row = myPrescriptionsTableView_rowForView();
     if (row == -1)
         return;
 
-    //printout->SetPageSizeMM(120, 90);
-    
     // 1320
     Operator *d = mOperatorIDSheet->loadOperator();
 
@@ -183,12 +140,6 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     const wxCoord dy = 4*mmToLogical;
     const wxCoord fontSize = 10;
 
-#ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__
-            << "\n\t mmToLogical: " << mmToLogical // 3.7
-            << "\n\t dy: " << dy // 15
-            << std::endl;
-#endif
     wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
     dc->SetFont(m_testFont);
 
@@ -197,9 +148,6 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
         placeDate = placeDate.BeforeLast('('); // discard time
         placeDate.Trim();
         wxString firstLine = wxString::Format("%s %s %s - %s %s", d->title, d->givenName, d->familyName, d->zipCode, placeDate);
-#ifndef NDEBUG
-        std::clog << "doc:" << xPos << "," << yPos << std::endl; // 0
-#endif
         dc->DrawText(firstLine, xPos, yPos);
         yPos += dy;
         yPos += 4;
@@ -210,37 +158,40 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
         pen.SetWidth(3);
         dc->SetPen(pen); // FIXME: on Linux
 #endif
-#ifndef NDEBUG
-        std::clog << "lin:" << xPos << "," << yPos << std::endl; // 19
-#endif
         dc->DrawLine(xPos, yPos, 85*mmToLogical, yPos);
         yPos += 2;
     }
 
     // 1341 - Second line
+    wxString patient = myPatientAddressTextField->GetValue();
+    if (!patient.IsEmpty())
     {
-        wxString patient = myPatientAddressTextField->GetValue();
         wxArrayString patientArray = wxSplit(patient, '\n');
         Patient *p = mPatientSheet->getAllFields();
         wxString secondLine = wxString::Format("%s, %s %s", patientArray[0], _("born"), p->birthDate);
-#ifndef NDEBUG
-        std::clog << "pat:" << xPos << "," << yPos << std::endl; // 21
-#endif
         dc->DrawText(secondLine, xPos, yPos);
         yPos += dy;
     }
 
-    // 1351 Third line
     std::vector<PrescriptionItem *> prescriptionBasket = mPrescriptionsCart[0].cart;
     wxString package = prescriptionBasket[row]->fullPackageInfo;
-    wxArrayString packageArray = wxSplit(package, ','); // TODO: ", "
+
+    // First split package line into left and right, separated by " ["
+    wxArrayString packageLR = wxSplit(package, '[');
+    for (int i=0; i< packageLR.size(); i++)
+        packageLR[i].Trim(true); // trim right
+
+    // Further split left side with separator ", "
+    // name, EFP, PP, SL, SB
+    wxArrayString leftArray = wxSplit(packageLR[0], ',');
+    for (int i=0; i< leftArray.size(); i++)
+        leftArray[i].Trim(false); // trim left
+
+    // 1351 Third line
     {
-#ifndef NDEBUG
-        std::clog << "pkg:" << xPos << "," << yPos << std::endl; // 36
-#endif
         m_testFont.SetWeight(wxFONTWEIGHT_BOLD);
         dc->SetFont(m_testFont);
-        dc->DrawText(packageArray[0], xPos, yPos);
+        dc->DrawText(leftArray[0], xPos, yPos);
         m_testFont.SetWeight(wxFONTWEIGHT_NORMAL);
         dc->SetFont(m_testFont);
         yPos += dy;
@@ -250,40 +201,26 @@ void MainWindow::OnDraw_Label2(wxPrintout *printout, wxDC *dc, float mmToLogical
     {
         wxString comment = prescriptionBasket[row]->comment;
         int n = myTextWrapper(comment, 40);
-#ifndef NDEBUG
-        std::clog << "cmt:" << xPos << "," << yPos << std::endl; // 51
-#endif
         dc->DrawText(comment, xPos, yPos);
         yPos += (1+n)*dy;
     }
 
-    // Fixed position for bottom line
+    // Fixed vertical position for bottom line
     yPos = 7.5*dy;
 
     // 1361 bottom line left
-    {
-        wxString labelSwissmed;
-        wxArrayString swissmedArray = wxSplit(package, '['); // TODO: " ["
-        if (swissmedArray.size() >= 2)
-            labelSwissmed = wxString::Format("[%s", swissmedArray[1]);
-
-#ifndef NDEBUG
-        std::clog << "swm:" << xPos << "," << yPos << std::endl; // 113
-#endif
+    if (packageLR.size() > 1) { // is there a right side ?
+        wxString labelSwissmed = wxString::Format("[%s", packageLR[1]);
         dc->DrawText(labelSwissmed, xPos, yPos);
     }
     
     // 1367 bottom line right
-    {
-        wxString labelPrice;
-        if (packageArray.size() >= 2) {
-            wxArrayString priceArray = wxSplit(packageArray[2], ' ');
-            if (priceArray[0] == "PP")
-                labelPrice = wxString::Format("CHF\t%@", priceArray[1]);
-
-#ifndef NDEBUG
-            std::clog << "chf:" << xPos << "," << yPos << std::endl;
-#endif
+    if (leftArray.size() > 2) {
+        wxArrayString pricePP_Array = wxSplit(leftArray[2], ' ');
+        if (pricePP_Array.size() > 1 &&
+            pricePP_Array[0] == "PP")
+        {
+            wxString labelPrice = wxString::Format("CHF\t%s", pricePP_Array[1]);
             dc->DrawText(labelPrice, 50*mmToLogical, yPos);
         }
     }
