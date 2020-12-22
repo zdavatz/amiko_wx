@@ -1152,6 +1152,8 @@ void MainWindow::saveFavorites()
         nlohmann::json json = favorites;
         file << json;
     }
+
+    GoogleSyncManager::Instance()->requestSync();
 }
 
 // 1950

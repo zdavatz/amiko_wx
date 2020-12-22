@@ -88,6 +88,7 @@ private:
     bool shouldSyncLocalFile(wxFileName path);
 
     std::mutex syncMutex;
+    bool isSyningNow = false;
     bool startedSyncing = false;
     bool wantToStartSyncing = false;
     bool wantToStopSyncing = false;

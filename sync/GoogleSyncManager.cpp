@@ -89,9 +89,11 @@ void GoogleSyncManager::syncLoop() {
         auto nextSync = lastSynced + std::chrono::seconds(3 * 60); // 3 minutes
         if (wantToStartSyncing || now >= nextSync ) {
             syncMutex.lock();
+            isSyningNow = true;
             wantToStartSyncing = false;
             lastSynced = std::chrono::system_clock::now();
             sync();
+            isSyningNow = false;
             syncMutex.unlock();
         }
         if (wantToStopSyncing) {
@@ -115,7 +117,7 @@ void GoogleSyncManager::stopBackgroundSync() {
 }
 
 void GoogleSyncManager::requestSync() {
-    if (startedSyncing) {
+    if (startedSyncing && !isSyningNow) {
         wantToStartSyncing = true;
     }
 }

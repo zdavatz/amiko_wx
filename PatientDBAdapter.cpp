@@ -12,6 +12,7 @@
 #include "SQLiteDatabase.hpp"
 #include "Patient.hpp"
 #include "Utilities.hpp"
+#include "sync/GoogleSyncManager.hpp"
 
 // 30
 static const char * KEY_ROWID = "_id";
@@ -123,6 +124,8 @@ wxString PatientDBAdapter::addEntry(Patient *patient)
         // Insert new entry into DB
         bool ok =
         myPatientDb->insertRowIntoTable_forColumns_andValues(DATABASE_TABLE, columnStr, valueStr);
+
+        GoogleSyncManager::Instance()->requestSync();
         return uuidStr;
     }
 
@@ -159,6 +162,9 @@ wxString PatientDBAdapter::insertEntry(Patient *patient)
 
     // It doesn't normally get here
     std::clog << __FUNCTION__ << " Line " << __LINE__ << std::endl;
+
+    GoogleSyncManager::Instance()->requestSync();
+
     return addEntry(patient);
 }
 
@@ -167,6 +173,7 @@ bool PatientDBAdapter::deleteEntry(Patient *patient)
 {
     if (myPatientDb) {
         myPatientDb->deleteRowFromTable_withUId(DATABASE_TABLE, patient->uniqueId);
+        GoogleSyncManager::Instance()->requestSync();
         return true;
     }
 

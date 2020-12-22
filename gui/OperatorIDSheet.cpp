@@ -6,6 +6,7 @@
 #include "SignatureView.hpp"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include "sync/GoogleSyncManager.hpp"
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
@@ -69,6 +70,8 @@ void OperatorIDSheet::saveSettings()
     wxFile *file = new wxFile(doctorFilePath, wxFile::write);
     file->Write(json.dump());
     file->Close();
+
+    GoogleSyncManager::Instance()->requestSync();
 }
 
 // 199
