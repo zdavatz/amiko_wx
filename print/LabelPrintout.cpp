@@ -14,6 +14,7 @@ extern wxPageSetupDialogData* g_pageSetupData;
 
 bool LabelPrintout::OnPrintPage(int page)
 {
+#if 1 // TODO: OnPreparePrinting()
     SetPageSizeMM(36, 89);
 
     wxDC *dc = GetDC();
@@ -38,8 +39,9 @@ bool LabelPrintout::OnPrintPage(int page)
     dc->SetUserScale(overallScale, overallScale);
 
     float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
+#endif
 
-    m_frame->OnDraw_Label2(this, dc, logUnitsFactor);
+    m_frame->OnDraw_Label(dc, logUnitsFactor);
 
     return true;
 }
@@ -56,8 +58,8 @@ void LabelPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, in
 {
     *minPage = 1;
     *maxPage = 1;
-    *selPageFrom = 1;
-    *selPageTo = 1;
+    *selPageFrom = *minPage;
+    *selPageTo = *maxPage;
 }
 
 bool LabelPrintout::HasPage(int pageNum)

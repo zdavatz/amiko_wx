@@ -54,14 +54,18 @@ bool PrescriptionPrintout::OnBeginDocument(int startPage, int endPage)
 void PrescriptionPrintout::GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo)
 {
     *minPage = 1;
-    *maxPage = numPages;
-    *selPageFrom = 1;
-    *selPageTo = numPages;
+    *maxPage = 1;
+
+    // TODO: CountPages() see sample edit.cpp
+    m_pageEnds.Clear();
+
+    *selPageFrom = *minPage;
+    *selPageTo = *maxPage;
 }
 
 bool PrescriptionPrintout::HasPage(int pageNum)
 {
-    return (pageNum <= numPages);
+    return (pageNum <= (int)m_pageEnds.Count());
 }
 
 void PrescriptionPrintout::DrawPageOne()
