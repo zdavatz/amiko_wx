@@ -272,8 +272,10 @@ void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmTo
     // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
     int row = mySectionTitles->GetSelectedRow();
-    dc->DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
-    dc->DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    if (row != wxNOT_FOUND) {
+        dc->DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
+        dc->DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    }
     yPos += 2*lineHeight;
     
     dc->DrawText(myPatientAddressTextField->GetValue(), xPos, yPos);
@@ -392,8 +394,10 @@ void MainWindow::OnDraw_Prescription1(wxDC&dc)
     // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
     int row = mySectionTitles->GetSelectedRow();
-    dc.DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
-    dc.DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    if (row != wxNOT_FOUND) {
+        dc.DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
+        dc.DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    }
     yPos += 2*lineHeight;
 
     dc.DrawText(myPatientAddressTextField->GetValue(), xPos, yPos);

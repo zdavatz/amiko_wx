@@ -9,19 +9,13 @@
 #include "wx/wx.h"
 #include "wx/print.h"
 
-#ifndef NDEBUG
-#define NUM_PRINT_PAGES 2
-#else
-#define NUM_PRINT_PAGES 1
-#endif
-
 class MainWindow;
 
 class PrescriptionPrintout: public wxPrintout
 {
 public:
     PrescriptionPrintout(MainWindow* frame, const wxString &title = _("Prescription"))
-        : wxPrintout(title) { m_frame=frame; numPages=NUM_PRINT_PAGES; }
+    : wxPrintout(title) { m_frame=frame; }
 
     virtual bool OnPrintPage(int page) wxOVERRIDE;
     virtual bool HasPage(int page) wxOVERRIDE;
@@ -36,5 +30,5 @@ public:
 
 private:
     MainWindow *m_frame;
-    int numPages;
+    wxArrayInt m_pageEnds;
 };
