@@ -21,7 +21,9 @@ public:
     virtual bool HasPage(int page) wxOVERRIDE;
     virtual bool OnBeginDocument(int startPage, int endPage) wxOVERRIDE;
     virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo) wxOVERRIDE;
+    virtual void OnPreparePrinting() wxOVERRIDE;
 
 private:
     MainWindow *m_frame;
+    float logUnitsFactor;
 };

@@ -12,11 +12,10 @@
 // Global page setup data
 extern wxPageSetupDialogData* g_pageSetupData;
 
-bool LabelPrintout::OnPrintPage(int page)
+void LabelPrintout::OnPreparePrinting()
 {
-#if 1 // TODO: OnPreparePrinting()
     SetPageSizeMM(36, 89);
-
+    
     wxDC *dc = GetDC();
     if (!dc || !dc->IsOk())
         return false;
@@ -38,11 +37,16 @@ bool LabelPrintout::OnPrintPage(int page)
     float overallScale = scale * (float)(w/(float)pageWidth);
     dc->SetUserScale(overallScale, overallScale);
 
-    float logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
-#endif
+    logUnitsFactor = (float)(ppiPrinterX/(scale*25.4));
+}
+
+bool LabelPrintout::OnPrintPage(int page)
+{
+    wxDC *dc = GetDC();
+    if (!dc || !dc->IsOk())
+        return false;
 
     m_frame->OnDraw_Label(dc, logUnitsFactor);
-
     return true;
 }
 
