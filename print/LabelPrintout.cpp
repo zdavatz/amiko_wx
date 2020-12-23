@@ -18,7 +18,7 @@ void LabelPrintout::OnPreparePrinting()
     
     wxDC *dc = GetDC();
     if (!dc || !dc->IsOk())
-        return false;
+        return;
 
     int ppiScreenX, ppiScreenY;
     GetPPIScreen(&ppiScreenX, &ppiScreenY);

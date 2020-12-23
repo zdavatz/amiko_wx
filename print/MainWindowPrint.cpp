@@ -398,7 +398,7 @@ void MainWindow::printPrescription()
 {
     int nPages = printPrescriptionNumPages();
     if (nPages == 0)
-        return;
+        return; // No medicines in this prescription
     
     initPrint(wxEmptyString);
     
