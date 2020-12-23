@@ -21,12 +21,9 @@ public:
     virtual bool HasPage(int page) wxOVERRIDE;
     virtual bool OnBeginDocument(int startPage, int endPage) wxOVERRIDE;
     virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo) wxOVERRIDE;
+    virtual void OnPreparePrinting() wxOVERRIDE;
 
-    void DrawPageOne();
-    void DrawPageTwo();
-
-    // Writes a header on a page. Margin units are in millimetres.
-    bool WritePageHeader(wxPrintout *printout, wxDC *dc, const wxString& text, float mmToLogical);
+    int m_numPages;
 
 private:
     MainWindow *m_frame;

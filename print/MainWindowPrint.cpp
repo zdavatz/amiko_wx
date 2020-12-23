@@ -28,7 +28,7 @@
 #include "PatientSheet.h"
 
 // Global print data, to remember settings during the session
-wxPrintData *g_printData = NULL;
+static wxPrintData *g_printData = NULL;
 
 // Global page setup data
 wxPageSetupDialogData* g_pageSetupData = NULL;
@@ -228,7 +228,10 @@ void MainWindow::OnDraw_Label(wxDC *dc, float mmToLogical)
     delete d;
 }
 
-void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmToLogical)
+void MainWindow::OnDraw_Prescription(wxPrintout *printout,
+                                      wxDC *dc,
+                                      float mmToLogical,
+                                      int page)
 {
     int pageWidthMM, pageHeightMM;
     printout->GetPageSizeMM(&pageWidthMM, &pageHeightMM);
@@ -271,12 +274,17 @@ void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmTo
 
     // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
-    int row = mySectionTitles->GetSelectedRow();
-    if (row != wxNOT_FOUND) {
-        dc->DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
-        dc->DrawText("Page 1 of 1", xPos+xOffset, yPos);
+    {
+        int row = mySectionTitles->GetSelectedRow();
+        if (row != wxNOT_FOUND)
+            dc->DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
     }
-    yPos += 2*lineHeight;
+
+    {
+        wxString pageCountLabel = wxString::Format("Page %d of %d", page, printPrescriptionNumPages());
+        dc->DrawText(pageCountLabel, xPos+xOffset, yPos);
+        yPos += 2*lineHeight;
+    }
     
     dc->DrawText(myPatientAddressTextField->GetValue(), xPos, yPos);
     dc->DrawText(myOperatorIDTextField->GetValue(), xPos+xOffset, yPos);
@@ -329,7 +337,11 @@ void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmTo
     << "cartSize: " << cartSize << std::endl;
 #endif
 
-    for (int i=0; i<cartSize; i++) {
+    // Handle multiple pages: simple pagination
+    int firstItem, lastItem;
+    getprintItemRangeForPage(page, &firstItem, &lastItem);
+
+    for (int i=firstItem; i<=lastItem; i++) {
         PrescriptionItem *item = mPrescriptionsCart[ cartNo].getItemAtIndex(i);
         wxString str;
 
@@ -353,130 +365,50 @@ void MainWindow::OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmTo
     }
 }
 
-void MainWindow::OnDraw_Prescription1(wxDC&dc)
+#define ITEMS_PER_PAGE  5
+// Return item index 0 based
+void MainWindow::getprintItemRangeForPage(const int page, int *firstItem, int *lastItem)
 {
-#ifndef NDEBUG
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
-    dc.DrawText("Draw", 0, 10);
-
-    if (!dc.IsOk())
-        return;
-
-    int w,h;
-    dc.GetSize(&w, &h);
-    double scaleW,scaleH;
-    dc.GetUserScale(&scaleW, &scaleH);
-    std::cerr << __FUNCTION__ << " " << __LINE__
-    << "\n\t DC size:" << w << "," << h  // 510,715
-    << "\n\t DC scale:" << scaleW << "," << scaleH // 1.97, 1.97
-    << std::endl;
-
-    const wxCoord xPos = 10;
-    const wxCoord xOffset = w/2;
-    wxCoord yPos = 30;
-    const wxCoord fontSize = 14;
-    const wxCoord lineHeight = fontSize+2;
-    const wxCoord wrapAt = 65;
-
-    dc.SetBackground(*wxWHITE_BRUSH);
-    // dc.Clear();
-    wxFont m_testFont = wxFontInfo( fontSize ).Family(wxFONTFAMILY_SWISS);
-#if 1 //ndef NDEBUG
-    wxSize szPPI = dc.GetPPI();
-    
-    std::cerr << __PRETTY_FUNCTION__ 
-            << "font size: " << m_testFont.GetFractionalPointSize() // 6
-            << "dc PPI: " << szPPI.x << "," << szPPI.y  // 72,72
-            << std::endl;
-#endif
-    dc.SetFont(m_testFont);
-
-    // dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
-
-    int row = mySectionTitles->GetSelectedRow();
-    if (row != wxNOT_FOUND) {
-        dc.DrawText(mListOfSectionTitles[row], xPos, yPos); // "RZ_2020-12-10T153736"
-        dc.DrawText("Page 1 of 1", xPos+xOffset, yPos);
-    }
-    yPos += 2*lineHeight;
-
-    dc.DrawText(myPatientAddressTextField->GetValue(), xPos, yPos);
-    dc.DrawText(myOperatorIDTextField->GetValue(), xPos+xOffset, yPos);
-    yPos += 5*lineHeight;
-
-    wxSize sz(90,40);
-    wxImage img = mySignView->getSignaturePNG();
-    if (img.IsOk()) {
-        //img.Resize(sz, wxPoint(0,0)); // add border or crop
-        //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-        img.Rescale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-        wxBitmap m_bitmap = wxBitmap(img);
-        if (m_bitmap.IsOk())
-            dc.DrawBitmap( m_bitmap, xPos+xOffset, yPos );
-    }
-#if 1
-    sz.IncBy(3);
-    dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    dc.SetPen(*wxBLACK_PEN);
-    dc.DrawRectangle(xPos+xOffset, yPos, sz.x, sz.y);
-#endif
-
-    dc.DrawText(myPlaceDateField->GetLabelText(), xPos, yPos);
-
-    yPos += 5*lineHeight;
-
-    dc.SetPen(*wxBLACK_PEN);
-    dc.SetBrush(*wxLIGHT_GREY_BRUSH);
-    dc.DrawRectangle(0, yPos, 230, 350-yPos);
-    dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    yPos += lineHeight;
-
-    wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
-    if (!rootItem.IsOk())
-        return;
-
-    int numRows = myPrescriptionsTableView->GetChildrenCount(rootItem, false);
-    std::clog << "numRows: " << numRows << std::endl;
-
     const int cartNo = 0;
     int cartSize = mPrescriptionsCart[ cartNo].cart.size();
-    std::clog << "cartSize: " << cartSize << std::endl;
+    int lastIndex = cartSize - 1; // zero based
 
-    for (int i=0; i<cartSize; i++) {
-        PrescriptionItem *item = mPrescriptionsCart[ cartNo].getItemAtIndex(i);
-        wxString str;
+    *firstItem = (page-1)*ITEMS_PER_PAGE;
+    *lastItem = page*ITEMS_PER_PAGE - 1;
+    
+    *firstItem = wxMin(*firstItem, lastIndex);
+    *lastItem = wxMin(*lastItem, lastIndex);
+}
 
-        str.Printf("%s", item->fullPackageInfo);
-        int n = myTextWrapper(str, wrapAt);
-        dc.DrawText(str, xPos, yPos);
-        yPos += lineHeight*(1+n);
+int MainWindow::printPrescriptionNumPages()
+{
+    const int cartNo = 0;
+    int cartSize = mPrescriptionsCart[ cartNo].cart.size();
+    if (cartSize == 0)
+        return 0;
 
-//        str.Printf( "%s", item->eanCode );
-//        dc.DrawText(str, xPos, yPos);
-//        yPos += lineHeight;
-
-        if (item->comment.length() > 0) {
-            str.Printf("%s", item->comment);
-            int n = myTextWrapper(str, wrapAt);
-            dc.DrawText(str, xPos, yPos);
-            yPos += lineHeight*(1+n);
-        }
-
-        yPos += lineHeight;
-    }
-#endif
+    // Simple pagination: each page shows 5 items
+    int nPages= (cartSize-1)/ITEMS_PER_PAGE + 1;
+    return nPages;
 }
 
 // 1071
 // Reference wxWidgets sample printing.app printing.cpp:384
 void MainWindow::printPrescription()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+    int nPages = printPrescriptionNumPages();
+    if (nPages == 0)
+        return;
+    
     initPrint(wxEmptyString);
-
+    
     wxPrintDialogData printDialogData(* g_printData);
-    wxPrintPreview *preview =
-    new wxPrintPreview(new PrescriptionPrintout(this), new PrescriptionPrintout(this), &printDialogData);
+    PrescriptionPrintout *printout = new PrescriptionPrintout(this);
+    PrescriptionPrintout *printoutForPrinting = new PrescriptionPrintout(this);
+ 
+    printout->m_numPages = printoutForPrinting->m_numPages = nPages;
+
+    wxPrintPreview *preview = new wxPrintPreview(printout, printoutForPrinting, &printDialogData);
     if (!preview->IsOk())
     {
         delete preview;
@@ -507,7 +439,6 @@ void MainWindow::printPrescription()
 // 1381
 void MainWindow::printMedicineLabel()
 {
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
     // TODO: get actual name programmatically
 #ifdef __linux__
     initPrint("DYMO-LabelWriter-450");
@@ -516,15 +447,8 @@ void MainWindow::printMedicineLabel()
 #endif
     
     wxPrintDialogData printDialogData(* g_printData);
-//    myLabelPanel * medicineLabelView = new myLabelPanel(this);
-//    wxView *myView = new wxView; // abstract because of OnDraw()
-//    myView->SetFrame(medicineLabelView);
-    
     wxPrintout *printout = new LabelPrintout(this);
-    //printout->SetPageSizeMM(36, 89);
-
     wxPrintout *printoutForPrinting = new LabelPrintout(this);
-    //printoutForPrinting->SetPageSizeMM(36, 89);
 
     wxPrintPreview *preview = new wxPrintPreview(printout, printoutForPrinting, &printDialogData);
     if (!preview->IsOk())

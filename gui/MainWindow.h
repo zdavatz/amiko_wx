@@ -120,8 +120,7 @@ public:
 #ifndef __APPLE_
     void OnQuit( wxCommandEvent& event);
 #endif
-    void OnDraw_Prescription1(wxDC&dc); // __deprecated
-    void OnDraw_Prescription2(wxPrintout *printout, wxDC *dc, float mmToLogical);
+    void OnDraw_Prescription(wxPrintout *printout, wxDC *dc, float mmToLogical, int page);
     void OnDraw_Label(wxDC *dc, float mmToLogical);
     void initPrint(const wxString &printerName);
     void terminatePrint();
@@ -132,7 +131,9 @@ public:
 
 private:
     void setOperatorID();
+    void printMedicineLabel();
     void savePrescription();
+
     // 113
     void printTechInfo();
     void printPrescription();
@@ -151,7 +152,9 @@ private:
     void myPrescriptionsTableView_reloadData(int cartNo);
     int myPrescriptionsTableView_rowForView();
     void removeItemFromPrescription();
-    void printMedicineLabel();
+    int printPrescriptionNumPages();
+    void getprintItemRangeForPage(const int page, int *firstItem, int *lastItem);
+
     void deletePrescription_returnCode_contextInfo(wxWindowModalDialogEvent& event);
 
 #ifdef TEST_MIME_TYPE
