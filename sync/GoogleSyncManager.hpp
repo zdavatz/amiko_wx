@@ -14,6 +14,7 @@
 #include <nlohmann/json.hpp>
 #include "Utilities.hpp"
 #include <wx/filename.h>
+#include <mutex>
 
 namespace GoogleAPITypes {
     struct RemoteFile {
@@ -30,6 +31,8 @@ namespace GoogleAPITypes {
 
     void from_json(const nlohmann::json& j, RemoteFile& f);
 };
+
+wxDECLARE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
 
 class GoogleSyncManager
 {
@@ -70,6 +73,12 @@ public:
         std::vector<std::string> parents
     );
 
+    wxEvtHandler *patientUpdatedHandler = nullptr;
+
+    void startBackgroundSync();
+    void stopBackgroundSync();
+    void requestSync();
+
 private:
     static GoogleSyncManager* m_pInstance;
     std::string getAccessToken();
@@ -77,4 +86,12 @@ private:
     std::set<std::string> listLocalFilesAndFolders(wxString path = UTI::documentsDirectory());
 
     bool shouldSyncLocalFile(wxFileName path);
+
+    std::mutex syncMutex;
+    bool isSyningNow = false;
+    bool startedSyncing = false;
+    bool wantToStartSyncing = false;
+    bool wantToStopSyncing = false;
+    std::chrono::time_point<std::chrono::system_clock> lastSynced;
+    void syncLoop();
 };

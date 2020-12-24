@@ -1,4 +1,5 @@
 
+#include <chrono>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -103,6 +104,7 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
 
     EVT_DROP_FILES(MainWindow::OnDropFiles)
+    EVT_FSWATCHER(wxID_ANY, MainWindow::OnFileWatcherUpdated)
 END_EVENT_TABLE()
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -296,17 +298,20 @@ MainWindow::MainWindow( wxWindow* parent )
     myPrescriptionsTableView->ExpandAll();
     myPrescriptionsTableView->SetIndent(5); // default 15
 
-    std::thread testSyncThread([] {
-        GoogleSyncManager *g = GoogleSyncManager::Instance();
-        g->sync();
-    });
-    testSyncThread.detach();
+    GoogleSyncManager::Instance()->startBackgroundSync();
+
 #ifndef __APPLE__
     // Issue #36
     m_menuFile->AppendSeparator();
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
+
+    fsWatcher = new wxFileSystemWatcher();
+    wxFileName amkFolderPath = wxFileName(UTI::documentsDirectory(), "");
+    amkFolderPath.AppendDir("amk");
+    fsWatcher->AddTree(amkFolderPath);
+    fsWatcher->SetOwner(this);
 }
 
 MainWindow::~MainWindow()
@@ -1147,6 +1152,8 @@ void MainWindow::saveFavorites()
         nlohmann::json json = favorites;
         file << json;
     }
+
+    GoogleSyncManager::Instance()->requestSync();
 }
 
 // 1950
@@ -3555,4 +3562,7 @@ void MainWindow::OnDropFiles(wxDropFilesEvent& event)
     // 2900
     loadPrescription_andRefreshHistory(event.GetFiles()[0], true);
 }
-    
+
+void MainWindow::OnFileWatcherUpdated(wxFileSystemWatcherEvent& event) {
+    updatePrescriptionHistory();
+}

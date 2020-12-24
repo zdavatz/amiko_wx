@@ -29,6 +29,7 @@
 #include "Operator.hpp"
 #include "Utilities.hpp"
 #include "DefaultsController.hpp"
+#include "sync/GoogleSyncManager.hpp"
 
 PrescriptionsAdapter::PrescriptionsAdapter()
 : patient(nullptr)
@@ -116,6 +117,8 @@ void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, 
     // Delete file
     if (wxFileName::Exists(patientDir.GetFullPath()))
         wxRemoveFile(patientDir.GetFullPath());
+
+    GoogleSyncManager::Instance()->requestSync();
 }
 
 // 160
@@ -322,6 +325,8 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     wxFileOutputStream file( pathBase64.GetFullPath() );
     file.Write(base64Str, base64Str.length());
     file.Close();
+
+    GoogleSyncManager::Instance()->requestSync();
 
     return wxURL(pathBase64.GetFullPath());
 }

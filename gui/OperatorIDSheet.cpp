@@ -6,6 +6,7 @@
 #include "SignatureView.hpp"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include "sync/GoogleSyncManager.hpp"
 
 // 35
 OperatorIDSheet::OperatorIDSheet( wxWindow* parent )
@@ -14,6 +15,22 @@ OperatorIDSheetBase( parent )
 {
     loadSettings();
     Fit();
+
+    fsWatcher = new wxFileSystemWatcher();
+    wxFileName jsonFilePath = wxFileName(UTI::documentsDirectory(), DOC_JSON_FILENAME);
+    wxFileName signatureFilePath = wxFileName(UTI::documentsDirectory(), DOC_SIGNATURE_FILENAME);
+    fsWatcher->Add(jsonFilePath);
+    fsWatcher->Add(signatureFilePath);
+    fsWatcher->SetOwner(this);
+}
+
+BEGIN_EVENT_TABLE(OperatorIDSheet, OperatorIDSheetBase)
+    EVT_FSWATCHER(wxID_ANY, OperatorIDSheet::OnFileUpdated)
+END_EVENT_TABLE()
+
+
+void OperatorIDSheet::OnFileUpdated( wxFileSystemWatcherEvent& event ) {
+    loadSettings();
 }
 
 // 105
@@ -53,6 +70,8 @@ void OperatorIDSheet::saveSettings()
     wxFile *file = new wxFile(doctorFilePath, wxFile::write);
     file->Write(json.dump());
     file->Close();
+
+    GoogleSyncManager::Instance()->requestSync();
 }
 
 // 199

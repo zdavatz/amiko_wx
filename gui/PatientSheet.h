@@ -33,6 +33,7 @@ class PatientSheet : public PatientSheetBase
 		void OnNewPatient( wxCommandEvent& event );
 		void OnDeletePatient( wxCommandEvent& event );
 		void OnShowContacts( wxCommandEvent& event );
+        void OnPatientUpdatedFromSync( wxCommandEvent& event );
 	public:
 		/** Constructor */
 		PatientSheet( wxWindow* parent );
@@ -60,6 +61,9 @@ class PatientSheet : public PatientSheetBase
     PatientDBAdapter *mPatientDb;
 
 private:
+    ~PatientSheet();
+    DECLARE_EVENT_TABLE()
+
     void setNumPatients(int numPatients);
     Patient * getContactAtRow(int row);
     // 73

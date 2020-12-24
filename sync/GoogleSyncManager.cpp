@@ -16,6 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <thread>
 #include <wx/filename.h>
 #include <wx/dir.h>
 #include "../Patient.hpp"
@@ -70,6 +71,8 @@ namespace GoogleAPITypes {
 
 GoogleSyncManager* GoogleSyncManager::m_pInstance;
 
+wxDEFINE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
+
 // Singleton
 GoogleSyncManager* GoogleSyncManager::Instance()
 {
@@ -78,6 +81,45 @@ GoogleSyncManager* GoogleSyncManager::Instance()
     }
 
     return m_pInstance;
+}
+
+void GoogleSyncManager::syncLoop() {
+    while (true) {
+        auto now = std::chrono::system_clock::now();
+        auto nextSync = lastSynced + std::chrono::seconds(3 * 60); // 3 minutes
+        if (wantToStartSyncing || now >= nextSync ) {
+            syncMutex.lock();
+            isSyningNow = true;
+            wantToStartSyncing = false;
+            lastSynced = std::chrono::system_clock::now();
+            sync();
+            isSyningNow = false;
+            syncMutex.unlock();
+        }
+        if (wantToStopSyncing) {
+            break;
+        }
+        sleep(1);
+    }
+}
+
+void GoogleSyncManager::startBackgroundSync() {
+    if (!startedSyncing) {
+        startedSyncing = true;
+        std::thread background(&GoogleSyncManager::syncLoop, this);
+        background.detach();
+    }
+}
+
+void GoogleSyncManager::stopBackgroundSync() {
+    startedSyncing = false;
+    wantToStopSyncing = true;
+}
+
+void GoogleSyncManager::requestSync() {
+    if (startedSyncing && !isSyningNow) {
+        wantToStartSyncing = true;
+    }
 }
 
 size_t writefunc(void *ptr, size_t size, size_t nmemb, std::string *s) 
@@ -242,7 +284,7 @@ std::string GoogleSyncManager::getAccessToken() {
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
-    std::clog << s << std::endl;
+    // std::clog << s << std::endl;
     auto json = nlohmann::json::parse(s);
     // Example response
     // {
@@ -598,7 +640,7 @@ std::vector<GoogleAPITypes::RemoteFile> GoogleSyncManager::listRemoteFilesAndFol
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
-    std::clog << s << std::endl;
+    // std::clog << s << std::endl;
     auto json = nlohmann::json::parse(s);
     // Example response
     // {
@@ -758,8 +800,6 @@ std::map<std::string, time_t> getLocalPatientTimestamps() {
     for (const auto& entry : strMap) {
         auto uid = entry.first;
         auto timeStr = entry.second;
-        std::clog << "patient uid: " << uid << std::endl;
-        std::clog << "timeStr: " << timeStr << std::endl;
         map[uid] = std::chrono::system_clock::to_time_t(UTI::patientStringToTime(timeStr));
     }
     return map;
@@ -859,7 +899,6 @@ void GoogleSyncManager::sync() {
                 wxDateTime localModified = filename.GetModificationTime();
                 wxDateTime remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
                 if (localModified.IsLaterThan(remoteModified)) {
-                    std::clog << "want to update1: " << path << std::endl;
                     pathsToUpdate[path] = remoteFile.id;
                 }
             } else if (remoteVersion > localVersion) {
@@ -893,7 +932,6 @@ void GoogleSyncManager::sync() {
             wxDateTime localModified = filename.GetModificationTime();
             auto remoteModified = wxDateTime(std::chrono::system_clock::to_time_t(UTI::stringToTime(remoteFile.modifiedTime)));
             if (localModified.IsLaterThan(remoteModified)) {
-                std::clog << "want to update2: " << path << std::endl;
                 pathsToUpdate[path] = remoteFile.id;
             } else if (localModified.IsEarlierThan(remoteModified)) {
                 pathsToDownload[path] = remoteFile.id;
@@ -1251,6 +1289,11 @@ void GoogleSyncManager::sync() {
         long version = entry.second;
         std::string key = wxFileName("patient", patientUid).GetFullPath().ToStdString();
         versionMap[key] = version;
+    }
+
+    wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_PATIENT);
+    if (patientUpdatedHandler != nullptr) {
+        patientUpdatedHandler->QueueEvent(event);
     }
 
     try {
