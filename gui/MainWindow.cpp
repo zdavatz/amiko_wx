@@ -3564,5 +3564,8 @@ void MainWindow::OnDropFiles(wxDropFilesEvent& event)
 }
 
 void MainWindow::OnFileWatcherUpdated(wxFileSystemWatcherEvent& event) {
-    updatePrescriptionHistory();
+    int eventType = event.GetChangeType();
+    if (eventType == wxFSW_EVENT_CREATE || eventType == wxFSW_EVENT_DELETE || eventType == wxFSW_EVENT_MODIFY) {
+        updatePrescriptionHistory();
+    }
 }

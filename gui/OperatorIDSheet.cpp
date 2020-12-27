@@ -30,7 +30,12 @@ END_EVENT_TABLE()
 
 
 void OperatorIDSheet::OnFileUpdated( wxFileSystemWatcherEvent& event ) {
-    loadSettings();
+    int eventType = event.GetChangeType();
+    if (eventType == wxFSW_EVENT_CREATE || eventType == wxFSW_EVENT_DELETE || eventType == wxFSW_EVENT_MODIFY) {
+        loadSettings();
+    } else {
+        std::clog << "oh yes!" << std::endl;
+    }
 }
 
 // 105
