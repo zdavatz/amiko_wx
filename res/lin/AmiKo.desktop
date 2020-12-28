@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=0.1
+Name=AmiKo
+GenericName=AmiKo
+X-GNOME-FullName=AmiKo
+Comment=Medicine database
+Keywords=Swiss;drugs;prescription;
+Exec=AmiKo
+Terminal=false
+Type=Application
+Icon=AmiKo.png
+MimeType=application/octet-stream;
+StartupNotify=true
+Categories=Development;

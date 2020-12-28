@@ -33,6 +33,16 @@ static wxPrintData *g_printData = NULL;
 // Global page setup data
 wxPageSetupDialogData* g_pageSetupData = NULL;
 
+static void myTextEllipsis(wxString &s, const int newlinePos)
+{
+    wxString ellipsis = "...";
+    int n = s.length();
+    if (n > newlinePos) {
+        s.Truncate(newlinePos - ellipsis.length());
+        s.Append(ellipsis);
+    }
+}
+
 static int myTextWrapper(wxString &s, const int newlinePos)
 {
     int n = s.length();
@@ -304,7 +314,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
         if (m_bitmap.IsOk())
             dc->DrawBitmap( m_bitmap, ptSignature.x, ptSignature.y );
     }
-#if 1
+#ifndef NDEBUG
     szSignature.IncBy(3);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
     dc->SetPen(*wxBLACK_PEN);
@@ -314,6 +324,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
     yPos += szSignature.y;
     yPos += lineHeight;
 
+#ifndef NDEBUG
     dc->SetPen(*wxBLACK_PEN);
     dc->SetBrush(*wxLIGHT_GREY_BRUSH);
     dc->DrawRectangle(leftMarginLogical,
@@ -321,6 +332,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
                         rightMarginLogical,
                         bottomMarginLogical-yPos); //(350*mmToLogical)-yPos);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
+#endif
     yPos += lineHeight;
 
     wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
@@ -346,9 +358,9 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
         wxString str;
 
         str.Printf("%s", item->fullPackageInfo);
-        int n = myTextWrapper(str, wrapAtChar);
+        myTextEllipsis(str, wrapAtChar);
         dc->DrawText(str, xPos, yPos);
-        yPos += lineHeight*(1+n);
+        yPos += lineHeight;
 
 //        str.Printf( "%s", item->eanCode );
 //        dc.DrawText(str, xPos, yPos);

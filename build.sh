@@ -217,6 +217,17 @@ $CMAKE -G"$GENERATOR" \
     -D JSON_DIR=$BIN_JSON \
     -D CURL_DIR=$BIN_CURL \
     $SRC_APP
+
+# Normally cpack creates a single config file for the whole project, resulting in a single DEB file
+# We want two DEB files so we are doing some renaming. Idea from:
+# https://cmake.cmake.narkive.com/vCbIAsrO/creating-multiple-deb-packages-from-one-source-tree-using-cpack
+for f in AmiKo CoMed
+do
+  cp CPackConfig.cmake CPackConfig.$f.cmake
+  sed -i -e "s/;ALL;/;${f};/g" CPackConfig.$f.cmake
+  sed -i -e "s/placeholder/${f}/g" CPackConfig.$f.cmake
+done
+
 fi
 
 if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
@@ -236,5 +247,15 @@ do
 rsync -az --delete $WD/lang $HOME/.$f
 done
 fi
+fi
+
+#-------------------------------------------------------------------------------
+if [ $STEP_CREATE_INSTALLER_FROM_CLI ] ; then
+cd $BLD_APP
+for f in AmiKo CoMed
+do
+  echo "=== Create installer $f $BUILD_TYPE "
+  cpack -C $BUILD_TYPE --config CPackConfig.$f.cmake
+done
 fi
 

@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.213")
+	VERSION "0.1.262")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -272,10 +272,11 @@ endforeach()
 
 foreach(APP_NAME CoMed AmiKo) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+
 if (APPLE)
-install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
+  install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
 else (APPLE)
-install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${APP_NAME})
+  install(TARGETS ${APP_NAME} DESTINATION ./${APP_NAME} COMPONENT ${APP_NAME})
 endif (APPLE)
 
 install(DIRECTORY lang
@@ -290,7 +291,58 @@ install(FILES
     "${CMAKE_SOURCE_DIR}/res/interactions.css"
     "${CMAKE_SOURCE_DIR}/res/interactions_callbacks.js"
     "${CMAKE_SOURCE_DIR}/res/main_callbacks.js"
-	DESTINATION ${APP_NAME})
+    DESTINATION ./${APP_NAME} 
+    COMPONENT ${APP_NAME})
+
+if (NOT APPLE)
+if (UNIX)
+install(FILES
+    "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.desktop"
+	DESTINATION share/applications
+	COMPONENT ${APP_NAME})
+endif (UNIX)
+endif (NOT APPLE)
+
 endforeach()
 
+#===============================================================================
+# Create a template configuration file.
+# Later we'll use sed to replace the placeholder
 
+foreach(APP_NAME placeholder) 
+	MESSAGE("=== Packaging: <${APP_NAME}>")
+	set (CPACK_PACKAGE_NAME ${APP_NAME})
+	set (CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.png")
+	set (CPACK_PACKAGE_VENDOR "ywesee")
+	set (CPACK_PACKAGE_CONTACT "Zeno Davatz zdavatz@ywesee.com")
+	set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CMAKE_PROJECT_DESCRIPTION})
+	set (CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+	set (CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+	set (CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+	set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+	set (CPACK_PACKAGE_CHECKSUM "MD5")
+	#set (CPACK_PACKAGE_CHECKSUM "SHA1")
+	
+	if (NOT APPLE)
+	if (UNIX)
+		MESSAGE("Linux installer")
+		set(CPACK_GENERATOR "DEB;TGZ")
+		#set(CPACK_GENERATOR "RPM")
+		set(CPACK_DEBIAN_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
+		set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_CONTACT}) #required
+		set(CPACK_DEBIAN_PACKAGE_SECTION "office")
+		#set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
+		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libwwxgtk ( >= 3.1.4 ), libwebkit2gtk-4.0, pcscd, libssl, libgtk-3") # Specify dependencies here
+		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+	endif (UNIX)
+	endif (NOT APPLE)
+	
+	# https://cmake.org/cmake/help/latest/module/CPack.html
+	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+	set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+	#set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_SOURCE_DIR}/welcome.txt")
+
+endforeach()
+
+# Must be after the last CPACK macros
+INCLUDE(CPack)
