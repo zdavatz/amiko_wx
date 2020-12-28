@@ -304,7 +304,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
         if (m_bitmap.IsOk())
             dc->DrawBitmap( m_bitmap, ptSignature.x, ptSignature.y );
     }
-#if 1
+#ifndef NDEBUG
     szSignature.IncBy(3);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
     dc->SetPen(*wxBLACK_PEN);
@@ -314,6 +314,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
     yPos += szSignature.y;
     yPos += lineHeight;
 
+#ifndef NDEBUG
     dc->SetPen(*wxBLACK_PEN);
     dc->SetBrush(*wxLIGHT_GREY_BRUSH);
     dc->DrawRectangle(leftMarginLogical,
@@ -321,6 +322,7 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
                         rightMarginLogical,
                         bottomMarginLogical-yPos); //(350*mmToLogical)-yPos);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
+#endif
     yPos += lineHeight;
 
     wxTreeItemId rootItem = myPrescriptionsTableView->GetRootItem();
