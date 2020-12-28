@@ -202,3 +202,13 @@ done
 fi
 fi
 
+#-------------------------------------------------------------------------------
+if [ $STEP_CREATE_INSTALLER_FROM_CLI ] ; then
+cd $BLD_APP
+for f in AmiKo CoMed
+do
+  echo "=== Create $f Installer"
+  cpack -C $BUILD_TYPE -P $f
+done
+fi
+
