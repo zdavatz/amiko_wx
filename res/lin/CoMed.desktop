@@ -1,14 +1,14 @@
 [Desktop Entry]
 Version=0.1
-Name=Comed
-GenericName=Comed
-X-GNOME-FullName=AmComediKo
+Name=CoMed
+GenericName=CoMed
+X-GNOME-FullName=CoMed
 Comment=Medicine database
 Keywords=Swiss;drugs;prescription;
 Exec=Comed
 Terminal=false
 Type=Application
-Icon=Comed.png
+Icon=CoMed.png
 MimeType=application/octet-stream;
 StartupNotify=true
 Categories=Development;

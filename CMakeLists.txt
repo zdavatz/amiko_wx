@@ -1,9 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.213"
-	HOMEPAGE_URL "https://github.com/zdavatz/amiko_linux"
-	DESCRIPTION "AmiKo with wxWidgets")
+	VERSION "0.1.262")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -243,10 +241,11 @@ endforeach()
 
 foreach(APP_NAME CoMed AmiKo) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+
 if (APPLE)
-install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
+  install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
 else (APPLE)
-install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${APP_NAME})
+  install(TARGETS ${APP_NAME} DESTINATION ./${APP_NAME} COMPONENT ${APP_NAME})
 endif (APPLE)
 
 install(DIRECTORY lang
@@ -261,23 +260,26 @@ install(FILES
     "${CMAKE_SOURCE_DIR}/res/interactions.css"
     "${CMAKE_SOURCE_DIR}/res/interactions_callbacks.js"
     "${CMAKE_SOURCE_DIR}/res/main_callbacks.js"
-	DESTINATION ${APP_NAME})
+    DESTINATION ./${APP_NAME} 
+    COMPONENT ${APP_NAME})
 
 if (NOT APPLE)
 if (UNIX)
 install(FILES
     "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.desktop"
-	DESTINATION share/applications)
+	DESTINATION share/applications
+	COMPONENT ${APP_NAME})
 endif (UNIX)
 endif (NOT APPLE)
 
 endforeach()
 
 #===============================================================================
-# Create installer
+# Create a template configuration file.
+# Later we'll use sed to replace the placeholder
 
-foreach(APP_NAME CoMed AmiKo) 
-	MESSAGE("=== Packaging ${APP_NAME}")
+foreach(APP_NAME placeholder) 
+	MESSAGE("=== Packaging: <${APP_NAME}>")
 	set (CPACK_PACKAGE_NAME ${APP_NAME})
 	set (CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.png")
 	set (CPACK_PACKAGE_VENDOR "ywesee")
@@ -288,25 +290,19 @@ foreach(APP_NAME CoMed AmiKo)
 	set (CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 	set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 	set (CPACK_PACKAGE_CHECKSUM "MD5")
+	#set (CPACK_PACKAGE_CHECKSUM "SHA1")
 	
 	if (NOT APPLE)
 	if (UNIX)
 		MESSAGE("Linux installer")
-		set(CPACK_GENERATOR "DEB RPM TGZ")
-		#set(CPACK_DEBIAN_PACKAGE_NAME ${APP_NAME})
+		set(CPACK_GENERATOR "DEB;TGZ")
+		#set(CPACK_GENERATOR "RPM")
+		set(CPACK_DEBIAN_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
 		set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_CONTACT}) #required
 		set(CPACK_DEBIAN_PACKAGE_SECTION "office")
-		#set(CPACK_DEBIAN_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
 		#set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
 		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libwwxgtk ( >= 3.1.4 ), libwebkit2gtk-4.0, pcscd, libssl, libgtk-3") # Specify dependencies here
 		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-
-		# To use this:
-		# make package
-		# sudo dpkg -i ${APP_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-Linux.deb
-		
-		# This will result in the file:
-		#/usr/bin/${APP_NAME}
 	endif (UNIX)
 	endif (NOT APPLE)
 	
