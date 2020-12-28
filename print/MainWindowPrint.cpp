@@ -33,6 +33,16 @@ static wxPrintData *g_printData = NULL;
 // Global page setup data
 wxPageSetupDialogData* g_pageSetupData = NULL;
 
+static void myTextEllipsis(wxString &s, const int newlinePos)
+{
+    wxString ellipsis = "...";
+    int n = s.length();
+    if (n > newlinePos) {
+        s.Truncate(newlinePos - ellipsis.length());
+        s.Append(ellipsis);
+    }
+}
+
 static int myTextWrapper(wxString &s, const int newlinePos)
 {
     int n = s.length();
@@ -348,9 +358,9 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
         wxString str;
 
         str.Printf("%s", item->fullPackageInfo);
-        int n = myTextWrapper(str, wrapAtChar);
+        myTextEllipsis(str, wrapAtChar);
         dc->DrawText(str, xPos, yPos);
-        yPos += lineHeight*(1+n);
+        yPos += lineHeight;
 
 //        str.Printf( "%s", item->eanCode );
 //        dc.DrawText(str, xPos, yPos);
