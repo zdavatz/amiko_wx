@@ -50,15 +50,21 @@ bool MyApp::OnInit()
 
     if (!m_locale.Init(m_lang, wxLOCALE_DONT_LOAD_DEFAULT) )
     {
+#ifndef NDEBUG
         wxLogWarning(_("This language is not supported by the system."));
         // continue nevertheless
+#endif
     }
+#if 0
     // normally this wouldn't be necessary as the catalog files would be found
     // in the default locations, but when the program is not installed the
     // catalogs are in the build directory where we wouldn't find them by
     // default
     wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
     wxLocale::AddCatalogLookupPathPrefix(documentsDir + wxFILE_SEP_PATH + "lang");
+#else
+    //wxLocale::AddCatalogLookupPathPrefix(wxStandardPaths::Get().GetLocalizedResourcesDir(m_lang));
+#endif
     // Initialize the catalogs we'll be using
     const wxLanguageInfo* pInfo = wxLocale::GetLanguageInfo(m_lang);
     if (m_lang != wxLANGUAGE_ENGLISH &&

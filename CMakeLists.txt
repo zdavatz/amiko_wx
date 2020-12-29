@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.262")
+	VERSION "0.1.263")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -272,26 +272,31 @@ endforeach()
 
 foreach(APP_NAME CoMed AmiKo) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
+#MESSAGE(STATUS "CMAKE_INSTALL_LOCALEDIR: ${CMAKE_INSTALL_LOCALEDIR}")
+#MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
 
 if (APPLE)
   install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
 else (APPLE)
-  install(TARGETS ${APP_NAME} DESTINATION ./${APP_NAME} COMPONENT ${APP_NAME})
+  install(TARGETS ${APP_NAME} RUNTIME DESTINATION ./local/bin COMPONENT ${APP_NAME})
 endif (APPLE)
 
-install(DIRECTORY lang
-	DESTINATION ${APP_NAME}
+install(DIRECTORY lang/
+	DESTINATION share/locale
+	COMPONENT ${APP_NAME}
 	FILES_MATCHING PATTERN "*.mo")
 
+# Relative to current source dir
 install(FILES
-    "${CMAKE_SOURCE_DIR}/res/amiko_stylesheet.css"
-    "${CMAKE_SOURCE_DIR}/res/color-scheme-light.css"
-    "${CMAKE_SOURCE_DIR}/res/color-scheme-dark.css"
-    "${CMAKE_SOURCE_DIR}/res/fulltext_style.css"
-    "${CMAKE_SOURCE_DIR}/res/interactions.css"
-    "${CMAKE_SOURCE_DIR}/res/interactions_callbacks.js"
-    "${CMAKE_SOURCE_DIR}/res/main_callbacks.js"
-    DESTINATION ./${APP_NAME} 
+    "res/amiko_stylesheet.css"
+    "res/color-scheme-light.css"
+    "res/color-scheme-dark.css"
+    "res/fulltext_style.css"
+    "res/interactions.css"
+    "res/interactions_callbacks.js"
+    "res/main_callbacks.js"
+    "res/lin/${APP_NAME}.png"
+    DESTINATION $ENV{HOME}/.${APP_NAME} 
     COMPONENT ${APP_NAME})
 
 if (NOT APPLE)
