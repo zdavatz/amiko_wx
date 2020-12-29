@@ -198,6 +198,10 @@ if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
 cd $BLD_APP
 echo "=== Build"
 make $MAKE_FLAGS
+fi
+
+if [ $STEP_INSTALL_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
+cd $BLD_APP
 echo "=== Install into $BIN_APP"
 make install
 fi
@@ -214,7 +218,7 @@ fi
 fi
 
 #-------------------------------------------------------------------------------
-if [ $STEP_CREATE_INSTALLER_FROM_CLI ] ; then
+if [ $STEP_CREATE_INSTALLER ] ; then
 cd $BLD_APP
 for f in AmiKo CoMed
 do

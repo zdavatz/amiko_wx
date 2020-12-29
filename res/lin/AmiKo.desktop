@@ -8,7 +8,8 @@ Keywords=Swiss;drugs;prescription;
 Exec=AmiKo
 Terminal=false
 Type=Application
-Icon=AmiKo.png
+Icon=~/.AmiKo/AmiKo.png
 MimeType=application/octet-stream;
 StartupNotify=true
 Categories=Development;
+
