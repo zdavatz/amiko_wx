@@ -177,7 +177,9 @@ Operator * OperatorIDSheet::loadOperator()
         oper->postalAddress = wxString(json[DOC_JSON_ADDRESS].get<std::string>());
         oper->zipCode = wxString(json[DOC_JSON_ZIP].get<std::string>());
         oper->city = wxString(json[DOC_JSON_CITY].get<std::string>());
-        oper->country = wxString(json[DOC_JSON_COUNTRY].get<std::string>());
+        if (json.contains(DOC_JSON_COUNTRY)) {
+            oper->country = wxString(json[DOC_JSON_COUNTRY].get<std::string>());
+        }
         oper->phoneNumber = wxString(json[DOC_JSON_PHONE].get<std::string>());
         oper->emailAddress = wxString(json[DOC_JSON_EMAIL].get<std::string>());
     } catch (const std::exception& e) {
