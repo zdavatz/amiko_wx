@@ -38,6 +38,7 @@ fi
 
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
 SQLITE=sqlite-amalgamation-$SQLITE_VERSION
+TARGET_LIST="AmiKo CoMed"
 WD=$(pwd)
 
 eval SRC=$CONFIG_SRC_DIR
@@ -173,7 +174,7 @@ fi
 if [ $STEP_CONFIGURE_APP ] ; then
 echo "=== Configure $APP_NAME in $BLD_APP"
 mkdir -p $BLD_APP ; cd $BLD_APP
-rm -f CMakeCache.txt cmake_install.cmake*
+rm -f CMakeCache.txt
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX=$BIN_APP \
     -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -185,7 +186,7 @@ $CMAKE -G"$GENERATOR" \
 # Normally cpack creates a single config file for the whole project, resulting in a single DEB file
 # We want two DEB files so we are doing some renaming. Idea from:
 # https://cmake.cmake.narkive.com/vCbIAsrO/creating-multiple-deb-packages-from-one-source-tree-using-cpack
-for f in AmiKo CoMed
+for f in $TARGET_LIST
 do
   cp CPackConfig.cmake CPackConfig.$f.cmake
   sed -i -e "s/;ALL;/;${f};/g" CPackConfig.$f.cmake
@@ -194,36 +195,55 @@ done
 
 fi
 
+#-------------------------------------------------------------------------------
+
 if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
 cd $BLD_APP
 echo "=== Build"
 make $MAKE_FLAGS
 fi
 
-if [ $STEP_INSTALL_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
+#-------------------------------------------------------------------------------
+# Install the whole project, not just a single target
+
+if [ $STEP_INSTALL_APP ] ; then
 cd $BLD_APP
 echo "=== Install into $BIN_APP"
-make install
-fi
 
-#-------------------------------------------------------------------------------
-if [ $STEP_COPY_LANG_FILES ] ; then
-
-if [[ $(uname -s) == "Linux" ]] ; then
-for f in AmiKo CoMed
+for f in $TARGET_LIST
 do
-rsync -az --delete $WD/lang $HOME/.$f
+  echo "--- target: $f"
+  cp $BLD_APP/$f $BIN_APP/$f
+  cp $SRC_APP/res/lin/$f.desktop $(xdg-user-dir DESKTOP)
+  sudo cp $SRC_APP/res/lin/$f.png /usr/share/icons/$f.png
+
+  # The css and js files are also "unexpectedly" installed by running the step STEP_CREATE_INSTALLER
+  mkdir -p $HOME/.$f
+  cp $SRC_APP/res/*.css $HOME/.$f/
+  cp $SRC_APP/res/*.js $HOME/.$f/
 done
-fi
+
+for LANG in de_CH fr_CH
+do
+  echo "--- language: $LANG"
+  LOCALIZED_RESOURCES_DIR="/usr/local/share/locale/${LANG}/LC_MESSAGES"
+  sudo mkdir -p $LOCALIZED_RESOURCES_DIR
+  sudo cp $SRC_APP/lang/$LANG/LC_MESSAGES/amiko.mo ${LOCALIZED_RESOURCES_DIR}/
+done
+
 fi
 
 #-------------------------------------------------------------------------------
 if [ $STEP_CREATE_INSTALLER ] ; then
 cd $BLD_APP
-for f in AmiKo CoMed
+
+for f in $TARGET_LIST
 do
-  echo "=== Create installer $f $BUILD_TYPE "
-  cpack -C $BUILD_TYPE --config CPackConfig.$f.cmake
+  echo "=== Create installer $f $BUILD_TYPE"
+  cpack -C $BUILD_TYPE \
+	-D CMAKE_INSTALL_BINDIR="/usr/local/bin" \
+	-D DATAROOT="/usr/share" \
+	--config CPackConfig.$f.cmake
 done
 fi
 
