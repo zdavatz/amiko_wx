@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.263")
+	VERSION "0.1.265")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -173,8 +173,8 @@ set( SRCS_JS
 	)
 
 set( SRCS_LANG
-    lang/de/amiko.po
-    lang/fr/amiko.po
+    lang/de_CH/amiko.po
+    lang/fr_CH/amiko.po
     )
     
 set( SRCS_CARD
@@ -270,19 +270,27 @@ endforeach()
 
 #=============================================================================
 
-foreach(APP_NAME CoMed AmiKo) 
+set(MY_TARGETS AmiKo CoMed)
+#set(CMAKE_INSTALL_BINDIR "local/bin")
+set(DATAROOT ".")
+
+foreach(APP_NAME ${MY_TARGETS}) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
-#MESSAGE(STATUS "CMAKE_INSTALL_LOCALEDIR: ${CMAKE_INSTALL_LOCALEDIR}")
-#MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
+MESSAGE(STATUS "CMAKE_INSTALL_LOCALEDIR: ${CMAKE_INSTALL_LOCALEDIR}")
+MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
+MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "CPACK_SET_DESTDIR: ${CPACK_SET_DESTDIR}")
+
+#set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS WORLD_READ WORLD_WRITE)
 
 if (APPLE)
   install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
 else (APPLE)
-  install(TARGETS ${APP_NAME} RUNTIME DESTINATION ./local/bin COMPONENT ${APP_NAME})
+  install(TARGETS ${APP_NAME} RUNTIME DESTINATION local/bin COMPONENT ${APP_NAME})
 endif (APPLE)
 
 install(DIRECTORY lang/
-	DESTINATION share/locale
+	DESTINATION local/share/locale
 	COMPONENT ${APP_NAME}
 	FILES_MATCHING PATTERN "*.mo")
 
@@ -295,8 +303,12 @@ install(FILES
     "res/interactions.css"
     "res/interactions_callbacks.js"
     "res/main_callbacks.js"
-    "res/lin/${APP_NAME}.png"
     DESTINATION $ENV{HOME}/.${APP_NAME} 
+    COMPONENT ${APP_NAME})
+
+install(FILES
+    "res/lin/${APP_NAME}.png"
+    DESTINATION share/icons 
     COMPONENT ${APP_NAME})
 
 if (NOT APPLE)
@@ -319,7 +331,7 @@ foreach(APP_NAME placeholder)
 	set (CPACK_PACKAGE_NAME ${APP_NAME})
 	set (CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.png")
 	set (CPACK_PACKAGE_VENDOR "ywesee")
-	set (CPACK_PACKAGE_CONTACT "Zeno Davatz zdavatz@ywesee.com")
+	set (CPACK_PACKAGE_CONTACT "Zeno Davatz <zdavatz@ywesee.com>")
 	set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CMAKE_PROJECT_DESCRIPTION})
 	set (CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 	set (CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -335,7 +347,7 @@ foreach(APP_NAME placeholder)
 		#set(CPACK_GENERATOR "RPM")
 		set(CPACK_DEBIAN_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
 		set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_CONTACT}) #required
-		set(CPACK_DEBIAN_PACKAGE_SECTION "office")
+		set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 		#set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
 		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libwwxgtk ( >= 3.1.4 ), libwebkit2gtk-4.0, pcscd, libssl, libgtk-3") # Specify dependencies here
 		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)

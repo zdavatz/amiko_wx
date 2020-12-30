@@ -55,18 +55,10 @@ bool MyApp::OnInit()
         // continue nevertheless
 #endif
     }
-#if 0
-    // normally this wouldn't be necessary as the catalog files would be found
-    // in the default locations, but when the program is not installed the
-    // catalogs are in the build directory where we wouldn't find them by
-    // default
-    wxString documentsDir = wxStandardPaths::Get().GetUserDataDir();
-    wxLocale::AddCatalogLookupPathPrefix(documentsDir + wxFILE_SEP_PATH + "lang");
-#else
-    //wxLocale::AddCatalogLookupPathPrefix(wxStandardPaths::Get().GetLocalizedResourcesDir(m_lang));
-#endif
-    // Initialize the catalogs we'll be using
+
     const wxLanguageInfo* pInfo = wxLocale::GetLanguageInfo(m_lang);
+    wxLocale::AddCatalogLookupPathPrefix(wxStandardPaths::Get().GetLocalizedResourcesDir(pInfo->CanonicalName, wxStandardPathsBase::ResourceCat_Messages));
+    // Initialize the catalogs we'll be using
     if (m_lang != wxLANGUAGE_ENGLISH &&
         !m_locale.AddCatalog("amiko"))
     {
@@ -85,14 +77,14 @@ bool MyApp::OnInit()
     // shows that you may make use of the standard message catalogs as well
     //
     // if it's not installed on your system, it is just silently ignored
-#ifdef __LINUX__
+#ifdef __linux__
     {
         wxLogNull noLog;
         m_locale.AddCatalog("fileutils");
     }
 #endif
 #endif
-    
+
     wxString dir = wxStandardPaths::Get().GetUserDataDir();
     if (!wxDir::Exists(dir))
         wxFileName::Mkdir(dir);
