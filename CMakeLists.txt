@@ -158,8 +158,8 @@ set( SRCS_JS
 	)
 
 set( SRCS_LANG
-    lang/de/amiko.po
-    lang/fr/amiko.po
+    lang/de_CH/amiko.po
+    lang/fr_CH/amiko.po
     )
     
 set( SRCS_CARD
