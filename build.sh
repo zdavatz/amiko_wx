@@ -173,7 +173,7 @@ fi
 if [ $STEP_CONFIGURE_APP ] ; then
 echo "=== Configure $APP_NAME in $BLD_APP"
 mkdir -p $BLD_APP ; cd $BLD_APP
-rm -f CMakeCache.txt
+rm -f CMakeCache.txt cmake_install.cmake*
 $CMAKE -G"$GENERATOR" \
     -D CMAKE_INSTALL_PREFIX=$BIN_APP \
     -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
