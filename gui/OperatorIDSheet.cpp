@@ -33,8 +33,6 @@ void OperatorIDSheet::OnFileUpdated( wxFileSystemWatcherEvent& event ) {
     int eventType = event.GetChangeType();
     if (eventType == wxFSW_EVENT_CREATE || eventType == wxFSW_EVENT_DELETE || eventType == wxFSW_EVENT_MODIFY) {
         loadSettings();
-    } else {
-        std::clog << "oh yes!" << std::endl;
     }
 }
 
@@ -184,6 +182,7 @@ Operator * OperatorIDSheet::loadOperator()
         oper->emailAddress = wxString(json[DOC_JSON_EMAIL].get<std::string>());
     } catch (const std::exception& e) {
         // Just in case the file is not initialized
+        std::clog << "Exception " << e.what() << std::endl;
     }
     
     return oper;
