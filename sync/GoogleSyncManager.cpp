@@ -92,11 +92,16 @@ void GoogleSyncManager::syncLoop() {
             isSyningNow = true;
             wantToStartSyncing = false;
             lastSynced = std::chrono::system_clock::now();
-            sync();
+            try {
+                sync();
+            } catch (std::exception& e) {
+                std::cout << "Sync error:" << std::endl;
+                std::cout << e.what() << std::endl;
+            }
             isSyningNow = false;
             syncMutex.unlock();
         }
-        if (wantToStopSyncing) {
+        if (wantToStopSyncing || !this->isGoogleLoggedIn()) {
             break;
         }
         sleep(1);
