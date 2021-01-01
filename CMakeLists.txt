@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.265")
+	VERSION "0.1.268")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -185,7 +185,9 @@ source_group(lang FILES ${SRCS_LANG})
 source_group(card FILES ${SRCS_CARD})
 source_group(print FILES ${SRCS_PRINT})
 
-foreach(APP_NAME CoMed AmiKo)    
+set(MY_TARGETS AmiKo CoMed)
+
+foreach(APP_NAME ${MY_TARGETS}) 
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
@@ -239,7 +241,6 @@ endforeach()
 
 #=============================================================================
 
-set(MY_TARGETS AmiKo CoMed)
 #set(CMAKE_INSTALL_BINDIR "local/bin")
 set(DATAROOT ".")
 
@@ -250,7 +251,7 @@ MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "CPACK_SET_DESTDIR: ${CPACK_SET_DESTDIR}")
 
-#set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS WORLD_READ WORLD_WRITE)
+#set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ WORLD_WRITE)
 
 if (APPLE)
   install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
@@ -264,6 +265,7 @@ install(DIRECTORY lang/
 	FILES_MATCHING PATTERN "*.mo")
 
 # Relative to current source dir
+# PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ WORLD_WRITE
 install(FILES
     "res/amiko_stylesheet.css"
     "res/color-scheme-light.css"
@@ -317,6 +319,10 @@ foreach(APP_NAME placeholder)
 		set(CPACK_DEBIAN_PACKAGE_NAME ${CPACK_PACKAGE_NAME})
 		set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_CONTACT}) #required
 		set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
+
+		# It seems to hang the installer
+		#set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/res/lin/debian/postinst;")
+
 		#set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
 		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libwwxgtk ( >= 3.1.4 ), libwebkit2gtk-4.0, pcscd, libssl, libgtk-3") # Specify dependencies here
 		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
