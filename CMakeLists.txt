@@ -243,7 +243,10 @@ if (APPLE)
 	${SRCS_JS}
 	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-  foreach(LANG_NAME ${MY_LANGUAGES}) 
+  set_target_properties(${APP_NAME} PROPERTIES
+    MACOSX_BUNDLE_ICON_FILE "res/mac/${APP_NAME}.icns")
+
+  foreach(LANG_NAME ${MY_LANGUAGES})
 	set_source_files_properties(
 		lang/${LANG_NAME}/LC_MESSAGES/amiko.mo
 		PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${LANG_NAME}.lproj)
