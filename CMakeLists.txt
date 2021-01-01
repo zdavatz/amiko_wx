@@ -180,7 +180,7 @@ set( SRCS_PRINT
     print/PrescriptionPrintout.cpp print/PrescriptionPrintout.hpp
     print/MainWindowPrint.cpp
     )
-
+    
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
@@ -188,8 +188,8 @@ source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
 source_group(doctor FILES ${SRCS_DOCTOR})
-source_group(css FILES ${SRCS_CSS})
-source_group(javascript FILES ${SRCS_JS})
+source_group("Resources/css" FILES ${SRCS_CSS})
+source_group("Resources/javascript" FILES ${SRCS_JS})
 source_group(lang FILES ${SRCS_LANG})
 source_group(card FILES ${SRCS_CARD})
 source_group(print FILES ${SRCS_PRINT})
@@ -199,6 +199,27 @@ set(MY_LANGUAGES de_CH fr_CH)
 
 foreach(APP_NAME ${MY_TARGETS}) 
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
+
+if (APPLE)
+  set(MAC_APP_ICON res/mac/${APP_NAME}.icns)
+  set(MAC_LANG
+    lang/de_CH/LC_MESSAGES/amiko.mo
+    lang/fr_CH/LC_MESSAGES/amiko.mo
+    )
+
+  set_source_files_properties(
+    ${SRCS_CSS} ${SRCS_JS} ${MAC_APP_ICON}
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    
+  foreach(LANG_NAME ${MY_LANGUAGES})
+    set_source_files_properties(
+        lang/${LANG_NAME}/LC_MESSAGES/amiko.mo
+        PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${LANG_NAME}.lproj)
+  endforeach()
+
+  source_group(Resources FILES ${MAC_APP_ICON})
+  #include_directories(${CMAKE_CURRENT_BINARY_DIR})
+endif (APPLE)
 
 ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     main.cpp main.hpp
@@ -212,9 +233,9 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS_PRINT}
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
-		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
+    ${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
     customURLConnection.cpp customURLConnection.hpp
-    ${SRCS_LANG}
+    ${SRCS_LANG} ${MAC_APP_ICON} ${MAC_LANG}
     )
 
 #ADD_DEFINITIONS("-DwxWidgets_USE_STATIC=OFF")
@@ -238,19 +259,11 @@ if (APPLE)
     ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a
     "-framework PCSC")
 
-  set_source_files_properties(
-	${SRCS_CSS}
-	${SRCS_JS}
-	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
   set_target_properties(${APP_NAME} PROPERTIES
-    MACOSX_BUNDLE_ICON_FILE "res/mac/${APP_NAME}.icns")
+    #MACOSX_BUNDLE_ICON_FILE ${MAC_APP_ICON}
+    MACOSX_BUNDLE_ICON_FILE ${APP_NAME}
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.ywesee.${APP_NAME}")
 
-  foreach(LANG_NAME ${MY_LANGUAGES})
-	set_source_files_properties(
-		lang/${LANG_NAME}/LC_MESSAGES/amiko.mo
-		PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${LANG_NAME}.lproj)
-  endforeach()
 endif (APPLE)
 
 # Linux
@@ -279,7 +292,9 @@ MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
 
 # === macOS ===
 if (APPLE)
-install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
+install(TARGETS ${APP_NAME}
+    BUNDLE DESTINATION .
+    COMPONENT ${APP_NAME})
 endif (APPLE)
 
 # === Linux ===
