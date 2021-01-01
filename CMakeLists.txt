@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.265")
+	VERSION "0.1.268")
 
 SET(CMAKE_CXX_STANDARD 17)
 
@@ -10,7 +10,7 @@ configure_file(
     "${CMAKE_BINARY_DIR}/config.h")
 include_directories(${CMAKE_BINARY_DIR})
 
-#=============================================================================
+#===============================================================================
 
 if (UNIX)
 if (NOT APPLE)
@@ -24,16 +24,16 @@ MESSAGE(STATUS "WEBKIT_LIBRARIES: ${WEBKIT_LIBRARIES}")
 endif (NOT APPLE)
 endif (UNIX)
 
-#=============================================================================
+#===============================================================================
 message(STATUS "JSON_DIR: ${JSON_DIR}")
 set(CMAKE_PREFIX_PATH ${JSON_DIR} ${CMAKE_PREFIX_PATH})
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-#=============================================================================
+#===============================================================================
 message(STATUS "CURL_DIR: ${CURL_DIR}")
 set(CMAKE_PREFIX_PATH ${CURL_DIR} ${CMAKE_PREFIX_PATH})
 
-#=============================================================================
+#===============================================================================
 if (UNIX)
 if (NOT APPLE)
 # Linux
@@ -45,7 +45,7 @@ find_package(OpenSSL REQUIRED)
 endif (NOT APPLE)
 endif (UNIX)
 
-#=============================================================================
+#===============================================================================
 if (UNIX)
 if (NOT APPLE)
 # Linux
@@ -71,7 +71,7 @@ MESSAGE(STATUS "PCSC_LIBRARY: ${PCSC_LIBRARY}")
 endif (NOT APPLE)
 endif (UNIX)
 
-#=============================================================================
+#===============================================================================
 
 set(wxWidgets_ROOT_DIR ${WX_ROOT})
 
@@ -107,7 +107,7 @@ endif(UNIX)
 #MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
 #MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
 
-#=============================================================================
+#===============================================================================
 
 set(CURL_LIBRARY "-lcurl")
 find_package(CURL REQUIRED)
@@ -120,7 +120,7 @@ ADD_DEFINITIONS("-D_LARGE_FILES")
 ADD_DEFINITIONS("-DGL_SILENCE_DEPRECATION=1")
 endif(APPLE)
 
-#=============================================================================
+#===============================================================================
 
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
@@ -167,6 +167,14 @@ set( SRCS_DOCTOR
 		SignatureView.cpp SignatureView.hpp
 		)
 
+set( SRCS_CSS
+    res/amiko_stylesheet.css
+    res/color-scheme-light.css
+    res/color-scheme-dark.css
+    res/fulltext_style.css
+    res/interactions.css
+	)
+
 set( SRCS_JS
     res/interactions_callbacks.js
     res/main_callbacks.js
@@ -196,12 +204,16 @@ source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
 source_group(preferences FILES ${SRCS_PREFERENCES})
 source_group(doctor FILES ${SRCS_DOCTOR})
+source_group(css FILES ${SRCS_CSS})
 source_group(javascript FILES ${SRCS_JS})
 source_group(lang FILES ${SRCS_LANG})
 source_group(card FILES ${SRCS_CARD})
 source_group(print FILES ${SRCS_PRINT})
 
-foreach(APP_NAME CoMed AmiKo)    
+set(MY_TARGETS AmiKo CoMed)
+set(MY_LANGUAGES de_CH fr_CH)
+
+foreach(APP_NAME ${MY_TARGETS}) 
 MESSAGE(STATUS "Configure target: ${APP_NAME}")
 
 if(APP_NAME STREQUAL AmiKo)
@@ -228,8 +240,8 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS_PRINT}
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
-		${SRCS_DOCTOR} ${SRCS_JS} ${SRCS_CARD}
-        ${SRCS_PREFERENCES}
+		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
+    ${SRCS_PREFERENCES}
     customURLConnection.cpp customURLConnection.hpp
     ${SRCS_LANG}
     )
@@ -251,59 +263,73 @@ target_link_libraries( ${APP_NAME}
         ${CURL_LIBRARIES}
 		nlohmann_json::nlohmann_json)
 
-if (UNIX)
+# macOS
 if (APPLE)
-  # macOS
   target_link_libraries( ${APP_NAME}
     ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a
     "-framework PCSC")
-else (APPLE)
-  # Linux
+
+  set_source_files_properties(
+	${SRCS_CSS}
+	${SRCS_JS}
+	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+  set_target_properties(${APP_NAME} PROPERTIES
+    MACOSX_BUNDLE_ICON_FILE "res/mac/${APP_NAME}.icns")
+
+  foreach(LANG_NAME ${MY_LANGUAGES})
+	set_source_files_properties(
+		lang/${LANG_NAME}/LC_MESSAGES/amiko.mo
+		PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${LANG_NAME}.lproj)
+  endforeach()
+endif (APPLE)
+
+# Linux
+if (NOT APPLE)
+if (UNIX)
   target_include_directories( ${APP_NAME} PUBLIC ${PCSC_INCLUDE_DIR})
   target_link_libraries( ${APP_NAME} ${WEBKIT_LIBRARIES} ${PCSC_LIBRARY})
-endif (APPLE)
 endif (UNIX)
+endif (NOT APPLE)
 
 target_compile_definitions(${APP_NAME} PUBLIC "APP_NAME=\"${APP_NAME}\"")
 
 endforeach()
 
-#=============================================================================
+#===============================================================================
 
-set(MY_TARGETS AmiKo CoMed)
 #set(CMAKE_INSTALL_BINDIR "local/bin")
 set(DATAROOT ".")
 
 foreach(APP_NAME ${MY_TARGETS}) 
 MESSAGE(STATUS "Install ${APP_NAME} to ${CMAKE_INSTALL_PREFIX}")
-MESSAGE(STATUS "CMAKE_INSTALL_LOCALEDIR: ${CMAKE_INSTALL_LOCALEDIR}")
-MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
-MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
-MESSAGE(STATUS "CPACK_SET_DESTDIR: ${CPACK_SET_DESTDIR}")
+#MESSAGE(STATUS "CMAKE_INSTALL_LOCALEDIR: ${CMAKE_INSTALL_LOCALEDIR}")
+#MESSAGE(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
+#MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+#MESSAGE(STATUS "CPACK_SET_DESTDIR: ${CPACK_SET_DESTDIR}")
 
-#set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS WORLD_READ WORLD_WRITE)
-
+# === macOS ===
 if (APPLE)
-  install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
-else (APPLE)
-  install(TARGETS ${APP_NAME} RUNTIME DESTINATION local/bin COMPONENT ${APP_NAME})
+install(TARGETS ${APP_NAME} BUNDLE DESTINATION ${APP_NAME})
 endif (APPLE)
 
+# === Linux ===
+if (NOT APPLE)
+if (UNIX)
+# ExecutablePath
+install(TARGETS ${APP_NAME} RUNTIME DESTINATION local/bin COMPONENT ${APP_NAME})
+
+# LocalizedResourcesDir
 install(DIRECTORY lang/
 	DESTINATION local/share/locale
 	COMPONENT ${APP_NAME}
 	FILES_MATCHING PATTERN "*.mo")
 
-# Relative to current source dir
+# ResourcesDir
 install(FILES
-    "res/amiko_stylesheet.css"
-    "res/color-scheme-light.css"
-    "res/color-scheme-dark.css"
-    "res/fulltext_style.css"
-    "res/interactions.css"
-    "res/interactions_callbacks.js"
-    "res/main_callbacks.js"
-    DESTINATION $ENV{HOME}/.${APP_NAME} 
+    ${SRCS_CSS}
+    ${SRCS_JS}
+    DESTINATION local/share/${APP_NAME} 
     COMPONENT ${APP_NAME})
 
 install(FILES
@@ -311,8 +337,6 @@ install(FILES
     DESTINATION share/icons 
     COMPONENT ${APP_NAME})
 
-if (NOT APPLE)
-if (UNIX)
 install(FILES
     "${CMAKE_SOURCE_DIR}/res/lin/${APP_NAME}.desktop"
 	DESTINATION share/applications
@@ -340,7 +364,10 @@ foreach(APP_NAME placeholder)
 	set (CPACK_PACKAGE_CHECKSUM "MD5")
 	#set (CPACK_PACKAGE_CHECKSUM "SHA1")
 	
-	if (NOT APPLE)
+	if (APPLE)
+		MESSAGE("macOS installer")
+		set(CPACK_GENERATOR "DragNDrop")
+	else (APPLE)
 	if (UNIX)
 		MESSAGE("Linux installer")
 		set(CPACK_GENERATOR "DEB;TGZ")
@@ -352,7 +379,7 @@ foreach(APP_NAME placeholder)
 		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libwwxgtk ( >= 3.1.4 ), libwebkit2gtk-4.0, pcscd, libssl, libgtk-3") # Specify dependencies here
 		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 	endif (UNIX)
-	endif (NOT APPLE)
+	endif (APPLE)
 	
 	# https://cmake.org/cmake/help/latest/module/CPack.html
 	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")

@@ -77,13 +77,7 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
     wxString interactions_Style;
     {
         // Load style sheet from file
-#ifdef __linux__
-        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-        wxString interactionsCssPath(f.GetPath());
-#else
-        // TODO: use GetResourcesDir()
-        wxString interactionsCssPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+        wxString interactionsCssPath = wxStandardPaths::Get().GetResourcesDir();
         interactionsCssPath += wxFILE_SEP_PATH + wxString("interactions.css");
 
         wxString interactionsCss;
@@ -105,13 +99,7 @@ wxString InteractionsHtmlView::fullInteractionsHtml(InteractionsAdapter *interac
     wxString jscriptStr;
     {
         // Load javascript from file
-#ifdef __linux__
-        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-        wxString jscriptPath(f.GetPath());
-#else
-        // TODO: use GetResourcesDir()
-        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+        wxString jscriptPath = wxStandardPaths::Get().GetResourcesDir();
         jscriptPath += wxFILE_SEP_PATH + wxString("interactions_callbacks.js");
 
         if (wxFileName::Exists(jscriptPath)) {
