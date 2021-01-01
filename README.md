@@ -79,6 +79,9 @@ In the file `~/AmiKo` you can set `language=57` on the first line. That will put
 ```
 STEP_CONFIGURE_WXWIDGETS=y
 STEP_COMPILE_WXWIDGETS=y
+
+STEP_CONFIGURE_JSON=y
+STEP_BUILD_JSON=y
 ```
 2. For Mac in `seed.conf`
 ```
