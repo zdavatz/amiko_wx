@@ -1782,13 +1782,7 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     wxString amiko_Style; // TODO: read it once only and store it, instead of doing this for every fachinfo
     {
         // Load style sheet from file
-#ifdef __linux__
-        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-        wxString amikoCssPath(f.GetPath());
-#else
-        // TODO: use GetResourcesDir()
-        wxString amikoCssPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+        wxString amikoCssPath = wxStandardPaths::Get().GetResourcesDir();
         amikoCssPath += wxFILE_SEP_PATH + wxString("amiko_stylesheet.css");
 
         wxString amikoCss;
@@ -1810,15 +1804,9 @@ void MainWindow::updateExpertInfoView(wxString anchor)
     wxString js_Script;
     {
         // Load JavaScript from file
-#ifdef __linux__
-        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-        wxString jscriptPath(f.GetPath());
-#else
-        // TODO: use GetResourcesDir()
-        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
-        
+        wxString jscriptPath = wxStandardPaths::Get().GetResourcesDir();        
         jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
+
         wxString jscriptStr;
         //= [NSString stringWithContentsOfFile:jscriptPath encoding:NSUTF8StringEncoding error:nil];
         if (wxFileName::Exists(jscriptPath)) {
@@ -1943,13 +1931,7 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
     wxString colorCss = UTI::getColorCss();
 
     // Load style sheet from file
-#ifdef __linux__
-    wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-    wxString fullTextCssPath(f.GetPath());
-#else
-    // TODO: use GetResourcesDir()
-    wxString fullTextCssPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+    wxString fullTextCssPath = wxStandardPaths::Get().GetResourcesDir();
     fullTextCssPath += wxFILE_SEP_PATH + wxString("fulltext_style.css");
 
     wxString fullTextCss;
@@ -1962,14 +1944,8 @@ void MainWindow::updateFullTextSearchView(wxString contentStr)
 
     wxString js_Script;
     {
-// Load javascript from file
-#ifdef __linux__
-        wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-        wxString jscriptPath(f.GetPath());
-#else
-        // TODO: use GetResourcesDir()
-        wxString jscriptPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+		// Load javascript from file
+        wxString jscriptPath = wxStandardPaths::Get().GetResourcesDir();
         jscriptPath += wxFILE_SEP_PATH + wxString("main_callbacks.js");
         
         wxString jscriptStr;

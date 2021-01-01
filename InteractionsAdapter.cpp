@@ -43,7 +43,7 @@ bool InteractionsAdapter::openInteractionsCsvFile(wxString name)
     
     // ** B. If no database is available, check if db is in app bundle
     documentsDir = wxStandardPaths::Get().GetResourcesDir();
-    // TODO:
+    std::clog << __FUNCTION__ << __LINE__ << " TODO: check for DB in resources directory\n";
     
 #ifndef NDEBUG
     std::cerr << "Didn't find " << filePath << std::endl;

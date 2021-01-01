@@ -90,13 +90,7 @@ wxString getColorCss()
     if (appearance.IsDark())
         colorSchemeFilename = "color-scheme-dark.css";
 
-#ifdef __linux__
-    wxFileName f(wxStandardPaths::Get().GetExecutablePath());
-    wxString colorCssPath(f.GetPath());
-#else
-    // TODO: use GetResourcesDir()
-    wxString colorCssPath = wxStandardPaths::Get().GetUserDataDir();
-#endif
+    wxString colorCssPath = wxStandardPaths::Get().GetResourcesDir();
     colorCssPath += wxFILE_SEP_PATH + colorSchemeFilename;
 
     // Read CSS file into string

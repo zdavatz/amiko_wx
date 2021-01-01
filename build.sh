@@ -39,6 +39,7 @@ fi
 WXWIDGETS=wxWidgets-$WXWIDGETS_VERSION
 SQLITE=sqlite-amalgamation-$SQLITE_VERSION
 TARGET_LIST="AmiKo CoMed"
+LANGUAGE_LIST="de_CH fr_CH"
 WD=$(pwd)
 
 eval SRC=$CONFIG_SRC_DIR
@@ -204,9 +205,9 @@ make $MAKE_FLAGS
 fi
 
 #-------------------------------------------------------------------------------
-# Install the whole project, not just a single target
+# (Linux only) Install the whole project, not just a single target
 
-if [ $STEP_INSTALL_APP ] ; then
+if [ $STEP_INSTALL_APP ] && [[ $(uname -s) == "Linux" ]] ; then
 cd $BLD_APP
 echo "=== Install into $BIN_APP"
 
@@ -217,13 +218,14 @@ do
   cp $SRC_APP/res/lin/$f.desktop $(xdg-user-dir DESKTOP)
   sudo cp $SRC_APP/res/lin/$f.png /usr/share/icons/$f.png
 
-  # The css and js files are also "unexpectedly" installed by running the step STEP_CREATE_INSTALLER
   mkdir -p $HOME/.$f
-  cp $SRC_APP/res/*.css $HOME/.$f/
-  cp $SRC_APP/res/*.js $HOME/.$f/
+
+  USER_DATA_DIR="/usr/local/share/$f"
+  cp $SRC_APP/res/*.css $USER_DATA_DIR/
+  cp $SRC_APP/res/*.js  $USER_DATA_DIR/
 done
 
-for LANG in de_CH fr_CH
+for LANG in $LANGUAGE_LIST
 do
   echo "--- language: $LANG"
   LOCALIZED_RESOURCES_DIR="/usr/local/share/locale/${LANG}/LC_MESSAGES"
