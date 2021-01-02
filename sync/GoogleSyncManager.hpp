@@ -33,6 +33,8 @@ namespace GoogleAPITypes {
 };
 
 wxDECLARE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
+wxDECLARE_EVENT(SYNC_MANAGER_UPDATED_DOCTOR, wxCommandEvent);
+wxDECLARE_EVENT(SYNC_MANAGER_UPDATED_AMK, wxCommandEvent);
 
 class GoogleSyncManager
 {
@@ -74,6 +76,8 @@ public:
     );
 
     wxEvtHandler *patientUpdatedHandler = nullptr;
+    wxEvtHandler *doctorUpdatedHandler = nullptr;
+    wxEvtHandler *amkUpdatedHandler = nullptr;
 
     void startBackgroundSync();
     void stopBackgroundSync();

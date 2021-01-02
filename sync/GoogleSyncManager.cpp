@@ -72,6 +72,8 @@ namespace GoogleAPITypes {
 GoogleSyncManager* GoogleSyncManager::m_pInstance;
 
 wxDEFINE_EVENT(SYNC_MANAGER_UPDATED_PATIENT, wxCommandEvent);
+wxDEFINE_EVENT(SYNC_MANAGER_UPDATED_DOCTOR, wxCommandEvent);
+wxDEFINE_EVENT(SYNC_MANAGER_UPDATED_AMK, wxCommandEvent);
 
 // Singleton
 GoogleSyncManager* GoogleSyncManager::Instance()
@@ -957,6 +959,24 @@ void GoogleSyncManager::sync() {
     std::clog << "remoteFilesToDelete: " << std::endl;
     debugLogStringSet(remoteFilesToDelete);
 
+    bool willUpdateDoctor = pathsToDownload.find(DOC_SIGNATURE_FILENAME) != pathsToDownload.end()
+        || pathsToDownload.find(DOC_JSON_FILENAME) != pathsToDownload.end();
+    bool willUpdateAMK = false;
+    for (const auto& entry : pathsToDownload) {
+        auto path = entry.first;
+        auto dirs = wxFileName(path).GetDirs();
+        if (!dirs.IsEmpty() && dirs[0] == "amk") {
+            willUpdateAMK = true;
+        }
+    }
+    for (const auto& path : localFilesToDelete) {
+        auto dirs = wxFileName(path).GetDirs();
+        if (!dirs.IsEmpty() && dirs[0] == "amk") {
+            willUpdateAMK = true;
+        }
+    }
+
+
     // Create folders on Google drive
     {
         std::set<std::string> allFoldersToCreate;
@@ -1111,12 +1131,28 @@ void GoogleSyncManager::sync() {
         }
     }
 
+    {
+        wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_DOCTOR);
+        if (willUpdateDoctor && doctorUpdatedHandler != nullptr) {
+            doctorUpdatedHandler->QueueEvent(event);
+        }
+    }
+
+    {
+        wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_AMK);
+        if (willUpdateAMK && amkUpdatedHandler != nullptr) {
+            amkUpdatedHandler->QueueEvent(event);
+        }
+    }
+
     // Sync patients
     std::set<std::string> patientsToCreate; // uid
     std::map<std::string, GoogleAPITypes::RemoteFile> patientsToUpdate; // uid : remote file
     std::map<std::string, GoogleAPITypes::RemoteFile> patientsToDownload; // uid : remote file
     std::set<std::string> localPatientsToDelete; // uid
     std::map<std::string, GoogleAPITypes::RemoteFile> remotePatientsToDelete; // uid : remote
+
+    bool willUpdatePatients = !patientsToDownload.empty() || !localPatientsToDelete.empty();
 
     std::map<std::string, time_t> localPatientTimestamps = getLocalPatientTimestamps();
     {
@@ -1296,9 +1332,11 @@ void GoogleSyncManager::sync() {
         versionMap[key] = version;
     }
 
-    wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_PATIENT);
-    if (patientUpdatedHandler != nullptr) {
-        patientUpdatedHandler->QueueEvent(event);
+    {
+        wxCommandEvent* event = new wxCommandEvent(SYNC_MANAGER_UPDATED_PATIENT);
+        if (willUpdatePatients && patientUpdatedHandler != nullptr) {
+            patientUpdatedHandler->QueueEvent(event);
+        }
     }
 
     try {

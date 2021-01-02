@@ -104,7 +104,7 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
 
     EVT_DROP_FILES(MainWindow::OnDropFiles)
-    EVT_FSWATCHER(wxID_ANY, MainWindow::OnFileWatcherUpdated)
+    EVT_COMMAND(wxID_ANY, SYNC_MANAGER_UPDATED_AMK, MainWindow::OnAmkFilesUpdated)
 END_EVENT_TABLE()
 
 MainWindow::MainWindow( wxWindow* parent )
@@ -299,6 +299,7 @@ MainWindow::MainWindow( wxWindow* parent )
     myPrescriptionsTableView->SetIndent(5); // default 15
 
     GoogleSyncManager::Instance()->startBackgroundSync();
+    GoogleSyncManager::Instance()->amkUpdatedHandler = this;
 
 #ifndef __APPLE__
     // Issue #36
@@ -306,12 +307,6 @@ MainWindow::MainWindow( wxWindow* parent )
     m_menuFile->Append(wxID_EXIT, wxT("&Quit"));
     Connect(wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnQuit));
 #endif
-
-    fsWatcher = new wxFileSystemWatcher();
-    wxFileName amkFolderPath = wxFileName(UTI::documentsDirectory(), "");
-    amkFolderPath.AppendDir("amk");
-    fsWatcher->AddTree(amkFolderPath);
-    fsWatcher->SetOwner(this);
 }
 
 MainWindow::~MainWindow()
@@ -3539,9 +3534,6 @@ void MainWindow::OnDropFiles(wxDropFilesEvent& event)
     loadPrescription_andRefreshHistory(event.GetFiles()[0], true);
 }
 
-void MainWindow::OnFileWatcherUpdated(wxFileSystemWatcherEvent& event) {
-    int eventType = event.GetChangeType();
-    if (eventType == wxFSW_EVENT_CREATE || eventType == wxFSW_EVENT_DELETE || eventType == wxFSW_EVENT_MODIFY) {
-        updatePrescriptionHistory();
-    }
+void MainWindow::OnAmkFilesUpdated(wxCommandEvent& event) {
+    updatePrescriptionHistory();
 }
