@@ -16,24 +16,16 @@ OperatorIDSheetBase( parent )
     loadSettings();
     Fit();
 
-    fsWatcher = new wxFileSystemWatcher();
-    wxFileName jsonFilePath = wxFileName(UTI::documentsDirectory(), DOC_JSON_FILENAME);
-    wxFileName signatureFilePath = wxFileName(UTI::documentsDirectory(), DOC_SIGNATURE_FILENAME);
-    fsWatcher->Add(jsonFilePath);
-    fsWatcher->Add(signatureFilePath);
-    fsWatcher->SetOwner(this);
+    GoogleSyncManager::Instance()->doctorUpdatedHandler = this;
 }
 
 BEGIN_EVENT_TABLE(OperatorIDSheet, OperatorIDSheetBase)
-    EVT_FSWATCHER(wxID_ANY, OperatorIDSheet::OnFileUpdated)
+    EVT_COMMAND(wxID_ANY, SYNC_MANAGER_UPDATED_DOCTOR, OperatorIDSheet::OnDoctorUpdated)
 END_EVENT_TABLE()
 
 
-void OperatorIDSheet::OnFileUpdated( wxFileSystemWatcherEvent& event ) {
-    int eventType = event.GetChangeType();
-    if (eventType == wxFSW_EVENT_CREATE || eventType == wxFSW_EVENT_DELETE || eventType == wxFSW_EVENT_MODIFY) {
-        loadSettings();
-    }
+void OperatorIDSheet::OnDoctorUpdated( wxCommandEvent& event ) {
+    loadSettings();
 }
 
 // 105
