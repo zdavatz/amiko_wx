@@ -176,8 +176,20 @@ GoogleSyncManager::~GoogleSyncManager() {
     curl_global_cleanup();
 }
 
+std::string getGoogleClientId() {
+    if (wxString(APP_NAME) == "CoMed")
+        return COMED_GOOGLE_CLIENT_ID;
+    return AMIKO_GOOGLE_CLIENT_ID;
+}
+
+std::string getGoogleClientSecret() {
+    if (wxString(APP_NAME) == "CoMed")
+        return COMED_GOOGLE_CLIENT_SECRET;
+    return AMIKO_GOOGLE_CLIENT_SECRET;
+}
+
 std::string GoogleSyncManager::authURL() {
-    return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto&client_id=" GOOGLE_CLIENT_ID;
+    return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto&client_id=" + getGoogleClientId();
 }
 
 bool GoogleSyncManager::isGoogleLoggedIn() {
@@ -194,8 +206,8 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
 
     std::string postString = \
         "code=" + code + \
-        "&client_id=" + GOOGLE_CLIENT_ID + \
-        "&client_secret=" GOOGLE_CLIENT_SECRET + \
+        "&client_id=" + getGoogleClientId() + \
+        "&client_secret=" + getGoogleClientSecret() + \
         "&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto" + \
         "&grant_type=authorization_code";
 
@@ -278,8 +290,8 @@ std::string GoogleSyncManager::getAccessToken() {
     std::string s;
 
     std::string postString = \
-        "client_id=" GOOGLE_CLIENT_ID \
-        "&client_secret=" GOOGLE_CLIENT_SECRET \
+        "client_id=" + getGoogleClientId() + \
+        "&client_secret=" + getGoogleClientSecret() + \
         "&refresh_token=" + refreshToken + \
         "&grant_type=refresh_token";
 
@@ -851,7 +863,7 @@ Patient* stringMapToPatient(std::map<std::string, std::string> map) {
 }
 
 void GoogleSyncManager::sync() {
-    std::cout << "Start syncing" << std::endl;
+    std::clog << "Start syncing" << std::endl;
 
     if (!this->isGoogleLoggedIn()) {
         return;
