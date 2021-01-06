@@ -5,7 +5,6 @@
 //  Copyright © 2020 Ywesee GmbH. All rights reserved.
 
 #include "GoogleSyncManager.hpp"
-#include "GoogleConfig.h"
 #include "PatientDBAdapter.hpp"
 #include "../DefaultsController.hpp"
 #include <curl/curl.h>
