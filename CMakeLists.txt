@@ -32,6 +32,8 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 #===============================================================================
 message(STATUS "CURL_DIR: ${CURL_DIR}")
 set(CMAKE_PREFIX_PATH ${CURL_DIR} ${CMAKE_PREFIX_PATH})
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+find_package(CURL 7.73.0 REQUIRED)
 
 #===============================================================================
 if (UNIX)
@@ -106,11 +108,6 @@ endif(UNIX)
 #MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
 #MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
 #MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
-
-#===============================================================================
-
-set(CURL_LIBRARY "-lcurl")
-find_package(CURL REQUIRED)
 
 #=============================================================================
 
