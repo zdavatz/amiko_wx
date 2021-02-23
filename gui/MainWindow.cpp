@@ -2710,7 +2710,14 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     // TODO: make sure the Prescription view is not the current one
 
     wxString find_text = fiSearchField->GetValue();
-    
+
+#ifdef __WXMAC__
+    if (find_text.IsEmpty()) {
+        myWebView->RunScript("resetSearchInPage()");
+    } else {
+        myWebView->RunScript("searchText('" + find_text + "')");
+    }
+#else
     if (find_text.IsEmpty())
         m_findCount = myWebView->Find(wxEmptyString); // reset the search and highlights
     else
@@ -2745,6 +2752,7 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
         fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
     else
         fiSearchField->SetBackgroundColour(wxColour(255, 101, 101));
+#endif
 }
 
 // 1390
@@ -3075,7 +3083,14 @@ void MainWindow::OnPerformFindAction( wxCommandEvent& event )
             fiSearchCount->Hide(); // No need to show the count when the string is empty
             fiSizer->Layout();
             break;
-            
+#ifdef __WXMAC__
+        case wxID_FI_FIND_NEXT:
+            myWebView->RunScript("highlightNextResult()");
+            break;
+        case wxID_FI_FIND_PREVIOUS:
+            myWebView->RunScript("highlightPreviousResult()");
+            break;
+#else
         case wxID_FI_FIND_NEXT:     // tag 2 = NSTextFinderActionNextMatch
         case wxID_FI_FIND_PREVIOUS: // tag 3 = NSTextFinderActionPreviousMatch
             if (myTextFinder->IsShown() && m_findCount > 0) {
@@ -3091,13 +3106,16 @@ void MainWindow::OnPerformFindAction( wxCommandEvent& event )
 #endif
             }
             break;
+#endif
 
-            
         case wxID_FI_FIND_DONE: // tag 11 = NSTextFinderActionHideFindInterface
             if (myTextFinder->IsShown()) {
                 myTextFinder->Hide();
                 fiSizer->Layout();
             }
+#ifdef __WXMAC__
+            myWebView->RunScript("resetSearchInPage()");
+#endif
             break;
                 
         default:
