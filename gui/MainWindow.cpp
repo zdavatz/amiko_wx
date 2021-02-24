@@ -1064,8 +1064,6 @@ void MainWindow::switchTabs(int item)
         default:
             break;
     }
-
-    Fit();
 }
 
 // 1897
