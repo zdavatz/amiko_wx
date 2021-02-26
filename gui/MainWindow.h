@@ -207,7 +207,6 @@ private:
     wxArrayString mListOfSectionTitles;
     
     // .m 179
-    wxString mAnchor;
     wxString mFullTextContentStr;
     
     // .m 183
