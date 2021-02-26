@@ -1776,13 +1776,6 @@ void MainWindow::OnDocumentLoaded(wxWebViewEvent& evt)
     // Only notify if the document is the main frame, not a subframe
     if (evt.GetURL() == m_browser->GetCurrentURL())
 #endif
-    {
-        // Inject JS into webview
-        if (mAnchor.length() > 0) {
-            wxString jsCallback = wxString::Format("moveToHighlight('%s')", mAnchor);
-            myWebView->RunScript(jsCallback); // stringByEvaluatingJavaScriptFromString
-        }
-    }
 }
 
 // 2473
@@ -1869,13 +1862,11 @@ void MainWindow::updateExpertInfoView(wxString anchor)
             if (!keyword.IsEmpty()) {
                 // Instead of appending like in the Windows version,
                 // insert before "</body>"
-                wxString jsCode = wxString::Format("highlightText(document.body,'%s')", keyword);
+                wxString jsCode = wxString::Format("highlightText(document.body,'%s');moveToHighlight('%s')", keyword, anchor);
                 wxString extraHtmlCode = wxString::Format("<script>%s</script>\n </body>", jsCode);
                 htmlStr.Replace("</body>", extraHtmlCode);
             }
         }
-
-        mAnchor = anchor;
     }
 
     // 2547
