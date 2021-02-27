@@ -3049,7 +3049,8 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 // 1537
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
-    wxMessageBox(wxString::Format("%s\n%s\nSQLite %s",
+    wxMessageBox(wxString::Format("AmiKo Desitin wx build %s\n%s\n%s\nSQLite %s",
+                              PROJECT_VER,
                               wxGetOsDescription(),
                               wxVERSION_STRING,
                               SQLITE_VERSION),
