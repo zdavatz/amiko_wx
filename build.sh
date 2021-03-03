@@ -147,7 +147,7 @@ echo "=== Configure CURL, install to $BIN_CURL"
     if [[ $(uname -s) == "Darwin" ]] ; then
         PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig" $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL
     elif [[ $(uname -s) == "Linux" ]] ; then
-        $SRC_CURL/configure --with-ssl
+        $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL
     fi
 fi
 
@@ -238,6 +238,15 @@ if [ $STEP_COMPILE_APP ] && [ $CONFIG_GENERATOR_MK ] ; then
 cd $BLD_APP
 echo "=== Build"
 make $MAKE_FLAGS
+# Make binary load the embeded library
+if [[ $(uname -s) == "Darwin" ]] ; then
+mkdir ./AmiKo.app/Contents/Frameworks
+mkdir ./CoMed.app/Contents/Frameworks
+cp ${BIN_CURL}/lib/libcurl.4.dylib ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib
+cp ${BIN_CURL}/lib/libcurl.4.dylib ./CoMed.app/Contents/Frameworks/libcurl.4.dylib
+install_name_tool -change ${BIN_CURL}/lib/libcurl.4.dylib @executable_path/../Frameworks/libcurl.4.dylib ./AmiKo.app/Contents/MacOS/AmiKo
+install_name_tool -change ${BIN_CURL}/lib/libcurl.4.dylib @executable_path/../Frameworks/libcurl.4.dylib ./CoMed.app/Contents/MacOS/CoMed
+fi
 fi
 
 #-------------------------------------------------------------------------------
