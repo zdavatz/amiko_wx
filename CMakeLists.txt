@@ -276,6 +276,7 @@ target_link_libraries( ${APP_NAME}
 
 # macOS
 if (APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
   target_link_libraries( ${APP_NAME}
     ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a
     "-framework PCSC")
