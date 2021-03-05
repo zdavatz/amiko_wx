@@ -26,10 +26,9 @@ public:
     void setInt(int value, const wxString & key);
     int getInt(const wxString & key, int defVal);
 
-    void setString(const wxString& value, const wxString& key);
+    void setString(wxString value, const wxString& key);
     wxString getString(const wxString& key, const char* defVal);
 
-private:
     // private constructor so that it can not be called
     DefaultsController()
     : wxConfig(APP_NAME, PROJECT_BUNDLE_ID

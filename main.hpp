@@ -7,8 +7,15 @@
 
 #pragma once
 #include <wx/wx.h>
+#include <wx/apptrait.h>
 #include <wx/taskbar.h>
 #include "MainWindow.h"
+
+class MyAppTraits : public wxGUIAppTraits
+{
+public:
+    wxConfigBase *CreateConfig ();
+};
 
 class MyApp : public wxApp
 {
@@ -23,6 +30,8 @@ protected:
     wxLanguage m_lang;  // language specified by user
     wxLocale m_locale;  // locale we'll be using
     MainWindow *m_window;
+
+    virtual wxAppTraits *CreateTraits() { return new MyAppTraits; }
 };
 
 DECLARE_APP(MyApp)
