@@ -146,8 +146,10 @@ mkdir -p $BLD_CURL ; cd $BLD_CURL
 echo "=== Configure CURL, install to $BIN_CURL"
     if [[ $(uname -s) == "Darwin" ]] ; then
         export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig" 
+        $SRC_CURL/configure --without-ssl --with-secure-transport --prefix=$BIN_CURL --without-librtmp --without-libidn --without-libidn2
+    else
+      $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL --without-librtmp --without-libidn --without-libidn2
     fi
-    $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL --without-librtmp --without-libidn --without-libidn2
 fi
 
 if [ $STEP_BUILD_CURL ] ; then
@@ -246,8 +248,8 @@ cp ${BIN_CURL}/lib/libcurl.4.dylib ./CoMed.app/Contents/Frameworks/libcurl.4.dyl
 install_name_tool -change ${BIN_CURL}/lib/libcurl.4.dylib @executable_path/../Frameworks/libcurl.4.dylib ./AmiKo.app/Contents/MacOS/AmiKo
 install_name_tool -change ${BIN_CURL}/lib/libcurl.4.dylib @executable_path/../Frameworks/libcurl.4.dylib ./CoMed.app/Contents/MacOS/CoMed
 
-LIBSSL_PATH=$(otool -L ${BIN_CURL}/lib/libcurl.4.dylib | grep libssl | cut -f 2 | cut -d ' ' -f 1)
-LIBCRYPTO_PATH=$(otool -L ${BIN_CURL}/lib/libcurl.4.dylib | grep libcrypto | cut -f 2 | cut -d ' ' -f 1)
+LIBSSL_PATH=$(otool -L ./AmiKo.app/Contents/MacOS/AmiKo | grep libssl | cut -f 2 | cut -d ' ' -f 1)
+LIBCRYPTO_PATH=$(otool -L ./AmiKo.app/Contents/MacOS/AmiKo | grep libcrypto | cut -f 2 | cut -d ' ' -f 1)
 LIBNGHTTP2_PATH=$(otool -L ${BIN_CURL}/lib/libcurl.4.dylib | grep libnghttp2 | cut -f 2 | cut -d ' ' -f 1)
 
 cp ${LIBSSL_PATH} ./AmiKo.app/Contents/Frameworks/libssl.dylib
@@ -264,6 +266,7 @@ install_name_tool -change ${LIBCRYPTO_PATH} @executable_path/../Frameworks/libcr
 install_name_tool -change $(otool -L ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib | grep libssl | cut -f 2 | cut -d ' ' -f 1) @executable_path/../Frameworks/libssl.dylib ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib
 install_name_tool -change $(otool -L ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib | grep libcrypto | cut -f 2 | cut -d ' ' -f 1) @executable_path/../Frameworks/libcrypto.dylib ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib
 install_name_tool -change $(otool -L ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib | grep libnghttp2 | cut -f 2 | cut -d ' ' -f 1) @executable_path/../Frameworks/libnghttp2.dylib ./AmiKo.app/Contents/Frameworks/libcurl.4.dylib
+install_name_tool -change $(otool -L ./AmiKo.app/Contents/Frameworks/libssl.dylib | grep libcrypto | cut -f 2 | cut -d ' ' -f 1) @executable_path/../Frameworks/libcrypto.dylib ./AmiKo.app/Contents/Frameworks/libssl.dylib
 fi
 fi
 
