@@ -12,13 +12,11 @@
 
 #include "DefaultsController.hpp"
 
-DefaultsController* DefaultsController::m_pInstance;
 
 // Singleton
 DefaultsController* DefaultsController::Instance()
 {
-    if (!m_pInstance) {
-        m_pInstance = new DefaultsController;
+    DefaultsController *m_pInstance = (DefaultsController*)DefaultsController::Get(true);
 #ifndef NDEBUG
         std::cout
 
@@ -43,7 +41,6 @@ DefaultsController* DefaultsController::Instance()
         << "\n\t GetPath:           <" << m_pInstance->GetPath() << ">"
         << std::endl;
 #endif
-    }
 
     return m_pInstance;
 }
@@ -70,7 +67,7 @@ int DefaultsController::getInt(const wxString & key, int defVal)
     return value;
 }
 
-void DefaultsController::setString(const wxString& value, const wxString& key)
+void DefaultsController::setString(wxString value, const wxString& key)
 {
     Write(key, value);
 }

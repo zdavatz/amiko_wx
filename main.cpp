@@ -30,6 +30,10 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_MENU(wxID_PREFERENCES, MyApp::OnPrefs)
 END_EVENT_TABLE()
 
+wxConfigBase *MyAppTraits::CreateConfig () {
+    return new DefaultsController();
+}
+
 bool MyApp::OnInit()
 {
     if (!wxApp::OnInit())
