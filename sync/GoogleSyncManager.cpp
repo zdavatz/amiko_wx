@@ -193,7 +193,7 @@ std::string GoogleSyncManager::authURL() {
 
 bool GoogleSyncManager::isGoogleLoggedIn() {
     DefaultsController *defaults = DefaultsController::Instance();
-    return defaults->Exists("google-access-token");
+    return !defaults->getString("google-access-token", "").IsEmpty();
 }
 
 void GoogleSyncManager::receivedAuthCode(std::string code) {
@@ -218,6 +218,8 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
+    std::clog << "Response: " << s << std::endl;
+
     auto json = nlohmann::json::parse(s);
     // Example response
     // {
@@ -237,11 +239,9 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
     auto expire = now + std::chrono::seconds(expires);
     auto expireIsoString = UTI::timeToString(expire);
 
-#ifndef NDEBUG
     std::clog << "Access token: " << accessToken << std::endl;
     std::clog << "Refresh token: " << refreshToken << std::endl;
     std::clog << "expire: " << expireIsoString << std::endl;
-#endif
 
     DefaultsController *defaults = DefaultsController::Instance();
     defaults->setString(wxString(accessToken), "google-access-token");
@@ -252,9 +252,9 @@ void GoogleSyncManager::receivedAuthCode(std::string code) {
 
 void GoogleSyncManager::logout() {
     DefaultsController *defaults = DefaultsController::Instance();
-    defaults->DeleteEntry("google-access-token");
-    defaults->DeleteEntry("google-refresh-token");
-    defaults->DeleteEntry("google-access-token-expire");
+    defaults->setString("", "google-access-token");
+    defaults->setString("", "google-refresh-token");
+    defaults->setString("", "google-access-token-expire");
     defaults->Flush();
 }
 
