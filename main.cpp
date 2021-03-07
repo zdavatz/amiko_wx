@@ -18,13 +18,28 @@
 #include <wx/intl.h>
 #include <wx/dir.h>
 #include "wx/fs_zip.h"
+#include <wx/log.h>
 #include <wx/zipstrm.h>
 
 #include "main.hpp"
 #include "DefaultsController.hpp"
 #include "gui/PreferencesWindow.hpp"
 
-IMPLEMENT_APP(MyApp)
+// IMPLEMENT_APP(MyApp)
+IMPLEMENT_APP_NO_MAIN(MyApp);
+IMPLEMENT_WX_THEME_SUPPORT;
+
+int main(int argc, char *argv[])
+{
+    // Suppress the init error message about web-extensions #134
+    // https://github.com/wxWidgets/Phoenix/issues/1640
+    wxLogNull x;
+    wxEntryStart( argc, argv );
+    wxTheApp->CallOnInit();
+    wxTheApp->OnRun();
+
+    return 0;
+}
 
 BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_MENU(wxID_PREFERENCES, MyApp::OnPrefs)
