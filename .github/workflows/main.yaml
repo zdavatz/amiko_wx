@@ -45,7 +45,7 @@ jobs:
       run: sudo ./build.sh
     - uses: actions/upload-artifact@v2
       with:
-        name: Artifact
+        name: mac-artifact
         path: |
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.dmg
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
@@ -95,9 +95,72 @@ jobs:
       run: ./build.sh
     - uses: actions/upload-artifact@v2
       with:
-        name: Artifact
+        name: linux-artifact
         path: |
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
+
+  create_release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    needs:
+      - build_mac
+      - build_linux
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Check if need to create new release
+      id: check_tag
+      run: |
+        CURRENT_VERSION=$(cat CMakeLists.txt | grep VERSION | head -n 2 | tail -n +2 | grep -Eo '[0-9\.]+')
+        echo "Current version: $CURRENT_VERSION"
+        if git rev-parse "$CURRENT_VERSION" >/dev/null 2>&1; then
+          echo "Tag exists, no need to create release"
+          echo "::set-output name=need_release::false"
+        else
+          echo "Tag does not exist, creating release"
+          echo "::set-output name=need_release::true"
+          echo "::set-output name=current_version::${CURRENT_VERSION}"
+        fi
+    - uses: actions/download-artifact@v2
+      if: steps.check_tag.outputs.need_release == 'true'
+      with:
+        name: mac-artifact
+        path: ~/mac-artifact
+    - uses: actions/download-artifact@v2
+      if: steps.check_tag.outputs.need_release == 'true'
+      with:
+        name: linux-artifact
+        path: ~/linux-artifact
+    - name: Display structure of downloaded files
+      if: steps.check_tag.outputs.need_release == 'true'
+      run: |
+        ls -Rlah ~/mac-artifact ~/linux-artifact
+        env
+      env:
+        NEED_RELEASE: ${{ steps.check_tag.outputs.need_release }}
+        CURRENT_VERSION: ${{ steps.check_tag.outputs.current_version }}
+    - uses: rickstaa/action-create-tag@v1
+      if: steps.check_tag.outputs.need_release == 'true'
+      with:
+        tag: ${{ steps.check_tag.outputs.current_version }}
+        commit_sha: ${{ github.sha }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: steps.check_tag.outputs.need_release == 'true'
+      with:
+        name: ${{ steps.check_tag.outputs.current_version }}
+        tag_name: ${{ steps.check_tag.outputs.current_version }}
+        files: |
+          /home/runner/mac-artifact/*.dmg
+          /home/runner/linux-artifact/*.deb
+          /home/runner/linux-artifact/*.rpm
+          /home/runner/linux-artifact/*.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
