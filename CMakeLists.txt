@@ -177,6 +177,10 @@ set( SRCS_JS
     res/main_callbacks.js
 	)
 
+set( SRCS_IMAGE
+    res/splash_1000x670.png
+    )
+
 set( SRCS_LANG
     lang/de_CH/amiko.po
     lang/fr_CH/amiko.po
@@ -203,6 +207,7 @@ source_group(preferences FILES ${SRCS_PREFERENCES})
 source_group(doctor FILES ${SRCS_DOCTOR})
 source_group("Resources/css" FILES ${SRCS_CSS})
 source_group("Resources/javascript" FILES ${SRCS_JS})
+source_group("Resources/images" FILES ${SRCS_IMAGE})
 source_group(lang FILES ${SRCS_LANG})
 source_group(card FILES ${SRCS_CARD})
 source_group(print FILES ${SRCS_PRINT})
@@ -226,7 +231,7 @@ if (APPLE)
     )
 
   set_source_files_properties(
-    ${SRCS_CSS} ${SRCS_JS} ${MAC_APP_ICON}
+    ${SRCS_CSS} ${SRCS_JS} ${MAC_APP_ICON} ${SRCS_IMAGE}
     PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     
   foreach(LANG_NAME ${MY_LANGUAGES})
@@ -251,7 +256,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS_PRINT}
     ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
-		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
+		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD} ${SRCS_IMAGE}
     ${SRCS_PREFERENCES}
     customURLConnection.cpp customURLConnection.hpp
     ${SRCS_LANG} ${MAC_APP_ICON} ${MAC_LANG}
@@ -335,6 +340,7 @@ install(DIRECTORY lang/
 install(FILES
     ${SRCS_CSS}
     ${SRCS_JS}
+    ${SRCS_IMAGE}
     DESTINATION local/share/${APP_NAME} 
     COMPONENT ${APP_NAME})
 
