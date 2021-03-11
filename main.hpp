@@ -10,6 +10,7 @@
 #include <wx/apptrait.h>
 #include <wx/taskbar.h>
 #include "MainWindow.h"
+#include "SplashWindow.h"
 
 class MyAppTraits : public wxGUIAppTraits
 {
@@ -30,6 +31,7 @@ protected:
     wxLanguage m_lang;  // language specified by user
     wxLocale m_locale;  // locale we'll be using
     MainWindow *m_window;
+    SplashWindow *m_splash;
 
     virtual wxAppTraits *CreateTraits() { return new MyAppTraits; }
 };
