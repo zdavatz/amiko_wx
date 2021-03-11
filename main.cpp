@@ -104,16 +104,27 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+    SplashWindow* splash = new SplashWindow(nullptr);
+    m_splash = splash;
+    splash->Show();
+    SetTopWindow( splash );
+    splash->UpdateWindowUI();
+    this->SafeYieldFor(splash, wxEVT_CATEGORY_UI);
+
     wxString dir = wxStandardPaths::Get().GetUserDataDir();
     if (!wxDir::Exists(dir))
         wxFileName::Mkdir(dir);
     
     wxFileSystem::AddHandler(new wxZipFSHandler);
 
-    MainWindow* frame = new MainWindow(nullptr);
-    m_window = frame;
-    frame->Show();
-    SetTopWindow( frame );
+    MyApp *_this = this;
+    wxGetApp().CallAfter([=]{
+        // wxMilliSleep(1000);
+        MainWindow* frame = new MainWindow(nullptr);
+        _this->m_window = frame;
+        frame->Show();
+        _this->SetTopWindow( frame );
+    });
     return true;
 }
 
