@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Nov 23 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Mar 11 2021)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -201,6 +201,24 @@ class MainWindowBase : public wxFrame
 			m_splitter3->SetSashPosition( 500 );
 			m_splitter3->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MainWindowBase::m_splitter3OnIdle ), NULL, this );
 		}
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class SplashWindowBase
+///////////////////////////////////////////////////////////////////////////////
+class SplashWindowBase : public wxFrame
+{
+	private:
+
+	protected:
+		wxStaticBitmap* m_slashBitmap;
+
+	public:
+
+		SplashWindowBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1000,670 ), long style = 0|wxTAB_TRAVERSAL );
+
+		~SplashWindowBase();
 
 };
 

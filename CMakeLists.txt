@@ -122,6 +122,7 @@ endif(APPLE)
 set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
     gui/MainWindow.cpp gui/MainWindow.h
+    gui/SplashWindow.cpp gui/SplashWindow.h
 		)
     
 set( SRCS_SQL

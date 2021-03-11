@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.9.0 Nov 23 2020)
+// C++ code generated with wxFormBuilder (version 3.9.0 Mar 11 2021)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -455,6 +455,27 @@ MainWindowBase::~MainWindowBase()
 	this->Disconnect( m_toolAbout->GetId(), wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler( MainWindowBase::OnShowAboutPanel ) );
 	this->Disconnect( wxID_SMART_CARD_TICK, wxEVT_TIMER, wxTimerEventHandler( MainWindowBase::OnSmartCardTick ) );
 
+}
+
+SplashWindowBase::SplashWindowBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* bSizer27;
+	bSizer27 = new wxBoxSizer( wxVERTICAL );
+
+	m_slashBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap( wxT("../amikoosx_splash_1000x670.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 1000,670 ), 0 );
+	bSizer27->Add( m_slashBitmap, 0, wxALL, 5 );
+
+
+	this->SetSizer( bSizer27 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+}
+
+SplashWindowBase::~SplashWindowBase()
+{
 }
 
 PatientSheetBase::PatientSheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
