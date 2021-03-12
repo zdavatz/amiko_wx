@@ -108,8 +108,6 @@ bool MyApp::OnInit()
     m_splash = splash;
     splash->Show();
     SetTopWindow( splash );
-    splash->UpdateWindowUI();
-    this->SafeYieldFor(splash, wxEVT_CATEGORY_UI);
 
     wxString dir = wxStandardPaths::Get().GetUserDataDir();
     if (!wxDir::Exists(dir))
@@ -119,11 +117,12 @@ bool MyApp::OnInit()
 
     MyApp *_this = this;
     wxGetApp().CallAfter([=]{
-        // wxMilliSleep(1000);
         MainWindow* frame = new MainWindow(nullptr);
         _this->m_window = frame;
         frame->Show();
         _this->SetTopWindow( frame );
+        _this->m_splash->Close(true);
+        _this->m_splash = nullptr;
     });
     return true;
 }

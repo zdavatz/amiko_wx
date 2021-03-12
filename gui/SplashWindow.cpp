@@ -1,8 +1,9 @@
 #include "SplashWindow.h"
+#include "../res/xpm/splash_1000x670.xpm"
 
 SplashWindow::SplashWindow( wxWindow* parent )
 :
 SplashWindowBase( parent )
 {
-    m_slashBitmap->SetBitmap(wxBitmap( wxT("res/splash_1000x670.png"), wxBITMAP_TYPE_ANY ));
+    m_slashBitmap->SetBitmap(wxBitmap(splash_xpm));
 }
