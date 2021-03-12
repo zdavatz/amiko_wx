@@ -25,7 +25,7 @@ jobs:
         path: |
           ~/Downloads/source
           ~/Documents/temp/build
-        key: ${{ runner.os }}-20210307
+        key: ${{ runner.os }}-20210312
     - name: Setup seed
       env:
         AMIKO_GOOGLE_CLIENT_ID: ${{ secrets.AMIKO_GOOGLE_CLIENT_ID }}
@@ -49,6 +49,12 @@ jobs:
         path: |
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.dmg
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
+    - name: Delete build files from cache
+      run: |
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.dmg
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.dmg
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
 
   build_linux:
     runs-on: ${{ matrix.os }}
@@ -72,7 +78,7 @@ jobs:
         path: |
           ~/Downloads/source
           ~/Documents/temp/build
-        key: ${{ runner.os }}-20210307
+        key: ${{ runner.os }}-20210312
     - name: Setup seed
       env:
         AMIKO_GOOGLE_CLIENT_ID: ${{ secrets.AMIKO_GOOGLE_CLIENT_ID }}
@@ -101,6 +107,16 @@ jobs:
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
           ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
+    - name: Delete build files from cache
+      run: |
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
+        ls ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
+        sudo rm ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.md5
 
   create_release:
     runs-on: ${{ matrix.os }}
