@@ -781,11 +781,13 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
         std::clog << " (user)" << std::endl;
 #endif
 
-#if 0
-    // If we don't want to handle navigation then veto the event and navigation
-    // will not take place.
-    evt.Veto();
-#endif
+    auto url = evt.GetURL();
+    if (url.Contains(".pdf")) {
+        wxLaunchDefaultBrowser(url);
+        // If we don't want to handle navigation then veto the event and navigation
+        // will not take place.
+        evt.Veto();
+    }
 }
 
 // 1573
