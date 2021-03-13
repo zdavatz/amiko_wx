@@ -28,14 +28,10 @@ function displayFachinfo(ean, anchor) {
         if (anchor == 'undefined')
             anchor = '';
 
-        var payload = [];
-        payload.push("[\"" + "main_cb" + "\"");
-        payload.push("\"" + "display_fachinfo" + "\"");
-        payload.push("\"" + ean + "\"");
-        payload.push("\"" + anchor + "\"]");
+        var payload = ["main_cb", "display_fachinfo", ean, anchor];
 
         // Change the title to something that allows you to pass information from JS to C++
-        document.title = payload;
+        document.title = JSON.stringify(payload);
     } catch (e) {
         alert(e);
     }
@@ -163,22 +159,19 @@ function highlightSearchResult(index) {
         if (count + match.count > index) {
             var subIndex = index - count; // The x match of this string
             var node = match.textNode;
-            var splitted = node.data.split(currentSearchTerm);
-            var completed = [];
-            var matchedIndex = -1;
-            for (var i = 0; i < splitted.length; i++) {
-                if (i !== 0) {
-                    if (i - 1 === subIndex) {
-                        // this is the text we want to highlight
-                        matchedIndex = completed.length;
-                    }
-                    completed.push(currentSearchTerm);
-                }
-                completed.push(splitted[i]);
+            var regexp = new RegExp(escapeRegExp(currentSearchTerm), 'gi');
+            var match = null;
+            var matchIndex = 0;
+            var before, highlightText, after;
+            while ((match = regexp.exec(node.data)) != null) {
+              if (matchIndex === subIndex) {
+                before = node.data.slice(0, match.index);
+                highlightText = match[0];
+                after = node.data.slice(match.index + highlightText.length);
+                break;
+              }
+              matchIndex++;
             }
-            var before = completed.slice(0, matchedIndex).join();
-            var highlightText = completed[matchedIndex];
-            var after = completed.slice(matchedIndex + 1).join();
             // Create a new element with text highlighted
             var wrapper = document.createElement('span');
             wrapper.appendChild(document.createTextNode(before));
@@ -198,18 +191,27 @@ function highlightSearchResult(index) {
         }
         count += match.count;
     }
+    var payload = ["main_cb", "in_page_search", (index + 1) + "/" + totalMatchCount];
+
+    // Change the title to something that allows you to pass information from JS to C++
+    document.title = JSON.stringify(payload);
 }
 
 // pure
 function findTextNodesWithText(text, node) {
     if (node instanceof Text) {
-        var splitted = node.data.split(text);
-        if (splitted.length === 1) {
+        var re = new RegExp(escapeRegExp(text), 'gi');
+        var match = null;
+        var count = 0;
+        while((match = re.exec(node.data)) !== null) {
+          count++;
+        }
+        if (count === 0) {
             // Not found, no replace
             return [];
         }
         return [{
-            count: splitted.length - 1,
+            count: count,
             textNode: node
         }];
     }
@@ -225,4 +227,8 @@ function findTextNodesWithText(text, node) {
         results = results.concat(subResult);
     }
     return results;
+}
+
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

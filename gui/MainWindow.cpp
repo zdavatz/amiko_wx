@@ -1726,34 +1726,42 @@ void MainWindow::OnTitleChanged(wxWebViewEvent& evt)
         return;
     }
     
-    if (msg.size() == 3) {              // Interactions
-        // 2432
-        if (msg[0] == "interactions_cb") {
-            if (msg[1] == "notify_interaction")
-                mInteractionsView->sendInteractionNotice();
-            else if (msg[1] == "delete_all")
-                mInteractionsView->clearMedBasket();
-            else if (msg[1] == "delete_row")
-                mInteractionsView->removeFromMedBasketForKey(msg[2]);
-            
-            // Update med basket
-            mCurrentWebView = kInteractionsCartView;
-            updateInteractionsView();
-        }
+    if (msg.size() == 0) return;
+
+    if (msg[0] == "interactions_cb") {
+        if (msg[1] == "notify_interaction")
+            mInteractionsView->sendInteractionNotice();
+        else if (msg[1] == "delete_all")
+            mInteractionsView->clearMedBasket();
+        else if (msg[1] == "delete_row")
+            mInteractionsView->removeFromMedBasketForKey(msg[2]);
+        
+        // Update med basket
+        mCurrentWebView = kInteractionsCartView;
+        updateInteractionsView();
     }
-    else if (msg.size() == 4) {         // Full text search
-        // 2447
-        // msg[0] is "main_cb"
-        // msg[1] is "display_fachinfo"
-        std::string ean = msg[2];
-        std::string anchor = msg[3];
-        if (ean.length() > 0) {
-            // 2452
-            mCurrentWebView = kExpertInfoView;
-            mMed = mDb->getMediWithRegnr(ean);
-            updateExpertInfoView(anchor);
-            
-            // TODO: moveToHighlight ?
+    if (msg[0] == "main_cb") {
+        // Full text search
+        if (msg[1] == "display_fachinfo" && msg.size() == 4) {
+            // 2447
+            // msg[0] is "main_cb"
+            // msg[1] is "display_fachinfo"
+            std::string ean = msg[2];
+            std::string anchor = msg[3];
+            if (ean.length() > 0) {
+                // 2452
+                mCurrentWebView = kExpertInfoView;
+                mMed = mDb->getMediWithRegnr(ean);
+                updateExpertInfoView(anchor);
+                
+                // TODO: moveToHighlight ?
+            }
+        }
+        if (msg[1] == "in_page_search" && msg.size() == 3) {
+            std::string searchState = msg[2];
+            fiSearchCount->SetLabel(wxString(searchState)); 
+            fiSearchCount->Show();
+            fiSizer->Layout();
         }
     }
 }
@@ -2703,8 +2711,10 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
 #ifdef __WXMAC__
     if (find_text.IsEmpty()) {
         myWebView->RunScript("resetSearchInPage()");
+        fiSearchCount->Hide();
     } else {
         myWebView->RunScript("searchText('" + find_text + "')");
+        fiSearchCount->Show();
     }
 #else
     if (find_text.IsEmpty())
@@ -2733,7 +2743,7 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
     }
     else {
         if (fiSearchCount->IsShown())
-            fiSearchCount->Hide();        
+            fiSearchCount->Hide();
     }
     fiSizer->Layout();
     
