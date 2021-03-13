@@ -27,18 +27,10 @@ function deleteRow(tableID,currentRow) {
     // var myfunc = window.RemoveMeds;
     try {
         if (tableID=="Notify_interaction") {
-            var payload = [];
-            payload.push("[\"" + "interactions_cb" + "\"");
-            payload.push("\"" + "notify_interaction" + "\"");
-            payload.push("\"\"]");
-            document.title = payload;
+            document.title = JSON.stringify(["interactions_cb", "notify_interaction", ""]);
         } else if (tableID=="Delete_all") {
             // window.alert("delete all rows");
-            var payload = [];
-            payload.push("[\"" + "interactions_cb" + "\"");
-            payload.push("\"" + "delete_all" + "\"");
-            payload.push("\"\"]");
-            document.title = payload;
+            document.title = JSON.stringify(["interactions_cb", "delete_all", ""]);
 		} else {
             var table = document.getElementById(tableID);
 			var rowCount = table.rows.length;
@@ -47,11 +39,7 @@ function deleteRow(tableID,currentRow) {
 				var row = table.rows[i];
 				if (row==currentRow.parentNode.parentNode) {
                     // window.alert("delete single row");
-                    var payload = [];
-                    payload.push("[\"" + "interactions_cb" + "\"");
-                    payload.push("\"" + "delete_row" + "\"");
-                    payload.push("\"" + row.cells[1].innerText + "\"]");
-                    document.title = payload;
+                    document.title = JSON.stringify(["interactions_cb", "delete_row", row.cells[1].innerText]);
 					// Delete row
 					table.deleteRow(i);		
 					// Update counters
