@@ -191,6 +191,10 @@ function highlightSearchResult(index) {
         }
         count += match.count;
     }
+    var payload = ["main_cb", "in_page_search", (index + 1) + "/" + totalMatchCount];
+
+    // Change the title to something that allows you to pass information from JS to C++
+    document.title = JSON.stringify(payload);
 }
 
 // pure
