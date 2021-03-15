@@ -2747,13 +2747,13 @@ void MainWindow::OnSearchFiNow( wxCommandEvent& event )
         if (fiSearchCount->IsShown())
             fiSearchCount->Hide();
     }
-    fiSizer->Layout();
     
     if (m_findCount > 0 || find_text.IsEmpty())
         fiSearchField->SetBackgroundColour(fiSearchFieldBGColor);
     else
         fiSearchField->SetBackgroundColour(wxColour(255, 101, 101));
 #endif
+    fiSizer->Layout();
 }
 
 // 1390
