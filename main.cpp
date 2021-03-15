@@ -117,6 +117,7 @@ bool MyApp::OnInit()
 
     MyApp *_this = this;
     wxGetApp().CallAfter([=]{
+        wxMilliSleep(1000);
         MainWindow* frame = new MainWindow(nullptr);
         _this->m_window = frame;
         frame->Show();
