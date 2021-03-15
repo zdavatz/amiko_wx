@@ -115,7 +115,7 @@ function presearchTextInPage(text, node) {
     }
     currentSearchTerm = text;
     matchedTextNodes = findTextNodesWithText(text, node);
-    totalMatchCount = matchedTextNodes.reduce((acc, curr)=> acc + curr.count, 0);
+    totalMatchCount = matchedTextNodes.reduce(function(acc, curr){ return acc + curr.count }, 0);
 }
 
 function resetSearchInPage() {
@@ -162,12 +162,12 @@ function highlightSearchResult(index) {
             var regexp = new RegExp(escapeRegExp(currentSearchTerm), 'gi');
             var match = null;
             var matchIndex = 0;
-            var before, highlightText, after;
+            var before, highlightedText, after;
             while ((match = regexp.exec(node.data)) != null) {
               if (matchIndex === subIndex) {
                 before = node.data.slice(0, match.index);
-                highlightText = match[0];
-                after = node.data.slice(match.index + highlightText.length);
+                highlightedText = match[0];
+                after = node.data.slice(match.index + highlightedText.length);
                 break;
               }
               matchIndex++;
@@ -175,16 +175,16 @@ function highlightSearchResult(index) {
             // Create a new element with text highlighted
             var wrapper = document.createElement('span');
             wrapper.appendChild(document.createTextNode(before));
-            var highlightedNode = document.createTextNode(highlightText);
             var highlightedSpan = document.createElement('span');
-            highlightedSpan.innerText = currentSearchTerm;
-            highlightedSpan.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color-highlight');
+            highlightedSpan.innerText = highlightedText;
+            highlightedSpan.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color-highlight') || 'yellow';
             highlightedSpan.className = 'mark';
             wrapper.appendChild(highlightedSpan);
             wrapper.appendChild(document.createTextNode(after));
-            node.replaceWith(wrapper);
+            // node.replaceWith(wrapper);
+            node.parentNode.replaceChild(wrapper, node);
             restoreCurrentHighlighedText = function() {
-                wrapper.replaceWith(node);
+                wrapper.parentNode.replaceChild(node, wrapper);
             }
             wrapper.scrollIntoView(true);
             break;
