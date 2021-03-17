@@ -26,12 +26,15 @@ public:
 
     DECLARE_EVENT_TABLE()
     void OnPrefs(wxCommandEvent& evt);
+    void OnTimer(wxTimerEvent& event);
     
 protected:
     wxLanguage m_lang;  // language specified by user
     wxLocale m_locale;  // locale we'll be using
     MainWindow *m_window;
     SplashWindow *m_splash;
+
+    wxTimer *m_timer;
 
     virtual wxAppTraits *CreateTraits() { return new MyAppTraits; }
 };
