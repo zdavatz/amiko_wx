@@ -158,9 +158,39 @@ Medication * DBAdapter::getMediWithRegnr(wxString regnr)
     return cursorToFullMedInfo(cursor);
 }
 
+MEDICATION_RESULTS DBAdapter::getAll()
+{
+    if (cachedAll.size()) {
+        return cachedAll;
+    }
+    wxString query = wxString::Format("select %s from %s",
+            SHORT_TABLE,
+            DATABASE_TABLE);
+
+#ifdef __linux__
+    if (!mySqliteDb)  // Issue #8 null in Linux
+    {
+        std::cerr << __PRETTY_FUNCTION__ << " Line " << __LINE__ << std::endl;
+        MEDICATION_RESULTS temp;
+        return temp;
+    }
+    else
+#endif
+    {
+        ALL_SQL_RESULTS results = mySqliteDb->performQuery(query);
+        MEDICATION_RESULTS r = extractShortMedInfoFrom(results);
+        cachedAll = r;
+        return r;
+    }
+}
+
 // 169
 MEDICATION_RESULTS DBAdapter::searchTitle(wxString title)
 {
+    if (title.IsEmpty()) {
+        std::clog << "getAll" << std::endl;
+        return getAll();
+    }
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",
             SHORT_TABLE,
             DATABASE_TABLE,

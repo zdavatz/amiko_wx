@@ -176,7 +176,7 @@ private:
     Medication *csvMedication;
 
     // .m 149
-    Medication *mMed;
+    Medication *mMed = nullptr;
     DBAdapter *mDb;
     InteractionsAdapter *mInteractions;
     InteractionsHtmlView *mInteractionsView;

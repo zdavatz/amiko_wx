@@ -994,16 +994,6 @@ void MainWindow::switchTabs(int item)
             myTableView->SetItemCount(searchResults.size()); // reloadData
             myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
             myTableView->Refresh();
-            
-#ifndef WITH_JS_BRIDGE
-            {
-            // Workaround new to Amiko-wx (TBC)
-            // Purpose: define mMed and prevent crash in updateExpertInfoView()
-            // Code taken from createJSBridge()
-            wxString ean = wxEmptyString; // TODO: msg[2];
-            mMed = mDb->getMediWithRegnr(ean);
-            }
-#endif
 
             // Switch tab view
             updateExpertInfoView(wxEmptyString);

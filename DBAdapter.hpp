@@ -23,6 +23,7 @@ public:
     bool openDatabase(wxString dbName);
     void closeDatabase();
 
+    MEDICATION_RESULTS getAll();
     MEDICATION_RESULTS searchTitle(wxString title);
     MEDICATION_RESULTS searchAuthor(wxString author);
     MEDICATION_RESULTS searchATCCode(wxString atccode);
@@ -42,4 +43,5 @@ public:
 private:
      
     SQLiteDatabase *mySqliteDb;
+    MEDICATION_RESULTS cachedAll;
 };
