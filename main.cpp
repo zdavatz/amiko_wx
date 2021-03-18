@@ -41,8 +41,15 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+enum
+{ 
+    Splash_Reset = wxID_HIGHEST,
+    Splash_Timer,
+};
+
 BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_MENU(wxID_PREFERENCES, MyApp::OnPrefs)
+EVT_TIMER(Splash_Timer, MyApp::OnTimer)
 END_EVENT_TABLE()
 
 wxConfigBase *MyAppTraits::CreateConfig () {
@@ -115,17 +122,22 @@ bool MyApp::OnInit()
     
     wxFileSystem::AddHandler(new wxZipFSHandler);
 
-    MyApp *_this = this;
-    wxGetApp().CallAfter([=]{
-        wxMilliSleep(1000);
-        MainWindow* frame = new MainWindow(nullptr);
-        _this->m_window = frame;
-        frame->Show();
-        _this->SetTopWindow( frame );
-        _this->m_splash->Close(true);
-        _this->m_splash = nullptr;
-    });
+    static const int INTERVAL = 1000; // milliseconds
+    m_timer = new wxTimer(this, Splash_Timer);
+    // m_timer->Start(INTERVAL);
+    m_timer->StartOnce(INTERVAL);
+
     return true;
+}
+
+void MyApp::OnTimer(wxTimerEvent& event) {
+    MainWindow* frame = new MainWindow(nullptr);
+    this->m_window = frame;
+    frame->Show();
+    this->SetTopWindow( frame );
+    this->m_splash->Close(true);
+    this->m_splash->Destroy();
+    this->m_splash = nullptr;
 }
 
 void MyApp::OnPrefs(wxCommandEvent& evt)
