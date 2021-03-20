@@ -302,14 +302,16 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
 
     dc->DrawText(myPlaceDateField->GetLabelText(), xPos, yPos);
     
-    //wxSize szSignature(90*mmToLogical, 40*mmToLogical);
-    wxSize szSignature(rightMarginLogical - (xPos+xOffset), 40*mmToLogical);
-    wxPoint ptSignature(xPos+xOffset, yPos);
     wxImage img = mySignView->getSignaturePNG();
+    int maxWidth = rightMarginLogical - (xPos+xOffset);
+    int maxHeight = 40*mmToLogical;
+    float scale = fmin(maxWidth / (img.GetWidth()/1.0f), maxHeight / (img.GetHeight()/1.0f));
+    wxSize szSignature(img.GetWidth() * scale, img.GetHeight() * scale);
+    wxPoint ptSignature(xPos+xOffset, yPos);
     if (img.IsOk()) {
         //img.Resize(sz, wxPoint(0,0)); // add border or crop
         //img = img.Scale(sz.x, sz.y, wxIMAGE_QUALITY_HIGH);
-        img.Rescale(szSignature.x, szSignature.y, wxIMAGE_QUALITY_HIGH);
+        img.Rescale(szSignature.GetWidth(), szSignature.GetHeight(), wxIMAGE_QUALITY_HIGH);
         wxBitmap m_bitmap = wxBitmap(img);
         if (m_bitmap.IsOk())
             dc->DrawBitmap( m_bitmap, ptSignature.x, ptSignature.y );
@@ -318,10 +320,10 @@ void MainWindow::OnDraw_Prescription(wxPrintout *printout,
     szSignature.IncBy(3);
     dc->SetBrush(*wxTRANSPARENT_BRUSH);
     dc->SetPen(*wxBLACK_PEN);
-    dc->DrawRectangle(ptSignature.x, ptSignature.y, szSignature.x, szSignature.y);
+    dc->DrawRectangle(ptSignature.x, ptSignature.y, szSignature.GetWidth(), szSignature.GetHeight());
 #endif
 
-    yPos += szSignature.y;
+    yPos += szSignature.GetHeight();
     yPos += lineHeight;
 
 #ifndef NDEBUG
