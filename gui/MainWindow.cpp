@@ -702,7 +702,7 @@ void MainWindow::setOperatorID()
     if (wxFileName::Exists(filePath)) {
         wxImage image;
         if (image.LoadFile(filePath, wxBITMAP_TYPE_PNG)) {
-            mySignView->SetBitmap( wxBitmap(image));
+            mySignView->SetBitmap(wxBitmap(image));
             mySignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
         }
         else
@@ -981,11 +981,11 @@ void MainWindow::switchTabs(int item)
             mUsedDatabase = kdbt_Favorites;
             mSearchInteractions = false;
             mPrescriptionMode = false;
-            
+
             // 1826
             searchResults = retrieveAllFavorites();
             searchResultsFT = retrieveAllFTFavorites();
-            
+
             // 1828
             // Update tableview
             updateTableView();
