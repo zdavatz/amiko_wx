@@ -516,27 +516,13 @@ void MainWindow::updatePrescriptionHistory()
         return;
     }
 
-    // 750
-    // Extract section IDs
-    if (!mMed)
-        return;
-    
-    // not in amiko-osk
-    if (!mPatientSheet)
+    if (!mPatientSheet) {
         mPatientSheet = new PatientSheet(this);
-
-    if (mMed->sectionIds) {
-        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionURLsForPatient( mPatientSheet->retrievePatient());
-        mListOfSectionIds = listOfPrescriptions;  // array of full paths
     }
 
-    // 756
-    // Extract section titles
-    if (mMed->sectionTitles) {
-        Patient *p = mPatientSheet->retrievePatient();
-        wxArrayString listOfPrescriptions = mPrescriptionAdapter->listOfPrescriptionsForPatient(p);
-        mListOfSectionTitles = listOfPrescriptions; // array of just the basenames
-    }
+    mListOfSectionIds = mPrescriptionAdapter->listOfPrescriptionURLsForPatient( mPatientSheet->retrievePatient());  // array of full paths
+    Patient *p = mPatientSheet->retrievePatient();
+    mListOfSectionTitles = mPrescriptionAdapter->listOfPrescriptionsForPatient(p); // array of just the basenames
 
      mySectionTitles_reloadData(); // reloadData
 }
