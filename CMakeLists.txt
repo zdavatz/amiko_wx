@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project (AmiKo-wx
-	VERSION "0.1.278")
+	VERSION "0.1.279")
 
 SET(CMAKE_CXX_STANDARD 17)
 
