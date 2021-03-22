@@ -483,12 +483,9 @@ void PatientSheet::OnSavePatient( wxCommandEvent& event )
         return;
     }
 
-    // 420
-    if (mPatientUUID.length() > 0)
-        patient->uniqueId = mPatientUUID;
+    patient->uniqueId = patient->generateUniqueID();
 
-    if (mPatientDb->getPatientWithUniqueID(mPatientUUID) == nullptr) {
-        // Not found in DB
+    if (mPatientDb->getPatientWithUniqueID(patient->uniqueId) == nullptr /* Not found in DB*/) {
         mPatientUUID = mPatientDb->addEntry(patient);
         friendlyNoteAdded();
     }
