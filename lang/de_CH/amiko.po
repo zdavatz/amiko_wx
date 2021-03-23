@@ -448,3 +448,12 @@ msgstr "männlich"
 
 msgid "unknown"
 msgstr "unbekannt"
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "Already up-to-date"
+msgstr "Bereits aktuell"
+
+msgid "Checking for update"
+msgstr "Prüfen auf Update"

@@ -372,10 +372,12 @@ class SyncPreferencesBase : public wxDialog
 
 	protected:
 		wxCheckBox* syncCheckbox;
+		wxButton* mUpdateButton;
 		wxButton* closeButton;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnCheckboxClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnUpdateClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCloseClicked( wxCommandEvent& event ) { event.Skip(); }
 
 
