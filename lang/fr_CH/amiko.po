@@ -465,3 +465,12 @@ msgstr "rezept"
 
 msgid "unknown"
 msgstr "inconnu"
+
+msgid "Update"
+msgstr "Mise à jour"
+
+msgid "Already up-to-date"
+msgstr "Déjà à jour"
+
+msgid "Checking for update"
+msgstr "Vérification de la mise à jour"
