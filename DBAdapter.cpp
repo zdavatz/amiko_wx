@@ -188,7 +188,6 @@ MEDICATION_RESULTS DBAdapter::getAll()
 MEDICATION_RESULTS DBAdapter::searchTitle(wxString title)
 {
     if (title.IsEmpty()) {
-        std::clog << "getAll" << std::endl;
         return getAll();
     }
     wxString query = wxString::Format("select %s from %s where %s like '%s%%' or %s like '%%%s%%'",

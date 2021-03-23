@@ -25,7 +25,6 @@
 #include "DefaultsController.hpp"
 #include "gui/PreferencesWindow.hpp"
 
-// IMPLEMENT_APP(MyApp)
 IMPLEMENT_APP_NO_MAIN(MyApp);
 IMPLEMENT_WX_THEME_SUPPORT;
 

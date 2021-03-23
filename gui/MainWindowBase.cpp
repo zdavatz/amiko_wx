@@ -885,6 +885,9 @@ SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const
 	syncCheckbox = new wxCheckBox( this, wxID_ANY, _("Sync with Google Drive"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer26->Add( syncCheckbox, 0, wxALL, 5 );
 
+	mUpdateButton = new wxButton( this, wxID_ANY, _("Update"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer26->Add( mUpdateButton, 0, wxALL, 5 );
+
 
 	bSizer26->Add( 0, 20, 1, wxEXPAND, 5 );
 
@@ -900,6 +903,7 @@ SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const
 
 	// Connect Events
 	syncCheckbox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
+	mUpdateButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnUpdateClick ), NULL, this );
 	closeButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
 }
 
@@ -907,6 +911,7 @@ SyncPreferencesBase::~SyncPreferencesBase()
 {
 	// Disconnect Events
 	syncCheckbox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
+	mUpdateButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnUpdateClick ), NULL, this );
 	closeButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
 
 }
