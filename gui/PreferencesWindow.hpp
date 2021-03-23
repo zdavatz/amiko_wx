@@ -18,6 +18,8 @@ public:
 private:
     void OnCheckboxClick(wxCommandEvent& event);
     void OnCloseClicked( wxCommandEvent& event );
+    void OnUpdateClick( wxCommandEvent& event );
+    void CheckForUpdate();
 
     GoogleAuthSheet *googleAuthSheet;
 };
