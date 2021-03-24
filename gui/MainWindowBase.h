@@ -372,12 +372,10 @@ class SyncPreferencesBase : public wxDialog
 
 	protected:
 		wxCheckBox* syncCheckbox;
-		wxButton* mUpdateButton;
 		wxButton* closeButton;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnCheckboxClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnUpdateClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCloseClicked( wxCommandEvent& event ) { event.Skip(); }
 
 
@@ -385,6 +383,31 @@ class SyncPreferencesBase : public wxDialog
 
 		SyncPreferencesBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
 		~SyncPreferencesBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class AboutDialogBase
+///////////////////////////////////////////////////////////////////////////////
+class AboutDialogBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxStaticBitmap* mLogoBitmap;
+		wxStaticText* mVersionLabel;
+		wxButton* mUpdateButton;
+		wxButton* mCloseButton;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnUpdateClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCloseClick( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		AboutDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 298,213 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~AboutDialogBase();
 
 };
 

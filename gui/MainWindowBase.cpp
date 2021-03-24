@@ -885,9 +885,6 @@ SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const
 	syncCheckbox = new wxCheckBox( this, wxID_ANY, _("Sync with Google Drive"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer26->Add( syncCheckbox, 0, wxALL, 5 );
 
-	mUpdateButton = new wxButton( this, wxID_ANY, _("Update"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer26->Add( mUpdateButton, 0, wxALL, 5 );
-
 
 	bSizer26->Add( 0, 20, 1, wxEXPAND, 5 );
 
@@ -903,7 +900,6 @@ SyncPreferencesBase::SyncPreferencesBase( wxWindow* parent, wxWindowID id, const
 
 	// Connect Events
 	syncCheckbox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
-	mUpdateButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnUpdateClick ), NULL, this );
 	closeButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
 }
 
@@ -911,7 +907,59 @@ SyncPreferencesBase::~SyncPreferencesBase()
 {
 	// Disconnect Events
 	syncCheckbox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCheckboxClick ), NULL, this );
-	mUpdateButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnUpdateClick ), NULL, this );
 	closeButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SyncPreferencesBase::OnCloseClicked ), NULL, this );
+
+}
+
+AboutDialogBase::AboutDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* bSizer28;
+	bSizer28 = new wxBoxSizer( wxHORIZONTAL );
+
+	mLogoBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap( AmiKo_xpm ), wxDefaultPosition, wxSize( 60,60 ), 0 );
+	mLogoBitmap->SetMinSize( wxSize( 60,60 ) );
+
+	bSizer28->Add( mLogoBitmap, 0, wxALL, 5 );
+
+	wxBoxSizer* bSizer29;
+	bSizer29 = new wxBoxSizer( wxVERTICAL );
+
+	mVersionLabel = new wxStaticText( this, wxID_ANY, _("VERSION TEXT"), wxDefaultPosition, wxDefaultSize, 0 );
+	mVersionLabel->Wrap( -1 );
+	bSizer29->Add( mVersionLabel, 0, wxALL, 5 );
+
+
+	bSizer29->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	mUpdateButton = new wxButton( this, wxID_ANY, _("Update"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer29->Add( mUpdateButton, 0, wxALL, 5 );
+
+
+	bSizer29->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	mCloseButton = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer29->Add( mCloseButton, 0, wxALIGN_RIGHT|wxALL, 5 );
+
+
+	bSizer28->Add( bSizer29, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( bSizer28 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	mUpdateButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AboutDialogBase::OnUpdateClick ), NULL, this );
+	mCloseButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AboutDialogBase::OnCloseClick ), NULL, this );
+}
+
+AboutDialogBase::~AboutDialogBase()
+{
+	// Disconnect Events
+	mUpdateButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AboutDialogBase::OnUpdateClick ), NULL, this );
+	mCloseButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AboutDialogBase::OnCloseClick ), NULL, this );
 
 }
