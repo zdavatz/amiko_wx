@@ -46,6 +46,7 @@
 #include "config.h"
 #include "SignatureView.hpp"
 #include "DefaultsController.hpp"
+#include "AboutDialog.h"
 
 #include "HealthCard.hpp"
 #include "PatientDBAdapter.hpp"
@@ -3037,12 +3038,8 @@ void MainWindow::OnPrintDocument( wxCommandEvent& event )
 // 1537
 void MainWindow::OnShowAboutPanel( wxCommandEvent& event )
 {
-    wxMessageBox(wxString::Format("AmiKo Desitin wx build %s\n%s\n%s\nSQLite %s",
-                              PROJECT_VER,
-                              wxGetOsDescription(),
-                              wxVERSION_STRING,
-                              SQLITE_VERSION),
-    wxString(APP_NAME), wxOK | wxICON_INFORMATION);
+    auto dialog = new AboutDialog(this);
+    dialog->ShowModal();
 }
 
 // 495

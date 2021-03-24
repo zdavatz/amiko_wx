@@ -123,6 +123,7 @@ set( SRCS_GUI
     gui/MainWindowBase.cpp gui/MainWindowBase.h
     gui/MainWindow.cpp gui/MainWindow.h
     gui/SplashWindow.cpp gui/SplashWindow.h
+    gui/AboutDialog.cpp gui/AboutDialog.h
 		)
     
 set( SRCS_SQL
