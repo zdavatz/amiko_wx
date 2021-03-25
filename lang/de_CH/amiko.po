@@ -457,3 +457,9 @@ msgstr "Bereits aktuell"
 
 msgid "Checking for update"
 msgstr "Prüfen auf Update"
+
+msgid "No Database"
+msgstr "Keine Datenbank"
+
+msgid "Do you want to download the database?"
+msgstr "Wollen Sie die Datenbank runterladen?"

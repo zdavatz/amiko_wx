@@ -6,6 +6,8 @@
 #include <thread>
 
 #include <wx/wx.h>
+#include <wx/app.h>
+#include "main.hpp"
 #include <wx/stdpaths.h>
 #include <wx/busyinfo.h>
 
@@ -151,8 +153,6 @@ MainWindow::MainWindow( wxWindow* parent )
     SetTitle(APP_NAME + wxString(" Desitin"));
     const wxEventTable *et = GetEventTable();
 
-    //fadeInAndShow(); // Too early here because we are not doing the fade-in (yet)
-
     // 256
     // Register applications defaults
     // TODO: if necessary 'DBLastUpdate'
@@ -165,28 +165,34 @@ MainWindow::MainWindow( wxWindow* parent )
     // 275
     // Open AIPS database (SQLite file)
     bool ok = openSQLiteDatabase();
-#ifndef NDEBUG
-    if (ok)
-        std::cerr << "Number of records in AIPS database: "
-        << mDb->getNumRecords() << std::endl;
-#endif
+    if (ok) {
+        std::cerr << "Number of records in AIPS database: " << mDb->getNumRecords() << std::endl;
+    } else {
+        wxMessageDialog dialog(this,
+                      _("Do you want to download the database?"),
+                      _("No Database"),
+                      wxYES_DEFAULT | wxYES_NO | wxICON_WARNING);
+        int result = dialog.ShowModal();
+        if (result == wxID_YES) {
+            wxGetApp().CallAfter([=]{
+                wxCommandEvent x;
+                OnUpdateAipsDatabase(x);
+            });
+        }
+    }
 
     // Open full-text database (SQLite file)
     ok = openFullTextDatabase();
-#ifndef NDEBUG
-    if (ok)
-        std::cerr << "Number of records in fulltext database: "
-        << mFullTextDb->getNumRecords() << std::endl;
-#endif
+    if (ok) {
+        std::cerr << "Number of records in fulltext database: " << mFullTextDb->getNumRecords() << std::endl;
+    }
 
     // 286
     // Open drug interactions (CSV file)
     ok = openInteractionsCsvFile();
-#ifndef NDEBUG
-    if (ok)
-        std::cerr << "Number of records in interaction file: "
-        << mInteractions->getNumInteractions() << std::endl;
-#endif
+    if (ok) {
+        std::cerr << "Number of records in interaction file: " << mInteractions->getNumInteractions() << std::endl;
+    }
 
     // Issue #8
     // TBC: it's not in the call stack when running on Linux
