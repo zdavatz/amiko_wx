@@ -395,6 +395,7 @@ class AboutDialogBase : public wxDialog
 
 	protected:
 		wxStaticBitmap* mLogoBitmap;
+		wxStaticText* m_staticText29;
 		wxStaticText* mVersionLabel;
 		wxButton* mUpdateButton;
 		wxButton* mCloseButton;
@@ -406,7 +407,7 @@ class AboutDialogBase : public wxDialog
 
 	public:
 
-		AboutDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 298,213 ), long style = wxDEFAULT_DIALOG_STYLE );
+		AboutDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,171 ), long style = wxCAPTION );
 		~AboutDialogBase();
 
 };
