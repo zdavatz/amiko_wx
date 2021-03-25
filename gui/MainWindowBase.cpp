@@ -918,32 +918,66 @@ AboutDialogBase::AboutDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer28;
 	bSizer28 = new wxBoxSizer( wxHORIZONTAL );
 
-	mLogoBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap( AmiKo_xpm ), wxDefaultPosition, wxSize( 60,60 ), 0 );
-	mLogoBitmap->SetMinSize( wxSize( 60,60 ) );
 
-	bSizer28->Add( mLogoBitmap, 0, wxALL, 5 );
+	bSizer28->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer32;
+	bSizer32 = new wxBoxSizer( wxVERTICAL );
+
+	bSizer32->SetMinSize( wxSize( 410,-1 ) );
+
+	bSizer32->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer31;
+	bSizer31 = new wxBoxSizer( wxHORIZONTAL );
+
+	bSizer31->SetMinSize( wxSize( 100,100 ) );
+	mLogoBitmap = new wxStaticBitmap( this, wxID_ANY, wxBitmap( AmiKo_xpm ), wxPoint( 30,30 ), wxSize( 64,64 ), 0 );
+	mLogoBitmap->SetMinSize( wxSize( 64,64 ) );
+
+	bSizer31->Add( mLogoBitmap, 0, wxALL, 5 );
 
 	wxBoxSizer* bSizer29;
 	bSizer29 = new wxBoxSizer( wxVERTICAL );
 
-	mVersionLabel = new wxStaticText( this, wxID_ANY, _("VERSION TEXT"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText29 = new wxStaticText( this, wxID_ANY, _("AmiKo"), wxDefaultPosition, wxSize( 100,-1 ), 0 );
+	m_staticText29->Wrap( -1 );
+	m_staticText29->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
+
+	bSizer29->Add( m_staticText29, 0, wxALL, 5 );
+
+	mVersionLabel = new wxStaticText( this, wxID_ANY, _("AmiKo version xxx\nMac OS\nwx\nSqlite"), wxDefaultPosition, wxDefaultSize, 0 );
 	mVersionLabel->Wrap( -1 );
+	mVersionLabel->SetFont( wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
+
 	bSizer29->Add( mVersionLabel, 0, wxALL, 5 );
 
+	wxBoxSizer* bSizer321;
+	bSizer321 = new wxBoxSizer( wxHORIZONTAL );
 
-	bSizer29->Add( 0, 0, 1, wxEXPAND, 5 );
+	mUpdateButton = new wxButton( this, wxID_ANY, _("Update"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	bSizer321->Add( mUpdateButton, 0, wxALL, 5 );
 
-	mUpdateButton = new wxButton( this, wxID_ANY, _("Update"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer29->Add( mUpdateButton, 0, wxALL, 5 );
-
-
-	bSizer29->Add( 0, 0, 1, wxEXPAND, 5 );
-
-	mCloseButton = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer29->Add( mCloseButton, 0, wxALIGN_RIGHT|wxALL, 5 );
+	mCloseButton = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition, wxSize( -1,20 ), 0 );
+	bSizer321->Add( mCloseButton, 0, wxALL, 5 );
 
 
-	bSizer28->Add( bSizer29, 1, wxEXPAND, 5 );
+	bSizer29->Add( bSizer321, 1, wxALIGN_RIGHT, 5 );
+
+
+	bSizer31->Add( bSizer29, 1, wxEXPAND, 5 );
+
+
+	bSizer32->Add( bSizer31, 1, wxEXPAND, 5 );
+
+
+	bSizer32->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+	bSizer28->Add( bSizer32, 1, wxEXPAND, 5 );
+
+
+	bSizer28->Add( 0, 0, 1, wxEXPAND, 5 );
 
 
 	this->SetSizer( bSizer28 );

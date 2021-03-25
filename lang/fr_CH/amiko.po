@@ -474,3 +474,9 @@ msgstr "Déjà à jour"
 
 msgid "Checking for update"
 msgstr "Vérification de la mise à jour"
+
+msgid "No Database"
+msgstr "Pas de base de données"
+
+msgid "Do you want to download the database?"
+msgstr "Voulez-vous télécharger la base de données?"

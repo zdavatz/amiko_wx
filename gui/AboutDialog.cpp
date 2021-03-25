@@ -27,8 +27,6 @@ AboutDialogBase( parent )
     mUpdateButton->Enable(false);
     mUpdateButton->SetLabel(_("Checking for update"));
 
-    mLogoBitmap->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
-    
     wxGetApp().CallAfter([=]{
         CheckForUpdate();
     });
