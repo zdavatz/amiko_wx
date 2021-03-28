@@ -308,6 +308,11 @@ MainWindow::MainWindow( wxWindow* parent )
     GoogleSyncManager::Instance()->startBackgroundSync();
     GoogleSyncManager::Instance()->amkUpdatedHandler = this;
 
+
+    if (searchResults.size() > 0) {
+        cellProcessing(0);
+    }
+
 #ifndef __APPLE__
     // Issue #36
     m_menuFile->AppendSeparator();
