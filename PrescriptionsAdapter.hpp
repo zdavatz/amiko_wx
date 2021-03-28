@@ -9,6 +9,7 @@
 #include <string>
 
 #include <wx/url.h>
+#include <wx/filename.h>
 
 class Patient;
 class PrescriptionItem;
@@ -25,6 +26,7 @@ public:
     wxString loadPrescriptionFromFile(wxString filePath);
     wxURL savePrescriptionForPatient_withUniqueHash_andOverwrite(Patient *p, wxString hash, bool overwrite);
     void deletePrescriptionWithName_forPatient(wxString name, Patient *p);
+    wxFileName amkPathForPatient(Patient *p);
     
     // 30
     std::vector<PrescriptionItem *> cart;

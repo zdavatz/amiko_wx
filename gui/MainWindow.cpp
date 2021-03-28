@@ -797,6 +797,7 @@ void MainWindow::loadPrescription_andRefreshHistory(wxString filename, bool refr
     // Set patient found in prescription
     Patient *p = mPrescriptionAdapter->patient;
     if (p) {
+        p->uniqueId = p->generateUniqueID();
         wxString patientHash = p->uniqueId;
 
         if (!mPatientSheet)
