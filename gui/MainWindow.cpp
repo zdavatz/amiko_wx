@@ -10,6 +10,7 @@
 #include "main.hpp"
 #include <wx/stdpaths.h>
 #include <wx/busyinfo.h>
+#include <wx/filefn.h>
 
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
@@ -780,7 +781,22 @@ void MainWindow::OnNavigationRequest(wxWebViewEvent& evt)
 #endif
 
     auto url = evt.GetURL();
-    if (url.Contains(".pdf")) {
+    if (url.StartsWith("http://file-drop/")) {
+        evt.Veto();
+
+        url.Replace("http://file-drop/", "");
+        wxArrayString parts = wxSplit(url, '/');
+        wxString filename = parts[0];
+        wxString fileContent = parts[1];
+
+        wxFileName tempFileName = wxFileName::CreateTempFileName("amiko-amk");
+        wxFile *file = new wxFile(tempFileName.GetFullPath(), wxFile::write);
+        file->Write(fileContent);
+        file->Close();
+
+        OnDropFilesAtPath(tempFileName.GetFullPath());
+        wxRemoveFile(tempFileName.GetFullPath());
+    } else if (url.Contains(".pdf")) {
         wxLaunchDefaultBrowser(url);
         // If we don't want to handle navigation then veto the event and navigation
         // will not take place.
@@ -3532,11 +3548,19 @@ void MainWindow::OnDropFiles(wxDropFilesEvent& event)
 {
     if (event.GetNumberOfFiles() < 1)
         return;
+    wxString filePath = event.GetFiles()[0];
+    OnDropFilesAtPath(filePath);
+}
+void MainWindow::OnDropFilesAtPath(wxString filePath) {
+    loadPrescription_andRefreshHistory(filePath, true);
 
-    // TODO: check file extension == amk
-    
-    // 2900
-    loadPrescription_andRefreshHistory(event.GetFiles()[0], true);
+    Patient *p = mPrescriptionAdapter->patient;
+    if (p) {
+        wxFileName amkPath = mPrescriptionAdapter->amkPathForPatient(p);
+        amkPath.SetFullName(wxFileName(filePath).GetFullName());
+        wxCopyFile(filePath, amkPath.GetFullPath());
+        loadPrescription_andRefreshHistory(amkPath.GetFullPath(), true);
+    }
 }
 
 void MainWindow::OnAmkFilesUpdated(wxCommandEvent& event) {
