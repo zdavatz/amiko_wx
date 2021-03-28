@@ -121,6 +121,22 @@ void PrescriptionsAdapter::deletePrescriptionWithName_forPatient(wxString name, 
     GoogleSyncManager::Instance()->requestSync();
 }
 
+wxFileName PrescriptionsAdapter::amkPathForPatient(Patient *p) {
+    // Check if patient has already a directory, if not create one
+    wxFileName patientDir(UTI::documentsDirectory(), wxEmptyString);
+
+    patientDir.AppendDir("amk");
+    if (!wxDirExists(patientDir.GetFullPath())) {
+        wxMkdir(patientDir.GetFullPath());
+    }
+    
+    patientDir.AppendDir(p->uniqueId);
+    if (!wxDirExists(patientDir.GetFullPath())) {
+        wxMkdir(patientDir.GetFullPath());
+    }
+    return patientDir;
+}
+
 // 160
 // It will in any case create a new file
 // if the overwrite flag is set, delete the original file
@@ -218,15 +234,57 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
         nlohmann::json json;
         i >> json;
 
-        operatorDict[KEY_AMK_DOC_TITLE] = json[DOC_JSON_TITLE].get<std::string>();
-        operatorDict[KEY_AMK_DOC_SURNAME] = json[DOC_JSON_SURNAME].get<std::string>();
-        operatorDict[KEY_AMK_DOC_NAME] = json[DOC_JSON_NAME].get<std::string>();
-        operatorDict[KEY_AMK_DOC_ADDRESS] = json[DOC_JSON_ADDRESS].get<std::string>();
-        operatorDict[KEY_AMK_DOC_ZIP] = json[DOC_JSON_ZIP].get<std::string>();
-        operatorDict[KEY_AMK_DOC_CITY] = json[DOC_JSON_CITY].get<std::string>();
-        operatorDict[KEY_AMK_DOC_PHONE] = json[DOC_JSON_PHONE].get<std::string>();
-        operatorDict[KEY_AMK_DOC_EMAIL] = json[DOC_JSON_EMAIL].get<std::string>();
-        cityString = json[DOC_JSON_CITY].get<std::string>();
+        try {
+            operatorDict[KEY_AMK_DOC_TITLE] = json[DOC_JSON_TITLE].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_TITLE] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_SURNAME] = json[DOC_JSON_SURNAME].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_SURNAME] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_NAME] = json[DOC_JSON_NAME].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_NAME] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_ADDRESS] = json[DOC_JSON_ADDRESS].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_ADDRESS] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_ZIP] = json[DOC_JSON_ZIP].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_ZIP] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_CITY] = json[DOC_JSON_CITY].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_CITY] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_PHONE] = json[DOC_JSON_PHONE].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_PHONE] = "";
+        }
+        try {
+            operatorDict[KEY_AMK_DOC_EMAIL] = json[DOC_JSON_EMAIL].get<std::string>();
+        } catch (const std::exception &e) {
+            operatorDict[KEY_AMK_DOC_EMAIL] = "";
+        }
+        try {
+            cityString = json[DOC_JSON_CITY].get<std::string>();
+        } catch (const std::exception &e) {
+            cityString = "";
+        }
+        wxString encodedImgStr;
+        wxString pngFilePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+        if (pngFilePath.length() > 0) {
+            std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO: encode signature " << pngFilePath << " as base64" << std::endl;
+        }
+        operatorDict[KEY_AMK_DOC_SIGNATURE] = encodedImgStr;
     } catch (const std::exception& e) {
         // Just in case the file is not initialized
     }
@@ -234,23 +292,6 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
     placeDate = wxString::Format("%s, %s",
                  cityString,
                  UTI::prettyTime());
-    
-    wxString encodedImgStr;
-    wxString pngFilePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-    if (pngFilePath.length() > 0) {
-#if 1
-        std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__
-        << " TODO: encode signature " << pngFilePath << " as base64" << std::endl;
-#else
-        // 245
-        NSImage *img = [[NSImage alloc] initWithContentsOfFile:pngFilePath];
-        NSData *imgData = [img TIFFRepresentation];
-        NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:imgData];
-        NSData *data = [imageRep representationUsingType:NSPNGFileType properties:@{}];
-        encodedImgStr = [data base64Encoding];
-#endif
-    }
-    operatorDict[KEY_AMK_DOC_SIGNATURE] = encodedImgStr;
 
     // 253
     nlohmann::json prescription = nlohmann::json::array();

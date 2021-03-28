@@ -4,21 +4,38 @@
  All main JS callbacks
  */
 
-/**
- */
-function setupWebViewJavascriptBridge(callback) {
-    if (window.WebViewJavascriptBridge) {
-        return callback(WebViewJavascriptBridge);
+document.ondrop = function(ev) {
+    ev.preventDefault();
+    event.stopPropagation();
+    var theFile = null;
+    if (ev.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+            // If dropped items aren't files, reject them
+            if (ev.dataTransfer.items[i].kind === 'file') {
+                var file = ev.dataTransfer.items[i].getAsFile();
+                theFile = file;
+                break;
+            }
+        }
+    } else {
+        if (ev.dataTransfer.files.length > 0) {
+            theFile = ev.dataTransfer.files[0];
+        }
     }
-    if (window.WVJBCallbacks) {
-        return window.WVJBCallbacks.push(callback);
+    if (theFile) {
+        var reader = new FileReader();
+        reader.readAsText(theFile, "UTF-8");
+        reader.onload = function (evt) {
+            // file content is too big we cannot pass it via title
+            location.href = "http://file-drop/" + theFile.name + "/" + evt.target.result;
+        }
     }
-    window.WVJBCallbacks = [callback];
-    var WVJBIframe = document.createElement('iframe');
-    WVJBIframe.style.display = 'none';
-    WVJBIframe.src = 'https://__bridge_loaded__';
-    document.documentElement.appendChild(WVJBIframe);
-    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0);
+}
+
+document.ondragover = function(ev) {
+    ev.preventDefault();
+    event.stopPropagation();
 }
 
 /**
