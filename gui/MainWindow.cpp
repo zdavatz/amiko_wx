@@ -619,8 +619,8 @@ void MainWindow::resetDataInTableView()
     if (searchResults.size()>0) {
         updateTableView();
 
-        myTableView->SetItemCount(searchResults.size()); // reloadData
-        if (searchResults.size() > 0)
+        myTableView->SetItemCount(myTableView->searchRes.size()); // reloadData
+        if (myTableView->searchRes.size() > 0)
             myTableView->SetSelection(0); // scrollRectToVisible
         else
             myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
@@ -980,7 +980,7 @@ void MainWindow::switchTabs(int item)
             updateTableView();
             
             // 1791
-            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->SetItemCount(myTableView->searchRes.size()); // reloadData
             myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
             myTableView->Refresh();
 
@@ -1006,7 +1006,7 @@ void MainWindow::switchTabs(int item)
             updateTableView();
 
             // 1831
-            myTableView->SetItemCount(searchResults.size()); // reloadData
+            myTableView->SetItemCount(myTableView->searchRes.size()); // reloadData
             myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
             myTableView->Refresh();
 
@@ -1267,25 +1267,20 @@ void MainWindow::searchAnyDatabasesWith(wxString searchQuery)
     std::clog << __FUNCTION__ << ", searchQuery <" << searchQuery << ">"  << std::endl;
 #endif
 
-    if (mCurrentSearchState == kss_Title)
+    if (mCurrentSearchState == kss_Title) {
         searchResults = mDb->searchTitle(searchQuery);  // array of Medication
-
-    else if (mCurrentSearchState == kss_Author)
+    } else if (mCurrentSearchState == kss_Author) {
         searchResults = mDb->searchAuthor(searchQuery);
-
-    else if (mCurrentSearchState == kss_AtcCode)
+    } else if (mCurrentSearchState == kss_AtcCode) {
         searchResults = mDb->searchATCCode(searchQuery);
-
-    else if (mCurrentSearchState == kss_RegNr)
+    } else if (mCurrentSearchState == kss_RegNr) {
         searchResults = mDb->searchRegNr(searchQuery);
-
-    else if (mCurrentSearchState == kss_Therapy)
+    } else if (mCurrentSearchState == kss_Therapy) {
         searchResults = mDb->searchApplication(searchQuery);
-
-    else if (mCurrentSearchState == kss_FullText) {
-        // 2048
-        if (searchQuery.length() > 2)
+    } else if (mCurrentSearchState == kss_FullText) {
+        if (searchQuery.length() > 2) {
             searchResultsFT = mFullTextDb->searchKeyword(searchQuery); // array of FullTextEntry
+        }
     }
 
     mCurrentSearchKey = searchQuery;
@@ -1678,7 +1673,7 @@ void MainWindow::updateTableView()
     else if (mCurrentSearchState == kss_FullText) {
         for (auto e : searchResultsFT) {
             if (mUsedDatabase == kdbt_Aips ||
-                mUsedDatabase == kdbt_Favorites)
+                (mUsedDatabase == kdbt_Favorites && favoriteFTEntrySet.find(e->hash) != favoriteFTEntrySet.end()))
             {
                 if (!e->hash.IsEmpty()) {
                     favoriteKeyData.Add(e->hash);
@@ -2620,21 +2615,15 @@ void MainWindow::OnSearchNow( wxCommandEvent& event )
         if (mUsedDatabase == kdbt_Favorites) {
             searchResults = retrieveAllFavorites();
             searchResultsFT = retrieveAllFTFavorites();
-        }        
+        }
     }
 
     // 977
     // Update tableview
     updateTableView();
     
-    if (mCurrentSearchState == kss_FullText) {
-        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
-        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
-    }
-    else {
-        myTableView->SetItemCount(searchResults.size()); // reloadData
-        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
-    }
+    myTableView->SetItemCount(myTableView->searchRes.size()); // reloadData
+    myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
 
     myTableView->Refresh();
     mSearchInProgress = false;
@@ -2679,14 +2668,8 @@ void MainWindow::OnButtonPressed( wxCommandEvent& event )
 
     updateTableView();
 
-    if (mCurrentSearchState == kss_FullText) {
-        myTableView->SetItemCount(searchResultsFT.size()); // reloadData
-        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
-    }
-    else {
-        myTableView->SetItemCount(searchResults.size()); // reloadData
-        myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
-    }
+    myTableView->SetItemCount(myTableView->searchRes.size()); // reloadData
+    myTableView->SetSelection(wxNOT_FOUND); // Initially no selection
 
     myTableView->Refresh();
 }
