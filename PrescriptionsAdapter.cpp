@@ -279,12 +279,22 @@ wxURL PrescriptionsAdapter::savePrescriptionForPatient_withUniqueHash_andOverwri
         } catch (const std::exception &e) {
             cityString = "";
         }
-        wxString encodedImgStr;
+
         wxString pngFilePath = UTI::documentsDirectory() + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-        if (pngFilePath.length() > 0) {
-            std::clog << __PRETTY_FUNCTION__ << " Line " << __LINE__ << " TODO: encode signature " << pngFilePath << " as base64" << std::endl;
+        wxFile file(pngFilePath);
+        if(!file.IsOpened()){
+            std::clog << "Cannot open signature file";
+        } else {
+            wxFileOffset nSize = file.Length();
+            // read the whole file into memory
+            wxUint8* data = new wxUint8[nSize];
+            file.Read(data, (size_t) nSize);
+            file.Close();
+            //Base64 Encode
+            wxString enc64 = wxBase64Encode(data,nSize);
+            operatorDict[KEY_AMK_DOC_SIGNATURE] = enc64;
+            delete data;
         }
-        operatorDict[KEY_AMK_DOC_SIGNATURE] = encodedImgStr;
     } catch (const std::exception& e) {
         // Just in case the file is not initialized
     }
