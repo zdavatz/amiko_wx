@@ -697,15 +697,17 @@ void MainWindow::setOperatorID()
         myPlaceDateField->SetLabel( wxString::Format("%s, %s", operatorPlace, UTI::prettyTime()));
     
     wxString documentsDirectory = UTI::documentsDirectory();
-    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-    if (wxFileName::Exists(filePath)) {
-        wxImage image;
-        if (image.LoadFile(filePath, wxBITMAP_TYPE_PNG)) {
-            mySignView->SetBitmap(wxBitmap(image));
-            mySignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
-        }
-        else
-            std::cerr << __FUNCTION__ << " couldn't load " << filePath << std::endl;
+    wxImage image = UTI::loadSignatureImage();
+    if (image.IsOk()) {
+        mySignView->SetBitmap(wxBitmap(image));
+        mySignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
+        mySignLabel->Hide();
+        bSizer12_doctor->Layout();
+    } else {
+        mySignLabel->SetLabel(_("Doctor's Signature 300px * 75px"));
+        mySignLabel->Show();
+        bSizer12_doctor->Layout();
+        std::cerr << __FUNCTION__ << " couldn't load signature file" << std::endl;
     }
 }
 
@@ -2541,8 +2543,9 @@ void MainWindow::OnUpdateUI( wxUpdateUIEvent& event )
 {
     // 3050
     bool doctorDefined =
-    myOperatorIDTextField->GetValue().length() > 0 &&
-    myOperatorIDTextField->GetValue() != _("Enter the doctor's address");
+        myOperatorIDTextField->GetValue().length() > 0 &&
+        myOperatorIDTextField->GetValue() != _("Enter the doctor's address") &&
+        mySignView->GetBitmap().IsOk();
     bool patientDefined = myPatientAddressTextField->GetValue().length() > 0;
     
     // 3058
