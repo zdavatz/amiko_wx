@@ -480,3 +480,6 @@ msgstr "Pas de base de données"
 
 msgid "Do you want to download the database?"
 msgstr "Voulez-vous télécharger la base de données?"
+
+msgid "Doctor's Signature 300px * 75px"
+msgstr "Signature du médecin 300px * 75px"
