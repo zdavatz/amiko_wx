@@ -72,16 +72,12 @@ void OperatorIDSheet::saveSettings()
 // 199
 void OperatorIDSheet::loadSettings()
 {
-    wxString documentsDirectory = UTI::documentsDirectory();
-    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
-    if (wxFileName::Exists(filePath)) {
-        wxImage image;
-        if (image.LoadFile(filePath, wxBITMAP_TYPE_PNG)) {
-            mSignView->SetBitmap( wxBitmap(image));
-            mSignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
-        }
-        else
-            std::cerr << __FUNCTION__ << " couldn't load " << filePath << std::endl;
+    wxImage image = UTI::loadSignatureImage();
+    if (image.IsOk()) {
+        mSignView->SetBitmap( wxBitmap(image));
+        mSignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
+    } else {
+        std::cerr << __FUNCTION__ << " couldn't load signature file" << std::endl;
     }
 
     // 208
@@ -129,8 +125,17 @@ void OperatorIDSheet::OnLoadSignature( wxCommandEvent& event )
     // Grab reference to what has been selected
     wxString fileURL = openDlgPanel.GetPath();
     wxImage image;
+    wxImage scaled;
     image.LoadFile(fileURL);
-    mSignView->SetBitmap( wxBitmap(image));
+    if (image.IsOk()) {
+        if (image.GetWidth() > 300 || image.GetHeight() > 75) {
+            scaled = UTI::rescaleImageToFit(image, 300, 75);
+        } else {
+            scaled = image;
+        }
+        mSignView->SetBitmap(wxBitmap(scaled));
+        mSignView->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
+    }
 }
 
 // 53

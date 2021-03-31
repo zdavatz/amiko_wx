@@ -23,6 +23,7 @@
 #include <openssl/sha.h>
 
 #include "Utilities.hpp"
+#include "Operator.hpp"
 
 namespace UTI
 {
@@ -184,6 +185,24 @@ void setFileModifiedTime(std::string filepath, std::chrono::time_point<std::chro
     new_times.actime = foo.st_atime; /* keep atime unchanged */
     new_times.modtime = std::chrono::system_clock::to_time_t(timePoint);    /* set mtime to current time */
     utime(filepath.c_str(), &new_times);
+}
+
+wxImage loadSignatureImage()
+{
+    wxString documentsDirectory = UTI::documentsDirectory();
+    wxString filePath = documentsDirectory + wxFILE_SEP_PATH + DOC_SIGNATURE_FILENAME;
+    wxImage image;
+    if (wxFileName::Exists(filePath)) {
+        image.LoadFile(filePath, wxBITMAP_TYPE_PNG);
+    }
+    return image;
+}
+
+wxImage rescaleImageToFit(wxImage img, int maxWidth, int maxHeight) {
+    float scale = fmin(maxWidth / (img.GetWidth()/1.0f), maxHeight / (img.GetHeight()/1.0f));
+    wxSize szSignature(img.GetWidth() * scale, img.GetHeight() * scale);
+    img.Rescale(szSignature.GetWidth(), szSignature.GetHeight(), wxIMAGE_QUALITY_HIGH);
+    return img;
 }
 
 }

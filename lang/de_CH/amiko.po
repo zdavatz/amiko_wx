@@ -463,3 +463,6 @@ msgstr "Keine Datenbank"
 
 msgid "Do you want to download the database?"
 msgstr "Wollen Sie die Datenbank runterladen?"
+
+msgid "Doctor's Signature 300px * 75px"
+msgstr "Arztunterschrift 300px * 75px"

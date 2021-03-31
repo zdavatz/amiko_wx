@@ -120,6 +120,7 @@ class MainWindowBase : public wxFrame
 		wxPanel* panel_inter;
 		wxPanel* panel_rezept;
 		wxButton* m_button7;
+		wxStaticText* mySignLabel;
 		wxTreeCtrl* myPrescriptionsTableView;
 		wxButton* btnNewPrescription;
 		wxButton* btnCheckInter;
@@ -176,6 +177,7 @@ class MainWindowBase : public wxFrame
 		wxStaticText* fiSearchCount;
 		wxTextCtrl* myPatientAddressTextField;
 		wxStaticText* myPlaceDateField;
+		wxBoxSizer* bSizer12_doctor;
 		wxTextCtrl* myOperatorIDTextField;
 		SignatureView* mySignView;
 		wxButton* saveButton;

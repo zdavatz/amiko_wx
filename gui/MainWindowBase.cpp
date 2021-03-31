@@ -161,11 +161,14 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	bSizer10->Add( bSizer11_patient, 1, wxEXPAND, 5 );
 
-	wxBoxSizer* bSizer12_doctor;
 	bSizer12_doctor = new wxBoxSizer( wxVERTICAL );
 
 	myOperatorIDTextField = new wxTextCtrl( panel_rezept, wxID_ANY, _("Enter the doctor's address"), wxDefaultPosition, wxSize( -1,91 ), wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
 	bSizer12_doctor->Add( myOperatorIDTextField, 0, wxALL|wxEXPAND, 5 );
+
+	mySignLabel = new wxStaticText( panel_rezept, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	mySignLabel->Wrap( -1 );
+	bSizer12_doctor->Add( mySignLabel, 0, wxALL, 5 );
 
 	mySignView = new SignatureView( panel_rezept, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	bSizer12_doctor->Add( mySignView, 0, wxALL, 5 );
@@ -254,7 +257,7 @@ MainWindowBase::MainWindowBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_tool4 = myToolbar->AddTool( wxID_TB_PRESCRIPTION, _("Prescription"), wxBitmap( prescription_xpm ), wxNullBitmap, wxITEM_RADIO, wxEmptyString, wxEmptyString, NULL );
 
-	myToolbar->AddStretchableSpace();
+	myToolbar->AddSeparator();
 
 	m_tool7 = myToolbar->AddTool( wxID_EXPORT_WORDLIST, _("Export"), wxBitmap( export_xpm ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString, NULL );
 
