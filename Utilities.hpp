@@ -25,4 +25,6 @@ std::chrono::time_point<std::chrono::system_clock> stringToTime(std:: string inp
 std::chrono::time_point<std::chrono::system_clock> patientStringToTime(std::string inputStr);
 void ensureDirectory(wxFileName filename);
 void setFileModifiedTime(std::string filepath, std::chrono::time_point<std::chrono::system_clock> timePoint);
+wxImage loadSignatureImage();
+wxImage rescaleImageToFit(wxImage img, int maxWidth, int maxHeight);
 }
