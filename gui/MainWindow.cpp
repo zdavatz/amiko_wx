@@ -1205,6 +1205,9 @@ void MainWindow::setSearchState(int searchState, int btnId)
         tb->SetValue(i == btnId);
     }
 
+    mCurrentSearchKey = wxEmptyString;
+    mCurrentSearchState = searchState;
+
     switch (searchState)
     {
         case kss_Title:
@@ -1256,9 +1259,6 @@ void MainWindow::setSearchState(int searchState, int btnId)
             mySearchField->SetDescriptiveText(wxString::Format("%s %s", _("Search"), _("Full Text")));
             break;
     }
-
-    mCurrentSearchKey = wxEmptyString;
-    mCurrentSearchState = searchState;
     std::cerr << __PRETTY_FUNCTION__ << " Ended" << std::endl;
 }
 
