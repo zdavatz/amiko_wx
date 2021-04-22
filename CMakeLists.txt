@@ -10,6 +10,20 @@ configure_file(
     "${CMAKE_BINARY_DIR}/config.h")
 include_directories(${CMAKE_BINARY_DIR})
 
+IF(APPLE)
+  SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+ENDIF(APPLE)
+
+include(CheckCCompilerFlag)
+
+set(CMAKE_REQUIRED_LINK_OPTIONS "-arch;x86_64")
+check_c_compiler_flag("-arch x86_64" x86_64Supported)
+message("x86_64Supported=${x86_64Supported}")
+
+set(CMAKE_REQUIRED_LINK_OPTIONS "-arch;arm64")
+check_c_compiler_flag("-arch arm64" arm64Supported)
+message("arm64Supported=${arm64Supported}")
+
 #===============================================================================
 
 if (UNIX)
