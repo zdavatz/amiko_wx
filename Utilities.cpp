@@ -20,7 +20,11 @@
 #include <wx/filename.h>
 #include <wx/datetime.h>
 
+#ifdef __WXMAC__
+#include <CommonCrypto/CommonDigest.h>
+#else
 #include <openssl/sha.h>
+#endif
 
 #include "Utilities.hpp"
 #include "Operator.hpp"
@@ -115,6 +119,16 @@ wxString getColorCss()
 // https://stackoverflow.com/questions/2262386/generate-sha256-with-openssl-and-c
 wxString sha256(const wxString str)
 {
+#ifdef __WXMAC__
+    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256(str.c_str(), str.size(), hash);
+    std::stringstream ss;
+    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    return ss.str();
+#else
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
@@ -126,6 +140,7 @@ wxString sha256(const wxString str)
         ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
     }
     return ss.str();
+#endif
 }
 
 std::string timeToString(std::chrono::time_point<std::chrono::system_clock> timePoint)
