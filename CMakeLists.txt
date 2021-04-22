@@ -56,8 +56,6 @@ if (NOT APPLE)
 pkg_check_modules(OPENSSL REQUIRED openssl)
 MESSAGE(STATUS "OPENSSL_Found: ${OPENSSL_FOUND}")
 else (NOT APPLE)
-set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
-find_package(OpenSSL REQUIRED)
 endif (NOT APPLE)
 endif (UNIX)
 
@@ -284,11 +282,18 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CURL_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR} )
   
+if (APPLE)
 target_link_libraries( ${APP_NAME}
 		${wxWidgets_LIBRARIES}
-		${OPENSSL_LIBRARIES}
         ${CURL_LIBRARIES}
 		nlohmann_json::nlohmann_json)
+else (APPLE)
+    target_link_libraries( ${APP_NAME}
+        ${wxWidgets_LIBRARIES}
+        ${OPENSSL_LIBRARIES}
+        ${CURL_LIBRARIES}
+        nlohmann_json::nlohmann_json)
+endif (APPLE)
 
 # macOS
 if (APPLE)
