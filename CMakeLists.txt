@@ -116,10 +116,10 @@ ADD_DEFINITIONS("-D__WXGTK__")
 endif(NOT APPLE)
 endif(UNIX)
 
-#MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
-#MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
-#MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
-#MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
+MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
+MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
+MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
+MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
 
 #=============================================================================
 

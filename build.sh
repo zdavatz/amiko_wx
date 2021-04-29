@@ -77,7 +77,7 @@ NCPU=$(nproc --all)
     WX_OPTIONS_OS_AUTOTOOLS_DEBUG="--enable-debug --enable-debug_gdb"
   fi
 WX_OPTIONS_OS_AUTOTOOLS="--with-gtk=3 --with-cxx=17 --enable-utf8 --with-regex --enable-html --enable-webview ${WX_OPTIONS_OS_AUTOTOOLS_DEBUG}"
-WX_OPTIONS_OS_CMAKE=" -D wxBUILD_USE_STATIC_RUNTIME=ON -D wxBUILD_SAMPLES=ALL"
+WX_OPTIONS_OS_CMAKE=" -D wxBUILD_USE_STATIC_RUNTIME=ON"
 else
 NCPU=$NUMBER_OF_PROCESSORS
 WX_OPTIONS_OS_AUTOTOOLS="--with-msw"
@@ -85,7 +85,7 @@ WX_OPTIONS_OS_CMAKE="--with-msw -D wxBUILD_USE_STATIC_RUNTIME=ON"
 fi
 
 if [ -z $BUILD_TYPE ]; then BUILD_TYPE=Release; fi
-MAKE_FLAGS="-j $NCPU VERBOSE=1"
+MAKE_FLAGS="-j 4 VERBOSE=1"
 CMAKE=cmake
 mkdir -p $SRC
 $CMAKE --version | head -n 1
@@ -146,9 +146,30 @@ mkdir -p $BLD_CURL ; cd $BLD_CURL
 echo "=== Configure CURL, install to $BIN_CURL"
     if [[ $(uname -s) == "Darwin" ]] ; then
         export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
-        ARCH="x86_64 arm64" SDK=macosx CFLAGS="-arch x86_64 -arch arm64" $SRC_CURL/configure --without-ssl --with-secure-transport --prefix=$BIN_CURL --without-librtmp --without-libidn --without-libidn2 --without-zstd --without-brotli
+        echo "sdk path:"
+        echo $(xcrun -sdk macosx --show-sdk-path)
+        ARCH="x86_64 arm64" SDK=macosx DEPLOYMENT_TARGET=10.9 CFLAGS="-arch x86_64 -arch arm64 -isysroot $(xcrun -sdk macosx --show-sdk-path) -mmacosx-version-min=10.9" $SRC_CURL/configure \
+          --without-ssl \
+          --with-secure-transport \
+          --prefix=$BIN_CURL \
+          --without-librtmp \
+          --without-libidn \
+          --without-libidn2 \
+          --without-zstd \
+          --without-brotli
+        if [ $? -ne 0 ]; then
+          cat $BLD_CURL/config.log
+          exit 1
+        fi
     else
-      $SRC_CURL/configure --with-ssl --prefix=$BIN_CURL --without-librtmp --without-libidn --without-libidn2 --without-zstd --without-brotli
+      $SRC_CURL/configure \
+        --with-ssl \
+        --prefix=$BIN_CURL \
+        --without-librtmp \
+        --without-libidn \
+        --without-libidn2 \
+        --without-zstd \
+        --without-brotli
     fi
 fi
 
@@ -185,7 +206,11 @@ export CXXFLAGS=-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES
 if [[ $(uname -s) == "Linux" ]] ; then
 $SRC_WXWIDGETS/configure --prefix=$BIN_WXWIDGETS \
     $WX_OPTIONS_OS_AUTOTOOLS \
-    --enable-unicode --disable-shared --disable-sys-libs
+    --enable-unicode \
+    --disable-shared \
+    --disable-sys-libs \
+    --without-subdirs \
+    --enable-stc=no
 else
 rm -f CMakeCache.txt
 $CMAKE -G"$GENERATOR" \
