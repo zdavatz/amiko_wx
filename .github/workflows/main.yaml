@@ -1,6 +1,9 @@
 name: Build binary
 
-on: [push]
+on:
+  push:
+    branches:
+      - '**'
 
 jobs:
   build_mac:
@@ -24,8 +27,13 @@ jobs:
       with:
         path: |
           ~/Downloads/source
-          ~/Documents/temp/build
-        key: ${{ runner.os }}-20210312
+          ~/Documents/temp/build/AmiKo-wx/curl
+          ~/Documents/temp/build/AmiKo-wx/json
+          ~/Documents/temp/build/AmiKo-wx/wxWidgets-3.1.4-mk
+          ~/Applications/AmiKo-wx/curl
+          ~/Applications/AmiKo-wx/json
+          ~/Applications/AmiKo-wx/wxWidgets-3.1.4
+        key: ${{ runner.os }}-20210422
     - name: Setup seed
       env:
         AMIKO_GOOGLE_CLIENT_ID: ${{ secrets.AMIKO_GOOGLE_CLIENT_ID }}
@@ -77,8 +85,13 @@ jobs:
       with:
         path: |
           ~/Downloads/source
-          ~/Documents/temp/build
-        key: ${{ runner.os }}-20210312
+          ~/Documents/temp/build/AmiKo-wx/curl
+          ~/Documents/temp/build/AmiKo-wx/json
+          ~/Documents/temp/build/AmiKo-wx/wxWidgets-3.1.4-mk
+          ~/Applications/AmiKo-wx/curl
+          ~/Applications/AmiKo-wx/json
+          ~/Applications/AmiKo-wx/wxWidgets-3.1.4
+        key: ${{ runner.os }}-20210422
     - name: Setup seed
       env:
         AMIKO_GOOGLE_CLIENT_ID: ${{ secrets.AMIKO_GOOGLE_CLIENT_ID }}
@@ -134,9 +147,8 @@ jobs:
     - name: Check if need to create new release
       id: check_tag
       run: |
-        CURRENT_VERSION=$(cat CMakeLists.txt | grep VERSION | head -n 2 | tail -n +2 | grep -Eo '[0-9\.]+')
-        echo "Current version: $CURRENT_VERSION"
-        if git rev-parse "$CURRENT_VERSION" >/dev/null 2>&1; then
+        CURRENT_VERSION=$(./check_need_release.sh)
+        if [ -z $CURRENT_VERSION ] ; then
           echo "Tag exists, no need to create release"
           echo "::set-output name=need_release::false"
         else
@@ -167,6 +179,7 @@ jobs:
       with:
         tag: ${{ steps.check_tag.outputs.current_version }}
         commit_sha: ${{ github.sha }}
+        force_push_tag: true
     - name: Release
       uses: softprops/action-gh-release@v1
       if: steps.check_tag.outputs.need_release == 'true'

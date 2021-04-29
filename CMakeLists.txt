@@ -10,6 +10,20 @@ configure_file(
     "${CMAKE_BINARY_DIR}/config.h")
 include_directories(${CMAKE_BINARY_DIR})
 
+IF(APPLE)
+  SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+ENDIF(APPLE)
+
+include(CheckCCompilerFlag)
+
+set(CMAKE_REQUIRED_LINK_OPTIONS "-arch;x86_64")
+check_c_compiler_flag("-arch x86_64" x86_64Supported)
+message("x86_64Supported=${x86_64Supported}")
+
+set(CMAKE_REQUIRED_LINK_OPTIONS "-arch;arm64")
+check_c_compiler_flag("-arch arm64" arm64Supported)
+message("arm64Supported=${arm64Supported}")
+
 #===============================================================================
 
 if (UNIX)
@@ -42,8 +56,6 @@ if (NOT APPLE)
 pkg_check_modules(OPENSSL REQUIRED openssl)
 MESSAGE(STATUS "OPENSSL_Found: ${OPENSSL_FOUND}")
 else (NOT APPLE)
-set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
-find_package(OpenSSL REQUIRED)
 endif (NOT APPLE)
 endif (UNIX)
 
@@ -104,10 +116,10 @@ ADD_DEFINITIONS("-D__WXGTK__")
 endif(NOT APPLE)
 endif(UNIX)
 
-#MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
-#MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
-#MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
-#MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
+MESSAGE(STATUS "wxWidgets_Found: ${wxWidgets_FOUND}")
+MESSAGE(STATUS "wxWidgets_ROOT_DIR: ${wxWidgets_ROOT_DIR}")
+MESSAGE(STATUS "wxWidgets_INCLUDE_DIRS: ${wxWidgets_INCLUDE_DIRS}")
+MESSAGE(STATUS "wxWidgets_LIBRARIES: ${wxWidgets_LIBRARIES}")
 
 #=============================================================================
 
@@ -270,18 +282,26 @@ target_include_directories( ${APP_NAME} PUBLIC
     ${CURL_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR} )
   
+if (APPLE)
 target_link_libraries( ${APP_NAME}
 		${wxWidgets_LIBRARIES}
-		${OPENSSL_LIBRARIES}
         ${CURL_LIBRARIES}
 		nlohmann_json::nlohmann_json)
+else (APPLE)
+    target_link_libraries( ${APP_NAME}
+        ${wxWidgets_LIBRARIES}
+        ${OPENSSL_LIBRARIES}
+        ${CURL_LIBRARIES}
+        nlohmann_json::nlohmann_json)
+endif (APPLE)
 
 # macOS
 if (APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
   target_link_libraries( ${APP_NAME}
     ${wxWidgets_LIBRARY_DIRS}/libwx_osx_cocoau_webview-3.1.a
-    "-framework PCSC")
+    "-framework PCSC"
+    "-framework Security")
 
   set_target_properties(${APP_NAME} PROPERTIES
     #MACOSX_BUNDLE_ICON_FILE ${MAC_APP_ICON}
