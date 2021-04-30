@@ -1,0 +1,72 @@
+jobs:
+  include:
+   - os: linux
+     dist: bionic
+     arch: arm64
+
+language: cpp
+cache:
+  directories:
+  - $HOME/Downloads/source
+  - $HOME/Documents/temp/build/AmiKo-wx/curl
+  - $HOME/Documents/temp/build/AmiKo-wx/json
+  - $HOME/Documents/temp/build/AmiKo-wx/wxWidgets-3.1.4-mk
+  - $HOME/Applications/AmiKo-wx/curl
+  - $HOME/Applications/AmiKo-wx/json
+  - $HOME/Applications/AmiKo-wx/wxWidgets-3.1.4
+
+env:
+  global:
+    # AMIKO_GOOGLE_CLIENT_ID
+    # Run: travis encrypt AMIKO_GOOGLE_CLIENT_ID='...'
+    # AMIKO_GOOGLE_CLIENT_SECRET
+    # Run: travis encrypt AMIKO_GOOGLE_CLIENT_SECRET='...'
+    # COMED_GOOGLE_CLIENT_ID
+    # Run: travis encrypt COMED_GOOGLE_CLIENT_ID='...'
+    # COMED_GOOGLE_CLIENT_SECRET
+    # Run: travis encrypt COMED_GOOGLE_CLIENT_SECRET='...'
+
+install: |
+  sudo apt update
+  sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libssl-dev pcscd libpcsclite-dev rpm
+  cp seed.in.conf seed.conf
+  sed -e "s/#STEP/STEP/g" steps.in.conf > steps.conf
+
+  sed -i.bak -e "s/AMIKO_GOOGLE_CLIENT_ID=''/AMIKO_GOOGLE_CLIENT_ID='$AMIKO_GOOGLE_CLIENT_ID'/g" seed.conf
+  sed -i.bak -e "s/AMIKO_GOOGLE_CLIENT_SECRET=''/AMIKO_GOOGLE_CLIENT_SECRET='$AMIKO_GOOGLE_CLIENT_SECRET'/g" seed.conf
+  sed -i.bak -e "s/COMED_GOOGLE_CLIENT_ID=''/COMED_GOOGLE_CLIENT_ID='$COMED_GOOGLE_CLIENT_ID'/g" seed.conf
+  sed -i.bak -e "s/COMED_GOOGLE_CLIENT_SECRET=''/COMED_GOOGLE_CLIENT_SECRET='$COMED_GOOGLE_CLIENT_SECRET'/g" seed.conf
+
+script: |
+  sudo ./build.sh
+  CURRENT_VERSION=$(./check_need_release.sh)
+  if [ -z $CURRENT_VERSION ] ; then
+    echo "No need to create release"
+  else
+    echo "Need to create release"
+    echo "Creating release"
+    # Set up git user name and tag this commit
+    git config --local user.name "Travis"
+    git config --local user.email "travis@b123400.net"
+    export TRAVIS_TAG=$CURRENT_VERSION
+    git tag $CURRENT_VERSION
+    pushd ~/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/
+    for filename in *.rpm; do sudo mv $filename ${filename%.*}-arm64.rpm; done;
+    for filename in *.tar.gz; do sudo mv $filename ${filename%.tar.gz}-arm64.tar.gz; done;
+    for filename in *.deb; do sudo mv $filename ${filename%.*}-arm64.deb; done;
+    popd
+  fi
+
+deploy:
+  provider: releases
+  api_key:
+    # Run: travis encrypt <Github API key>
+  file_glob: true
+  file:
+    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm
+    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
+    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
+  skip_cleanup: true
+  on:
+    branch: build-arm
+    condition: -n $CURRENT_VERSION
