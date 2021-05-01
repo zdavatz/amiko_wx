@@ -68,5 +68,5 @@ deploy:
     - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
   skip_cleanup: true
   on:
-    branch: build-arm
+    branch: master
     condition: -n $CURRENT_VERSION
