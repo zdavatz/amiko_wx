@@ -1,31 +1,24 @@
 jobs:
   include:
-   - os: linux
-     dist: bionic
-     arch: arm64
-
+  - os: linux
+    dist: bionic
+    arch: arm64
 language: cpp
 cache:
   directories:
-  - $HOME/Downloads/source
-  - $HOME/Documents/temp/build/AmiKo-wx/curl
-  - $HOME/Documents/temp/build/AmiKo-wx/json
-  - $HOME/Documents/temp/build/AmiKo-wx/wxWidgets-3.1.4-mk
-  - $HOME/Applications/AmiKo-wx/curl
-  - $HOME/Applications/AmiKo-wx/json
-  - $HOME/Applications/AmiKo-wx/wxWidgets-3.1.4
-
+  - "$HOME/Downloads/source"
+  - "$HOME/Documents/temp/build/AmiKo-wx/curl"
+  - "$HOME/Documents/temp/build/AmiKo-wx/json"
+  - "$HOME/Documents/temp/build/AmiKo-wx/wxWidgets-3.1.4-mk"
+  - "$HOME/Applications/AmiKo-wx/curl"
+  - "$HOME/Applications/AmiKo-wx/json"
+  - "$HOME/Applications/AmiKo-wx/wxWidgets-3.1.4"
 env:
   global:
-    # AMIKO_GOOGLE_CLIENT_ID
-    - secure: "cmmB8wEUhlMozbkGE13xpR/aIoQ8pSE7/DAcF74eeNjkQW7nQzyx48s8vc8w4bO2dsBE/J9qYuKZtU/47ZtmmDhRkwqmVhgOSf6q1N7XUW7usrioxMe1BC5KrKDwv3l/euocDzDOQri5xN3KK+ZOpdUuRjT5lzggGLp+lJwVL1DdlntTdQ4S250C5Dp2ON0xr1PUF4GSylZHvmPpVdFJAJ1HNrOpl01baEhZ/3RunSdhcdXUdjo+JYAo47zA044xFIJFZgEmCc8RQ6UCevADjRd+9junC+Fd+g50w4iengVCYZC2LYq8kIpviUXB61xxF9La90fE8iuyeffypuMGy+YYhTJ2OL9PYoghleXfRUvu6kfBx3SM3lepmr7UlKsa6KOSHszmCVhWN6dmLQcwmOG42fEeLZ3LIB0S9DnLbu7O7ZTkCUMGMF4xUcMC4mAfcWxpumMBj8uaxymDDBdUNWOvTBTrFP/BUk6mikkkmclxwo81iI326P0oYguLtZ6hvyxyMVL3IFhpwNlTfQMpeKUcertayDyOWLNio8gTbGh99sWjj1ADIsnH8gYFla84lFCeNHpWFeInmuXD/eRmYygLy1BqMYvuUnQAEF1hVuBPk8fr00MJfw0KTiepRvSCRjYsmoSsA02kHmbD0vujbeBsXW64rmkL4+0sfXGJWks="
-    # AMIKO_GOOGLE_CLIENT_SECRET
-    - secure: "FDNfZBRlf+ydXRtOIKaFaoaKqkBcXr9YCf8Lt+wvTUhvJqnIhqfuF3Xcx5x3Z4hDzeUzqm70qVOhGDu/Fvx2oGznNX0MpI4sXmGSvDRuEIrcb0PQ3Uz2TegifX2bs2CspW3dpbZIaDwqoAQBcVdjrLyqjUSp06FwqV6c2yCYloTgyWsp8ydDVCW/K2rQc9vVubZBzQjNEHskHwhO+TFss18RxHbuQiDKcXISVH3JBypZP+7LDofLVhAumjjtI83djxXBO6tVxNFjhiwS3CC0Q5urTQjQii4XX8hXuokUFOq57A7hc9/eS20aqxPRVzxMopvCbwAnHDs6igxiRsNRtpEdfHK618XEG7FmFWXZ8Mfxah7rUIaQlPP6J1m8MnRblCGNwOBarbzIEEJTBWH7l7bIU1shUH9AgpcG9nEwagvSKxFLd5mcppLFBVyiy+rQVMlIaJzdUswSF5JuEHuZuSwQQUl1Ea0Vs8p7K5BlEE9YQAhkqv6QecRKfQAeBBvJKIKmzpF+4K4O+BRYZp6Q+pZ6nC8uHiK+fd3jaFneHj/Rf+igyVru88ofsgn2zbFRrfbwwrAFP+Fx24d486mSRXeBLzjSDDiQKlHLDg96TCrsQO1vWs/pu/wswXytmpiebX8JUJDnr1qtdAWqFGcKgEGeMyMX9mRor6fwpFQB3Ao="
-    # COMED_GOOGLE_CLIENT_ID
-    - secure: "0klyO+K8H1NAkOpbMk0DATc2O65ENqdpHHzSHpI1SyIPcwrKDQc3OmQOzwn+8WqwHKA8gcjzdjagrc8o1eBwuiAfV6MUEOOkvVBCGrp+t/Lrb38jeahqtbQ2s4vGbneW/ZSrGYDl4vo1I8WcQw383T0hSuZ7DamWl8kgrKeA1nevPktqbjr025WLi2QN86n/uCo4Pot0pURzlHbD1nfH5o6FbG8JhXxrkYCdUck1k8EdCWRHbfBkXzMlBjCM1znmq1pFx4+2yUz9wIdl8R193nSXqfcippGx9s0Y7ZrAP/BDUx6WvIkdKgmD+lGfE7AEXLmxwZCwczLZZ1xLVFK52ylxe1nglhzBntwBQkc7V1wW80oU5rvWCh0DpzvQUvcgphYoO0uRykZGEdGiFAbvs8mih4Rk2NnlPfcwsAem41eb0OAv/eOPUBa4CvxnB30q5XMfI/v+z/GcViPf+byz++BRqgRwzPg6V7eVdQDimTJTygdap1OPVMqJFGKdYqw7Um6d4NexWKudBblSuU0HMs2c54CuFopaFd5zX1vF142qvYdSHoxYyewUGSMhuBF9WrvZ9gurUg/7tXHDXZTw8PV5JYeiwDLxYPtGJsGcZWicMma6UbLArpIUma5YXYtBWXoxnyCFlG+XAut7sXC5xUgWhvCb687F3WTbr4dOfdA="
-    # COMED_GOOGLE_CLIENT_SECRET
-    - secure: "HT9gv3lgL72BFdvCDsp9V5qNLX0QawvbyGxMeoxmBGHMNNh0CTmhJ3WE5km89TKrvsQlnvCsmg6AT+O8iqpyrH5L4nIdKmhEmhuhdO8qvcvMJ+nKArcfoj0/p+337MAwGswn4FPi+djf6PNc6NAA82shIQXkg/hVa3y+HF9N/y8rS3N7UkGNYsNa54y7YjWiXn4xYOzhEAiadMIVYKGX+rh91Fie+VKF2ePf3gn4akCqN/jtAyi9i03cNASVocUhbHqER1rQ5GPqVzq5ebuABagPbl8CG/R/KElymA36YLRZP4KzzVHWc2P81eJmpZROpp9F12yD24x2DQiUiZ5JnZ+Nqc9BGUSX7rndG1qOtrK+89fDPnCp5/zxdTyUznuo9JLic9SXgaYf18niEilsvY4cgEuaOriejGYHuF37FUpF9jiQ3AsOdfk7Nxe1nNhNKztaSYV7s/FinSPMZOgSuOZGu9KS1pmDVFbFm6LfqCeA9hsewF4dL5NEjvduwZB1izv4+kGwMNVr0Rbt2rdvdaL1Evh31EQJ76C+v5CSrxOuBTtmbgfo3n+Cc/xUDV4vuVjViPXMlbZniN4oQ9mMbYxMiswNgiLDEqYYX4/dBjLP/pYI/OMr3G0A4UitvoUbQkY/APzFpIIL9QQJP7lSj1VSWcpvBof5yR/gMTZvvwU="
-
+  - secure: cmmB8wEUhlMozbkGE13xpR/aIoQ8pSE7/DAcF74eeNjkQW7nQzyx48s8vc8w4bO2dsBE/J9qYuKZtU/47ZtmmDhRkwqmVhgOSf6q1N7XUW7usrioxMe1BC5KrKDwv3l/euocDzDOQri5xN3KK+ZOpdUuRjT5lzggGLp+lJwVL1DdlntTdQ4S250C5Dp2ON0xr1PUF4GSylZHvmPpVdFJAJ1HNrOpl01baEhZ/3RunSdhcdXUdjo+JYAo47zA044xFIJFZgEmCc8RQ6UCevADjRd+9junC+Fd+g50w4iengVCYZC2LYq8kIpviUXB61xxF9La90fE8iuyeffypuMGy+YYhTJ2OL9PYoghleXfRUvu6kfBx3SM3lepmr7UlKsa6KOSHszmCVhWN6dmLQcwmOG42fEeLZ3LIB0S9DnLbu7O7ZTkCUMGMF4xUcMC4mAfcWxpumMBj8uaxymDDBdUNWOvTBTrFP/BUk6mikkkmclxwo81iI326P0oYguLtZ6hvyxyMVL3IFhpwNlTfQMpeKUcertayDyOWLNio8gTbGh99sWjj1ADIsnH8gYFla84lFCeNHpWFeInmuXD/eRmYygLy1BqMYvuUnQAEF1hVuBPk8fr00MJfw0KTiepRvSCRjYsmoSsA02kHmbD0vujbeBsXW64rmkL4+0sfXGJWks=
+  - secure: FDNfZBRlf+ydXRtOIKaFaoaKqkBcXr9YCf8Lt+wvTUhvJqnIhqfuF3Xcx5x3Z4hDzeUzqm70qVOhGDu/Fvx2oGznNX0MpI4sXmGSvDRuEIrcb0PQ3Uz2TegifX2bs2CspW3dpbZIaDwqoAQBcVdjrLyqjUSp06FwqV6c2yCYloTgyWsp8ydDVCW/K2rQc9vVubZBzQjNEHskHwhO+TFss18RxHbuQiDKcXISVH3JBypZP+7LDofLVhAumjjtI83djxXBO6tVxNFjhiwS3CC0Q5urTQjQii4XX8hXuokUFOq57A7hc9/eS20aqxPRVzxMopvCbwAnHDs6igxiRsNRtpEdfHK618XEG7FmFWXZ8Mfxah7rUIaQlPP6J1m8MnRblCGNwOBarbzIEEJTBWH7l7bIU1shUH9AgpcG9nEwagvSKxFLd5mcppLFBVyiy+rQVMlIaJzdUswSF5JuEHuZuSwQQUl1Ea0Vs8p7K5BlEE9YQAhkqv6QecRKfQAeBBvJKIKmzpF+4K4O+BRYZp6Q+pZ6nC8uHiK+fd3jaFneHj/Rf+igyVru88ofsgn2zbFRrfbwwrAFP+Fx24d486mSRXeBLzjSDDiQKlHLDg96TCrsQO1vWs/pu/wswXytmpiebX8JUJDnr1qtdAWqFGcKgEGeMyMX9mRor6fwpFQB3Ao=
+  - secure: 0klyO+K8H1NAkOpbMk0DATc2O65ENqdpHHzSHpI1SyIPcwrKDQc3OmQOzwn+8WqwHKA8gcjzdjagrc8o1eBwuiAfV6MUEOOkvVBCGrp+t/Lrb38jeahqtbQ2s4vGbneW/ZSrGYDl4vo1I8WcQw383T0hSuZ7DamWl8kgrKeA1nevPktqbjr025WLi2QN86n/uCo4Pot0pURzlHbD1nfH5o6FbG8JhXxrkYCdUck1k8EdCWRHbfBkXzMlBjCM1znmq1pFx4+2yUz9wIdl8R193nSXqfcippGx9s0Y7ZrAP/BDUx6WvIkdKgmD+lGfE7AEXLmxwZCwczLZZ1xLVFK52ylxe1nglhzBntwBQkc7V1wW80oU5rvWCh0DpzvQUvcgphYoO0uRykZGEdGiFAbvs8mih4Rk2NnlPfcwsAem41eb0OAv/eOPUBa4CvxnB30q5XMfI/v+z/GcViPf+byz++BRqgRwzPg6V7eVdQDimTJTygdap1OPVMqJFGKdYqw7Um6d4NexWKudBblSuU0HMs2c54CuFopaFd5zX1vF142qvYdSHoxYyewUGSMhuBF9WrvZ9gurUg/7tXHDXZTw8PV5JYeiwDLxYPtGJsGcZWicMma6UbLArpIUma5YXYtBWXoxnyCFlG+XAut7sXC5xUgWhvCb687F3WTbr4dOfdA=
+  - secure: HT9gv3lgL72BFdvCDsp9V5qNLX0QawvbyGxMeoxmBGHMNNh0CTmhJ3WE5km89TKrvsQlnvCsmg6AT+O8iqpyrH5L4nIdKmhEmhuhdO8qvcvMJ+nKArcfoj0/p+337MAwGswn4FPi+djf6PNc6NAA82shIQXkg/hVa3y+HF9N/y8rS3N7UkGNYsNa54y7YjWiXn4xYOzhEAiadMIVYKGX+rh91Fie+VKF2ePf3gn4akCqN/jtAyi9i03cNASVocUhbHqER1rQ5GPqVzq5ebuABagPbl8CG/R/KElymA36YLRZP4KzzVHWc2P81eJmpZROpp9F12yD24x2DQiUiZ5JnZ+Nqc9BGUSX7rndG1qOtrK+89fDPnCp5/zxdTyUznuo9JLic9SXgaYf18niEilsvY4cgEuaOriejGYHuF37FUpF9jiQ3AsOdfk7Nxe1nNhNKztaSYV7s/FinSPMZOgSuOZGu9KS1pmDVFbFm6LfqCeA9hsewF4dL5NEjvduwZB1izv4+kGwMNVr0Rbt2rdvdaL1Evh31EQJ76C+v5CSrxOuBTtmbgfo3n+Cc/xUDV4vuVjViPXMlbZniN4oQ9mMbYxMiswNgiLDEqYYX4/dBjLP/pYI/OMr3G0A4UitvoUbQkY/APzFpIIL9QQJP7lSj1VSWcpvBof5yR/gMTZvvwU=
 install: |
   sudo apt update
   sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev libssl-dev pcscd libpcsclite-dev rpm
@@ -36,7 +29,6 @@ install: |
   sed -i.bak -e "s/AMIKO_GOOGLE_CLIENT_SECRET=''/AMIKO_GOOGLE_CLIENT_SECRET='$AMIKO_GOOGLE_CLIENT_SECRET'/g" seed.conf
   sed -i.bak -e "s/COMED_GOOGLE_CLIENT_ID=''/COMED_GOOGLE_CLIENT_ID='$COMED_GOOGLE_CLIENT_ID'/g" seed.conf
   sed -i.bak -e "s/COMED_GOOGLE_CLIENT_SECRET=''/COMED_GOOGLE_CLIENT_SECRET='$COMED_GOOGLE_CLIENT_SECRET'/g" seed.conf
-
 script: |
   sudo ./build.sh
   CURRENT_VERSION=$(./check_need_release.sh)
@@ -56,17 +48,16 @@ script: |
     for filename in *.deb; do sudo mv $filename ${filename%.*}-arm64.deb; done;
     popd
   fi
-
 deploy:
   provider: releases
-  api_key: 
-    secure: "qVJRURb6r9EflGDnT4Lh1LWKiOlQTS5+rMdQlw16E04zjrhrMogd9nrj5Q8b7BkX6WRQMwOwmUfEgSmhw2hg4wf5Ly7hC5/zNBXzv/KGNajulCnZRwPIg0Z6OuMDtqlasdRMJya047pq87ZOuE6ZcLeTpSwmHnu8lihJPZC4gCvfuAUEnnKcgP3RkHnB9U7Foxoas6LadDU5yh6nmjLJyYzgddU9JhvE7MMPIsp1gb7KSGp8KsXX5m8jAIk8Z6OfdezS0xHxFrO9z6lUBYyTXimsOQRvsajlvKmklTkxWaW24nuCAPB58tKETSJR1a1q5g6CPKKwQFxP7U97S2KxptTTktdB5xqKZGQj7mE4s2/Izjs8IU+ScIxt01Cz1B6YYjbF7Z0aJMvNeWbDAgDr0oWaYIAisGKojDZ1THh+O75QeQREUsDxcS83ce51HFUJVtALhxvurqC+hmo/80W9eCOob4UamUiKES0nnkLlwlTdJf3uWm+nljHQWFCkcOtPUAUfmwDvPs1yRwVYNeaySt/nLHcO2weD2UXVAFM9wDLutRZr+NKCpaVchbT6WQT8qvAjBWkMepEPk+6eJaRsM6HqH/UVxm61cIGhs2HdPfut1QxbLd8mnHIIlBLVA4GldeZwb0yXHTr/iA5RJ21OTQ4fkgWJEy7CXY6ay5GFnKM=" 
+  api_key:
+    secure: myhdVZLLKaM7gEgpfur0w770rVUalwQGBsAJ6B+htA1zMEnwcSUr6DZ1UQycGoXNHjEJz7F9g7siU5xJ5Otvix69lM4UitEDAPwB61ML7D7ZxX6tCQnckJuAyCnCHwql9G7R1/6DlWGLQbVcoZUPqgwqK+GJEJcK7e/sk4XbNv9nguz/CyExhixiq70Bb5VO0hWvFC5GQwagzR+dd1TtJV2GNBxtCQj0PADSHsj+VMzLHErBp5G8Fdmlz9eyiwM88hIDXSNkMGxXpsYpULJlkum1losTENyRL+t2Fn6EjQ7YIyBGXJDnhcVp0n7xlAfU0Xn1QOnJrooAjLTpKAVatn8BuVycvWRPtYNH0Rz5fP1mzIAcFztutDE5AQkUdGDCKu5Rt3r7AeUc/jQKIfkOsCziwQWYYWwWYCJnNa7kZCVhOu0byt1Al4LYvT3LilZr/RfBz1mo3r4TujY/BqNYTOWKk7siUR4AdknRdPy0ucUpkQpao6Shh4rfKkKJ7EPLO/HSCzkoSVDAPkqSMPKj4/p/mWl2LrKSSjZJG1qfsOYDW5Y6ljcfmsVo3ZHG93DV/pUErDq/9ih6k1HXwgX3miK6ijanrzIjIsYx5ZXvGg3U4fE3Nc6pc0WR8RQqxXxasayV5bMQAwiT8D1wtsocE8ouF3TAQNIe7Jc9NdKYfgc=
   file_glob: true
   file:
-    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm
-    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz
-    - /home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb
+  - "/home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.rpm"
+  - "/home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.tar.gz"
+  - "/home/travis/Documents/temp/build/AmiKo-wx/AmiKo-wx-mk/*.deb"
   skip_cleanup: true
   on:
     branch: master
-    condition: -n $CURRENT_VERSION
+    condition: "-n $CURRENT_VERSION"
