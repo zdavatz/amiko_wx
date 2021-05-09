@@ -227,6 +227,7 @@ private:
     void OnNavigationRequest(wxWebViewEvent& evt);
     void OnTitleChanged(wxWebViewEvent& evt);
     void OnDocumentLoaded(wxWebViewEvent& evt);
+    void OnWebViewErrored(wxWebViewEvent& evt);
     void OnDropFiles(wxDropFilesEvent& event);
     void OnDropFilesAtPath(wxString filePath);
     void OnAmkFilesUpdated(wxCommandEvent& event);

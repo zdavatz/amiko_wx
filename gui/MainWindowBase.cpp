@@ -914,6 +914,66 @@ SyncPreferencesBase::~SyncPreferencesBase()
 
 }
 
+GoogleAuthCopySheetBase::GoogleAuthCopySheetBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxGridSizer* gSizer1;
+	gSizer1 = new wxGridSizer( 0, 2, 0, 0 );
+
+	m_staticText31 = new wxStaticText( this, wxID_ANY, _("1. Login with Google"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText31->Wrap( -1 );
+	gSizer1->Add( m_staticText31, 0, wxALL, 5 );
+
+	m_button23 = new wxButton( this, wxID_ANY, _("Open in browser"), wxDefaultPosition, wxDefaultSize, 0 );
+	gSizer1->Add( m_button23, 0, wxALL, 5 );
+
+	m_staticText32 = new wxStaticText( this, wxID_ANY, _("2. Paste the code here"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText32->Wrap( -1 );
+	gSizer1->Add( m_staticText32, 0, wxALL, 5 );
+
+	mCodeTextControl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	gSizer1->Add( mCodeTextControl, 0, wxALL|wxEXPAND, 5 );
+
+
+	gSizer1->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxBoxSizer* bSizer34;
+	bSizer34 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_button25 = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer34->Add( m_button25, 0, wxALL, 5 );
+
+	m_okButton = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer34->Add( m_okButton, 0, wxALL, 5 );
+
+
+	gSizer1->Add( bSizer34, 1, wxEXPAND, 5 );
+
+
+	this->SetSizer( gSizer1 );
+	this->Layout();
+	gSizer1->Fit( this );
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	m_button23->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedOpenInBrowser ), NULL, this );
+	mCodeTextControl->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnCodeChanged ), NULL, this );
+	m_button25->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedCancel ), NULL, this );
+	m_okButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedOK ), NULL, this );
+}
+
+GoogleAuthCopySheetBase::~GoogleAuthCopySheetBase()
+{
+	// Disconnect Events
+	m_button23->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedOpenInBrowser ), NULL, this );
+	mCodeTextControl->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnCodeChanged ), NULL, this );
+	m_button25->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedCancel ), NULL, this );
+	m_okButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GoogleAuthCopySheetBase::OnClickedOK ), NULL, this );
+
+}
+
 AboutDialogBase::AboutDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );

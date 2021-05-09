@@ -106,6 +106,7 @@ BEGIN_EVENT_TABLE(MainWindow, MainWindowBase)
     EVT_WEBVIEW_NAVIGATING(wxID_ANY, MainWindow::OnNavigationRequest)
     EVT_WEBVIEW_TITLE_CHANGED(wxID_ANY, MainWindow::OnTitleChanged)
     EVT_WEBVIEW_LOADED(wxID_ANY, MainWindow::OnDocumentLoaded)
+    EVT_WEBVIEW_ERROR(wxID_ANY, MainWindow::OnWebViewErrored)
 
     EVT_DROP_FILES(MainWindow::OnDropFiles)
     EVT_COMMAND(wxID_ANY, SYNC_MANAGER_UPDATED_AMK, MainWindow::OnAmkFilesUpdated)
@@ -1788,6 +1789,11 @@ void MainWindow::OnDocumentLoaded(wxWebViewEvent& evt)
     // Only notify if the document is the main frame, not a subframe
     if (evt.GetURL() == m_browser->GetCurrentURL())
 #endif
+}
+
+void MainWindow::OnWebViewErrored(wxWebViewEvent& evt)
+{
+    std::clog << "ERROR: " << evt.GetString() << std::endl;
 }
 
 // 2473
