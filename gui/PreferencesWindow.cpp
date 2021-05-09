@@ -23,12 +23,19 @@ void PreferencesWindow::OnCheckboxClick(wxCommandEvent& event)
 {
     GoogleSyncManager *g = GoogleSyncManager::Instance();
     if (!g->isGoogleLoggedIn()) {
-        if (!googleAuthSheet) {
-            googleAuthSheet = new GoogleAuthSheet(this);
-        } else {
-            googleAuthSheet->LoadAuthURL();
-        }
-        googleAuthSheet->ShowModal();
+#ifdef AMIKO_USE_COPY_OAUTH
+            if (!googleAuthCopySheet) {
+                googleAuthCopySheet = new GoogleAuthCopySheet(this);
+            }
+            googleAuthCopySheet->ShowModal();
+#else
+            if (!googleAuthSheet) {
+                googleAuthSheet = new GoogleAuthSheet(this);
+            } else {
+                googleAuthSheet->LoadAuthURL();
+            }
+            googleAuthSheet->ShowModal();
+#endif
         syncCheckbox->SetValue(g->isGoogleLoggedIn());
     } else {
         g->logout();
