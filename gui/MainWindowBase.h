@@ -389,6 +389,35 @@ class SyncPreferencesBase : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+/// Class GoogleAuthCopySheetBase
+///////////////////////////////////////////////////////////////////////////////
+class GoogleAuthCopySheetBase : public wxDialog
+{
+	private:
+
+	protected:
+		wxStaticText* m_staticText31;
+		wxButton* m_button23;
+		wxStaticText* m_staticText32;
+		wxTextCtrl* mCodeTextControl;
+		wxButton* m_button25;
+		wxButton* m_okButton;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnClickedOpenInBrowser( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnCodeChanged( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnClickedCancel( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnClickedOK( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		GoogleAuthCopySheetBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+		~GoogleAuthCopySheetBase();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
 /// Class AboutDialogBase
 ///////////////////////////////////////////////////////////////////////////////
 class AboutDialogBase : public wxDialog

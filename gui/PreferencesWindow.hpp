@@ -9,6 +9,7 @@
 #include <wx/wx.h>
 #include <wx/event.h>
 #include "GoogleAuthSheet.h"
+#include "GoogleAuthCopySheet.h"
 
 class PreferencesWindow : public SyncPreferencesBase
 {
@@ -19,6 +20,7 @@ private:
     void OnCheckboxClick(wxCommandEvent& event);
     void OnCloseClicked( wxCommandEvent& event );
 
-    GoogleAuthSheet *googleAuthSheet;
+    GoogleAuthSheet *googleAuthSheet = nullptr;
+    GoogleAuthCopySheet *googleAuthCopySheet = nullptr;
 };
 

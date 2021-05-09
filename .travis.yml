@@ -33,7 +33,9 @@ install: |
   sed -i.bak -e "s/AMIKO_GOOGLE_CLIENT_SECRET=''/AMIKO_GOOGLE_CLIENT_SECRET='$AMIKO_GOOGLE_CLIENT_SECRET'/g" seed.conf
   sed -i.bak -e "s/COMED_GOOGLE_CLIENT_ID=''/COMED_GOOGLE_CLIENT_ID='$COMED_GOOGLE_CLIENT_ID'/g" seed.conf
   sed -i.bak -e "s/COMED_GOOGLE_CLIENT_SECRET=''/COMED_GOOGLE_CLIENT_SECRET='$COMED_GOOGLE_CLIENT_SECRET'/g" seed.conf
+
 script: |
+  export AMIKO_USE_COPY_OAUTH=true
   sudo ./build.sh
   CURRENT_VERSION=$(./check_need_release.sh)
   if [ -z $CURRENT_VERSION ] ; then
