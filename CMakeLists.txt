@@ -169,6 +169,7 @@ set( SRCS_PATIENT
 set( SRCS_PREFERENCES
     gui/PreferencesWindow.cpp gui/PreferencesWindow.hpp
     gui/GoogleAuthSheet.cpp gui/GoogleAuthSheet.h
+    gui/GoogleAuthCopySheet.cpp gui/GoogleAuthCopySheet.h
     sync/GoogleSyncManager.cpp sync/GoogleSyncManager.hpp
     )
 
