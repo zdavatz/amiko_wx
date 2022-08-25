@@ -46,9 +46,9 @@ protected:
     ~GoogleSyncManager();
 
 public:
-    std::string authURL();
+    std::string authURL(int port);
 
-    void receivedAuthCode(std::string code);
+    void receivedAuthCode(std::string code, int port);
     bool isGoogleLoggedIn();
     void logout();
     
