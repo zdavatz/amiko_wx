@@ -146,6 +146,9 @@ set( SRCS_SQL
 set( SRCS_SQLITE
     sqlite/sqlite3.c sqlite/sqlite3.h sqlite/sqlite3ext.h )
 
+set( SRCS_HTTPLIB
+    cpp-httplib/httplib.h )
+
 set( SRCS_INTER
     InteractionsHtmlView.cpp InteractionsHtmlView.hpp
     InteractionsCart.cpp InteractionsCart.hpp
@@ -169,7 +172,6 @@ set( SRCS_PATIENT
 set( SRCS_PREFERENCES
     gui/PreferencesWindow.cpp gui/PreferencesWindow.hpp
     gui/GoogleAuthSheet.cpp gui/GoogleAuthSheet.h
-    gui/GoogleAuthCopySheet.cpp gui/GoogleAuthCopySheet.h
     sync/GoogleSyncManager.cpp sync/GoogleSyncManager.hpp
     )
 
@@ -211,6 +213,7 @@ set( SRCS_PRINT
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
+source_group(http ${SRCS_HTTPLIB})
 source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
@@ -232,12 +235,6 @@ add_definitions(-DAMIKO_GOOGLE_CLIENT_ID="$ENV{AMIKO_GOOGLE_CLIENT_ID}")
 add_definitions(-DAMIKO_GOOGLE_CLIENT_SECRET="$ENV{AMIKO_GOOGLE_CLIENT_SECRET}")
 add_definitions(-DCOMED_GOOGLE_CLIENT_ID="$ENV{COMED_GOOGLE_CLIENT_ID}")
 add_definitions(-DCOMED_GOOGLE_CLIENT_SECRET="$ENV{COMED_GOOGLE_CLIENT_SECRET}")
-
-message("AMIKO_USE_COPY_OAUTH:" $ENV{AMIKO_USE_COPY_OAUTH})
-if(DEFINED ENV{AMIKO_USE_COPY_OAUTH})
-    message(STATUS "AMIKO_USE_COPY_OAUTH environment variable defined")
-    add_definitions(-DAMIKO_USE_COPY_OAUTH)
-endif()
 
 if (APPLE)
   set(MAC_APP_ICON res/mac/${APP_NAME}.icns)
@@ -270,7 +267,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
     ${SRCS_PRINT}
-    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_HTTPLIB}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
     ${SRCS_PREFERENCES}

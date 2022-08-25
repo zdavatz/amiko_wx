@@ -187,12 +187,8 @@ std::string getGoogleClientSecret() {
     return AMIKO_GOOGLE_CLIENT_SECRET;
 }
 
-std::string GoogleSyncManager::authURL() {
-    return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto&client_id=" + getGoogleClientId();
-}
-
-std::string GoogleSyncManager::authURLForCopy() {
-    return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&client_id=" + getGoogleClientId();
+std::string GoogleSyncManager::authURL(int port) {
+    return "https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile%20https://www.googleapis.com/auth/drive.appdata&response_type=code&state=1&redirect_uri=http%3A//127.0.0.1:" + std::to_string(port) + "&client_id=" + getGoogleClientId();
 }
 
 bool GoogleSyncManager::isGoogleLoggedIn() {
@@ -200,16 +196,12 @@ bool GoogleSyncManager::isGoogleLoggedIn() {
     return !defaults->getString("google-access-token", "").IsEmpty();
 }
 
-void GoogleSyncManager::receivedAuthCode(std::string code) {
-    receivedAuthCode(code, false);
-}
-
-void GoogleSyncManager::receivedAuthCode(std::string code, bool isCopyMode) {
+void GoogleSyncManager::receivedAuthCode(std::string code, int port) {
     // Get Access token from code
     // https://developers.google.com/identity/protocols/oauth2/native-app
     CURL *curl = curl_easy_init();
 
-    std::string redirectUri = isCopyMode ? "urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob" : "urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob%3Aauto";
+    std::string redirectUri = "http%3A//127.0.0.1:" + std::to_string(port);
 
     std::string s;
 
