@@ -10,21 +10,23 @@ GoogleAuthSheetBase( parent )
 }
 
 void GoogleAuthSheet::LoadAuthURL() {
-    int port = setupLocalServer();
+    int port = SetupLocalServer();
     GoogleSyncManager *g = GoogleSyncManager::Instance();
     std::string url = g->authURL(port);
     myWebView->LoadURL(wxString(url));
 }
 
 void GoogleAuthSheet::OnCloseClicked( wxCommandEvent& event ) {
+    CloseServer();
     EndModal(wxID_CANCEL);
 }
 
 BEGIN_EVENT_TABLE(GoogleAuthSheet, GoogleAuthSheetBase)
     EVT_WEBVIEW_NAVIGATED(wxID_ANY, GoogleAuthSheet::OnWebViewNavigated)
+    EVT_CLOSE(GoogleAuthSheet::OnClose)
 END_EVENT_TABLE()
 
-int GoogleAuthSheet::setupLocalServer() {
+int GoogleAuthSheet::SetupLocalServer() {
     if (m_localServer.is_running()) return m_port;
     std::clog << "starting server." << std::endl;
 
@@ -41,6 +43,20 @@ int GoogleAuthSheet::setupLocalServer() {
     return m_port;
 }
 
+void GoogleAuthSheet::CloseServer() {
+    if (m_localServer.is_running()) {
+        m_localServer.stop();
+        m_httpThread.join();
+    }
+    m_port = 0;
+    std::clog << "Closed server" << std::endl;
+}
+
+void GoogleAuthSheet::OnClose( wxCloseEvent& event ) {
+    CloseServer();
+    Destroy();
+}
+
 void GoogleAuthSheet::OnWebViewNavigated( wxWebViewEvent& event ) {
     std::string url = myWebView->GetCurrentURL().ToStdString();
     auto position = url.find("code=");
@@ -52,8 +68,7 @@ void GoogleAuthSheet::OnWebViewNavigated( wxWebViewEvent& event ) {
             GoogleSyncManager *g = GoogleSyncManager::Instance();
             g->receivedAuthCode(code, m_port);
 
-            m_localServer.stop();
-            m_httpThread.join();
+            CloseServer();
 
             EndModal(wxID_OK);
         }

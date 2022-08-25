@@ -24,8 +24,8 @@ class GoogleAuthSheet : public GoogleAuthSheetBase
 
 	protected:
 		void OnCloseClicked( wxCommandEvent& event );
+		void OnClose( wxCloseEvent& event );
 		void OnWebViewNavigated( wxWebViewEvent& event );
-		int setupLocalServer();
 
 	private:
 		DECLARE_EVENT_TABLE()
@@ -33,6 +33,8 @@ class GoogleAuthSheet : public GoogleAuthSheetBase
 		httplib::Server m_localServer;
 		int m_port = 0;
 		std::thread m_httpThread;
+		int SetupLocalServer();
+		void CloseServer();
 };
 
 #endif // __GoogleAuthSheet__
