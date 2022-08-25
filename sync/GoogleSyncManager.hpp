@@ -47,10 +47,8 @@ protected:
 
 public:
     std::string authURL();
-    std::string authURLForCopy();
 
     void receivedAuthCode(std::string code);
-    void receivedAuthCode(std::string code, bool isCopyMode);
     bool isGoogleLoggedIn();
     void logout();
     
