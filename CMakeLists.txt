@@ -146,6 +146,9 @@ set( SRCS_SQL
 set( SRCS_SQLITE
     sqlite/sqlite3.c sqlite/sqlite3.h sqlite/sqlite3ext.h )
 
+set( SRCS_HTTPLIB
+    cpp-httplib/httplib.h )
+
 set( SRCS_INTER
     InteractionsHtmlView.cpp InteractionsHtmlView.hpp
     InteractionsCart.cpp InteractionsCart.hpp
@@ -210,6 +213,7 @@ set( SRCS_PRINT
 source_group(GUI FILES ${SRCS_GUI})
 source_group(SQL FILES ${SRCS_SQL})
 source_group(sqlite FILES ${SRCS_SQLITE})
+source_group(http ${SRCS_HTTPLIB})
 source_group(interactions FILES ${SRCS_INTER})
 source_group(prescriptions FILES ${SRCS_PRESCR})
 source_group(patients FILES ${SRCS_PATIENT})
@@ -263,7 +267,7 @@ ADD_EXECUTABLE( ${APP_NAME} WIN32 MACOSX_BUNDLE
     FullTextEntry.cpp FullTextEntry.hpp
     DataStore.cpp DataStore.hpp
     ${SRCS_PRINT}
-    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE}
+    ${SRCS_GUI} ${SRCS_SQL} ${SRCS_SQLITE} ${SRCS_HTTPLIB}
     ${SRCS_INTER} ${SRCS_PRESCR} ${SRCS_PATIENT}
 		${SRCS_DOCTOR} ${SRCS_CSS} ${SRCS_JS} ${SRCS_CARD}
     ${SRCS_PREFERENCES}
