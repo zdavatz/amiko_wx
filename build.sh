@@ -18,7 +18,7 @@ source seed.conf
 
 WXWIDGETS_VERSION=3.1.4
 SQLITE_VERSION=3320300
-CURL_VERSION=7.73.0
+CURL_VERSION=8.4.0
 
 if [ $CONFIG_GENERATOR_XC ] ; then
     GENERATOR="Xcode"
@@ -148,8 +148,7 @@ echo "=== Configure CURL, install to $BIN_CURL"
         export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
         echo "sdk path:"
         echo $(xcrun -sdk macosx --show-sdk-path)
-        ARCH="x86_64 arm64" SDK=macosx DEPLOYMENT_TARGET=10.9 CFLAGS="-arch x86_64 -arch arm64 -isysroot $(xcrun -sdk macosx --show-sdk-path) -mmacosx-version-min=10.9" $SRC_CURL/configure \
-          --without-ssl \
+        ARCH="x86_64 arm64" SDK=macosx DEPLOYMENT_TARGET=10.10 CFLAGS="-arch x86_64 -arch arm64 -isysroot $(xcrun -sdk macosx --show-sdk-path) -mmacosx-version-min=10.10" $SRC_CURL/configure \
           --with-secure-transport \
           --prefix=$BIN_CURL \
           --without-librtmp \
