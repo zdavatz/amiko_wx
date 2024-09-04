@@ -157,12 +157,12 @@ jobs:
           echo "::set-output name=need_release::true"
           echo "::set-output name=current_version::${CURRENT_VERSION}"
         fi
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.7
       if: steps.check_tag.outputs.need_release == 'true'
       with:
         name: mac-artifact
         path: ~/mac-artifact
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.7
       if: steps.check_tag.outputs.need_release == 'true'
       with:
         name: linux-artifact
